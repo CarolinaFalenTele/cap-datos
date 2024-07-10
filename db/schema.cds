@@ -1,7 +1,7 @@
 namespace db.datos;
 
 
-type projectVertical        : String enum {
+type projectVertical     : String enum {
     Appian;
     ![O365];
     RPAS;
@@ -14,22 +14,21 @@ type projectVertical        : String enum {
     Otros;
 };
 
-type projectClientNuevo : String enum {
+type projectClientNuevo  : String enum {
     ![Sí en TGT];
     ![Sí en Vertical];
     ![No];
 };
 
 
-
-type ProyectNaturaleza      : String enum {
+type ProyectNaturaleza   : String enum {
     CAPEX;
     OPEX;
     ![Proyecto/Servicio a Cliente Externo];
     ![Opex Servicios];
 };
 
-type proyectSeguimiento     : String enum {
+type proyectSeguimiento  : String enum {
     Agile;
     Mixto;
     Waterfall;
@@ -37,13 +36,13 @@ type proyectSeguimiento     : String enum {
     Servicio
 }
 
-type proyectEjecucionVia    : String enum {
+type proyectEjecucionVia : String enum {
     Si;
     No;
     Mixto;
 };
 
-type proyectAMreceptor      : String enum {
+type proyectAMreceptor   : String enum {
     ![No Aplica];
     ![AM TSA];
     ![AM BI];
@@ -56,7 +55,7 @@ type proyectAMreceptor      : String enum {
 };
 
 
-type proyecTipoCompra       : String enum {
+type proyecTipoCompra    : String enum {
     General;
     Ordinaria;
     ![Complementaria compra general];
@@ -66,31 +65,31 @@ type proyecTipoCompra       : String enum {
 
 };
 
-type proyectTipoServ        : String enum {
+type proyectTipoServ     : String enum {
     ![Proyecto Implementacion];
     ![Soporte y mantenimiento];
     Consultoria;
 
 };
 
-type otrosServicios         : array of {
+type otrosServicios      : array of {
     Vertical       : projectVertical;
     TipoServicio   : proyectTipoServ;
     ConceptoOferta : String;
 };
 
-type arrGastosdeViaje       : array of {
+type arrGastosdeViaje    : array of {
     Vertical       : projectVertical;
     TipoServicio   : proyectTipoServ;
     ConceptoOferta : String;
 }
 
-type infrestructura         : array of {
+type infrestructura      : array of {
     Vertical       : projectVertical;
     ConceptoOferta : String;
 };
 
-type licencias              : array of {
+type licencias           : array of {
     Vertical       : projectVertical;
     ConceptoOferta : String;
 }
@@ -115,7 +114,7 @@ entity DatosProyect {
         costeEstructura          : Integer;
         objetivoAlcance          : LargeString;
         AsuncionesyRestricciones : LargeString;
-        CambioEuRUSD              : Integer;
+        CambioEuRUSD             : Integer;
         Vertical                 : projectVertical;
         Naturaleza               : ProyectNaturaleza;
         Seguimiento              : proyectSeguimiento;
@@ -134,11 +133,12 @@ entity Area {
 };
 
 entity TipoIniciativa {
-      key ID         : UUID;
-      valueinicia: String; 
-      NombreIniciativa: String;
+    key ID               : UUID;
+        valueinicia      : String;
+        NombreIniciativa : String;
 
-  }
+}
+
 entity planificacion {
     key ID           : UUID;
         fecha_inicio : Date;
@@ -159,60 +159,62 @@ entity Facturacion {
 };
 
 entity RecursosInternos {
-    Vertical       : projectVertical;
-    tipoServicio   : proyectTipoServ;
-    ConceptoOferta : String;
-    PMJ            : Integer;
-    mesAño         : Date;
-    total          : Integer;
-    otrosServi     : otrosServicios;
-    GastosdeViaje  : arrGastosdeViaje;
-    PerfilServicio : Association to PerfilServicio;
-    DatosProyect   : Association to DatosProyect;
+    key ID             : UUID;
+        Vertical       : projectVertical;
+        tipoServicio   : proyectTipoServ;
+        ConceptoOferta : String;
+        PMJ            : Integer;
+        mesAño         : Date;
+        total          : Integer;
+        otrosServi     : otrosServicios;
+        GastosdeViaje  : arrGastosdeViaje;
+        PerfilServicio : Association to PerfilServicio;
+        DatosProyect   : Association to DatosProyect;
 
 
 };
 
 entity ConsumoExternos {
-    Vertical       : projectVertical;
-    tipoServicio   : proyectTipoServ;
-    ConceptoOferta : String;
-    PMJ            : Integer;
-    mesAño         : Date;
-    total          : Integer;
-    otrosServi     : otrosServicios;
-    GastosdeViaje  : arrGastosdeViaje;
-    PerfilServicio : Association to PerfilServicio;
-    DatosProyect   : Association to DatosProyect;
+
+    key ID             : UUID;
+        Vertical       : projectVertical;
+        tipoServicio   : proyectTipoServ;
+        ConceptoOferta : String;
+        PMJ            : Integer;
+        mesAño         : Date;
+        total          : Integer;
+        otrosServi     : otrosServicios;
+        GastosdeViaje  : arrGastosdeViaje;
+        PerfilServicio : Association to PerfilServicio;
+        DatosProyect   : Association to DatosProyect;
 
 };
 
 
 entity RecursosExternos {
-    Vertical       : projectVertical;
-    tipoServicio   : proyectTipoServ;
-    ConceptoOferta : String;
-    PMJ            : Integer;
-    mesAño         : Date;
-    total          : Integer;
-    otrosServi     : otrosServicios;
-    GastosdeViaje  : arrGastosdeViaje;
-    PerfilServicio : Association to PerfilServicio;
-    DatosProyect   : Association to DatosProyect;
+    key ID             : UUID;
+        Vertical       : projectVertical;
+        tipoServicio   : proyectTipoServ;
+        ConceptoOferta : String;
+        PMJ            : Integer;
+        mesAño         : Date;
+        total          : Integer;
+        otrosServi     : otrosServicios;
+        GastosdeViaje  : arrGastosdeViaje;
+        PerfilServicio : Association to PerfilServicio;
+        DatosProyect   : Association to DatosProyect;
 
 };
 
 entity otrosConceptos {
+        key ID        : UUID;
     Infrestructura : infrestructura;
     Licencias      : licencias;
 }
 
- 
+
 entity PerfilServicio {
     key ID           : UUID;
         valuePerfil  : String;
         NombrePerfil : String;
 };
-
-
-entity SelctDatosProyect as select from DatosProyect;
