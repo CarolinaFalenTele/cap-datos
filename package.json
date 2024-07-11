@@ -19,8 +19,8 @@
     "eslint": "^9"
   },
   "scripts": {
-    "start": "cds watch",
-    "deploy": "node node_modules/@sap/hdi-deploy/deploy.js"
+    "start": "cds run",
+    "deploy": "cds deploy"
   },
   "cds": {
     "requires": {
