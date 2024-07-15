@@ -9,6 +9,7 @@
     "@sap/cds": "^7",
     "@sap/hana-client": "^2.21.28",
     "@sap/xssec": "^3",
+    "dotenv": "^16.4.5",
     "express": "^4",
     "hdb": "^0.19.8",
     "package-lock.json": "^1.0.0"
@@ -17,7 +18,7 @@
     "@cap-js/sqlite": "^1",
     "@sap/cds-dk": "^7",
     "@sap/eslint-plugin-cds": "^3",
-    "@sap/hdi-deploy": "^4.9.5",
+    "@sap/hdi-deploy": "^5.2.0",
     "eslint": "^9"
   },
   "scripts": {
@@ -27,15 +28,12 @@
   "cds": {
     "requires": {
       "requires": {
-        "auth": "xsuaa",
+        "auth": "mocked",
         "db": "hana"
       },
-      "[production]": {
-        "auth": "xsuaa"
+      "hana": {
+        "deploy-format": "hdbtable"
       }
-    },
-    "hana": {
-      "deploy-format": "hdbtable"
     }
   }
 }
