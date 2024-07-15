@@ -26,6 +26,7 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: datosCdo-db
+      - name: datosCdo-auth
 
   - name: datosCdo-db-deployer
     type: hdb
@@ -41,3 +42,12 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+  - name: datosCdo-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: datosCdo-${org}-${space}
+        tenant-mode: dedicated

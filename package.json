@@ -8,8 +8,10 @@
   "dependencies": {
     "@sap/cds": "^7",
     "@sap/hana-client": "^2.21.28",
+    "@sap/xssec": "^3",
     "express": "^4",
-    "hdb": "^0.19.8"
+    "hdb": "^0.19.8",
+    "package-lock.json": "^1.0.0"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
@@ -24,8 +26,12 @@
   },
   "cds": {
     "requires": {
-      "db": {
-        "kind": "hana"
+      "requires": {
+        "auth": "xsuaa",
+        "db": "hana"
+      },
+      "[production]": {
+        "auth": "xsuaa"
       }
     },
     "hana": {

@@ -164,7 +164,7 @@ entity RecursosInternos {
         tipoServicio   : proyectTipoServ;
         ConceptoOferta : String;
         PMJ            : Integer;
-        mesAño         : Date;
+        mesYear        : Date;
         total          : Integer;
         otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
@@ -181,7 +181,7 @@ entity ConsumoExternos {
         tipoServicio   : proyectTipoServ;
         ConceptoOferta : String;
         PMJ            : Integer;
-        mesAño         : Date;
+        mesYear         : Date;
         total          : Integer;
         otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
@@ -197,7 +197,7 @@ entity RecursosExternos {
         tipoServicio   : proyectTipoServ;
         ConceptoOferta : String;
         PMJ            : Integer;
-        mesAño         : Date;
+        mesYear         : Date;
         total          : Integer;
         otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
