@@ -1,9 +1,8 @@
 namespace db.datos;
 
-
-type projectVertical     : String enum {
+type projectVertical : String enum {
     Appian;
-    ![O365];
+    O365;
     RPAS;
     BMC;
     CELONIS;
@@ -14,27 +13,26 @@ type projectVertical     : String enum {
     Otros;
 };
 
-type projectClientNuevo  : String enum {
-    ![Sí en TGT];
-    ![Sí en Vertical];
-    ![No];
+type projectClientNuevo : String enum {
+    Si_en_TGT;
+    Si_en_Vertical;
+    No;
 };
 
-
-type ProyectNaturaleza   : String enum {
+type ProyectNaturaleza : String enum {
     CAPEX;
     OPEX;
-    ![Proyecto/Servicio a Cliente Externo];
-    ![Opex Servicios];
+    Proyecto_Servicio_a_Cliente_Externo;
+    Opex_Servicios;
 };
 
-type proyectSeguimiento  : String enum {
+type proyectSeguimiento : String enum {
     Agile;
     Mixto;
     Waterfall;
-    ![Sin Seguimiento];
-    Servicio
-}
+    Sin_Seguimiento;
+    Servicio;
+};
 
 type proyectEjecucionVia : String enum {
     Si;
@@ -42,114 +40,162 @@ type proyectEjecucionVia : String enum {
     Mixto;
 };
 
-type proyectAMreceptor   : String enum {
-    ![No Aplica];
-    ![AM TSA];
-    ![AM BI];
-    ![COE Salesforce];
+type proyectAMreceptor : String enum {
+    No_Aplica;
+    AM_TSA;
+    AM_BI;
+    COE_Salesforce;
     RoD;
     Telesap;
     Vicky;
-    ![GlobalSAP / AM TSA];
+    GlobalSAP_AM_TSA;
     Otros;
 };
 
-
-type proyecTipoCompra    : String enum {
+type proyecTipoCompra : String enum {
     General;
     Ordinaria;
-    ![Complementaria compra general];
-    ![Derivada Compra General];
-    ![NO-MCT];
+    Complementaria_compra_general;
+    Derivada_Compra_General;
+    NO_MCT;
     Otros;
-
 };
 
-type proyectTipoServ     : String enum {
-    ![Proyecto Implementacion];
-    ![Soporte y mantenimiento];
+type proyectTipoServ : String enum {
+    Proyecto_Implementacion;
+    Soporte_y_mantenimiento;
     Consultoria;
-
 };
 
-type otrosServicios      : array of {
+type otrosServicios : array of {
     Vertical       : projectVertical;
     TipoServicio   : proyectTipoServ;
     ConceptoOferta : String;
 };
 
-type arrGastosdeViaje    : array of {
+type arrGastosdeViaje : array of {
     Vertical       : projectVertical;
     TipoServicio   : proyectTipoServ;
     ConceptoOferta : String;
-}
+};
 
-type infrestructura      : array of {
+type infrestructura : array of {
     Vertical       : projectVertical;
     ConceptoOferta : String;
 };
 
-type licencias           : array of {
+type licencias : array of {
     Vertical       : projectVertical;
     ConceptoOferta : String;
-}
+};
 
 entity Jefeproyect {
-    key ID        : UUID;
+    key ID        : UUID @cds.auto;
         matricula : Integer;
         name      : String;
         lastname  : String;
-};
+        valueJefe: String;
+}
 
 entity DatosProyect {
-    key ID                       : UUID;
+    key ID                       : UUID  @cds.auto;
         codigoProyect            : Integer;
         nameProyect              : String;
         pluriAnual               : Boolean;
-        clienteFuncional         : String;
         clienteFacturacion       : String;
-        clienteNuevo             : projectClientNuevo;
         multijuridica            : Boolean;
         IPC_apli                 : Integer;
         costeEstructura          : Integer;
         objetivoAlcance          : LargeString;
         AsuncionesyRestricciones : LargeString;
         CambioEuRUSD             : Integer;
-        Vertical                 : projectVertical;
-        Naturaleza               : ProyectNaturaleza;
-        Seguimiento              : proyectSeguimiento;
-        EjecucionVia             : proyectEjecucionVia;
-        AmReceptor               : proyectAMreceptor;
-        Iniciativa               : Association to TipoIniciativa;
+        Estado                   : String; 
+        Fechainicio              : DateTime;
+        FechaFin              : DateTime;
+        Proveedores              :  Association to Proveedores;
+        clienteFuncional         : Association to clienteFuncional;
+        TipoServicio             : Association to TipoServicio;
+        Vertical                 : Association to  Vertical;
+        Naturaleza               : Association to Naturaleza;
+        Seguimiento              : Association to Seguimiento;
+        EjecucionVia             : Association to EjecucionVia;
+        AmReceptor               :  Association to AMreceptor;
+        Iniciativa               : Association to TipoIniciativa;  
         Area                     : Association to Area;
         jefeProyectID            : Association to Jefeproyect;
-
 };
 
 entity Area {
-    key ID         : UUID;
-        valueArea  : String;
+    key ID         : UUID @cds.auto;
+    valueArea      : String; 
         NombreArea : String;
 };
 
-entity TipoIniciativa {
-    key ID               : UUID;
-        valueinicia      : String;
-        NombreIniciativa : String;
 
-}
 
-entity planificacion {
-    key ID           : UUID;
-        fecha_inicio : Date;
-        fecha_fin    : Date;
-        DatosProyect : Association to DatosProyect;
+entity Vertical {
+       key ID         : UUID @cds.auto;
+       valueVertical   : String; 
+       NombreVertical: String;       
+};  
 
+entity clienteFuncional {
+       key ID         : UUID @cds.auto;
+       valueClienteFun   : String; 
+       NombreClienteFun: String;       
+};  
+
+
+entity Naturaleza {
+       key ID         : UUID @cds.auto;
+       valueNaturaleza   : String; 
+       NombreNaturaleza: String;       
+};
+
+entity Seguimiento {
+       key ID         : UUID @cds.auto;
+       valueSeguimiento  : String; 
+       NombreSeguimiento: String;       
+}; 
+
+entity AMreceptor {
+       key ID         : UUID @cds.auto;
+       valueAMreceptor : String; 
+       NombreAMreceptor: String;       
+}; 
+
+
+entity EjecucionVia {
+       key ID         : UUID @cds.auto;
+       valueEjecuVia  : String; 
+       NombreEjecuVia: String;       
+};    
+
+
+entity TipoServicio  {
+    key ID               : UUID @cds.auto;
+        valueTipoServ    : String;
+        NombreTipoServ : String;
 };
 
 
+entity TipoIniciativa {
+    key ID               : UUID @cds.auto;
+        valueinicia      : String;
+        NombreIniciativa : String;
+};
+
+
+entity planificacion {
+    key ID           : UUID @cds.auto;
+        hito         : String;
+        fecha_inicio : Date;  
+        fecha_fin    : Date;
+        DatosProyect : Association to DatosProyect;
+};
+
 entity Facturacion {
-    key ID              : UUID;
+    key ID              : UUID @cds.auto;
         descripcionHito : String;
         fechaEstimida   : Date;
         facturacion     : Integer;
@@ -159,62 +205,61 @@ entity Facturacion {
 };
 
 entity RecursosInternos {
-    key ID             : UUID;
-        Vertical       : projectVertical;
-        tipoServicio   : proyectTipoServ;
+    key ID             : UUID @cds.auto;
         ConceptoOferta : String;
         PMJ            : Integer;
         mesYear        : Date;
         total          : Integer;
-        otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
+        tipoServicio   : Association to TipoServicio;
+        Vertical       : Association to Vertical;
         PerfilServicio : Association to PerfilServicio;
         DatosProyect   : Association to DatosProyect;
-
-
 };
 
 entity ConsumoExternos {
-
-    key ID             : UUID;
-        Vertical       : projectVertical;
-        tipoServicio   : proyectTipoServ;
+    key ID             : UUID @cds.auto;
         ConceptoOferta : String;
         PMJ            : Integer;
-        mesYear         : Date;
+        mesYear        : Date;
         total          : Integer;
-        otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
+        tipoServicio   : Association to TipoServicio;
+        Vertical       : Association to Vertical;
         PerfilServicio : Association to PerfilServicio;
         DatosProyect   : Association to DatosProyect;
-
 };
 
-
 entity RecursosExternos {
-    key ID             : UUID;
-        Vertical       : projectVertical;
-        tipoServicio   : proyectTipoServ;
+    key ID             : UUID @cds.auto;
         ConceptoOferta : String;
         PMJ            : Integer;
-        mesYear         : Date;
+        mesYear        : Date;
         total          : Integer;
-        otrosServi     : otrosServicios;
         GastosdeViaje  : arrGastosdeViaje;
+        tipoServicio   : Association to TipoServicio;
+        Vertical       : Association to Vertical;
         PerfilServicio : Association to PerfilServicio;
         DatosProyect   : Association to DatosProyect;
-
 };
 
 entity otrosConceptos {
-        key ID        : UUID;
-    Infrestructura : infrestructura;
-    Licencias      : licencias;
-}
-
+    key ID          : UUID @cds.auto;
+    Infrestructura  : infrestructura;
+    Licencias       : licencias;
+};
 
 entity PerfilServicio {
-    key ID           : UUID;
+    key ID           : UUID @cds.auto;
         valuePerfil  : String;
         NombrePerfil : String;
 };
+
+entity Proveedores{
+   key ID           : UUID @cds.auto;
+   selectCondi      : Boolean;
+   selectProvee     : Boolean;
+   Condicionado     : String;
+   Proveedor        : String; 
+
+}

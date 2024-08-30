@@ -1,4 +1,0 @@
-ID,codigoProyect,nameProyect,pluriAnual,clienteFuncional,clienteFacturacion,multijuridica,IPC_apli,costeEstructura
-223e4567-e89b-12d3-a456-426614174010,2001,Proyecto Alfa,true,Cliente A,Cliente B,false,2,50000
-223e4567-e89b-12d3-a456-426614174011,2002,Proyecto Beta,false,Cliente C,Cliente D,true,3,75000
-223e4567-e89b-12d3-a456-426614174012,2003,Proyecto Gamma,true,Cliente E,Cliente F,false,1,60000

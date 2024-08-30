@@ -6,7 +6,8 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^7",
+    "@sap/approuter": "^16.6.1",
+    "@sap/cds": "^7.9.3",
     "@sap/hana-client": "^2.21.28",
     "@sap/xssec": "^3",
     "dotenv": "^16.4.5",
@@ -19,20 +20,28 @@
     "@sap/cds-dk": "^7",
     "@sap/eslint-plugin-cds": "^3",
     "@sap/hdi-deploy": "^5.2.0",
-    "eslint": "^9"
+    "@sap/ux-specification": "^1.120.15",
+    "eslint": "^9",
+    "rimraf": "^5.0.5"
   },
   "scripts": {
-    "start": "cds run",
-    "deploy": "cds deploy"
+    "start": "cds start",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy datosCdo --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive"
   },
   "cds": {
     "requires": {
       "requires": {
-        "auth": "mocked",
+        "auth": "xsuaa",
         "db": "hana"
       },
       "hana": {
         "deploy-format": "hdbtable"
+      },
+      "[hybrid]": {
+        "auth": "xsuaa"
       }
     }
   }

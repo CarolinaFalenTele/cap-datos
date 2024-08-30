@@ -1,10 +1,10 @@
-ID,valueArea,NombreArea
-1,Seguridad,Seguridad
-2,Arquitectura y Tecnología,Arquitectura y Tecnología
-3,Control TGT,Control TGT
-4,Finanzas y Supply Chain,Finanzas y Supply Chain
-5,Gestión Sistemas TSA,Gestión Sistemas TSA
-6,Recursos Humanos TGT,Recursos Humanos TGT
-7,Aplicaciones Globales B2B & BI",Aplicaciones Globales B2B & BI"
-8,Tesorería, Mercados y CDG,Tesorería, Mercados y CDG
-9,Servicios Clientes B2B - PMO,Servicios Clientes B2B - PMO
+ID,NombreArea,valueArea
+123e4567-e89b-12d3-a456-426614174002,Seguridad," "
+123e4567-e89b-12d3-a456-426614174005,Arquitectura y Tecnología," "
+123e4567-e89b-12d3-a456-426614174003,Control TGT," "
+123e4567-e89b-12d3-a456-426614174004,Finanzas y Supply Chain," "
+123e4567-e89b-12d3-a456-426614174006,Gestión Sistemas TSA," "
+123e4567-e89b-12d3-a456-426614174007,Recursos Humanos TGT," "
+123e4567-e89b-12d3-a456-426614174008,"Aplicaciones Globales B2B & BI"," "
+123e4567-e89b-12d3-a456-426614174009,"Tesorería, Mercados y CDG"," "
+123e4567-e89b-12d3-a456-426614174010,Servicios Clientes B2B - PMO," "

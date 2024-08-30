@@ -1,0 +1,17 @@
+/* Enter your custom styles here */
+
+.customTextColor {
+    color: hsl(226, 100%, 60%); /* Cambia este valor por el color que desees */
+    font-weight: bold; /* Opcional: puedes añadir otras propiedades de estilo */
+}
+
+
+.customHeaderColor .sapMListTblHeader .sapMListTblCell  {
+    background-color: black; /* Color verde */
+    color: #FFFFFF !important; /* Color blanco puro */
+   font-weight: bold; /* Texto en negrita */
+
+}
+
+
+
