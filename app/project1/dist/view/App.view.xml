@@ -1,0 +1,167 @@
+<mvc:View controllerName="project1.controller.App"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+ <App id="app">
+        <pages>
+            <Page xmlns="sap.m" id="pageId" title="Page Title" floatingFooter="true" class="miClase">
+                <customHeader>
+                    <Bar xmlns="sap.m" class="sapContrastPlus myCustomBar" id="bar0" busyIndicatorSize="Large" design="Header">
+                        <contentLeft>
+                            <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Telef%C3%B3nica_2021_logo.svg/1200px-Telef%C3%B3nica_2021_logo.svg.png" width="120px" id="image0" />
+                        </contentLeft>
+                    </Bar>
+                </customHeader>
+
+                <content>
+                    <VBox id="vbox0">
+                        <items>
+                            <ObjectHeader xmlns="sap.m" title="Fichas CDO" id="header0" responsive="true" fullScreenOptimized="true" intro="Descripcion" titleActive="true" titlePress="handleTitlePress" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header">
+
+                                <ObjectAttribute id="233" title="Empleado"  text="David Arroyo" />
+                                <ObjectAttribute id="223" title="Solicitudes" text="20" active="true" />
+                                <ObjectAttribute id="2" title="Category" text="BTP" />
+                                <ObjectAttribute id="2323" title="Weight per unit" text="{WeightMeasure} {WeightUnit}" />
+                                <ObjectAttribute id="2222" title="Dimension per unit" text="{Width} x {Depth} x {Height} {DimUnit}" />
+
+                                <statuses>
+                                    <ObjectStatus id="status0" title="Approval" text="Pending" state="Warning" />
+                                </statuses>
+
+                                <attributes>
+                                    <ObjectAttribute text="10 units" id="attribute0" />
+
+                                </attributes>
+
+
+                                <headerContainer>
+                                    <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding">
+                                        <items>
+                                            <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
+                                                <Text id="ma2" text="Info content goes here ..." />
+                                            </IconTabFilter>
+                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" count="3">
+                                                <Table id="idPendientes" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent" width="auto">
+                                                    <headerToolbar>
+                                                        <Toolbar id="headerToolbar">
+                                                            <Title id="title" text="Pendientes a Aprobacion" level="H2" />
+                                                        </Toolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column id="colFecha" width="12em">
+                                                            <Text id="txtFecha" text="Fecha" />
+                                                        </Column>
+                                                        <Column id="colCodigo" width="12em">
+                                                            <Text id="txtCodigo" text="Codigo Proyecto" />
+                                                        </Column>
+                                                        <Column id="colNombreProyecto" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="txtNombreProyecto" text="Nombre Proyecto" />
+                                                        </Column>
+                                                        <Column id="colDescripcion" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="txtDescripcion" text="Descripción" />
+                                                        </Column>
+                                                        <Column id="colArea" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="txtArea" text="Área" />
+                                                        </Column>
+                                                        <Column id="colJefeProyecto">
+                                                            <Text id="txtJefeProyecto" text="Jefe de Proyecto" />
+                                                        </Column>
+                                                        <Column id="colEstado" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+                                                            <Text id="txtEstado" text="Estado" />
+                                                        </Column>
+                                                        <Column id="colEstado1" hAlign="End">
+                                                            <Text id="txtButtons" text="" />
+                                                        </Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem id="cliItem">
+                                                            <cells>
+                                                                <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{ListaCdo>fecha}" />
+                                                                <Text id="txtCellCodigo" text="{codigoProyect}" />
+                                                                <Text id="txtCellNombreProyecto" text="{nameProyect}" />
+                                                                <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />
+                                                                <Text id="txtCellArea" text="{Area/NombreArea}" />
+                                                                <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}" />
+                                                                <ObjectStatus id="objStatus" text="Pendiente" state="Warning" />
+                                                                <HBox id="fff">
+                                                                    <Button id="nu" icon="sap-icon://edit" press="onEditPress" />
+                                                                    <Button id="ww" icon="sap-icon://process" press="onDeletePress" />
+                                                                </HBox>
+
+
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+
+                                            </IconTabFilter>
+                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes" count="12">
+
+                                                <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{ListaCdo>/listaCdo}" class="sapFDynamicPageAlignContent" width="auto">
+                                                    <headerToolbar>
+                                                        <Toolbar id="d">
+                                                            <Title id="d2" text="Lista De Solicitudes" level="H2" />
+                                                        </Toolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column id="ud" width="12em">
+                                                            <Text id="2d" text="Fecha" />
+                                                        </Column>
+                                                        <Column id="22d" width="12em">
+                                                            <Text id="21d" text="Codigo Proyecto" />
+                                                        </Column>
+                                                        <Column id="d87" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="d00" text="Nombre Proyecto" />
+                                                        </Column>
+                                                        <Column id="d4" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="dkh" text="Descripcion" />
+                                                        </Column>
+                                                        <Column id="d34" minScreenWidth="Tablet" demandPopin="true">
+                                                            <Text id="dh" text="Area" />
+                                                        </Column>
+                                                        <Column id="d34h" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+                                                            <Text id="dhh" text="Jefe de Proyecto" />
+                                                        </Column>
+                                                        <Column id="dnn" hAlign="End">
+                                                            <Text id="dass" text="Estado" />
+                                                        </Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem id="q111d">
+                                                            <cells>
+                                                                <ObjectIdentifier id="1234d" title="{Name}" text="{ListaCdo>fecha}" />
+                                                                <Text id="2333d" text="{ListaCdo>Codigo}" />
+                                                                <Text id="00" text="{ListaCdo>NombreProyec}" />
+                                                                <Text id="0" text="{ListaCdo>Descripcion}" />
+                                                                <Text id="20" text="{ListaCdo>Area}" />
+                                                                <Text id="210" text="{ListaCdo>Jefe Proyecto}" />
+
+                                                                <ObjectStatus id="status02" text="{ListaCdo>Estado}" state="Success" />
+
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </IconTabFilter>
+                                            <IconTabFilter id="ma77" key="people" icon="sap-icon://group">
+                                                <Text id="ma66" text="People content goes here ..." />
+                                            </IconTabFilter>
+                                        </items>
+                                    </IconTabBar>
+                                </headerContainer>
+                            </ObjectHeader>
+                        </items>
+                    </VBox>
+                </content>
+
+                <footer>
+                    <OverflowToolbar id="toolbar1">
+                        <ToolbarSpacer id="22" />
+
+                        <Button id="33" type="Accept" text="Accept" press="onNavToView1" />
+                    </OverflowToolbar>
+                </footer>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

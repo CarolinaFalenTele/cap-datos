@@ -1,9 +1,9 @@
 using {db.datos as datos} from '../db/schema';
 
 service DatosCDOService {
-@requires: 'authenticated-user'
+/*@requires: 'authenticated-user'
 @cds.redirection.target
-@odata.draft.enabled: true
+@odata.draft.enabled: true*/
     entity DatosProyect as projection on datos.DatosProyect;
     entity Jefeproyect as projection on datos.Jefeproyect;
     entity Area as projection on datos.Area;
@@ -17,7 +17,7 @@ service DatosCDOService {
     entity TipoServicio as projection on datos.TipoServicio;
     entity EjecucionVia as projection on datos.EjecucionVia;
     entity Facturacion as projection on datos.Facturacion;
-    entity Proveedores as projection on datos.Proveedores;
+    entity Proveedores as projection on datos.Proveedor;
     entity RecursosInternos as projection on datos.RecursosInternos;
     entity ConsumoExternos as projection on datos.ConsumoExternos;
     entity RecursosExternos as projection on datos.RecursosExternos;

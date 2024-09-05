@@ -81,6 +81,22 @@ modules:
         - npm run build:cf
       supported-platforms:
         []
+
+  - name: datosCdo
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: datosCdo-auth
 resources:
   - name: datosCdo-db
     type: com.sap.xs.hdi-container

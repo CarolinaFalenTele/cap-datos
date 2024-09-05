@@ -1,5 +1,5 @@
 <mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"  
-    xmlns:smartFilter="sap.ui.comp.smartfilterbar"  xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
+    xmlns:smartFilter="sap.ui.comp.smartfilterbar" controllerName="project1.controller.View1" displayBlock="true">
 <App id="app2">
 <Page id="page" title="{i18n>title}">
 <customHeader>
@@ -36,8 +36,7 @@
                             </l:VerticalLayout>
                         </IconTabFilter>
 
-                        <IconTabFilter id="idIniu" text="Activities" count="" key="key2" class=".miClase">
-
+                        <IconTabFilter id="idIniu" text="Activities" count="10" key="key2" class=".miClase">
                             <FlexBox width="100%" id="box0_14728022858"/>
                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel1">
                                 <headerToolbar>
@@ -137,7 +136,7 @@
 
                                                             <Input xmlns="sap.m" id="id_Cfactur" placeholder="Facturacion..." liveChange="onInputChange" tooltip="Facturacion"/>
 
-                                                            <Select xmlns="sap.m" id="idNatu" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}">
+                                                            <Select xmlns="sap.m" id="select1_1714404476527" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}">
                                                                 <items>
                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreNaturaleza}" id="item160"/>
                                                                 </items>
@@ -262,7 +261,7 @@
                                                 <Text text="Fechas planificacion" id="text10_1714468462964" class="sapUiSmallMarginBottom myText2"/>
                                                 <FlexBox width="100%" id="box0_1714468536656">
                                                     <items>
-                                        <Table ariaLabelledBy="__label7" id="table3_1714468867118" class="table1" items="{planning>/milestones}" width="500px">
+                                        <Table ariaLabelledBy="__label7" id="table3_1714468867118" class="table1" items="{/planificacion}" width="500px">
                                                             <headerToolbar>
                                                                 <Toolbar id="dhyff">
                                                                     <Title id="2ff" text="Fechas planificacion" level="H2" class="myText2"/>
@@ -290,73 +289,46 @@
                                                             <items>
                                                                 <ColumnListItem type="Active" id="colum4">
                                                                     <cells>
-                                                                        <Text id="texty" text="{planning>fase}"/>
-                                                                        <DatePicker id="Fechainicio"          value="{planning>fechaInicio}" 
-                            change="onFechaChange"
-                            displayFormat="yyyy-MM-dd" 
-                            valueFormat="yyyy-MM-dd"  />                                                                   
-
-                                                                        <DatePicker id="fecha_fin1"  value="{planning>fechaFin}" 
-                            change="onFechaChange"
-                            displayFormat="yyyy-MM-dd" 
-                            valueFormat="yyyy-MM-dd"  />                                                                  
+                                                                        <Text id="texty" text="{hito}"/>
+                                                                        <DatePicker id="fecha_ini" value="{planificacion>fecha_inicio}" displayFormat="yyyy-MM-dd"/>
+                                                                        <DatePicker id="fecha_fin" value="{planificacion>fecha_fin}" displayFormat="yyyy-MM-dd" />
                                                                     </cells>
                                                                 </ColumnListItem>
                                                             </items>
                                                         </Table>
       
-   <!--<viz:VizFrame 
-    id="idVizFrame" 
-    height='400px' 
-    width='600px' 
-    vizType='column'
-    legendVisible="true"
-    visible="true">
-    
-    <viz:dataset>
-        <viz.data:FlattenedDataset id="ujer" data="{/chartData}">
-            <viz.data:dimensions>
-                <viz.data:DimensionDefinition  id="ujermoea" name="Fase" value="{fase}"/>
-            </viz.data:dimensions>
-            <viz.data:measures>
-                <viz.data:MeasureDefinition  id="ujerore" name="Duración (días)" value="{duracion}"/>
-            </viz.data:measures>
-        </viz.data:FlattenedDataset>
-    </viz:dataset>
-    
-    <viz:feeds>
-        <viz.feeds:FeedItem  id="mujer" uid="categoryAxis" type="Dimension" values="Fase"/>
-        <viz.feeds:FeedItem  id="nogave344" uid="valueAxis" type="Measure" values="Duración (días)"/>
-    </viz:feeds>
-</viz:VizFrame>-->
-
-     <viz:VizFrame id="idVizFrame" height="400px" width="500px" uiConfig="{ 'applicationSet': 'fiori' }"  legendVisible="true" vizType="bar" visible="true">
-    <viz:dataset>
-        <viz.data:FlattenedDataset id="fnor" data="{planning>/chartData}">
-            <viz.data:dimensions>
-                <viz.data:DimensionDefinition id="suyel" name="Fase" value="{planning>fase}" />
-            </viz.data:dimensions>
-            <viz.data:measures>
-                <viz.data:MeasureDefinition id="mied" name="Duración (días)" value="{planning>duracion}" />
-                 <viz.data:MeasureDefinition id="miedLabel" name="Información" value="{planning>label}" />
-
-            </viz.data:measures>
-        </viz.data:FlattenedDataset>
-    </viz:dataset>
-    <viz:feeds>
-        <viz.feeds:FeedItem id="juras" uid="valueAxis" type="Measure" values="Duración (días)" />
-        <viz.feeds:FeedItem id="nopue" uid="categoryAxis" type="Dimension" values="Fase" />
-    </viz:feeds>
-     <viz:feeds>
-        <viz.feeds:FeedItem id="feedLabel" uid="tooltip" type="Measure" values="Información" />
-    </viz:feeds>
-</viz:VizFrame>
-
+      <!-- Filtro Inteligente (opcional) -->
+<smartFilter:SmartFilterBar 
+    id="smartFilterBar" 
+    entitySet="{path: 'planificacion', targetType: 'any'}" />
+        <!-- Gráfico Inteligente -->
+        <smartChart:SmartChart 
+            id="smartChart" 
+            entitySet="planificacion" 
+            smartFilterId="smartFilterBar"
+            chartType="Line">
+        </smartChart:SmartChart>
+                                      <!--                <viz:VizFrame id="idVizFrame" height="500px" width="600px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="column" visible="true">
+                                                            <viz:dataset >
+                                                                <viz.data:FlattenedDataset id="fnor" data="{/chartData}">
+                                                                    <viz.data:dimensions >
+                                                                        <viz.data:DimensionDefinition id="suyel" name="fecha" value="{fechaInicio}" dataType="date" />
+                                                                    </viz.data:dimensions>
+                                                                    <viz.data:measures>
+                                                                        <viz.data:MeasureDefinition id="mied" name="Duración" value="{duracion}" />
+                                                                    </viz.data:measures>
+                                                                </viz.data:FlattenedDataset>
+                                                            </viz:dataset>
+                                                            <viz:feeds>
+                                                                <viz.feeds:FeedItem id="juras" uid="valueAxis" type="Measure" values="Duración" />
+                                                                <viz.feeds:FeedItem id="nopue" uid="categoryAxis" type="Dimension" values="fecha" />
+                                                            </viz:feeds>
+                                                        </viz:VizFrame>-->  
                                                     </items>
                                                 </FlexBox>
                                                 <FlexBox width="100%" id="box0_1714472600967">
                                                     <items>
-                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="sapUiSmallMargin" items="{fechasModel>/fechas}" width="400px">
+                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="sapUiSmallMargin" width="400px">
                                                             <headerToolbar>
                                                                 <Toolbar id="plsn">
                                                                     <Title id="tuilo45" text="Plan de servicio" level="H2"/>
@@ -367,10 +339,8 @@
                                                                 <ColumnListItem type="Active" id="item0_1714472906426">
                                                                     <cells>
                                                                         <Text id="text9" text="Plan"/>
-                                                                        <Text  text="{fechasModel>fechaInicioConstruccion}" id="text11"/>
-                                                                  <Text  text="{fechasModel>fechaFinPruebasTQ}" id="text100052881"/>
-
-
+                                                                        <Text text="04/04/2023" id="text10"/>
+                                                                        <Text text="14/09/2024" id="text11"/>
                                                                     </cells>
                                                                 </ColumnListItem>
                                                             </items>
@@ -392,18 +362,16 @@
                                                                 </Column>
                                                             </columns>
                                                         </Table>
-
-                                                               <!-- Segundo VizFrame para Construcción y Pruebas TQ -->
-         
+                                                        
+        
                                                     </items>
                                                 </FlexBox>
-
 
 
                                                                 <FlexBox width="100%" id="box0_1721815442596">
 
                                                         
-                                                        <Table ariaLabelledBy="__xmlview0--label9_1714468867114"  noDataText="Drop column list items here and columns in the area above" id="table2" width="400px">
+                                                        <Table ariaLabelledBy="__xmlview0--label9_1714468867114" noDataText="Drop column list items here and columns in the area above" id="table2" width="400px">
                                                             <items>
                                                                 <ColumnListItem id="item2_1723105790552">
                                                                 <cells>
@@ -466,12 +434,12 @@
                                                 <FlexBox width="100%" id="box0_1714476532308">
                                                     <items>
                                                         <Text xmlns="sap.m" text="Objectivo y Alcance" id="text9_1714476556932" class="sapUiSmallMargin"/>
-                                                        <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idObje" rows="4" cols="60"/>
+                                                        <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="area0_1714484681199" rows="4" cols="60"/>
                                                     </items>
 
                                                     <items>
                                                         <Text xmlns="sap.m" text="Asunciones y Restricciones" id="s" class="sapUiSmallMargin"/>
-                                                        <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idAsunyRestri" rows="4" cols="60"/>
+                                                        <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="area0_s1714484681199" rows="4" cols="60"/>
                                                     </items>
                                                 </FlexBox>
 
@@ -2196,6 +2164,7 @@
 
 
 
+                                                    <Input xmlns="sap.m" value="Value" id="input0_1724758216494"/>
 
 
 
@@ -2402,7 +2371,6 @@
                         <ToolbarSpacer id="25432"/>
 
                         <Button id="564433" type="Accept" text="Accept" press="onSave"/>
-                        <Button  id="15254574" type="Reject" text="Reject" press="onClearFields"/>
                     </OverflowToolbar>
                 </footer>
 </Page>

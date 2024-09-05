@@ -97,6 +97,7 @@ entity Jefeproyect {
         valueJefe: String;
 }
 
+
 entity DatosProyect {
     key ID                       : UUID  @cds.auto;
         codigoProyect            : Integer;
@@ -111,9 +112,9 @@ entity DatosProyect {
         CambioEuRUSD             : Integer;
         Estado                   : String; 
         Fechainicio              : DateTime;
-        FechaFin              : DateTime;
-        Proveedores              :  Association to Proveedores;
-        clienteFuncional         : Association to clienteFuncional;
+        FechaFin                 : DateTime;
+        clienteFuncional         : String;
+        Proveedores              : Composition of many Proveedor on Proveedores.datosProyectID = ID;
         TipoServicio             : Association to TipoServicio;
         Vertical                 : Association to  Vertical;
         Naturaleza               : Association to Naturaleza;
@@ -125,10 +126,11 @@ entity DatosProyect {
         jefeProyectID            : Association to Jefeproyect;
 };
 
+
 entity Area {
     key ID         : UUID @cds.auto;
     valueArea      : String; 
-        NombreArea : String;
+    NombreArea     : String;
 };
 
 
@@ -255,11 +257,11 @@ entity PerfilServicio {
         NombrePerfil : String;
 };
 
-entity Proveedores{
+entity Proveedor{
    key ID           : UUID @cds.auto;
-   selectCondi      : Boolean;
-   selectProvee     : Boolean;
-   Condicionado     : String;
-   Proveedor        : String; 
-
+    condicionado       : Boolean;  
+    proveedor          : Boolean;  
+    valorCondicionado  : String;  
+    valorProveedor     : String;   
+    datosProyectID : UUID;  // Llave foránea  
 }

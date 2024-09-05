@@ -4,277 +4,88 @@ sap.ui.define([
   "sap/ui/core/format/DateFormat",
   "sap/viz/ui5/controls/VizFrame",
   "sap/ui/model/odata/v4/ODataModel",
-  'sap/m/MessageToast',
+  "sap/m/MessageToast",
   "sap/ui/model/Sorter",
   "sap/ui/model/Filter",
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
-  "sap/ui/model/json/JSONModel",
-
+  "sap/ui/model/json/JSONModel"
 ],
 
   function (Controller, VizFrame, MessageToast, ODataModel, Sorter, Filter, FilterOperator, JSONModel, FilterType,) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
-
-      onInit: function () {
-
-
-
-        // Crear un modelo inicial con los hitos y vincularlo a la vista
-        var oModel = new sap.ui.model.json.JSONModel({
-          milestones: [
-            { fase: "Kick off", fechaInicio: null, fechaFin: null },
-            { fase: "Diseño", fechaInicio: null, fechaFin: null },
-            { fase: "Construcción", fechaInicio: null, fechaFin: null },
-            { fase: "Pruebas TQ", fechaInicio: null, fechaFin: null },
-            { fase: "Go live", fechaInicio: null, fechaFin: null },
-            { fase: "Paso AM", fechaInicio: null, fechaFin: null },
-            { fase: "Server post/prod", fechaInicio: null, fechaFin: null }
-          ],
-          chartData: [], // Inicializamos el chartData
-        });
-        this.getView().setModel(oModel, "planning");
-
-        console.log(oModel);
-
-        // Inicializar el gráfico con los datos actuales
-        this.updateVizFrame1();
-
-      },
-
-      onFechaChange: function () {
-        // Cuando se cambia una fecha en la tabla, se actualiza el gráfico
-      //() this._updateChart();
-        this.updateVizFrame1();
-
-       
-      },
+    onInit: function () {
 
 
 
+    },
+      
+    onSave: async function () {  
 
-
-      //---------------Grafico fechasvizframe para Fases  --------------------------------
-
-
-      updateVizFrame1: function () {
-        var oView = this.getView();
-
-        var oModel = oView.getModel("planning");
-
-        var oData = oModel.getData();
-
-        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
-
-          pattern: "yyyy-MM-dd",
-
-        });
-
-        var aChartData = oData.milestones.map(function (milestone) {
-
-          var startDate = milestone.fechaInicio ? new Date(milestone.fechaInicio) : null;
-
-          var endDate = milestone.fechaFin ? new Date(milestone.fechaFin) : null;
-
-          if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
-
-            var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
-
-            return {
-
-              fase: milestone.fase,
-
-              fechaInicio: oDateFormat.format(startDate),
-
-              fechaFin: oDateFormat.format(endDate),
-
-              duracion: duration,
-
-              // Combinar la duración con las fechas para mostrar en las etiquetas
-
-              label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
-
-            };
-
-          } else {
-
-            return null;
-
-          }
-
-        }).filter(Boolean);
-
-        oModel.setProperty("/chartData", aChartData);
-
-
-        var oFechas = {};
-        aChartData.forEach(function(oHito) {
-          if (oHito.fase === "Construcción") {
-              oFechas.fechaInicioConstruccion = oHito.fechaInicio;
-          }
-          if (oHito.fase === "Pruebas TQ") {
-              oFechas.fechaFinPruebasTQ = oHito.fechaFin;
-          }
-      });
-
-     
- // Crear un modelo JSON para las fechas específicas
- var oFechasModel = new sap.ui.model.json.JSONModel({
-  fechas: [
-      { fase: "Fechas Importantes",
-        fechaInicioConstruccion: oFechas.fechaInicioConstruccion,
-        fechaFinPruebasTQ: oFechas.fechaFinPruebasTQ }
-  ]
-});
-
-// Establecer el nuevo modelo en la vista
-oView.setModel(oFechasModel, "fechasModel");
-
-    
-
-      },
-
-
-
-      //------------------------------------------------- 
-
-    
-
-
-
-      // ---------- Metodo Save ----------------- 
-      onSave: async function () {
-        let errorCount = 0;
-    
-        // Recopila los datos del formulario principal
         const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
         const snameProyect = this.byId("input1").getValue();
         const spluriAnual = this.byId("box_pluriAnual").getSelected();
-        const sClienteFac = this.byId("id_Cfactur").getValue();
+        const sClienteFac = this.byId("id_Cfactur").getValue(); 
         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
-        const sClienteFunc = this.byId("int_clienteFun").getValue();
-        const sObjetivoAlcance = this.byId("idObje").getValue();
-        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-        const sSelectedKey = this.byId("idNatu").getSelectedKey();
-        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
-        const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
-    
-        // Recolecta los datos de Proveedores desde la tabla o inputs
-        const oTable = this.byId("table2");
-        const aItems = oTable.getItems();
-    
-        const aProveedores = aItems.map(item => {
-            const aCells = item.getCells();
-            const condicionadoCheckbox = aCells[0];
-            const proveedorCheckbox = aCells[1];
-            const inputCondicionado = aCells[2];
-            const inputProveedor = aCells[3];
-    
-            const condicionado = condicionadoCheckbox?.getSelected ? condicionadoCheckbox.getSelected() : false;
-            const proveedor = proveedorCheckbox?.getSelected ? proveedorCheckbox.getSelected() : false;
-            const valorCondicionado = inputCondicionado?.getValue ? inputCondicionado.getValue() : "";
-            const valorProveedor = inputProveedor?.getValue ? inputProveedor.getValue() : "";
-    
-            return {
-                condicionado,
-                proveedor,
-                valorCondicionado,
-                valorProveedor
-            };
-        });
-    
-        // Creación del payload para la entidad `DatosProyect` incluyendo los proveedores
+        const sClienteFunc = this.byId("int_clienteFun").getValue();                                                                   
+       // const sNatural = this.byId("idNatu").getSelectedKey(); 
+
+
+        // Prepara el payload /  / Creación delPayload
         const payload = {
-            codigoProyect: scodigoProyect,
-            nameProyect: snameProyect,
-            pluriAnual: spluriAnual,
-            clienteFacturacion: sClienteFac,
-            multijuridica: sMultiJuri,
-            Fechainicio: sFechaIni,
-            FechaFin: sFechaFin,
-            clienteFuncional: sClienteFunc,
-            Naturaleza_ID: sSelectedKey,
-            Area_ID: sSelecKeyA,
-            Iniciativa_ID: sSelectKeyIni,
-            jefeProyectID_ID: sSelecKeyJe,
-            objetivoAlcance: sObjetivoAlcance,
-            AsuncionesyRestricciones: sAsunyRestric,
-            Proveedores: aProveedores // Relacionamos proveedores en el payload
+          codigoProyect: scodigoProyect,
+          nameProyect: snameProyect,
+          pluriAnual:  spluriAnual,
+          clienteFacturacion: sClienteFac,
+          multijuridica: sMultiJuri,
+          Fechainicio: sFechaIni,
+          FechaFin: sFechaFin,
+          clienteFuncional: sClienteFunc,
+        //  Naturaleza: sNatural,
         };
-    
-        // Realizamos la llamada POST al servicio OData para guardar los datos
-        try {
-            const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-    
-            if (response.ok) {
-                console.log("Datos guardados con éxito.");
-            } else {
-                const errorMessage = await response.text();
-                console.error("Error al guardar los datos:", errorMessage);
-            }
+
+      try {
+
+    /*  // Obtén el token de autenticación (asegúrate de que el usuario esté autenticado)
+               const token = await this._getAuthToken();
+               console.log(token);
+             
+              // Al obtener el token de autenticación después del inicio de sesión:
+     sessionStorage.setItem('authToken', token); // O usar localStorage si quieres persistencia más allá de la sesión actual
+     */
+
+          // Realiza la llamada POST al servicio CAP
+          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              //   "Authorization": `Bearer ${token}` // Añade el token de autenticación
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            console.log("Producto guardado con éxito.");
+          } else {
+            const errorMessage = await response.text();
+            console.error("Error al guardar el producto:", errorMessage);
+          }
         } catch (error) {
+          if (error.message.includes("401")) {
+            console.error("Token expirado o inválido, redirigiendo al inicio de sesión.");
+            // Lógica para redirigir o reintentar autenticación
+          } else {
             console.error("Error en la llamada al servicio:", error);
-        }
-    },
-    
-
-
-
-      /// limpiar text 
-      onClearFields: function () {
-        // Obtener la vista actual
-        var oView = this.getView();
-
-        // Función recursiva para limpiar los controles
-        function clearAllFields(oControl) {
-          // Verificar y limpiar según el tipo de control
-          if (oControl instanceof sap.m.Input) {
-            oControl.setValue(""); // Limpia Input
-          } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
-            oControl.setSelectedKey(""); // Limpia Select y ComboBox
-          } else if (oControl instanceof sap.m.DatePicker) {
-            oControl.setDateValue(null); // Limpia DatePicker
-          } else if (oControl instanceof sap.m.TextArea) {
-            oControl.setValue(""); // Limpia TextArea
-          } else if (oControl instanceof sap.m.CheckBox) {
-            oControl.setSelected(false); // Limpia CheckBox
-          }
-
-          // Verificar si el control es un contenedor y limpiar sus elementos hijos
-          if (oControl.getAggregation) {
-            // Obtiene todas las agregaciones del control
-            const aAggregations = oControl.getMetadata().getAllAggregations();
-            for (let sAggregationName in aAggregations) {
-              const oAggregation = oControl.getAggregation(sAggregationName);
-              if (Array.isArray(oAggregation)) {
-                oAggregation.forEach(clearAllFields); // Recursividad si es un arreglo de controles
-              } else if (oAggregation instanceof sap.ui.core.Control) {
-                clearAllFields(oAggregation); // Recursividad si es un solo control
-              }
-            }
           }
         }
 
-        // Ejecutar la función de limpieza en la vista completa
-        oView.findAggregatedObjects(false, clearAllFields);
       },
 
 
-
-
-
-      // prueba Vizframe
       onprueba: function (oEvent) {
         var oTable = this.byId("table1");
 
@@ -311,23 +122,39 @@ oView.setModel(oFechasModel, "fechasModel");
 
       },
 
+      onselectFun: function (oEvent) {
+        var oSelect = this.byId("slct_client");
+        var oSelectedItem = oSelect.getSelectedItem();
+
+        if (oSelectedItem) {
+          var sSelectedKey = oSelectedItem.getKey();
+          var sSelectedText = oSelectedItem.getText();
+
+          console.log("Selected Key:", sSelectedKey);
+          console.log("Selected Text:", sSelectedText);
+
+          // Aquí puedes realizar cualquier otra operación que necesites con sSelectedKey o sSelectedText
+        } else {
+          console.log("No item selected");
+        }
+      },
 
 
-      //doble metodo 
+
+
       onSelectIniMethod: function (oEvent) {
         this.onInputChange(oEvent);
         this.onSelectOpx(oEvent);
       },
 
 
-      //doble metodo 
+
       onselectmethodsetinfo: function (oEvent) {
         this.onInputChange(oEvent);
         this.fechasDinamicas(oEvent);
       },
 
 
-      // Añadir mas Columnas en tabla dinamica  
       onAddRowPress: function (sTableId) {
         console.log(sTableId);
 
@@ -388,7 +215,7 @@ oView.setModel(oFechasModel, "fechasModel");
       },
 
 
-      // Fechas dinamicas y tabla dinamica  
+
 
       onDateChange: function () {
         this.updateVizFrame();
@@ -478,14 +305,32 @@ oView.setModel(oFechasModel, "fechasModel");
         return diffMonths;
       },
 
-      //---------------------------------------------------------------
+
+      //---------------Grafico fechasvizframe --------------------------------
+
+      updateVizFrame: function () {
+        var oData = this.oModel.getData();
+        console.log(oData);
+        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
+          pattern: "yyyy-MM-dd",
+        });
+        var aChartData = oData.milestones.map(function (milestone) {
+          var startDate = oDateFormat.parse(milestone.fechaInicio);
+          var endDate = oDateFormat.parse(milestone.fechaFin);
+          var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convert to days
+          return {
+            hito: milestone.hito,
+            fechaInicio: oDateFormat.format(startDate),
+            duracion: duration,
+          };
+        });
+
+        this.oModel.setProperty("/chartData", aChartData);
+        console.log("aChartData");
+      },
+      //------------------------------------------------- 
 
 
-
-
-
-
-      //Navegacion VIew 1 
       onNavToView1: function () {
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
@@ -528,8 +373,6 @@ oView.setModel(oFechasModel, "fechasModel");
       },
 
 
-
-      //Gets de input informacion 
       onInputChange: function () {
         var oView = this.getView();
 
@@ -629,52 +472,34 @@ oView.setModel(oFechasModel, "fechasModel");
 
       //----------------Funcion CheckBox -------------------------------------------
       onSelectCheckbox: function (oEvent) {
-        try {
-          var oTable = this.byId("table2");
-          if (!oTable) {
-              console.error("Tabla no encontrada.");
-              return;
-          }
-  
-          var aColumns = oTable.getColumns();
-          var aItems = oTable.getItems();
-          var bSelected = oEvent.getSource()?.getSelected();
-  
-          if (bSelected === undefined) {
-              console.error("Error al obtener el estado del checkbox.");
-              return;
-          }
-  
-          var iSelectedColumnIndex = oEvent
-              .getSource()
-              .getParent()
-              .getParent()
-              .indexOfColumn(oEvent.getSource().getParent());
-  
-          // IDs de los checkboxes
-          var sOtherCheckboxId = iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
-          var oOtherCheckbox = this.byId(sOtherCheckboxId);
-  
-          if (!oOtherCheckbox) {
-              console.error("El otro checkbox no se encontró.");
-              return;
-          }
-  
-          // Deshabilitar el otro checkbox si este está seleccionado, habilitar si está deseleccionado
-          oOtherCheckbox.setEnabled(!bSelected);
-  
-          // Recorrer cada columna y establecer el estado editable de los inputs en esa columna
-          aColumns.forEach(function (oColumn, iColumnIndex) {
-              aItems.forEach(function (oItem) {
-                  var oInput = oItem.getCells()[iColumnIndex];
-                  if (oInput && oInput.setEditable) {
-                      oInput.setEditable(iColumnIndex === iSelectedColumnIndex ? bSelected : !bSelected);
-                  }
-              });
+        var oTable = this.byId("table2");
+        var aColumns = oTable.getColumns();
+        var aItems = oTable.getItems();
+        var bSelected = oEvent.getSource().getSelected();
+        var iSelectedColumnIndex = oEvent
+          .getSource()
+          .getParent()
+          .getParent()
+          .indexOfColumn(oEvent.getSource().getParent());
+
+        // IDs of the checkboxes
+        var sOtherCheckboxId =
+          iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
+        var oOtherCheckbox = this.byId(sOtherCheckboxId);
+
+        // Disable the other checkbox if this one is selected, enable if deselected
+        oOtherCheckbox.setEnabled(!bSelected);
+
+        // Loop through each column and set the editable state of inputs in that column
+        aColumns.forEach(function (oColumn, iColumnIndex) {
+          aItems.forEach(function (oItem) {
+            var oInput = oItem.getCells()[iColumnIndex];
+            // Set editable state to true only for the selected column
+            oInput.setEditable(
+              iColumnIndex === iSelectedColumnIndex ? bSelected : !bSelected
+            );
           });
-      } catch (error) {
-          console.error("Error en la función onSelectCheckbox:", error);
-      }
+        });
       },
       //--------------------------------------------------------------------------------
 

@@ -13,16 +13,5 @@
 
 }
 
-.errorCount {
-    color: red;
-    font-weight: bold;
-}
-
-.customIconTabBar .sapMITBText {
-    color: red; /* Cambia el color del texto del count */
-    font-weight: bold; /* Opcional: Cambia el peso de la fuente */
-}
-
-
 
 

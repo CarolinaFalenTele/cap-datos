@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/mvc/Controller"],function(o){"use strict";return o.extend("project1.controller.App",{onInit:function(){},onNavToView1:function(){var o=sap.ui.core.UIComponent.getRouterFor(this);console.log("Navigating to View1");o.navTo("view")}})});
+//# sourceMappingURL=App.controller.js.map
