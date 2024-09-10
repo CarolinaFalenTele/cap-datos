@@ -78,14 +78,22 @@
                                                             <cells>
                                                                 <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{ListaCdo>fecha}" />
                                                                 <Text id="txtCellCodigo" text="{codigoProyect}" />
-                                                                <Text id="txtCellNombreProyecto" text="{nameProyect}" />
+                                                                 <ObjectIdentifier id="nombre34" title="{nameProyect}" />
                                                                 <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />
                                                                 <Text id="txtCellArea" text="{Area/NombreArea}" />
                                                                 <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}" />
                                                                 <ObjectStatus id="objStatus" text="Pendiente" state="Warning" />
                                                                 <HBox id="fff">
-                                                                    <Button id="nu" icon="sap-icon://edit" press="onEditPress" />
-                                                                    <Button id="ww" icon="sap-icon://process" press="onDeletePress" />
+ <Button  id="butn34"
+              icon="sap-icon://edit"
+              press="onEditPress">
+              <customData>
+                <core:CustomData
+                  xmlns:core="sap.ui.core"
+                  key="projectId"
+                  value="{ID}" />
+              </customData>
+            </Button>                                                                    <Button id="ww" icon="sap-icon://process" press="onDeletePress" />
                                                                 </HBox>
 
 

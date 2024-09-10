@@ -129,10 +129,10 @@ annotate DatosCDOService.Proveedores with @(UI: {
     LineItem: [
        
         { $Type: 'UI.DataField', Value: ID, Label: 'ID' },
-        { $Type: 'UI.DataField', Value: selectCondi, Label: 'booleanCondi' },
-        { $Type: 'UI.DataField', Value: selectProvee, Label: 'booleanProvee' },
-        { $Type: 'UI.DataField', Value: Condicionado, Label: 'condicionado' },
-        { $Type: 'UI.DataField', Value: Proveedor, Label: 'Proveedor' },
+        { $Type: 'UI.DataField', Value: condicionado, Label: 'booleanCondi' },
+        { $Type: 'UI.DataField', Value: proveedor, Label: 'booleanProvee' },
+        { $Type: 'UI.DataField', Value: valorCondicionado, Label: 'condicionado' },
+        { $Type: 'UI.DataField', Value: valorProveedor, Label: 'Proveedor' },
 
     ]
 });

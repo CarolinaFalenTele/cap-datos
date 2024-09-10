@@ -117,9 +117,16 @@
           "target": "app"
         },
         {
-          "name": "view",
-          "pattern": "view",
+          "name": "view", 
+          "pattern": "view/{sProjectID}", 
           "target": "view"
+        
+
+        },
+        {
+          "name": "viewNoParam",
+          "pattern": "view",  
+          "target": "view"  
         }
       ],
       "targets": {
@@ -135,7 +142,9 @@
           "transition": "slide",
           "clearControlAggregation": false,
           "viewId": "view",
-          "viewName": "View1"
+          "viewName": "View1",
+          "viewLevel": 1
+
         }
       }
     },

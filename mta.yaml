@@ -49,7 +49,7 @@ modules:
               ServiceKeyName: datosCdo_html_repo_host-key
               sap.cloud.service: datosCdo2
             - Authentication: OAuth2UserTokenExchange
-              Name: datosCdo2_datosCdo_auth
+              Name: datosCdo2_DatosCdo_auth
               ServiceInstanceName: datosCdo-auth
               ServiceKeyName: datosCdo-auth-key
               sap.cloud.service: datosCdo2
