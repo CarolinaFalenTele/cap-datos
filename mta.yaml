@@ -8,7 +8,7 @@ modules:
     path: gen/srv
     requires:
       - name: datosCdo-db
-      - name: datosCdo-auth
+      - name: DatosCdo-auth
     provides:
       - name: srv-api
         properties:
@@ -36,10 +36,10 @@ modules:
         parameters:
           service-key:
             name: datosCdo_html_repo_host-key
-      - name: datosCdo-auth
+      - name: DatosCdo-auth
         parameters:
           service-key:
-            name: datosCdo-auth-key
+            name: DatosCdo-auth-key
     parameters:
       content:
         instance:
@@ -50,8 +50,8 @@ modules:
               sap.cloud.service: datosCdo2
             - Authentication: OAuth2UserTokenExchange
               Name: datosCdo2_DatosCdo_auth
-              ServiceInstanceName: datosCdo-auth
-              ServiceKeyName: datosCdo-auth-key
+              ServiceInstanceName: DatosCdo-auth
+              ServiceKeyName: DatosCdo-auth-key
               sap.cloud.service: datosCdo2
           existing_destinations_policy: ignore
     build-parameters:
@@ -96,19 +96,19 @@ modules:
           name: srv-api # must be used in xs-app.json as well
           url: ~{srv-url}
           forwardAuthToken: true
-      - name: datosCdo-auth
+      - name: DatosCdo-auth
 resources:
   - name: datosCdo-db
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
-  - name: datosCdo-auth
+  - name: DatosCdo-auth
     type: org.cloudfoundry.managed-service
     parameters:
       config:
         tenant-mode: dedicated
-        xsappname: datosCdo-${org}-${space}
+        xsappname: datosCdo
       path: ./xs-security.json
       service: xsuaa
       service-plan: application

@@ -118,6 +118,11 @@
                 },
                 {
                     "name": "view",
+                    "pattern": "view/{sProjectID}",
+                    "target": "view"
+                },
+                {
+                    "name": "viewNoParam",
                     "pattern": "view",
                     "target": "view"
                 }
@@ -135,7 +140,8 @@
                     "transition": "slide",
                     "clearControlAggregation": false,
                     "viewId": "view",
-                    "viewName": "View1"
+                    "viewName": "View1",
+                    "viewLevel": 1
                 }
             }
         },

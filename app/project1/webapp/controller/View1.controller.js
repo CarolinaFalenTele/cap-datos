@@ -42,8 +42,67 @@ sap.ui.define([
         // Inicializar el gráfico con los datos actuales
         this.updateVizFrame1();
 
+        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+        oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
 
       },    
+    
+      _onObjectMatched: async function(oEvent) {
+        var sProjectID = oEvent.getParameter("arguments").sProjectID;
+    
+        // Construye la URL con el ID correctamente escapado
+        var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+    
+        try {
+            const response = await fetch(sUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error('Network response was not ok: ' + errorText);
+            }
+    
+            const oData = await response.json();
+            console.log("Datos del proyecto:", oData);
+    
+            // Actualiza los controles de la vista con los datos obtenidos
+            if (oData) {
+                // Ejemplos de cómo poblar los controles
+                this.byId("input0").setValue(oData.codigoProyect || "");
+                this.byId("input1").setValue(oData.nameProyect || "");
+                this.byId("int_clienteFun").setValue(oData.clienteFuncional || "");
+                this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
+                this.byId("idObje").setValue(oData.objetivoAlcance || "");
+                this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
+                this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
+                this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
+                this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
+                this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+                this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
+                this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
+                this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
+                this.byId("date_inico").setDateValue(new Date(oData.fechaInicio || ""));
+                this.byId("date_fin").setDateValue(new Date(oData.fechaFin || ""));
+
+
+
+
+               // this.byId("datePickerStart").setDateValue(new Date(oData.startDate)); // Asegúrate de que el formato sea correcto
+           //     this.byId("comboBoxStatus").setSelectedKey(oData.status || "defaultStatus");
+                // Añade más campos según los controles en tu formulario
+            }
+    
+        } catch (error) {
+            console.error("Error al obtener los datos del proyecto:", error);
+            sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+        }
+    },
     
 
 

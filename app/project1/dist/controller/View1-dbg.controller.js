@@ -4,157 +4,616 @@ sap.ui.define([
   "sap/ui/core/format/DateFormat",
   "sap/viz/ui5/controls/VizFrame",
   "sap/ui/model/odata/v4/ODataModel",
-  "sap/m/MessageToast",
+  'sap/m/MessageToast',
   "sap/ui/model/Sorter",
   "sap/ui/model/Filter",
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
-  "sap/ui/model/json/JSONModel"
+  "sap/ui/model/json/JSONModel",
+
 ],
 
   function (Controller, VizFrame, MessageToast, ODataModel, Sorter, Filter, FilterOperator, JSONModel, FilterType,) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
-    onInit: function () {
+
+      onInit: function () {
 
 
 
-    },
-      
-    onSave: async function () {  
+        // Crear un modelo inicial con los hitos y vincularlo a la vista
+        var oModel = new sap.ui.model.json.JSONModel({
+          milestones: [
+            { fase: "Kick off", fechaInicio: null, fechaFin: null },
+            { fase: "Diseño", fechaInicio: null, fechaFin: null },
+            { fase: "Construcción", fechaInicio: null, fechaFin: null },
+            { fase: "Pruebas TQ", fechaInicio: null, fechaFin: null },
+            { fase: "Go live", fechaInicio: null, fechaFin: null },
+            { fase: "Paso AM", fechaInicio: null, fechaFin: null },
+            { fase: "Server post/prod", fechaInicio: null, fechaFin: null }
+          ],
+          chartData: [], // Inicializamos el chartData
+        });
+        this.getView().setModel(oModel, "planning");
 
-        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
-        const snameProyect = this.byId("input1").getValue();
-        const spluriAnual = this.byId("box_pluriAnual").getSelected();
-        const sClienteFac = this.byId("id_Cfactur").getValue(); 
-        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-        const sFechaIni = this.byId("date_inico").getDateValue();
-        const sFechaFin = this.byId("date_fin").getDateValue();
-        const sClienteFunc = this.byId("int_clienteFun").getValue();                                                                   
-       // const sNatural = this.byId("idNatu").getSelectedKey(); 
+        console.log(oModel);
+
+        // Inicializar el gráfico con los datos actuales
+        this.updateVizFrame1();
 
 
-        // Prepara el payload /  / Creación delPayload
-        const payload = {
-          codigoProyect: scodigoProyect,
-          nameProyect: snameProyect,
-          pluriAnual:  spluriAnual,
-          clienteFacturacion: sClienteFac,
-          multijuridica: sMultiJuri,
-          Fechainicio: sFechaIni,
-          FechaFin: sFechaFin,
-          clienteFuncional: sClienteFunc,
-        //  Naturaleza: sNatural,
+      },    
+    
+
+
+
+
+      onFechaChange: function () {
+        // Cuando se cambia una fecha en la tabla, se actualiza el gráfico
+        //() this._updateChart();
+        this.updateVizFrame1();
+
+
+      },
+
+
+
+
+      // Evento para la primera tabla
+      onPerfilChangeTabla1: function (oEvent) {
+        this.updateRowData(oEvent, "table_dimicFecha"); // Reemplaza con el ID de tu primera tabla
+      },
+      updateRowData: function (oEvent, oTableId) {
+        // Obtén el ID del Select que ha generado el evento
+        const oSource = oEvent.getSource();
+
+        // Encuentra la tabla
+        var oTable = this.byId(oTableId);
+
+        // Obtén el índice de la fila seleccionada desde el Select
+        var oItem = oSource.getParent(); // Obtiene el ColumnListItem
+        var iIndex = oTable.indexOfItem(oItem); // Obtiene el índice de la fila
+
+        if (iIndex === -1) {
+          console.error("Índice de la fila no encontrado. Verifica la estructura de la tabla.");
+          return;
+        }
+
+        // Obtén las celdas de la fila
+        var aItems = oTable.getItems();
+        var oRowData = aItems[iIndex].getCells();
+
+        if (!oRowData || oRowData.length === 0) {
+          console.error("Datos de la fila no encontrados.");
+          return;
+        }
+
+        // Obtén el valor seleccionado del Select
+        var sSelectedText = oSource.getSelectedItem().getText();
+
+        // Define un objeto de configuración para las actualizaciones
+        var oConfig = {
+          "Director": {
+            PMJ: 1370.88,
+            "2024": 41.00,
+            "2025": 15.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+
+
+          },
+          "CG4.C": {
+            PMJ: 182.72,
+            "2024": 5.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "CG4.A": {
+            PMJ: 331.24,
+            "2024": 51.93,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "CG4.B": {
+            PMJ: 225.11,
+            "2024": 51.93,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          }
+
         };
 
-      try {
+        // Lógica para actualizar datos basados en la selección del Select
+        var oUpdate = oConfig[sSelectedText];
 
-    /*  // Obtén el token de autenticación (asegúrate de que el usuario esté autenticado)
-               const token = await this._getAuthToken();
-               console.log(token);
-             
-              // Al obtener el token de autenticación después del inicio de sesión:
-     sessionStorage.setItem('authToken', token); // O usar localStorage si quieres persistencia más allá de la sesión actual
-     */
+        if (oUpdate) {
+          oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
+          oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
+          oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[10].setText(oUpdate["2029"]);   // Ajusta según la celda específica para el año 2025
 
-          // Realiza la llamada POST al servicio CAP
-          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              //   "Authorization": `Bearer ${token}` // Añade el token de autenticación
-            },
-            body: JSON.stringify(payload)
-          });
+          // Suma de 2024 y 2025 para 'Total'
+          var total = oUpdate["2024"] + oUpdate["2025"];
+          oRowData[11].setText(total);  // Coloca la suma en 'Total'
 
-          if (response.ok) {
-            console.log("Producto guardado con éxito.");
-          } else {
-            const errorMessage = await response.text();
-            console.error("Error al guardar el producto:", errorMessage);
+          // Suma de PMJ + Total para 'Total1'
+          var total1 = oUpdate.PMJ + total;
+          oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
+
+          // Asigna 5.00 a las columnas que no sean junio, julio o agosto y 4.00 a las correspondientes
+          var months = ["junio", "julio", "agosto"];
+
+          // Obtén las columnas de la tabla
+          var oColumns = oTable.getColumns();
+
+          // Empieza desde la columna después de 'Total1' (columna 9 en adelante)
+          for (var i = 9; i < oRowData.length; i++) {
+            var columnHeaderText = oColumns[i].getHeader().getText().toLowerCase();
+
+            if (months.some(month => columnHeaderText.includes(month))) {
+              oRowData[i].setText("4.00");  // Asignar 4.00 a junio, julio, agosto
+            }
           }
-        } catch (error) {
-          if (error.message.includes("401")) {
-            console.error("Token expirado o inválido, redirigiendo al inicio de sesión.");
-            // Lógica para redirigir o reintentar autenticación
-          } else {
-            console.error("Error en la llamada al servicio:", error);
-          }
+
+        } else {
+          console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      pruebaCambioDIner: function () {
+        const oselecPerfi = this.byId("selct3").getSelectedItem().getText();
+        const oselectPerf2 = this.byId("select4").getSelectedItem().getText();
+        const oselectPerf3 = this.byId("select409").getSelectedItem().getText();
+        const oselectPerf4 = this.byId("seect4").getSelectedItem().getText();
+        const oselectPerf5 = this.byId("select6").getSelectedItem().getText();
+        const oselectPerf6 = this.byId("select6543").getSelectedItem().getText();
+        const oselectPerf7 = this.byId("select16").getSelectedItem().getText();
+        const oselectPerf8 = this.byId("select6544").getSelectedItem().getText();
+        const oselectPerf9 = this.byId("select065443").getSelectedItem().getText();
+
+
+        var PMj1 = this.byId("pmj1");
+        var PMj2 = this.byId("pmj2");
+        var PMj3 = this.byId("pmj3");
+        var PMj4 = this.byId("pmj4");
+        var PMj5 = this.byId("pmj5");
+        var PMj6 = this.byId("pmj6");
+        var PMj7 = this.byId("pmj7");
+        var PMj8 = this.byId("pmj8");
+        var PMj9 = this.byId("pmj9");
+
+
+
+
+        console.log(oselecPerfi);
+
+        if (oselecPerfi === 'Director' || oselectPerf2 === 'Director' || oselectPerf3 === 'Director' || oselectPerf4 === 'Director' ||
+          oselectPerf5 === 'Director' || oselectPerf6 === 'Director' || oselectPerf7 === 'Director' || oselectPerf8 === 'Director' ||
+          oselectPerf9 === 'Director'
+        ) {
+
+          PMj1.setText("13000");
+        }
+
 
       },
 
 
-      onprueba: function (oEvent) {
-        var oTable = this.byId("table1");
+      //---------------Grafico fechasvizframe para Fases  --------------------------------
 
-        // Verifica si la tabla existe
-        if (!oTable) {
-          console.error("No se encontró la tabla.");
-          return;
-        }
 
-        // Obtén los ítems de la tabla
-        var aItems = oTable.getItems();
+      updateVizFrame1: function () {
+        var oView = this.getView();
 
-        // Verifica si hay ítems en la tabla
-        if (aItems.length === 0) {
-          console.warn("No hay ítems en la tabla.");
-          return;
-        }
+        var oModel = oView.getModel("planning");
 
-        // Itera sobre los ítems y obtiene las fechas
-        aItems.forEach(function (oItem) {
-          var oBindingContext = oItem.getBindingContext();
-          if (!oBindingContext) {
-            console.error("No se encontró el contexto de enlace para el ítem.");
-            return;
-          }
+        var oData = oModel.getData();
 
-          var oData = oBindingContext.getObject();
+        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
 
-          // Imprime las fechas en la consola
-          console.log("Hito/Fase:", oData.hito);
-          console.log("Fecha Inicio:", oData.fecha_inicio);
-          console.log("Fecha Fin:", oData.fecha_fin);
+          pattern: "yyyy-MM-dd",
+
         });
 
+        var aChartData = oData.milestones.map(function (milestone) {
+
+          var startDate = milestone.fechaInicio ? new Date(milestone.fechaInicio) : null;
+
+          var endDate = milestone.fechaFin ? new Date(milestone.fechaFin) : null;
+
+          if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
+
+            var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
+
+            return {
+
+              fase: milestone.fase,
+
+              fechaInicio: oDateFormat.format(startDate),
+
+              fechaFin: oDateFormat.format(endDate),
+
+              duracion: duration,
+
+              // Combinar la duración con las fechas para mostrar en las etiquetas
+
+              label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
+
+            };
+
+          } else {
+
+            return null;
+
+          }
+
+        }).filter(Boolean);
+
+        oModel.setProperty("/chartData", aChartData);
+
+
+        var oFechas = {};
+        aChartData.forEach(function (oHito) {
+          if (oHito.fase === "Construcción") {
+            oFechas.fechaInicioConstruccion = oHito.fechaInicio;
+          }
+          if (oHito.fase === "Pruebas TQ") {
+            oFechas.fechaFinPruebasTQ = oHito.fechaFin;
+          }
+        });
+
+
+        // Crear un modelo JSON para las fechas específicas
+        var oFechasModel = new sap.ui.model.json.JSONModel({
+          fechas: [
+            {
+              fase: "Fechas Importantes",
+              fechaInicioConstruccion: oFechas.fechaInicioConstruccion,
+              fechaFinPruebasTQ: oFechas.fechaFinPruebasTQ
+            }
+          ]
+        });
+
+        // Establecer el nuevo modelo en la vista
+        oView.setModel(oFechasModel, "fechasModel");
+
+
+
       },
+      //------------------------------------------------- 
 
-      onselectFun: function (oEvent) {
-        var oSelect = this.byId("slct_client");
-        var oSelectedItem = oSelect.getSelectedItem();
 
-        if (oSelectedItem) {
-          var sSelectedKey = oSelectedItem.getKey();
-          var sSelectedText = oSelectedItem.getText();
 
-          console.log("Selected Key:", sSelectedKey);
-          console.log("Selected Text:", sSelectedText);
 
-          // Aquí puedes realizar cualquier otra operación que necesites con sSelectedKey o sSelectedText
-        } else {
-          console.log("No item selected");
+
+      // ---------- Metodo Save ----------------- 
+      onSave: async function () {
+
+
+
+        let errorCount = 0;
+
+
+
+        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
+
+        const snameProyect = this.byId("input1").getValue();
+
+        const spluriAnual = this.byId("box_pluriAnual").getSelected();
+
+        const sClienteFac = this.byId("id_Cfactur").getValue();
+
+        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+
+        const sFechaIni = this.byId("date_inico").getDateValue();
+
+        const sFechaFin = this.byId("date_fin").getDateValue();
+
+        const sClienteFunc = this.byId("int_clienteFun").getValue();
+
+        const sObjetivoAlcance = this.byId("idObje").getValue();
+
+        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+
+
+
+        // Accede al control Select usando su ID
+
+        var oSelect = this.byId("idNatu");
+
+        var sSelectedKey = oSelect.getSelectedKey();
+
+        var oselectA = this.byId("slct_area");
+
+        var sSelecKeyA = oselectA.getSelectedKey();
+
+        var oSelectJe = this.byId("slct_Jefe");
+
+        var sSelecKeyJe = oSelectJe.getSelectedKey();
+
+        var oSelectInic = this.byId("slct_inic");
+
+        var sSelectKeyIni = oSelectInic.getSelectedKey();
+
+        var oSelectSegui = this.byId("selc_Segui");
+
+        var sSelectKeySegui = oSelectSegui.getSelectedKey();
+
+        var oSelectEjecu = this.byId("selc_ejcu");
+
+        var sSelectKeyEjcu = oSelectEjecu.getSelectedKey();
+
+        var oSelectVerti = this.byId("slct_verti");
+
+        var sSelectKeyVerti= oSelectVerti.getSelectedKey();
+
+        var oSelectAmRep = this.byId("selct_Amrecp");
+
+        var sSelectKeyAmrep = oSelectAmRep.getSelectedKey();
+
+
+        // Función para verificar campo vacío y marcar error
+
+        const validateField = (control, value) => {
+
+          if (!value || (typeof value === 'string' && value.trim() === "")) {
+
+            control.setValueState("Error");
+
+            control.setValueStateText("Este campo es obligatorio");
+
+            errorCount++;
+
+          } else {
+
+            control.setValueState("None");
+
+          }
+
+        };
+
+
+
+        // Validar cada campo
+
+        validateField(this.byId("input0"), scodigoProyect);
+
+        validateField(this.byId("input1"), snameProyect);
+
+        validateField(this.byId("id_Cfactur"), sClienteFac);
+
+        validateField(this.byId("int_clienteFun"), sClienteFunc);
+
+        validateField(this.byId("idNatu"), sSelectedKey);
+
+
+
+        // Si hay errores, actualizar IconTabFilter y detener el envío
+
+        if (errorCount > 0) {
+
+          const oIconTabFilter = this.byId("idIniu");
+
+          oIconTabFilter.setCount(errorCount);
+
+          return; // Detener el proceso si hay errores
+
         }
+
+
+
+
+
+        // Prepara el payload /  / Creación delPayload
+
+        const payload = {
+
+          codigoProyect: scodigoProyect,
+
+          nameProyect: this.byId("input1").getValue(),
+
+          pluriAnual: spluriAnual,
+
+          clienteFacturacion: sClienteFac,
+
+          multijuridica: sMultiJuri,
+
+          Fechainicio: sFechaIni,
+
+          FechaFin: sFechaFin,
+
+          clienteFuncional: sClienteFunc,
+
+          Naturaleza_ID: sSelectedKey,
+
+          Area_ID: sSelecKeyA,
+
+          Iniciativa_ID: sSelectKeyIni,
+
+          jefeProyectID_ID: sSelecKeyJe,
+
+          objetivoAlcance: sObjetivoAlcance,
+
+          AsuncionesyRestricciones: sAsunyRestric,
+
+          Vertical_ID : sSelectKeyVerti, 
+
+//          AmReceptor_ID : sSelectKeyAmrep
+
+        };
+
+
+
+
+
+        try {
+
+
+
+          /*  // Obtén el token de autenticación (asegúrate de que el usuario esté autenticado)
+ 
+                     const token = await this._getAuthToken();
+ 
+                     console.log(token);
+ 
+                    // Al obtener el token de autenticación después del inicio de sesión:
+ 
+           sessionStorage.setItem('authToken', token); // O usar localStorage si quieres persistencia más allá de la sesión actual
+ 
+           */
+
+
+
+          // Realiza la llamada POST al servicio CAP
+
+          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type": "application/json",
+
+              //   "Authorization": `Bearer ${token}` // Añade el token de autenticación
+
+            },
+
+            body: JSON.stringify(payload)
+
+          });
+
+
+
+          if (response.ok) {
+
+            const result = await response.json();
+            const generatedId = result.ID;
+
+            console.log("Producto guardado con éxito." ,generatedId );
+       
+
+          } else {
+
+            const errorMessage = await response.text();
+
+            console.error("Error al guardar el producto:", errorMessage);
+
+          }
+
+        } catch (error) {
+
+          if (error.message.includes("401")) {
+
+            console.error("Token expirado o inválido, redirigiendo al inicio de sesión.");
+
+            // Lógica para redirigir o reintentar autenticación
+
+          } else {
+
+            console.error("Error en la llamada al servicio:", error);
+
+          }
+
+        }
+
+
+
+      },
+
+
+      /// limpiar text 
+      onClearFields: function () {
+        // Obtener la vista actual
+        var oView = this.getView();
+
+        // Función recursiva para limpiar los controles
+        function clearAllFields(oControl) {
+          // Verificar y limpiar según el tipo de control
+          if (oControl instanceof sap.m.Input) {
+            oControl.setValue(""); // Limpia Input
+          } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
+            oControl.setSelectedKey(""); // Limpia Select y ComboBox
+          } else if (oControl instanceof sap.m.DatePicker) {
+            oControl.setDateValue(null); // Limpia DatePicker
+          } else if (oControl instanceof sap.m.TextArea) {
+            oControl.setValue(""); // Limpia TextArea
+          } else if (oControl instanceof sap.m.CheckBox) {
+            oControl.setSelected(false); // Limpia CheckBox
+          }
+
+          // Verificar si el control es un contenedor y limpiar sus elementos hijos
+          if (oControl.getAggregation) {
+            // Obtiene todas las agregaciones del control
+            const aAggregations = oControl.getMetadata().getAllAggregations();
+            for (let sAggregationName in aAggregations) {
+              const oAggregation = oControl.getAggregation(sAggregationName);
+              if (Array.isArray(oAggregation)) {
+                oAggregation.forEach(clearAllFields); // Recursividad si es un arreglo de controles
+              } else if (oAggregation instanceof sap.ui.core.Control) {
+                clearAllFields(oAggregation); // Recursividad si es un solo control
+              }
+            }
+          }
+        }
+
+        // Ejecutar la función de limpieza en la vista completa
+        oView.findAggregatedObjects(false, clearAllFields);
       },
 
 
 
-
+    
+      
+      //doble metodo 
       onSelectIniMethod: function (oEvent) {
         this.onInputChange(oEvent);
         this.onSelectOpx(oEvent);
       },
 
 
-
+      //doble metodo 
       onselectmethodsetinfo: function (oEvent) {
         this.onInputChange(oEvent);
         this.fechasDinamicas(oEvent);
       },
 
 
+      // Añadir mas Columnas en tabla dinamica  
       onAddRowPress: function (sTableId) {
         console.log(sTableId);
 
@@ -215,7 +674,7 @@ sap.ui.define([
       },
 
 
-
+      // Fechas dinamicas y tabla dinamica  
 
       onDateChange: function () {
         this.updateVizFrame();
@@ -245,57 +704,73 @@ sap.ui.define([
         // Calcular el número de meses en el rango
         var diffMonths = this.getMonthsDifference(startDate, endDate);
 
-        // Generar dinámicamente las columnas de la tabla
-        var oTable = this.getView().byId("table_dimicFecha");
-        var totalColumnIndex = this.findTotalColumnIndex(oTable);
+        // Definir las IDs de las tablas
+        var tableIds = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+        ];
 
-        if (totalColumnIndex === -1) {
-          console.error("Error: No se encontró la columna 'Total'.");
-          return;
-        }
+        // Iterar sobre cada tabla
+        tableIds.forEach(function (tableId) {
+          var oTable = this.getView().byId(tableId);
+          if (!oTable) {
+            console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+            return;
+          }
 
-        // Eliminar las columnas dinámicas existentes después de "Total"
-        var columnCount = oTable.getColumns().length;
-        for (var j = columnCount - 1; j > totalColumnIndex; j--) {
-          oTable.removeColumn(j);
-        }
+          var totalColumnIndex = this.findTotalColumnIndex(oTable);
 
-        // Agregar nuevas columnas
-        for (var i = 0; i <= diffMonths; i++) {
-          var columnDate = new Date(
-            startDate.getFullYear(),
-            startDate.getMonth() + i,
-            1
-          );
-          var year = columnDate.getFullYear();
-          var month = columnDate.toLocaleString("default", { month: "long" }); // Obtener el nombre del mes en letras
-          var columnHeaderText = year + "-" + month;
-          var oColumn = new sap.m.Column({
-            header: new sap.m.Label({ text: columnHeaderText }),
-            width: "100px", // Ajustar el ancho de la columna según sea necesario
-          });
-          oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-        }
+          if (totalColumnIndex === -1) {
+            console.error("Error: No se encontró la columna 'Total1' en la tabla " + tableId);
+            return;
+          }
 
-        // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
-        var oScrollContainer = this.getView().byId("scroll_container");
-        oScrollContainer.setHorizontal(true);
-        oScrollContainer.setVertical(false);
-        oScrollContainer.setWidth("100%");
+          // Eliminar las columnas dinámicas existentes después de "Total1"
+          var columnCount = oTable.getColumns().length;
+          for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+            oTable.removeColumn(j);
+          }
 
-        console.log("startDate:", startDate);
-        console.log("endDate:", endDate);
+          // Agregar nuevas columnas
+          for (var i = 0; i <= diffMonths; i++) {
+            var columnDate = new Date(
+              startDate.getFullYear(),
+              startDate.getMonth() + i,
+              1
+            );
+            var year = columnDate.getFullYear();
+            var month = columnDate.toLocaleString("default", { month: "long" });
+            var columnHeaderText = year + "-" + month;
+            var oColumn = new sap.m.Column({
+              header: new sap.m.Label({ text: columnHeaderText }),
+              width: "100px",
+            });
+            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+          }
+
+          // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+          if (oScrollContainer) {
+            oScrollContainer.setHorizontal(true);
+            oScrollContainer.setVertical(false);
+            oScrollContainer.setWidth("100%");
+          }
+
+          console.log("startDate:", startDate);
+          console.log("endDate:", endDate);
+        }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
       },
 
       findTotalColumnIndex: function (oTable) {
         var columns = oTable.getColumns();
         for (var i = 0; i < columns.length; i++) {
           var headerLabel = columns[i].getHeader();
-          if (headerLabel && headerLabel.getText() === "Total") {
+          if (headerLabel && headerLabel.getText() === "Total1") {  // Cambia "Total" a "Total1"
             return i;
           }
         }
-        return -1; // No se encontró la columna 'Total'
+        return -1; // No se encontró la columna 'Total1'
       },
 
       getMonthsDifference: function (startDate, endDate) {
@@ -306,31 +781,10 @@ sap.ui.define([
       },
 
 
-      //---------------Grafico fechasvizframe --------------------------------
-
-      updateVizFrame: function () {
-        var oData = this.oModel.getData();
-        console.log(oData);
-        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
-          pattern: "yyyy-MM-dd",
-        });
-        var aChartData = oData.milestones.map(function (milestone) {
-          var startDate = oDateFormat.parse(milestone.fechaInicio);
-          var endDate = oDateFormat.parse(milestone.fechaFin);
-          var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convert to days
-          return {
-            hito: milestone.hito,
-            fechaInicio: oDateFormat.format(startDate),
-            duracion: duration,
-          };
-        });
-
-        this.oModel.setProperty("/chartData", aChartData);
-        console.log("aChartData");
-      },
-      //------------------------------------------------- 
 
 
+
+      //Navegacion VIew 1 
       onNavToView1: function () {
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
@@ -373,6 +827,8 @@ sap.ui.define([
       },
 
 
+
+      //Gets de input informacion 
       onInputChange: function () {
         var oView = this.getView();
 
@@ -429,6 +885,15 @@ sap.ui.define([
           console.log("Selected Function Text:", sSelectValue4);
         }
 
+
+        var oselectPerf5 = this.byId("idNatu");
+        var sSelectValue5 = "";
+
+        if (oselectPerf5 && oselectPerf5.getSelectedItem()) {
+          sSelectValue5 = oselectPerf5.getSelectedItem().getText();
+          console.log("Selected Function Text:", sSelectValue5);
+        }
+
         var oDatePicker = this.byId("date_fin");
         var sDateValue = oDatePicker ? oDatePicker.getDateValue() : null;
         var sFormattedDate = "";
@@ -464,6 +929,17 @@ sap.ui.define([
         this.byId("txt_Fe_fin2").setText(sFormattedDate);
 
 
+        //Tercera tabla 
+        this.byId("textClitFu3").setText(sClienteFuncio);
+        this.byId("textCliFac3").setText(sClienteFact);
+        this.byId("textCodigo3").setText(sCodeValue);
+        this.byId("textNatural3").setText(sSelectValue5);
+        this.byId("txtNombre3").setText(sNombrePro);
+        this.byId("txtAre3").setText(sSelectValue2);
+        this.byId("txtFechInici3").setText(sFormattedDateIni);
+        this.byId("txtFechFin3").setText(sFormattedDate);
+
+
 
 
 
@@ -472,34 +948,52 @@ sap.ui.define([
 
       //----------------Funcion CheckBox -------------------------------------------
       onSelectCheckbox: function (oEvent) {
-        var oTable = this.byId("table2");
-        var aColumns = oTable.getColumns();
-        var aItems = oTable.getItems();
-        var bSelected = oEvent.getSource().getSelected();
-        var iSelectedColumnIndex = oEvent
-          .getSource()
-          .getParent()
-          .getParent()
-          .indexOfColumn(oEvent.getSource().getParent());
+        try {
+          var oTable = this.byId("table2");
+          if (!oTable) {
+            console.error("Tabla no encontrada.");
+            return;
+          }
 
-        // IDs of the checkboxes
-        var sOtherCheckboxId =
-          iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
-        var oOtherCheckbox = this.byId(sOtherCheckboxId);
+          var aColumns = oTable.getColumns();
+          var aItems = oTable.getItems();
+          var bSelected = oEvent.getSource()?.getSelected();
 
-        // Disable the other checkbox if this one is selected, enable if deselected
-        oOtherCheckbox.setEnabled(!bSelected);
+          if (bSelected === undefined) {
+            console.error("Error al obtener el estado del checkbox.");
+            return;
+          }
 
-        // Loop through each column and set the editable state of inputs in that column
-        aColumns.forEach(function (oColumn, iColumnIndex) {
-          aItems.forEach(function (oItem) {
-            var oInput = oItem.getCells()[iColumnIndex];
-            // Set editable state to true only for the selected column
-            oInput.setEditable(
-              iColumnIndex === iSelectedColumnIndex ? bSelected : !bSelected
-            );
+          var iSelectedColumnIndex = oEvent
+            .getSource()
+            .getParent()
+            .getParent()
+            .indexOfColumn(oEvent.getSource().getParent());
+
+          // IDs de los checkboxes
+          var sOtherCheckboxId = iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
+          var oOtherCheckbox = this.byId(sOtherCheckboxId);
+
+          if (!oOtherCheckbox) {
+            console.error("El otro checkbox no se encontró.");
+            return;
+          }
+
+          // Deshabilitar el otro checkbox si este está seleccionado, habilitar si está deseleccionado
+          oOtherCheckbox.setEnabled(!bSelected);
+
+          // Recorrer cada columna y establecer el estado editable de los inputs en esa columna
+          aColumns.forEach(function (oColumn, iColumnIndex) {
+            aItems.forEach(function (oItem) {
+              var oInput = oItem.getCells()[iColumnIndex];
+              if (oInput && oInput.setEditable) {
+                oInput.setEditable(iColumnIndex === iSelectedColumnIndex ? bSelected : !bSelected);
+              }
+            });
           });
-        });
+        } catch (error) {
+          console.error("Error en la función onSelectCheckbox:", error);
+        }
       },
       //--------------------------------------------------------------------------------
 

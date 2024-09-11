@@ -114,7 +114,6 @@ entity DatosProyect {
         Fechainicio              : DateTime;
         FechaFin                 : DateTime;
         clienteFuncional         : String;
-        Proveedores              : Composition of many Proveedor on Proveedores.datosProyectID = ID;
         TipoServicio             : Association to TipoServicio;
         Vertical                 : Association to  Vertical;
         Naturaleza               : Association to Naturaleza;
@@ -257,11 +256,3 @@ entity PerfilServicio {
         NombrePerfil : String;
 };
 
-entity Proveedor{
-   key ID           : UUID @cds.auto;
-    condicionado       : Boolean;  
-    proveedor          : Boolean;  
-    valorCondicionado  : String;  
-    valorProveedor     : String;   
-    datosProyectID : UUID;  // Llave foránea  
-}

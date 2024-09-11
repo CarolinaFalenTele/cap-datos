@@ -17,7 +17,7 @@ service DatosCDOService {
     entity TipoServicio as projection on datos.TipoServicio;
     entity EjecucionVia as projection on datos.EjecucionVia;
     entity Facturacion as projection on datos.Facturacion;
-    entity Proveedores as projection on datos.Proveedor;
+  //  entity Proveedores as projection on datos.Proveedor;
     entity RecursosInternos as projection on datos.RecursosInternos;
     entity ConsumoExternos as projection on datos.ConsumoExternos;
     entity RecursosExternos as projection on datos.RecursosExternos;
