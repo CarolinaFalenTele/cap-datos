@@ -1,4 +1,3 @@
-
 sap.ui.define([
   "sap/ui/core/mvc/Controller",
   "sap/ui/core/format/DateFormat",
@@ -10,7 +9,6 @@ sap.ui.define([
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
   "sap/ui/model/json/JSONModel",
-
 ],
 
   function (Controller, VizFrame, MessageToast, ODataModel, Sorter, Filter, FilterOperator, JSONModel, FilterType,) {
@@ -42,9 +40,91 @@ sap.ui.define([
         // Inicializar el gráfico con los datos actuales
         this.updateVizFrame1();
 
+        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
-      },    
+        oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
+
+
+        
+      },
+
+
+
+
+
+
+
+
+
+
+
+      
+      _onObjectMatched: async function (oEvent) {
     
+        var sProjectID = oEvent.getParameter("arguments").sProjectID;
+
+           // Almacenar el ID en una variable de instancia del controlador para usarlo más tarde
+    this._sProjectID = sProjectID;
+
+
+        // Construye la URL con el ID correctamente escapado
+        var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos del proyecto:", oData);
+
+          // Actualiza los controles de la vista con los datos obtenidos
+          if (oData) {
+            // Ejemplos de cómo poblar los controles
+            this.byId("input0").setValue(oData.codigoProyect || "");
+            this.byId("input1").setValue(oData.nameProyect || "");
+            this.byId("int_clienteFun").setValue(oData.clienteFuncional || "");
+            this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
+            this.byId("idObje").setValue(oData.objetivoAlcance || "");
+            this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
+            this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
+            this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
+            this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
+            this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+            this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
+            this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
+            this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
+            this.byId("date_inico").setDateValue(new Date(oData.fechaInicio || ""));
+            this.byId("date_fin").setDateValue(new Date(oData.fechaFin || ""));
+            this.byId("input0").setValue(oProjectData.codigoProyect);
+            this.byId("input1").setValue(oProjectData.nameProyect);
+            this.byId("box_pluriAnual").setSelected(oProjectData.pluriAnual);
+            this.byId("id_Cfactur").setValue(oProjectData.clienteFacturacion);
+            this.byId("box_multiJuridica").setSelected(oProjectData.multijuridica)
+
+
+
+
+            // this.byId("datePickerStart").setDateValue(new Date(oData.startDate)); // Asegúrate de que el formato sea correcto
+            //     this.byId("comboBoxStatus").setSelectedKey(oData.status || "defaultStatus");
+            // Añade más campos según los controles en tu formulario
+          }
+
+        } catch (error) {
+          console.error("Error al obtener los datos del proyecto:", error);
+          sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+        }
+      },
+
 
 
 
@@ -53,7 +133,6 @@ sap.ui.define([
         // Cuando se cambia una fecha en la tabla, se actualiza el gráfico
         //() this._updateChart();
         this.updateVizFrame1();
-
 
       },
 
@@ -64,6 +143,8 @@ sap.ui.define([
       onPerfilChangeTabla1: function (oEvent) {
         this.updateRowData(oEvent, "table_dimicFecha"); // Reemplaza con el ID de tu primera tabla
       },
+
+
       updateRowData: function (oEvent, oTableId) {
         // Obtén el ID del Select que ha generado el evento
         const oSource = oEvent.getSource();
@@ -182,58 +263,6 @@ sap.ui.define([
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-      pruebaCambioDIner: function () {
-        const oselecPerfi = this.byId("selct3").getSelectedItem().getText();
-        const oselectPerf2 = this.byId("select4").getSelectedItem().getText();
-        const oselectPerf3 = this.byId("select409").getSelectedItem().getText();
-        const oselectPerf4 = this.byId("seect4").getSelectedItem().getText();
-        const oselectPerf5 = this.byId("select6").getSelectedItem().getText();
-        const oselectPerf6 = this.byId("select6543").getSelectedItem().getText();
-        const oselectPerf7 = this.byId("select16").getSelectedItem().getText();
-        const oselectPerf8 = this.byId("select6544").getSelectedItem().getText();
-        const oselectPerf9 = this.byId("select065443").getSelectedItem().getText();
-
-
-        var PMj1 = this.byId("pmj1");
-        var PMj2 = this.byId("pmj2");
-        var PMj3 = this.byId("pmj3");
-        var PMj4 = this.byId("pmj4");
-        var PMj5 = this.byId("pmj5");
-        var PMj6 = this.byId("pmj6");
-        var PMj7 = this.byId("pmj7");
-        var PMj8 = this.byId("pmj8");
-        var PMj9 = this.byId("pmj9");
-
-
-
-
-        console.log(oselecPerfi);
-
-        if (oselecPerfi === 'Director' || oselectPerf2 === 'Director' || oselectPerf3 === 'Director' || oselectPerf4 === 'Director' ||
-          oselectPerf5 === 'Director' || oselectPerf6 === 'Director' || oselectPerf7 === 'Director' || oselectPerf8 === 'Director' ||
-          oselectPerf9 === 'Director'
-        ) {
-
-          PMj1.setText("13000");
-        }
-
-
-      },
-
-
       //---------------Grafico fechasvizframe para Fases  --------------------------------
 
 
@@ -286,6 +315,11 @@ sap.ui.define([
 
         oModel.setProperty("/chartData", aChartData);
 
+        console.log(aChartData);
+
+
+          this._aChartData = aChartData;
+
 
         var oFechas = {};
         aChartData.forEach(function (oHito) {
@@ -317,19 +351,15 @@ sap.ui.define([
       },
       //------------------------------------------------- 
 
-
-
-
-
-      // ---------- Metodo Save ----------------- 
-      onSave: async function () {
-
+      onSave: async function (oEvent) {
 
 
         let errorCount = 0;
 
 
+        const sProjectID = this._sProjectID; // Aquí usamos el ID del proyecto almacenado en _onObjectMatched
 
+        const saChartdata = this._aChartData;
         const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
 
         const snameProyect = this.byId("input1").getValue();
@@ -380,7 +410,7 @@ sap.ui.define([
 
         var oSelectVerti = this.byId("slct_verti");
 
-        var sSelectKeyVerti= oSelectVerti.getSelectedKey();
+        var sSelectKeyVerti = oSelectVerti.getSelectedKey();
 
         var oSelectAmRep = this.byId("selct_Amrecp");
 
@@ -471,89 +501,291 @@ sap.ui.define([
 
           AsuncionesyRestricciones: sAsunyRestric,
 
-          Vertical_ID : sSelectKeyVerti, 
+          Vertical_ID: sSelectKeyVerti,
 
-//          AmReceptor_ID : sSelectKeyAmrep
-
+          //          AmReceptor_ID : sSelectKeyAmrep
+      //    planificaciones: aChartData
         };
 
 
 
 
 
-        try {
+          try {
 
+        let response;
+        if (sProjectID) {
+          console.log(sProjectID);
+            // Si hay un ID, es una actualización (PATCH)
+            response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectID})`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            // Si no hay ID, es una creación (POST)
+            response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
+            console.log("chartfata", saChartdata);
+  // var oModel = this.getView().getModel(); // Asumiendo que tu modelo OData está configurado en la vista  
+   
+ /*  oModel.create("/Planificacion", {
+      chartData: saChartdata,
+      projectId: sProjectID
+    }, {
+      success: function() {
+        sap.m.MessageToast.show("Planificación insertada correctamente");
+      },
+      error: function(oError) {
+        sap.m.MessageToast.show("Error al insertar la planificación");
+      }
+    });*/
 
-          /*  // Obtén el token de autenticación (asegúrate de que el usuario esté autenticado)
- 
-                     const token = await this._getAuthToken();
- 
-                     console.log(token);
- 
-                    // Al obtener el token de autenticación después del inicio de sesión:
- 
-           sessionStorage.setItem('authToken', token); // O usar localStorage si quieres persistencia más allá de la sesión actual
- 
-           */
+        }
 
-
-
-          // Realiza la llamada POST al servicio CAP
-
-          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
-
-            method: "POST",
-
-            headers: {
-
-              "Content-Type": "application/json",
-
-              //   "Authorization": `Bearer ${token}` // Añade el token de autenticación
-
-            },
-
-            body: JSON.stringify(payload)
-
-          });
-
-
-
-          if (response.ok) {
-
+        if (response.ok) {
             const result = await response.json();
-            const generatedId = result.ID;
+            const generatedId = result.ID || sProjectID;
+            console.log("Guardado con éxito. ID:", generatedId);
 
-            console.log("Producto guardado con éxito." ,generatedId );
-       
+            // Navegar de vuelta a la vista principal o hacer lo que necesites después de guardar
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("app", {
+                newId: generatedId
+            });
 
-          } else {
-
+            console.log(oRouter);
+        } else {
             const errorMessage = await response.text();
+            console.log("Error al guardar el proyecto:", errorMessage);
+        }
+    } catch (error) {
+      console.log("Error en la llamada al servicio:", error);
+    }
 
-            console.error("Error al guardar el producto:", errorMessage);
+  },
 
-          }
 
-        } catch (error) {
 
-          if (error.message.includes("401")) {
 
-            console.error("Token expirado o inválido, redirigiendo al inicio de sesión.");
+      // ---------- Metodo Save ----------------- 
+  /*    onSave: async function (oEvent) {
 
-            // Lógica para redirigir o reintentar autenticación
+
+        let errorCount = 0;
+
+
+        const sProjectID = this._sProjectID; // Aquí usamos el ID del proyecto almacenado en _onObjectMatched
+
+        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
+
+        const snameProyect = this.byId("input1").getValue();
+
+        const spluriAnual = this.byId("box_pluriAnual").getSelected();
+
+        const sClienteFac = this.byId("id_Cfactur").getValue();
+
+        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+
+        const sFechaIni = this.byId("date_inico").getDateValue();
+
+        const sFechaFin = this.byId("date_fin").getDateValue();
+
+        const sClienteFunc = this.byId("int_clienteFun").getValue();
+
+        const sObjetivoAlcance = this.byId("idObje").getValue();
+
+        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+
+
+
+        // Accede al control Select usando su ID
+
+        var oSelect = this.byId("idNatu");
+
+        var sSelectedKey = oSelect.getSelectedKey();
+
+        var oselectA = this.byId("slct_area");
+
+        var sSelecKeyA = oselectA.getSelectedKey();
+
+        var oSelectJe = this.byId("slct_Jefe");
+
+        var sSelecKeyJe = oSelectJe.getSelectedKey();
+
+        var oSelectInic = this.byId("slct_inic");
+
+        var sSelectKeyIni = oSelectInic.getSelectedKey();
+
+        var oSelectSegui = this.byId("selc_Segui");
+
+        var sSelectKeySegui = oSelectSegui.getSelectedKey();
+
+        var oSelectEjecu = this.byId("selc_ejcu");
+
+        var sSelectKeyEjcu = oSelectEjecu.getSelectedKey();
+
+        var oSelectVerti = this.byId("slct_verti");
+
+        var sSelectKeyVerti = oSelectVerti.getSelectedKey();
+
+        var oSelectAmRep = this.byId("selct_Amrecp");
+
+        var sSelectKeyAmrep = oSelectAmRep.getSelectedKey();
+
+
+        // Función para verificar campo vacío y marcar error
+
+        const validateField = (control, value) => {
+
+          if (!value || (typeof value === 'string' && value.trim() === "")) {
+
+            control.setValueState("Error");
+
+            control.setValueStateText("Este campo es obligatorio");
+
+            errorCount++;
 
           } else {
 
-            console.error("Error en la llamada al servicio:", error);
+            control.setValueState("None");
 
           }
+
+        };
+
+
+
+        // Validar cada campo
+
+        validateField(this.byId("input0"), scodigoProyect);
+
+        validateField(this.byId("input1"), snameProyect);
+
+        validateField(this.byId("id_Cfactur"), sClienteFac);
+
+        validateField(this.byId("int_clienteFun"), sClienteFunc);
+
+        validateField(this.byId("idNatu"), sSelectedKey);
+
+
+
+        // Si hay errores, actualizar IconTabFilter y detener el envío
+
+        if (errorCount > 0) {
+
+          const oIconTabFilter = this.byId("idIniu");
+
+          oIconTabFilter.setCount(errorCount);
+
+          return; // Detener el proceso si hay errores
 
         }
 
 
 
-      },
+
+
+        // Prepara el payload /  / Creación delPayload
+
+        const payload = {
+
+          codigoProyect: scodigoProyect,
+
+          nameProyect: this.byId("input1").getValue(),
+
+          pluriAnual: spluriAnual,
+
+          clienteFacturacion: sClienteFac,
+
+          multijuridica: sMultiJuri,
+
+          Fechainicio: sFechaIni,
+
+          FechaFin: sFechaFin,
+
+          clienteFuncional: sClienteFunc,
+
+          Naturaleza_ID: sSelectedKey,
+
+          Area_ID: sSelecKeyA,
+
+          Iniciativa_ID: sSelectKeyIni,
+
+          jefeProyectID_ID: sSelecKeyJe,
+
+          objetivoAlcance: sObjetivoAlcance,
+
+          AsuncionesyRestricciones: sAsunyRestric,
+
+          Vertical_ID: sSelectKeyVerti,
+
+          //          AmReceptor_ID : sSelectKeyAmrep
+      //    planificaciones: aChartData
+        };
+
+
+
+
+
+          try {
+
+        let response;
+        if (sProjectID) {
+          console.log(sProjectID);
+            // Si hay un ID, es una actualización (PATCH)
+            response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectID})`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            // Si no hay ID, es una creación (POST)
+            response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            
+
+
+        }
+
+        if (response.ok) {
+            const result = await response.json();
+            const generatedId = result.ID || sProjectID;
+            console.log("Guardado con éxito. ID:", generatedId);
+
+            // Navegar de vuelta a la vista principal o hacer lo que necesites después de guardar
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("app", {
+                newId: generatedId
+            });
+
+            console.log(oRouter);
+        } else {
+            const errorMessage = await response.text();
+            console.log("Error al guardar el proyecto:", errorMessage);
+        }
+    } catch (error) {
+      console.log("Error en la llamada al servicio:", error);
+    }
+},*/
+
+
 
 
       /// limpiar text 
@@ -597,8 +829,8 @@ sap.ui.define([
 
 
 
-    
-      
+
+
       //doble metodo 
       onSelectIniMethod: function (oEvent) {
         this.onInputChange(oEvent);
@@ -791,7 +1023,7 @@ sap.ui.define([
         // Agrega un punto de interrupción aquí para verificar que oRouter y this estén definidos correctamente
         console.log("Navigating to View1");
 
-        oRouter.navTo("app");
+        oRouter.navTo("appNoparame");
       },
 
       //Visible table Facturacion
@@ -944,10 +1176,54 @@ sap.ui.define([
 
 
       },
-
+      onSelectCheckbox: function (oEvent) {
+        try {
+          var oTable = this.byId("table2");
+          if (!oTable) {
+            console.error("Tabla no encontrada.");
+            return;
+          }
+      
+          var aItems = oTable.getItems();
+          var bSelected = oEvent.getSource().getSelected();
+      
+          if (bSelected === undefined) {
+            console.error("Error al obtener el estado del checkbox.");
+            return;
+          }
+      
+          // Obtener el índice de la columna seleccionada
+          var iSelectedColumnIndex = oEvent.getSource().getParent().getParent().indexOfColumn(oEvent.getSource().getParent());
+      
+          // IDs de los CheckBoxes
+          var sOtherCheckboxId = iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
+          var oOtherCheckbox = this.byId(sOtherCheckboxId);
+      
+          if (!oOtherCheckbox) {
+            console.error("El otro checkbox no se encontró.");
+            return;
+          }
+      
+          // Deshabilitar el otro checkbox si este está seleccionado
+          oOtherCheckbox.setEnabled(!bSelected);
+      
+          // Recorrer los ítems de la tabla para hacer editable solo la columna seleccionada
+          aItems.forEach(function (oItem) {
+            var aCells = oItem.getCells();
+            aCells.forEach(function (oCell, iIndex) {
+              if (oCell.setEditable) {
+                oCell.setEditable(iIndex === iSelectedColumnIndex ? bSelected : !bSelected);
+              }
+            });
+          });
+        } catch (error) {
+          console.error("Error en la función onSelectCheckbox:", error);
+        }
+      },
+      
 
       //----------------Funcion CheckBox -------------------------------------------
-      onSelectCheckbox: function (oEvent) {
+  /*    onSelectCheckbox: function (oEvent) {
         try {
           var oTable = this.byId("table2");
           if (!oTable) {
@@ -994,7 +1270,7 @@ sap.ui.define([
         } catch (error) {
           console.error("Error en la función onSelectCheckbox:", error);
         }
-      },
+      },*/
       //--------------------------------------------------------------------------------
 
 

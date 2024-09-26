@@ -6,19 +6,11 @@
     },
     "routes": [
         {
-            "source": "^/keyuser/(.*)$",
-	"target": "$1",
-	"service": "com.sap.ui.flex.cf.keyuser",
-	"endpoint": "keyuser"
-        },
-        {
-
-            
             "source": "^/app/(.*)$",
             "target": "$1",
             "localDir": ".",
-            "cacheControl": "no-cache, no-store, must-revalidate",
-            "authenticationType": "xsuaa"
+             "authenticationType": "xsuaa",
+            "cacheControl": "no-cache, no-store, must-revalidate"
         },
         {
             "source": "^/appconfig/",
@@ -38,5 +30,4 @@
             "authenticationType": "xsuaa"
         }
     ]
-    }
-    
+}

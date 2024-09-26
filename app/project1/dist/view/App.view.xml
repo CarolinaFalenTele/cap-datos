@@ -21,8 +21,8 @@
                                 <ObjectAttribute id="233" title="Empleado"  text="David Arroyo" />
                                 <ObjectAttribute id="223" title="Solicitudes" text="20" active="true" />
                                 <ObjectAttribute id="2" title="Category" text="BTP" />
-                                <ObjectAttribute id="2323" title="Weight per unit" text="{WeightMeasure} {WeightUnit}" />
-                                <ObjectAttribute id="2222" title="Dimension per unit" text="{Width} x {Depth} x {Height} {DimUnit}" />
+                                <ObjectAttribute id="2323" title="Weight per unit" text="" />
+                                <ObjectAttribute id="2222" title="Dimension per unit" text="" />
 
                                 <statuses>
                                     <ObjectStatus id="status0" title="Approval" text="Pending" state="Warning" />
@@ -37,10 +37,10 @@
                                 <headerContainer>
                                     <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding">
                                         <items>
-                                            <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
+                                         <!--  <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
                                                 <Text id="ma2" text="Info content goes here ..." />
-                                            </IconTabFilter>
-                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" count="3">
+                                            </IconTabFilter>--> 
+                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" count="{/DatosProyect/$count}">
                                                 <Table id="idPendientes" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="headerToolbar">
@@ -82,28 +82,48 @@
                                                                 <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />
                                                                 <Text id="txtCellArea" text="{Area/NombreArea}" />
                                                                 <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}" />
+                                                    
                                                                 <ObjectStatus id="objStatus" text="Pendiente" state="Warning" />
+                                                                
+
+
+
                                                                 <HBox id="fff">
- <Button  id="butn34"
-              icon="sap-icon://edit"
-              press="onEditPress">
-              <customData>
-                <core:CustomData
-                  xmlns:core="sap.ui.core"
-                  key="projectId"
-                  value="{ID}" />
-              </customData>
-            </Button>                                                                    <Button id="ww" icon="sap-icon://process" press="onDeletePress" />
+                                                            <Button  id="butn34"
+                                                                        icon="sap-icon://edit"
+                                                                        press="onEditPress">
+                                                                        <customData>
+                                                                            <core:CustomData
+                                                                            xmlns:core="sap.ui.core"
+                                                                            key="projectId"
+                                                                            value="{ID}" />
+                                                                        </customData>
+                                                                        </Button>                                                                
+                                                                        
+                                                        <Button id="ww" icon="sap-icon://delete" press="onDeletePress" >
+
+                                                                <customData>
+                                                            <core:CustomData
+                                                                xmlns:core="sap.ui.core"
+                                                                key="projectId"
+                                                                value="{ID}" />
+                                                        </customData>
+                                                            </Button>
+
                                                                 </HBox>
 
 
+
+           
                                                             </cells>
+
+                 
                                                         </ColumnListItem>
                                                     </items>
                                                 </Table>
 
                                             </IconTabFilter>
-                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes" count="12">
+                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes" count="">
 
                                                 <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{ListaCdo>/listaCdo}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>

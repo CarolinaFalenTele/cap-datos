@@ -4,7 +4,10 @@ service DatosCDOService {
 /*@requires: 'authenticated-user'
 @cds.redirection.target
 @odata.draft.enabled: true*/
+
+
     entity DatosProyect as projection on datos.DatosProyect;
+    //@requires: 'Admin'
     entity Jefeproyect as projection on datos.Jefeproyect;
     entity Area as projection on datos.Area;
     entity clienteFuncional as projection on datos.clienteFuncional;
@@ -17,7 +20,7 @@ service DatosCDOService {
     entity TipoServicio as projection on datos.TipoServicio;
     entity EjecucionVia as projection on datos.EjecucionVia;
     entity Facturacion as projection on datos.Facturacion;
-  //  entity Proveedores as projection on datos.Proveedor;
+    entity ProveedoresC as projection on datos.ProveedoresC;
     entity RecursosInternos as projection on datos.RecursosInternos;
     entity ConsumoExternos as projection on datos.ConsumoExternos;
     entity RecursosExternos as projection on datos.RecursosExternos;

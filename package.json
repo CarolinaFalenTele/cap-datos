@@ -26,7 +26,7 @@
     "rimraf": "^5.0.5"
   },
   "scripts": {
-    "start": "cds start",
+    "start": "cds-serve",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
     "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy datosCdo --delete-services --delete-service-keys --delete-service-brokers",
@@ -34,8 +34,7 @@
   },
   "cds": {
     "requires": {
-     
-        "auth": "mocked",
+        "auth": "xsuaa",
         "db": "hana"
       }
   }

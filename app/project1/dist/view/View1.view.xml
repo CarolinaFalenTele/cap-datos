@@ -50,7 +50,7 @@
                                     <Text text="Rellenar" id="txt_rellena" class="miTitulo myText2"/>
                                     <FlexBox width="100%" id="flx_1">
                                         <items>
-                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin" width="1100px" headerText="Datos Proyecto" >
+                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1100px" headerText="Datos Proyecto" >
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1">
                                                         <cells>

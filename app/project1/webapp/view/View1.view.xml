@@ -1,4 +1,5 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:microchart="sap.suite.ui.microchart"
+ xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
 <App id="app2">
 <Page id="page" title="{i18n>title}">
 <customHeader>
@@ -50,7 +51,7 @@
                                     <Text text="Rellenar" id="txt_rellena" class="miTitulo myText2"/>
                                     <FlexBox width="100%" id="flx_1">
                                         <items>
-                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin" width="1100px" headerText="Datos Proyecto" >
+                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1100px" headerText="Datos Proyecto" >
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1">
                                                         <cells>
@@ -387,6 +388,34 @@
                                                         </Table>
 
                                                                <!-- Segundo VizFrame para Construcción y Pruebas TQ -->
+<viz:VizFrame id="idVizFrame2" height="280px" width="400px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="bar" visible="true">
+
+   <viz:dataset>
+    <viz.data:FlattenedDataset id="fnor2" data="{planning>/chartModel}" >
+        <viz.data:dimensions>
+            <viz.data:DimensionDefinition id="suyel2" name="Fase" value="{planning>fase}"/>
+        </viz.data:dimensions>
+        <viz.data:measures>
+            <viz.data:MeasureDefinition id="mied2" name="Duración (días)" value="{planning>duracion}"/>
+            <viz.data:MeasureDefinition id="miedLabel2" name="Información" value="{planning>label}"/>
+        </viz.data:measures>
+    </viz.data:FlattenedDataset>
+</viz:dataset>
+  <viz:feeds>
+    <viz.feeds:FeedItem id="juras2" uid="valueAxis" type="Measure" values="Duración (días)"/>
+    <viz.feeds:FeedItem id="nopue2" uid="categoryAxis" type="Dimension" values="Fase"/>
+</viz:feeds>
+<viz:feeds>
+    <viz.feeds:FeedItem id="feedLabel2" uid="tooltip" type="Measure" values="Información"/>
+</viz:feeds>
+
+</viz:VizFrame>
+
+
+ 
+
+    
+
          
                                                     </items>
                                                 </FlexBox>

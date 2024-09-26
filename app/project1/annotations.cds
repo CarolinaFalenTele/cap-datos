@@ -124,7 +124,7 @@ annotate DatosCDOService.planificacion with @(UI: {
 
     ]
 });
-
+/*-
 annotate DatosCDOService.Proveedores with @(UI: {
     LineItem: [
        
@@ -135,7 +135,7 @@ annotate DatosCDOService.Proveedores with @(UI: {
         { $Type: 'UI.DataField', Value: valorProveedor, Label: 'Proveedor' },
 
     ]
-});
+});*/
 
 annotate DatosCDOService.PerfilServicio with @(UI: {
     LineItem: [

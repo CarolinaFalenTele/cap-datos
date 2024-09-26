@@ -123,7 +123,11 @@ entity DatosProyect {
         Iniciativa               : Association to TipoIniciativa;  
         Area                     : Association to Area;
         jefeProyectID            : Association to Jefeproyect;
-};
+        ProveedoresC              : Association to many ProveedoresC on ProveedoresC.datosProyect_ID = ID;
+        planificacion          : Association to many planificacion on planificacion.datosProyect_ID = ID; // Asociación a planificaciones
+
+ };
+
 
 
 entity Area {
@@ -192,7 +196,8 @@ entity planificacion {
         hito         : String;
         fecha_inicio : Date;  
         fecha_fin    : Date;
-        DatosProyect : Association to DatosProyect;
+        duracion     : Time;
+        datosProyect_ID : UUID; // Clave foránea a DatosProyect
 };
 
 entity Facturacion {
@@ -254,5 +259,14 @@ entity PerfilServicio {
     key ID           : UUID @cds.auto;
         valuePerfil  : String;
         NombrePerfil : String;
+};
+
+entity ProveedoresC {
+    key ID           : UUID @cds.auto;
+    checkCondi   : Boolean;
+    checkProveedor : Boolean;
+    valueCondi   : String;
+    valueProvee  : String;
+    datosProyect_ID  : UUID;  // Clave foránea a DatosProyect
 };
 

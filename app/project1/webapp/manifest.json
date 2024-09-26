@@ -113,7 +113,12 @@
       "routes": [
         {
           "name": "app",
-          "pattern": " ",
+          "pattern": "app/{newId}",
+          "target": "app"
+        },
+        {
+          "name": "appNoparame",
+          "pattern": "app",
           "target": "app"
         },
         {

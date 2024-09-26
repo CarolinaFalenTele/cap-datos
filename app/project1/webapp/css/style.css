@@ -23,6 +23,9 @@
     font-weight: bold; /* Opcional: Cambia el peso de la fuente */
 }
 
-
+/* Define el estilo para resaltar la fila */
+.highlightRow {
+    background-color: #dff0d8; /* Cambia este color al que prefieras */
+  }
 
 
