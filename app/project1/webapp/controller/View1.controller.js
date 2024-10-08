@@ -71,7 +71,7 @@ sap.ui.define([
       },
 
 
-
+      //--------------------------------------METODOS TRAER INFORMACION ---------------------------------------
       //--------metodo traerdatos----------------- 
 
       _onObjectMatched: async function (oEvent) {
@@ -128,8 +128,16 @@ sap.ui.define([
 
             await this.fetchMilestones(sProjectID);
             await this.leerProveedor(sProjectID);
+            await this.leerFacturacion(sProjectID);
+            await this.leerClientFactura(sProjectID);
 
 
+            // Cambiar el texto del botón de "Enviar" a "Guardar"
+            const oButton = this.byId("564433"); // Asegúrate de que el ID del botón es "submitButton"
+            oButton.setText("Guardar");
+
+            // Mostrar un toast indicando que los datos se cargaron correctamente
+            sap.m.MessageToast.show("Datos cargados correctamente");
 
             // this.byId("datePickerStart").setDateValue(new Date(oData.startDate)); // Asegúrate de que el formato sea correcto
             //     this.byId("comboBoxStatus").setSelectedKey(oData.status || "defaultStatus");
@@ -252,9 +260,136 @@ sap.ui.define([
       },
 
 
+      leerFacturacion: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/Facturacion?$filter=datosProyect_ID eq ${projectID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de proveedor:", oData);
 
 
 
+
+
+          var oTable = this.byId("table0");
+          var aItems = oTable.getItems();
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Facturacion = oData.value[0]; // Asumiendo que quieres el primer proveedor
+
+            aItems.forEach(function (oItem) {
+              var aCells = oItem.getCells();
+
+              // Asegúrate de que el índice es correcto para cada input
+              if (aCells.length > 1) {
+                aCells[0].setValue(Facturacion.fechaEstimida || ""); // Input para valueCondi
+                aCells[1].setValue(Facturacion.descripcionHito || ""); // Input para valueProvee
+                aCells[2].setValue(Facturacion.facturacion || ""); // Input para valueProvee
+
+              }
+
+
+            }.bind(this));
+          } else {
+            console.log("No hay datos de proveedores disponibles.");
+          }
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Facturacion:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Facturacion");
+        }
+      },
+
+
+
+      leerClientFactura: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ClientFactura?$filter=datosProyect_ID eq ${projectID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de Cliente factura:", oData);
+
+          var oTable = this.byId("table_clienteFac");
+          var aItems = oTable.getItems();
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            // Asumiendo que tienes que llenar cada elemento de la tabla con los datos en orden
+            for (let i = 0; i < Math.min(aItems.length, oData.value.length); i++) {
+              var oItem = aItems[i];
+              var aCells = oItem.getCells();
+              var Facturacion = oData.value[i]; // Obteniendo el proveedor por índice
+
+              // Verificar si la primera celda es un Input o Text y establecer el valor
+              if (aCells[0].getMetadata().getName() === "sap.m.Input") {
+                aCells[0].setValue(Facturacion.juridica || "");
+              } else if (aCells[0].getMetadata().getName() === "sap.m.Text") {
+                aCells[0].setText(Facturacion.juridica || "");
+              }
+
+              // Verificar si la segunda celda es un Input o Text y establecer el valor
+              if (aCells[1].getMetadata().getName() === "sap.m.Input") {
+                aCells[1].setValue(Facturacion.oferta || "");
+              } else if (aCells[1].getMetadata().getName() === "sap.m.Text") {
+                aCells[1].setText(Facturacion.oferta || "");
+              }
+
+              // Verificar si la segunda celda es un Input o Text y establecer el valor
+
+              var totalOfer = this.byId("text73_172746565340567");
+              if (totalOfer.getMetadata().getName() === "sap.m.Input") {
+                totalOfer.setValue(Facturacion.oferta || "");
+              } else if (totalOfer.getMetadata().getName() === "sap.m.Text") {
+                totalOfer.setText(Facturacion.oferta || "");
+              }
+
+
+            }
+          } else {
+            console.log("No hay datos de cliente factura disponibles.");
+          }
+
+          // --- Verificar el estado del checkbox después de cargar los datos ---
+          var oCheckBox = this.byId("box_multiJuridica"); // Coloca el ID correcto del checkbox
+          var bSelected = oCheckBox.getSelected();
+
+          // Llama manualmente a la función que muestra u oculta la tabla
+          this.onCheckBoxSelectMulti({
+            getSource: () => oCheckBox,
+            getSelected: () => bSelected
+          });
+
+        } catch (error) {
+          console.error("Error al obtener los datos de cliente Facturacion:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de cliente Facturacion");
+        }
+      },
 
 
       //----------Leer Proveedor------------------------
@@ -316,6 +451,17 @@ sap.ui.define([
 
 
 
+
+      leerRecursos: async function (projectID) {
+
+      },
+
+      //---------------------------------------------------------------------------------
+
+
+
+
+      //--------------------------METODOS GRAFICOS -------------------------------------------
       //------ Metodo vizframe1 y seleccion fechas importantes ------
       updateVizFrame1: function (oData) {
         var oView = this.getView();
@@ -524,25 +670,27 @@ sap.ui.define([
         this.updateVizFrame2(oFechasModel);
       },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       onFechaChange: function () {
         // Cuando se cambia una fecha en la tabla, se actualiza el gráfico
         //() this._updateChart();
         this.updateVizFrame1();
         this.updateVizFrame3();
       },
+
+
+      //-------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -672,9 +820,11 @@ sap.ui.define([
 
 
 
-      //-------- METODO GUARDAR----------------------
+      //-------------------------- METODO INSERTAR ----------------------
       onSave: async function (oEvent) {
         let errorCount = 0;
+
+        const incompleteFields = [];
 
         const sProjectID = this._sProjectID; // ID del proyecto
         const saChartdata = this._aChartData;
@@ -686,6 +836,8 @@ sap.ui.define([
         const sClienteFunc = this.byId("int_clienteFun").getValue();
         const sObjetivoAlcance = this.byId("idObje").getValue();
         const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+        const sFechaIni = this.byId("date_inico").getDateValue();
+        const sFechaFin = this.byId("date_fin").getDateValue();
 
         // Acceder a los controles Select
         const sSelectedKey = this.byId("idNatu").getSelectedKey();
@@ -698,25 +850,39 @@ sap.ui.define([
         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
 
         // Función de validación
-        const validateField = (control, value) => {
+        const validateField = (control, value, fieldName) => {
           if (!value || (typeof value === 'string' && value.trim() === "")) {
-            control.setValueState("Error");
-            control.setValueStateText("Este campo es obligatorio");
-            errorCount++;
+              control.setValueState("Error");
+              control.setValueStateText("Este campo es obligatorio");
+              errorCount++;
+  
+              // Agregar el nombre del campo al array
+              if (!incompleteFields.includes(fieldName)) {
+                  incompleteFields.push(fieldName);
+              }
+  
           } else {
-            control.setValueState("None");
+              control.setValueState("None");
           }
-        };
+      };
+  
 
         // Validar cada campo
-        validateField(this.byId("input0"), scodigoProyect);
-        validateField(this.byId("input1"), snameProyect);
-        validateField(this.byId("id_Cfactur"), sClienteFac);
-        validateField(this.byId("int_clienteFun"), sClienteFunc);
-        validateField(this.byId("idNatu"), sSelectedKey);
+        validateField(this.byId("input0"), scodigoProyect, "Código del Proyecto");
+        validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
+        validateField(this.byId("id_Cfactur"), sClienteFac, "Cliente de Facturación");
+        validateField(this.byId("int_clienteFun"), sClienteFunc, "Cliente Funcional");
+        validateField(this.byId("idNatu"), sSelectedKey, "Naturaleza");
+
 
         // Si hay errores, detener el envío
         if (errorCount > 0) {
+
+          const message = `Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`;
+          sap.m.MessageBox.warning(message, {
+              title: "Advertencia"
+          });
+
           const oIconTabFilter = this.byId("idIniu");
           oIconTabFilter.setCount(errorCount);
           return; // Detener el proceso si hay errores
@@ -736,21 +902,21 @@ sap.ui.define([
           objetivoAlcance: sObjetivoAlcance,
           AsuncionesyRestricciones: sAsunyRestric,
           Vertical_ID: sSelectKeyVerti,
+          Fechainicio: sFechaIni,
+          FechaFin: sFechaFin,
+
         };
 
 
 
+// Solo añadir Fechainicio y FechaFin si tienen un valor válido
+if (sFechaIni) {
+  payload.Fechainicio = sFechaIni.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
+}
 
-
-
-        // Obtener la tabla por ID
-        var oTable = this.byId("table2");
-        // Obtener todos los items (filas) de la tabla
-        var aItems = oTable.getItems();
-        // Crear un arreglo para almacenar los datos de cada fila
-        var aData = [];
-
-
+if (sFechaFin) {
+  payload.FechaFin = sFechaFin.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
+}
 
 
 
@@ -766,6 +932,16 @@ sap.ui.define([
               },
               body: JSON.stringify(payload)
             });
+
+
+            if (response.ok) {
+              sap.m.MessageToast.show("Actualización realizada con éxito");
+              // Llamar correctamente al método
+              //    await this.actualizarProveedores(sProjectID);
+
+              this.getOwnerComponent().getRouter().navTo("appNoparame"); // Navegar de vuelta a la vista principal
+            }
+
           } else {
             // Si no hay ID, es una creación (POST)
             response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
@@ -776,75 +952,31 @@ sap.ui.define([
               body: JSON.stringify(payload)
             });
 
+
+
+
             // Manejo de la respuesta de inserción del proyecto
             if (response.ok) {
               const result = await response.json();
               const generatedId = result.ID; // Obtener el ID generado
               console.log("Guardado con éxito. ID:", generatedId);
 
-              // ----------------Inserción de planificación
-              const payload2Array = saChartdata.map(chart => ({
-                hito: chart.fase,
-                fecha_inicio: chart.fechaInicio,
-                fecha_fin: chart.fechaFin,
-                duracion: this.formatDuration(chart.duracion), // Llamada a la función
-                datosProyect_ID: generatedId // Usar el ID generado
-              }));
 
-              // Insertar cada elemento en el array
-              for (const payload2 of payload2Array) {
-                const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify(payload2)
-                });
+              await this.inserChart(generatedId);
 
-                if (response2.ok) {
-                  const result2 = await response2.json();
-                  console.log("Planificación guardada con éxito:", result2);
-                } else {
-                  const errorMessage = await response2.text();
-                  console.log("Error al guardar la planificación:", errorMessage);
-                  sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
-                }
-              }
+              await this.insertarProveedor(generatedId);
 
-              //  -----------Insertar datos de Proveedor 
+              await this.insertFacturacion(generatedId);
 
-              // Recorrer cada fila de la tabla
-              aItems.forEach(function (oItem) {
-                // Obtener las celdas (inputs) de la fila
-                var aCells = oItem.getCells();
+              await this.insertClientFactura(generatedId);
 
-                // Extraer el valor de cada celda (input) de la fila
-                var valueCondi = aCells[0].getValue(); // Input para valueCondi
-                var valueProvee = aCells[1].getValue(); // Input para valueProvee
-                var checkCondi = this.byId("box_condi").getSelected(); // Checkbox Condicionado
-                var checkProveedor = this.byId("box_prove").getSelected(); // Checkbox Proveedores
+              await this.insertRecursosInternos(generatedId);
 
-                // Agregar los valores al arreglo de datos, asegurándonos de que coincidan con los campos en la entidad ProveedoresC
-                aData.push({
-                  checkCondi: checkCondi,
-                  checkProveedor: checkProveedor,
-                  valueCondi: valueCondi,
-                  valueProvee: valueProvee,
-                  datosProyect_ID: generatedId // clave foránea
-                });
-              }.bind(this));
+              await this.insertCosumoExterno(generatedId);
 
+              await this.insertRecursoExterno(generatedId); 
 
-              // 6. Guardar ProveedoresC (POST)
-              for (let data of aData) {
-                data.datosProyect_ID = generatedId;
-                await fetch("/odata/v4/datos-cdo/ProveedoresC", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(data)
-                });
-              }
-
+              await this.insertarOtrosConceptos(generatedId);
 
               // Navegar de vuelta a la vista principal o hacer lo que necesites después de guardar
               const oRouter = this.getOwnerComponent().getRouter();
@@ -862,9 +994,1326 @@ sap.ui.define([
           sap.m.MessageToast.show("Error en la llamada al servicio: " + error.message);
         }
       },
-      //----------------------------------------
 
 
+
+
+
+      inserChart: async function (generatedId) {
+
+        const saChartdata = this._aChartData;
+
+
+        // ----------------Inserción de planificación
+        const payload2Array = saChartdata.map(chart => ({
+          hito: chart.fase,
+          fecha_inicio: chart.fechaInicio,
+          fecha_fin: chart.fechaFin,
+          duracion: this.formatDuration(chart.duracion), // Llamada a la función
+          datosProyect_ID: generatedId // Usar el ID generado
+        }));
+
+        // Insertar cada elemento en el array
+        for (const payload2 of payload2Array) {
+          const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload2)
+          });
+
+          if (response2.ok) {
+            const result2 = await response2.json();
+            console.log("Planificación guardada con éxito:", result2);
+          } else {
+            const errorMessage = await response2.text();
+            console.log("Error al guardar la planificación:", errorMessage);
+            sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
+          }
+        }
+
+
+      },
+
+
+
+      insertFacturacion: async function (generatedId) {
+
+        //Tabla facturacion 
+        var oTablaFac = this.byId("table0");
+        var itemsF = oTablaFac.getItems();
+        var DataFac = [];
+
+
+        itemsF.forEach(function (oItem) {
+          // Obtener las celdas (inputs) de la fila
+          var aCells = oItem.getCells();
+
+
+          // Comprobar que las celdas tengan controles y obtener los valores
+          var fechaEstimida = (aCells[0] && aCells[0].getValue) ? aCells[0].getValue() : ""; // Fecha estimada
+          var descripcionHito = (aCells[1] && aCells[1].getValue) ? aCells[1].getValue() : ""; // Descripción del hito
+          var facturacion = (aCells[2] && aCells[2].getValue) ? parseInt(aCells[2].getValue(), 10) : 0; // Facturación
+
+
+
+          // Validar la fecha
+          if (fechaEstimida) {
+            var parts = fechaEstimida.split("/");
+            if (parts.length === 3) {
+              var oDate = new Date(parts[2], parts[1] - 1, parts[0]); // Crear la fecha
+
+              // Comprobar si la fecha es válida
+              if (!isNaN(oDate.getTime())) {
+                var sFormattedDate = oDate.toISOString().split('T')[0]; // Formatear la fecha
+                // Agregar datos al arreglo
+                DataFac.push({
+                  fechaEstimida: sFormattedDate,
+                  descripcionHito: descripcionHito,
+                  facturacion: facturacion,
+                  total: 0, // Total puede calcularse si es necesario
+                  datosProyect_ID: generatedId // ID del proyecto
+                });
+              } else {
+                console.error("Fecha inválida:", fechaEstimida);
+              }
+            } else {
+              console.error("Formato de fecha incorrecto:", fechaEstimida);
+            }
+          }
+        });
+
+
+
+        // 6. Guardar ProveedoresC (POST)
+        for (let data of DataFac) {
+          data.datosProyect_ID = generatedId;
+          const response4 = await fetch("/odata/v4/datos-cdo/Facturacion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+
+          if (response4.ok) {
+            const response44 = await response4.json();
+            console.log("Facturacion guardada con éxito:", response44);
+          } else {
+            const errorMessage = await response4.text();
+            console.log("Error al guardar la Facturacion:", errorMessage);
+            sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
+          }
+        }
+
+
+
+      },
+
+
+
+
+      insertarProveedor: async function (generatedId) {
+
+        // Obtener la tabla por ID
+        var oTable = this.byId("table2");
+        var aItems = oTable.getItems();
+        var aData = [];
+
+
+
+        // Recorrer cada fila de la tabla
+        aItems.forEach(function (oItem) {
+          // Obtener las celdas (inputs) de la fila
+          var aCells = oItem.getCells();
+
+          // Extraer el valor de cada celda (input) de la fila
+          var valueCondi = aCells[0].getValue(); // Input para valueCondi
+          var valueProvee = aCells[1].getValue(); // Input para valueProvee
+          var checkCondi = this.byId("box_condi").getSelected(); // Checkbox Condicionado
+          var checkProveedor = this.byId("box_prove").getSelected(); // Checkbox Proveedores
+
+          // Agregar los valores al arreglo de datos, asegurándonos de que coincidan con los campos en la entidad ProveedoresC
+          aData.push({
+            checkCondi: checkCondi,
+            checkProveedor: checkProveedor,
+            valueCondi: valueCondi,
+            valueProvee: valueProvee,
+            datosProyect_ID: generatedId // clave foránea
+          });
+        }.bind(this));
+
+
+        // 6. Guardar ProveedoresC (POST)
+        for (let data of aData) {
+          data.datosProyect_ID = generatedId;
+          await fetch("/odata/v4/datos-cdo/ProveedoresC", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+        }
+      },
+
+
+      //--- RECURSOS INTERNOS -----
+
+      insertRecursosInternos: async function (generatedId) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table_dimicFecha");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            PerfilServicio_ID: sPerfil,
+            datosProyect_ID: generatedId
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              const idRecursos = result.ID; // Obtener el ID generado
+
+              await this.insertOtrosGastos(idRecursos);
+              await this.insertOtrosRecursos(idRecursos);
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: RECUROSOS INTERNOS", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+      },
+
+
+      insertOtrosGastos: async function (idRecursos) {
+
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table0_1727879576857");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            RecursosInternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/otrosGastoRecu", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+
+      },
+
+
+      insertOtrosRecursos: async function (idRecursos) {
+
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table0_1727879940116");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            RecursosInternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/otrosRecursos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: OTROS RECURSOS ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+
+      },
+
+
+      //----------------------------
+
+
+      // --------------CONSUMO EXTERNO ------------------
+      insertCosumoExterno: async function (generatedId) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("tablaConsuExter");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalC: stotalRe,
+            tipoServicio_ID: stipoServi,
+            PerfilServicio_ID: sPerfil,
+            datosProyect_ID: generatedId
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/ConsumoExternos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              const idRecursos = result.ID; // Obtener el ID generado
+
+
+              await this.insertServiConsu(idRecursos);
+              await this.insertGastoConsu(idRecursos);
+
+              console.log("Fila " + (i + 1) + " guardada con éxito:CONSUMO EXTERNO", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+
+      },
+
+
+
+      insertServiConsu: async function (idRecursos) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("idOtroserConsu");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            ConsumoExternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/otrosServiciosConsu", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERT SERVI ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+      },
+
+      insertGastoConsu: async function (idRecursos) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("idGastoViajeConsu");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            ConsumoExternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/GastoViajeConsumo", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES CONSUMO ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+      },
+ //-----------------------------------------------------------
+
+
+
+  //------------RECURSO EXTERNO ------------------------
+
+     insertRecursoExterno: async function (generatedId) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("tablaRecExterno");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalR: stotalRe,
+            tipoServicio_ID: stipoServi,
+            PerfilServicio_ID: sPerfil,
+            datosProyect_ID: generatedId
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/RecursosExternos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              const idRecursos = result.ID; // Obtener el ID generado
+
+
+              await this.insertServicioRecuExter(idRecursos);
+              await this.insertGastoViajeExterno(idRecursos);
+
+              console.log("Fila " + (i + 1) + " guardada con éxito:RECURSO EXTERNO", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+
+      },
+
+
+
+      insertServicioRecuExter: async function (idRecursos) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("idServiExterno");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            RecursosExternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/serviRecurExter", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: SERVICIO EXTERNO  ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+      },
+
+      insertGastoViajeExterno: async function (idRecursos) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("idGastoRecuExter");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            RecursosExternos_ID: idRecursos
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/GastoViajeRecExter", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+      },
+
+
+  insertarOtrosConceptos: async function (generatedId) {
+ // Obtener la tabla por su ID
+ const oTable = this.byId("table0_1724413700665");
+
+ // Obtener todos los elementos del tipo ColumnListItem
+ const aItems = oTable.getItems();
+
+ // Iterar sobre cada fila
+ for (let i = 0; i < aItems.length; i++) {
+   const oItem = aItems[i];  // Obtener la fila actual
+
+   // Obtener los controles dentro de cada celda
+   const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+   const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
+   const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
+   const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
+   const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
+
+
+   // Validar si todos los datos son válidos
+   if (!sVertical  || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+     sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+     return; // Si hay un error, no se envía la solicitud
+   }
+
+   // Construir el payload para cada fila
+   const payload = {
+     Vertical_ID: sVertical,
+     ConceptoOferta: sConcepto,
+     PMJ: sPMJ,
+     total: sTotal,
+     totalC: stotalRe,
+     datosProyect_ID: generatedId
+    };
+
+   try {
+     // Hacer el fetch de manera asincrónica para cada fila
+     const response = await fetch("/odata/v4/datos-cdo/otrosConceptos", {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json"
+       },
+       body: JSON.stringify(payload)
+     });
+
+     if (response.ok) {
+       const result = await response.json();
+       const idOtrosConcep = result.ID; 
+        await this.insertarLicencia(idOtrosConcep);
+
+       console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
+     } else {
+       const errorMessage = await response.text();
+       console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+       sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+     }
+   } catch (error) {
+     console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+     sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+   }
+ }
+      },
+
+      insertarLicencia: async function (idOtrosConcep) {
+
+// Obtener la tabla por su ID
+const oTable = this.byId("table0_1727955577124");
+
+// Obtener todos los elementos del tipo ColumnListItem
+const aItems = oTable.getItems();
+
+// Iterar sobre cada fila
+for (let i = 0; i < aItems.length; i++) {
+  const oItem = aItems[i];  // Obtener la fila actual
+
+  // Obtener los controles dentro de cada celda
+  const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+  const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
+  const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
+  const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
+  const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
+
+
+  // Validar si todos los datos son válidos
+  if (!sVertical  || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+    sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+    return; // Si hay un error, no se envía la solicitud
+  }
+
+  // Construir el payload para cada fila
+  const payload = {
+    Vertical_ID: sVertical,
+    ConceptoOferta: sConcepto,
+    PMJ: sPMJ,
+    total: sTotal,
+    totalC: stotalRe,
+    otrosConceptos_ID: idOtrosConcep
+   };
+
+  try {
+    // Hacer el fetch de manera asincrónica para cada fila
+    const response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+
+      console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
+    } else {
+      const errorMessage = await response.text();
+      console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+      sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+    }
+  } catch (error) {
+    console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+    sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+  }
+}
+
+
+      },
+
+
+
+      /* insertRecursosInternos: async function (generatedId) {
+         // Obtener la tabla por su ID
+         const oTable = this.byId("table_dimicFecha");
+         
+         // Obtener todos los elementos del tipo ColumnListItem
+         const aItems = oTable.getItems();
+         
+         // Iterar sobre cada fila
+         for (let i = 0; i < aItems.length; i++) {
+             const oItem = aItems[i];  // Obtener la fila actual
+             
+             // Obtener los controles dentro de cada celda
+             const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+             const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+             const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
+             const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+             const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+             const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
+             const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+             
+             // Validar si todos los datos son válidos
+             if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+                 sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i+1) + " correctamente.");
+                 return; // Si hay un error, no se envía la solicitud
+             }
+     
+             // Construir el payload para cada fila
+             const payload = {
+                 Vertical_ID: sVertical,
+                 ConceptoOferta: sConcepto,
+                 PMJ: sPMJ,
+                 total: sTotal,
+                 totalE: stotalRe,
+                 tipoServicio_ID: stipoServi,
+                 PerfilServicio_ID: sPerfil,
+                 datosProyect_ID: generatedId
+             };
+     
+             try {
+                 // Hacer el fetch de manera asincrónica para cada fila
+                 const response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
+                     method: "POST",
+                     headers: {
+                         "Content-Type": "application/json"
+                     },
+                     body: JSON.stringify(payload)
+                 });
+     
+                 if (response.ok) {
+                     const result = await response.json();
+                     console.log("Fila " + (i+1) + " guardada con éxito: RECUROSOS INTERNOS", result);
+                 } else {
+                     const errorMessage = await response.text();
+                     console.error("Error al guardar la fila " + (i+1) + ":", errorMessage);
+                     sap.m.MessageToast.show("Error al guardar la fila " + (i+1) + ": " + errorMessage);
+                 }
+             } catch (error) {
+                 console.error("Error en la llamada al servicio para la fila " + (i+1) + ":", error);
+                 sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i+1) + ": " + error.message);
+             }
+         }
+     },*/
+
+      //----------------------------------------------------
+
+
+      //--------------------METODO ACTUALIZAR  -------------------------------------
+
+
+
+
+
+
+
+
+
+      // Función para convertir texto a entero con manejo de errores
+      convertToInt: function (text) {
+        const parsed = parseInt(text, 10);
+        return isNaN(parsed) ? null : parsed;
+      },
+
+
+
+
+
+
+      /*insertRecursosInternos: async function (generatedId){
+
+     const sVertical = this.byId("selec0").getSelectedKey();
+     const stipoServi = this.byId("select0_17163029264").getSelectedKey();
+     const sPerfil = this.byId("selct3").getSelectedKey();
+     const sConcepto = this.byId("input0_2958934").getValue();
+     const sPMJ =  parseInt(this.byId("pmj2").getText(),10);
+     const sTotal =  parseInt( this.byId("text32").getText(),10);
+     const stotalRe = parseInt(  this.byId("text33").getText(),10);
+
+
+
+
+       const payload = {
+
+        Vertical_ID : sVertical,
+        ConceptoOferta : sConcepto,
+        PMJ: sPMJ,
+        total: sTotal,
+        totalE: stotalRe,
+        tipoServicio_ID : stipoServi,
+        PerfilServicio_ID: sPerfil,
+        datosProyect_ID : generatedId
+        }
+
+
+
+        try {
+          let response;
+
+        response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const result2 = await response.json();
+          console.log("Recursos internos guardada con éxito:", result2);
+        } else {
+          const errorMessage = await response.text();
+          console.log("Error al guardar la Recursos internos:", errorMessage);
+          sap.m.MessageToast.show("Error al guardar la Recursos internos: " + errorMessage);
+        }
+
+
+
+      } catch (error) {
+          console.log("Error en la llamada al servicio:", error);
+          sap.m.MessageToast.show("Error en la llamada al servicio: " + error.message);
+        }
+
+
+      },*/
+
+      insertClientFactura: async function (generatedId) {
+        var oTablaFac = this.byId("table_clienteFac");
+        var aItems = oTablaFac.getItems();
+        var aData = [];
+        var totalOferta = 0; // Variable para acumular la suma de "oferta"
+
+        aItems.forEach(function (oItem, index) {
+          // Omitir la última fila
+          if (index === aItems.length - 1) {
+            return; // Salir de esta iteración si es la última fila
+          }
+
+          var aCells = oItem.getCells();
+          var valueJudi = "";
+          var valueOferta = "";
+
+          // Verificar si la celda no es undefined y luego obtener su metadata
+          if (aCells[0] && aCells[0].getMetadata().getName() === "sap.m.Input") {
+            valueJudi = aCells[0].getValue(); // Para inputs en la primera celda
+          } else if (aCells[0] && aCells[0].getMetadata().getName() === "sap.m.Text") {
+            valueJudi = aCells[0].getText(); // Para textos en la primera celda
+          }
+
+          if (aCells[1] && aCells[1].getMetadata().getName() === "sap.m.Input") {
+            valueOferta = aCells[1].getValue(); // Para inputs en la segunda celda
+          } else if (aCells[1] && aCells[1].getMetadata().getName() === "sap.m.Text") {
+            valueOferta = aCells[1].getText(); // Para textos en la segunda celda
+          }
+
+
+          var totalOfer = this.byId("text73_172746565340567").getText();
+
+          // Solo agregar aData si hay valores válidos
+          if (valueJudi !== "" || valueOferta !== "") {
+            aData.push({
+              juridica: valueJudi,
+              oferta: valueOferta,
+              total: totalOfer,
+              datosProyect_ID: generatedId
+            });
+          }
+        }.bind(this));
+
+        console.log("Total de la columna oferta: ", totalOferta); // Muestra el total en la consola
+
+        // Aquí se procede a hacer el POST de cada fila a la entidad OData
+        for (let data of aData) {
+          const insert4 = await fetch("/odata/v4/datos-cdo/ClientFactura", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+
+          if (insert4.ok) {
+            const errorInfo = await insert4.json();
+          } else {
+            const errorMessage = await insert4.text();
+            console.log("Error al guardar la Facturacion:", errorMessage);
+            sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
+          }
+        }
+
+        // También puedes mostrar el total usando un mensaje SAPUI5
+        sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
+      },
+
+
+
+
+
+
+
+
+      /*   insertClientFactura: async function (generatedId) {
+           var oTablaFac = this.byId("table_clienteFac");
+           var aItems = oTablaFac.getItems();
+           var aData = [];
+           var totalOferta = 0; // Variable para acumular la suma de "oferta"
+       
+           aItems.forEach(function (oItem) {
+               var aCells = oItem.getCells();
+               var valueJudi = "";
+               var valueOferta = "";
+               var totalOfer = "";
+       
+               // Verificar si la celda no es undefined y luego obtener su metadata
+               if (aCells[0] && aCells[0].getMetadata().getName() === "sap.m.Input") {
+                   valueJudi = aCells[0].getValue(); // Para inputs en la primera celda
+               } else if (aCells[0] && aCells[0].getMetadata().getName() === "sap.m.Text") {
+                   valueJudi = aCells[0].getText(); // Para textos en la primera celda
+               }
+       
+               if (aCells[1] && aCells[1].getMetadata().getName() === "sap.m.Input") {
+                   valueOferta = aCells[1].getValue(); // Para inputs en la segunda celda
+               } else if (aCells[1] && aCells[1].getMetadata().getName() === "sap.m.Text") {
+                   valueOferta = aCells[1].getText(); // Para textos en la segunda celda
+               }
+       
+               totalOfer =   this.byId("text73_172746565340567").getText();
+   
+               console.log(totalOfer);
+       
+               // Solo agregar aData si hay valores válidos
+               if (valueJudi !== "" || valueOferta !== "") {
+                   aData.push({
+                       juridica: valueJudi,
+                       oferta: valueOferta,
+                       total: totalOfer,
+                       datosProyect_ID: generatedId
+                   });
+               }
+           }.bind(this));
+       
+           console.log("Total de la columna oferta: ", totalOferta); // Muestra el total en la consola
+       
+           // Aquí se procede a hacer el POST de cada fila a la entidad OData
+           for (let data of aData) {
+               const insert4 = await fetch("/odata/v4/datos-cdo/ClientFactura", {
+                   method: "POST",
+                   headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify(data)
+               });
+       
+               if (insert4.ok) {
+                   const errorInfo = await insert4.json();
+               } else {
+                   const errorMessage = await insert4.text();
+                   console.log("Error al guardar la Facturacion:", errorMessage);
+                   sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
+               }
+           }
+       
+           // También puedes mostrar el total usando un mensaje SAPUI5
+           sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
+       },*/
+
+
+       metodoSumar: function () {
+        var oTablaFac = this.byId("table_clienteFac");
+        var aItems = oTablaFac.getItems();
+        var totalOferta = 0;
+    
+        console.log("Cantidad de filas en la tabla:", aItems.length);
+    
+        // Iterar solo sobre las filas de datos (excluyendo la última)
+        aItems.forEach(function (oItem, index) {
+            // Verifica si es la fila de total (última fila)
+            if (index < aItems.length - 1) { // Excluye la última fila
+                var aCells = oItem.getCells();
+                var valueOferta = "";
+    
+                // Obtiene el valor de la segunda celda (columna de Oferta)
+                var ofertaCell = aCells[1];
+    
+                // Verifica si la celda es de tipo Input y obtiene el valor
+                if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+                    valueOferta = ofertaCell.getValue();
+                }
+    
+                // Limpiar espacios y convertir a número
+                valueOferta = valueOferta.trim();
+                var numericValue = parseFloat(valueOferta);
+    
+                // Imprimir para depuración
+                console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+    
+                // Solo sumar si valueOferta es un número válido
+                if (!isNaN(numericValue)) {
+                    totalOferta += numericValue; // Solo sumar si es un número
+                    console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+                }
+            }
+        });
+    
+        // Actualiza el control Text con el total de la oferta
+        this.byId("text73_172746565340567").setText(totalOferta.toFixed(2));
+    
+        console.log("Total de la columna oferta:", totalOferta);
+    },
+    
+
+    metodoSumarFac: function () {
+      var oTablaFac = this.byId("table0");
+      var aItems = oTablaFac.getItems();
+      var totalOferta = 0;
+  
+      console.log("Cantidad de filas en la tabla:", aItems.length);
+  
+      // Iterar solo sobre las filas de datos (excluyendo la última)
+      aItems.forEach(function (oItem, index) {
+          // Verifica si es la fila de total (última fila)
+          if (index < aItems.length - 1) { // Excluye la última fila
+              var aCells = oItem.getCells();
+              var valueOferta = "";
+  
+              // Obtiene el valor de la segunda celda (columna de Oferta)
+              var ofertaCell = aCells[2];
+  
+              // Verifica si la celda es de tipo Input y obtiene el valor
+              if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+                  valueOferta = ofertaCell.getValue();
+              }
+  
+              // Limpiar espacios y convertir a número
+              valueOferta = valueOferta.trim();
+              var numericValue = parseFloat(valueOferta);
+  
+              // Imprimir para depuración
+              console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+  
+              // Solo sumar si valueOferta es un número válido
+              if (!isNaN(numericValue)) {
+                  totalOferta += numericValue; // Solo sumar si es un número
+                  console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+              }
+          }
+      });
+  
+      // Actualiza el control Text con el total de la oferta
+      this.byId("text73_172746565340569997").setText(totalOferta.toFixed(2));
+  
+      console.log("Total de la columna oferta:", totalOferta);
+  },
+  
+    
+
+      /*   insertClientFactura: async function (generatedId) {
+           //Tabla facturacion 
+           var oTablaFac = this.byId("table_clienteFac");
+           var aItems = oTablaFac.getItems();
+           var aData = [];
+         
+            // Recorrer cada fila de la tabla
+            aItems.forEach(function (oItem) {
+             // Obtener las celdas (inputs) de la fila
+             var aCells = oItem.getCells();
+   
+             // Extraer el valor de cada celda (input) de la fila
+             var valueJudi = aCells[0].getValue(); // Input para valueCondi
+             var valueoferta = aCells[1].getValue(); // Input para valueProvee
+   
+             // Agregar los valores al arreglo de datos, asegurándonos de que coincidan con los campos en la entidad ProveedoresC
+             aData.push({
+               juridica: valueJudi,
+               oferta: valueoferta,
+               total: 0,
+               datosProyect_ID: generatedId // clave foránea
+             });
+           }.bind(this));
+   
+           console.log(aData);
+   
+              // 6. Guardar ClientFactura (POST)
+              for (let data of aData) {
+               data.datosProyect_ID = generatedId;
+             const response4 =   await fetch("/odata/v4/datos-cdo/ClientFactura", {
+                 method: "POST",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify(data)
+               });
+   
+   
+               if (response4.ok) {
+                 const error = await response4.json();
+                 console.log("Facturacion guardada con éxito:", error);
+               } else {
+                 const errorMessage = await response4.text();
+                 console.log("Error al guardar la Facturacion:", errorMessage);
+                 sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
+               }
+             }
+             
+         
+         },*/
 
 
 
@@ -1010,106 +2459,98 @@ sap.ui.define([
 
 
 
-      // --------- Metodo fechas dinamicas tabla ---------------------------
       fechasDinamicas: function (oEvent) {
         // Obtener las fechas seleccionadas de los DatePickers
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
-
+    
         // Comprobar si los DatePickers tienen valores seleccionados
         if (!startDatePicker || !endDatePicker) {
-          console.error("Error: No se pudieron obtener los DatePickers.");
-          return;
+            console.error("Error: No se pudieron obtener los DatePickers.");
+            return;
         }
-
+    
         var startDate = startDatePicker.getDateValue();
         var endDate = endDatePicker.getDateValue();
-
+    
         // Si las fechas no están definidas, salir de la función
         if (!startDate || !endDate) {
-          console.log("Esperando a que se seleccionen ambas fechas.");
-          return;
+            console.log("Esperando a que se seleccionen ambas fechas.");
+            return;
         }
-
+    
         // Calcular el número de meses en el rango
         var diffMonths = this.getMonthsDifference(startDate, endDate);
-
+    
         // Definir las IDs de las tablas
-        var tableIds = [
-          "tablaConsuExter",
-          "table_dimicFecha",
-          "tablaRecExterno",
-        ];
-
+        var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno"];
+    
         // Iterar sobre cada tabla
         tableIds.forEach(function (tableId) {
-          var oTable = this.getView().byId(tableId);
-          if (!oTable) {
-            console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-            return;
-          }
-
-          var totalColumnIndex = this.findTotalColumnIndex(oTable);
-
-          if (totalColumnIndex === -1) {
-            console.error("Error: No se encontró la columna 'Total1' en la tabla " + tableId);
-            return;
-          }
-
-          // Eliminar las columnas dinámicas existentes después de "Total1"
-          var columnCount = oTable.getColumns().length;
-          for (var j = columnCount - 1; j > totalColumnIndex; j--) {
-            oTable.removeColumn(j);
-          }
-
-          // Agregar nuevas columnas
-          for (var i = 0; i <= diffMonths; i++) {
-            var columnDate = new Date(
-              startDate.getFullYear(),
-              startDate.getMonth() + i,
-              1
-            );
-            var year = columnDate.getFullYear();
-            var month = columnDate.toLocaleString("default", { month: "long" });
-            var columnHeaderText = year + "-" + month;
-            var oColumn = new sap.m.Column({
-              header: new sap.m.Label({ text: columnHeaderText }),
-              width: "100px",
-            });
-            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-          }
-
-          // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
-          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-          if (oScrollContainer) {
-            oScrollContainer.setHorizontal(true);
-            oScrollContainer.setVertical(false);
-            oScrollContainer.setWidth("100%");
-          }
-
-          console.log("startDate:", startDate);
-          console.log("endDate:", endDate);
+            var oTable = this.getView().byId(tableId);
+            if (!oTable) {
+                console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+                return;
+            }
+    
+            var totalColumnIndex = this.findTotalColumnIndex(oTable);
+    
+            // Eliminar las columnas dinámicas existentes después de la columna encontrada
+            var columnCount = oTable.getColumns().length;
+            for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+                oTable.removeColumn(j);
+            }
+    
+            // Agregar nuevas columnas
+            for (var i = 0; i <= diffMonths; i++) {
+                var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+                var year = columnDate.getFullYear();
+                var month = columnDate.toLocaleString("default", { month: "long" });
+                var columnHeaderText = year + "-" + month;
+                var oColumn = new sap.m.Column({
+                    header: new sap.m.Label({ text: columnHeaderText }),
+                    width: "100px",
+                });
+                oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+            }
+    
+            // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+            var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+            if (oScrollContainer) {
+                oScrollContainer.setHorizontal(true);
+                oScrollContainer.setVertical(false);
+                oScrollContainer.setWidth("100%");
+            }
+    
+            console.log("startDate:", startDate);
+            console.log("endDate:", endDate);
         }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
-      },
-
-      findTotalColumnIndex: function (oTable) {
+    },
+    
+    findTotalColumnIndex: function (oTable) {
         var columns = oTable.getColumns();
+        var lastColumnIndex = columns.length - 1;  // Índice de la última columna
+    
+        // Buscar la columna 'Total1'
         for (var i = 0; i < columns.length; i++) {
-          var headerLabel = columns[i].getHeader();
-          if (headerLabel && headerLabel.getText() === "Total1") {  // Cambia "Total" a "Total1"
-            return i;
-          }
+            var headerLabel = columns[i].getHeader();
+            if (headerLabel && headerLabel.getText() === "Total1") {
+                return i;  // Devuelve el índice de la columna 'Total1'
+            }
         }
-        return -1; // No se encontró la columna 'Total1'
-      },
-
-      getMonthsDifference: function (startDate, endDate) {
+    
+        // Si no encuentra 'Total1', devuelve el índice de la última columna
+        console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+        return lastColumnIndex;
+    },
+    
+    getMonthsDifference: function (startDate, endDate) {
         var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
         diffMonths -= startDate.getMonth();
         diffMonths += endDate.getMonth();
         return diffMonths;
-      },
-
+    },
+    
       //------------------------------------------------------------------------
 
 

@@ -1,13 +1,14 @@
 
 module.exports = cds.service.impl(async function () {
 
-  const { DatosProyect, ProveedoresC ,planificacion } = this.entities;
+  const { DatosProyect, ProveedoresC,RecursosExternos,LicenciasCon, otrosConceptos , GastoViajeRecExter , serviRecurExter ,planificacion, Facturacion, ClientFactura , RecursosInternos, otrosGastoRecu, otrosRecursos, ConsumoExternos , GastoViajeConsumo , otrosServiciosConsu
+    
+  } = this.entities;
 
   this.on('CREATE', 'DatosProyect', async (req) => {
 
     const { codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID , Seguimiento_ID,EjecucionVia_ID, AmReceptor_ID , Vertical_ID  } = req.data;
 
-    // Aquí podrías hacer validaciones si es necesario
 
     try {
 
@@ -79,6 +80,291 @@ this.on('ProveedoresC', async (req) => {
       req.error(500, 'Error fetching data: ' + error.message);
   }
 });
+
+
+ 
+this.on('Facturacion', async (req) => {
+  const { ID, datosProyect_ID,  } = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(Facturacion).entries({
+
+        descripcionHito, fechaEstimida, facturacion, total, datosProyect_ID });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('ClientFactura', async (req) => {
+  const { ID, datosProyect_ID } = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(ClientFactura).entries({
+
+        juridica, oferta, total, datosProyect_ID });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('RecursosInternos', async (req) => {
+  const { ID, datosProyect_ID,  Vertical_ID, PerfilServicio_ID ,tipoServicio_ID } = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(RecursosInternos).entries({
+
+        ConceptoOferta, PMJ, total, mesYear,  total , totalE ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
+this.on('otrosGastoRecu', async (req) => {
+  const { ID, RecursosInternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(otrosGastoRecu).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,RecursosInternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
+this.on('otrosRecursos', async (req) => {
+  const { ID, RecursosInternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(otrosRecursos).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,RecursosInternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('ConsumoExternos', async (req) => {
+  const { ID, datosProyect_ID,  Vertical_ID, PerfilServicio_ID ,tipoServicio_ID } = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(ConsumoExternos).entries({
+
+        ConceptoOferta, PMJ, total, mesYear,  total , totalC ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('otrosServiciosConsu', async (req) => {
+  const { ID, ConsumoExternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(otrosServiciosConsu).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,ConsumoExternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('GastoViajeConsumo', async (req) => {
+  const { ID, ConsumoExternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(GastoViajeConsumo).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,ConsumoExternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
+
+
+
+
+this.on('RecursosExternos', async (req) => {
+  const { ID, datosProyect_ID,  Vertical_ID, PerfilServicio_ID ,tipoServicio_ID } = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(RecursosExternos).entries({
+
+        ConceptoOferta, PMJ, total, mesYear,  total , totalR ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('serviRecurExter', async (req) => {
+  const { ID, RecursosExternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(serviRecurExter).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,RecursosExternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('GastoViajeRecExter', async (req) => {
+  const { ID, RecursosExternos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(GastoViajeRecExter).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalE ,RecursosExternos_ID,  Vertical: {ID: Vertical_ID} , tipoServicio : {ID: tipoServicio_ID} });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
+this.on('LicenciasCon', async (req) => {
+  const { ID, otrosConceptos_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(LicenciasCon).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalC , otrosConceptos_ID ,  Vertical: {ID: Vertical_ID}  });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+this.on('otrosConceptos', async (req) => {
+  const { ID, datosProyect_ID , tipoServicio_ID ,Vertical_ID} = req.data;
+  // Verifica que ID no esté vacío o nulo
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  try {
+      const result = await INSERT.into(otrosConceptos).entries({
+
+        ConceptoOferta, PMJ, total, mesYear , totalC ,datosProyect_ID,  Vertical: {ID: Vertical_ID}  });
+      
+      return result;
+
+  } catch (error) {
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
 
 
 });

@@ -1,9 +1,11 @@
 sap.ui.define(
   [
     "sap/ui/core/mvc/Controller",
-      "sap/ui/core/CustomData"
+      "sap/ui/core/CustomData",
+      "sap/ui/core/format/DateFormat" // Importamos el formateador de fecha
+
   ],
-  function (BaseController, CustomData) {
+  function (BaseController, CustomData, DateFormat) {
     "use strict";
 
     return BaseController.extend("project1.controller.App", {
@@ -59,6 +61,29 @@ sap.ui.define(
             }
         });
     },
+
+     // Función para formatear la fecha
+     formatDate: function(dateString) {
+      if (!dateString) {
+          return "";
+      }
+
+      // Convertimos el string en un objeto Date
+      var date = new Date(dateString);
+      // Verificamos si es una fecha válida
+      if (isNaN(date.getTime())) {
+          return dateString; // Devolvemos el string original si no es válida
+      }
+
+      // Usamos DateFormat para formatear la fecha
+      var oDateFormat = DateFormat.getInstance({
+          pattern: "dd MMM yyyy", // Formato deseado
+          UTC: true // Para asegurarnos de que se considere la zona horaria UTC
+      });
+
+      return oDateFormat.format(date);
+  },
+
     
 
 
@@ -96,7 +121,7 @@ sap.ui.define(
         var oButton = oEvent.getSource();
         var sProjectId = oButton.getCustomData()[0].getValue();  // Obtén el ID del proyecto
         console.log(sProjectId);
-
+    
         // Mostrar el mensaje de confirmación
         sap.m.MessageBox.confirm("¿Estás seguro de que deseas eliminar este proyecto?", {
             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
@@ -114,13 +139,14 @@ sap.ui.define(
                         if (response.ok) {
                             sap.m.MessageToast.show("Proyecto eliminado exitosamente");
     
+                            // Refresca el binding de la tabla
                             const oTable = this.byId("idPendientes");
                             const oBinding = oTable.getBinding("items");
-                    
-                              oBinding.refresh(); // Refresca los datos de la tabla
-                     
-
-
+                            oBinding.refresh(); // Refresca los datos de la tabla
+    
+                            // Refresca el modelo para actualizar el count
+                            var oModel = this.getView().getModel(); // Asegúrate de que este sea el modelo correcto
+                            oModel.refresh(); // Elimina el true, no se necesita
                         } else {
                             sap.m.MessageToast.show("Error al eliminar el proyecto");
                         }
@@ -135,6 +161,10 @@ sap.ui.define(
     
     
     
+
+
+
+ 
 
 
 

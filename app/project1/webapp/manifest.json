@@ -122,16 +122,14 @@
           "target": "app"
         },
         {
-          "name": "view", 
-          "pattern": "view/{sProjectID}", 
+          "name": "view",
+          "pattern": "view/{sProjectID}",
           "target": "view"
-        
-
         },
         {
           "name": "viewNoParam",
-          "pattern": "view",  
-          "target": "view"  
+          "pattern": "view",
+          "target": "view"
         }
       ],
       "targets": {
@@ -149,7 +147,6 @@
           "viewId": "view",
           "viewName": "View1",
           "viewLevel": 1
-
         }
       }
     },

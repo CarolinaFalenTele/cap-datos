@@ -16,6 +16,11 @@ annotate DatosCDOService.DatosProyect with @(UI: {
     },
     {
         $Type: 'UI.DataField',
+        Label: 'Nombre Proyecto',
+        Value: Fechainicio
+    },
+    {
+        $Type: 'UI.DataField',
         Label: 'Área',
         Value: Area.NombreArea
     },

@@ -76,7 +76,7 @@
                                                     <items>
                                                         <ColumnListItem id="cliItem">
                                                             <cells>
-                                                                <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{ListaCdo>fecha}" />
+                                                                <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{DatosProyect>Fechainicio}" />
                                                                 <Text id="txtCellCodigo" text="{codigoProyect}" />
                                                                  <ObjectIdentifier id="nombre34" title="{nameProyect}" />
                                                                 <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />

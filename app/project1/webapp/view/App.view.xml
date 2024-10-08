@@ -19,10 +19,10 @@
                             <ObjectHeader xmlns="sap.m" title="Fichas CDO" id="header0" responsive="true" fullScreenOptimized="true" intro="Descripcion" titleActive="true" titlePress="handleTitlePress" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header">
 
                                 <ObjectAttribute id="233" title="Empleado"  text="David Arroyo" />
-                                <ObjectAttribute id="223" title="Solicitudes" text="20" active="true" />
+                                <ObjectAttribute id="223" title="Solicitudes" text="{/DatosProyect/$count}" active="true" />
                                 <ObjectAttribute id="2" title="Category" text="BTP" />
-                                <ObjectAttribute id="2323" title="Weight per unit" text="" />
-                                <ObjectAttribute id="2222" title="Dimension per unit" text="" />
+                              <!--  <ObjectAttribute id="2323" title="Weight per unit" text="" />
+                                <ObjectAttribute id="2222" title="Dimension per unit" text="" />-->
 
                                 <statuses>
                                     <ObjectStatus id="status0" title="Approval" text="Pending" state="Warning" />
@@ -76,7 +76,7 @@
                                                     <items>
                                                         <ColumnListItem id="cliItem">
                                                             <cells>
-                                                                <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{ListaCdo>fecha}" />
+                                                                <Text id="txtFechai"  text="{path: 'Fechainicio', formatter: '.formatDate'}"/>
                                                                 <Text id="txtCellCodigo" text="{codigoProyect}" />
                                                                  <ObjectIdentifier id="nombre34" title="{nameProyect}" />
                                                                 <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />
@@ -186,7 +186,7 @@
                     <OverflowToolbar id="toolbar1">
                         <ToolbarSpacer id="22" />
 
-                        <Button id="33" type="Accept" text="Accept" press="onNavToView1" />
+                        <Button id="33" type="Accept" text="Nueva Solicitud" press="onNavToView1" />
                     </OverflowToolbar>
                 </footer>
             </Page>

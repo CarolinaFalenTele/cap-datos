@@ -7,7 +7,7 @@ service DatosCDOService {
 
 
     entity DatosProyect as projection on datos.DatosProyect;
-    //@requires: 'Admin'
+   // @requires: 'Admin'
     entity Jefeproyect as projection on datos.Jefeproyect;
     entity Area as projection on datos.Area;
     entity clienteFuncional as projection on datos.clienteFuncional;
@@ -24,6 +24,15 @@ service DatosCDOService {
     entity RecursosInternos as projection on datos.RecursosInternos;
     entity ConsumoExternos as projection on datos.ConsumoExternos;
     entity RecursosExternos as projection on datos.RecursosExternos;
+    entity GastoViajeRecExter as projection on datos.GastoViajeRecExter;
+    entity serviRecurExter as projection on datos.serviRecurExter;
     entity otrosConceptos as projection on datos.otrosConceptos;
     entity PerfilServicio   as projection on datos.PerfilServicio;
+    entity ClientFactura  as projection on datos.ClientFactura;
+    entity LicenciasCon as projection on datos.LicenciasCon;
+    entity otrosGastoRecu as projection on datos.otrosGastoRecu;
+    entity otrosRecursos as projection on datos.otrosRecursos;
+    entity otrosServiciosConsu as projection on datos.otrosServiciosConsu;
+    entity GastoViajeConsumo as projection on datos.GastoViajeConsumo;
+
 }

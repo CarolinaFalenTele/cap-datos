@@ -1,10 +1,11 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:microchart="sap.suite.ui.microchart" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
 <App id="app2">
 <Page id="page" title="{i18n>title}">
 <customHeader>
     <Bar xmlns="sap.m" class="sapContrastPlus myCustomBar" id="bar120" busyIndicatorSize="Large" design="Header">
         <contentLeft>
             <Button icon="sap-icon://arrow-left" tooltip="" id="button3" press="onNavToView1"/>
+          
             <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Telef%C3%B3nica_2021_logo.svg/1200px-Telef%C3%B3nica_2021_logo.svg.png" width="120px" id="image034"/>
         </contentLeft>
     </Bar>
@@ -27,13 +28,13 @@
             <headerContainer>
                 <IconTabBar id="itb1333" selectedKey="key3" upperCase="true">
                     <items>
-                        <IconTabFilter id="234h" text="Info" count="" key="key1">
+                    <!--    <IconTabFilter id="234h" text="Info" count="" key="key1">
                             <l:VerticalLayout id="274143" class="sapUiContentPadding" width="100%">
                                 <l:content>
                                     <Text id="63954" text=""/>
                                 </l:content>
                             </l:VerticalLayout>
-                        </IconTabFilter>
+                        </IconTabFilter>-->
 
                         <IconTabFilter id="idIniu" text="Activities" count="" key="key2" class=".miClase">
 
@@ -50,11 +51,11 @@
                                     <Text text="Rellenar" id="txt_rellena" class="miTitulo myText2"/>
                                     <FlexBox width="100%" id="flx_1">
                                         <items>
-                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1100px" headerText="Datos Proyecto" >
+                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1100px" headerText="Datos Proyecto">
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1">
                                                         <cells>
-                                                            <Input xmlns="sap.m" id="input0" type="Number"  value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto"/>
+                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto"/>
                                                             <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Nombre Proyecto"/>
 
                                                             <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false">
@@ -387,6 +388,34 @@
                                                         </Table>
 
                                                                <!-- Segundo VizFrame para Construcción y Pruebas TQ -->
+<viz:VizFrame id="idVizFrame2" height="280px" width="400px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="bar" visible="true">
+
+   <viz:dataset>
+    <viz.data:FlattenedDataset id="fnor2" data="{planning>/chartModel}">
+        <viz.data:dimensions>
+            <viz.data:DimensionDefinition id="suyel2" name="Fase" value="{planning>fase}"/>
+        </viz.data:dimensions>
+        <viz.data:measures>
+            <viz.data:MeasureDefinition id="mied2" name="Duración (días)" value="{planning>duracion}"/>
+            <viz.data:MeasureDefinition id="miedLabel2" name="Información" value="{planning>label}"/>
+        </viz.data:measures>
+    </viz.data:FlattenedDataset>
+</viz:dataset>
+  <viz:feeds>
+    <viz.feeds:FeedItem id="juras2" uid="valueAxis" type="Measure" values="Duración (días)"/>
+    <viz.feeds:FeedItem id="nopue2" uid="categoryAxis" type="Dimension" values="Fase"/>
+</viz:feeds>
+<viz:feeds>
+    <viz.feeds:FeedItem id="feedLabel2" uid="tooltip" type="Measure" values="Información"/>
+</viz:feeds>
+
+</viz:VizFrame>
+
+
+ 
+
+    
+
          
                                                     </items>
                                                 </FlexBox>
@@ -479,51 +508,53 @@
                                                             <items>
                                                                 <ColumnListItem id="item4">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" id="input3_1721377434240"/>
+                                                                        <Input xmlns="sap.m" value="" id="input3_1721377434240"/>
 
-                                                                        <Input xmlns="sap.m" id="input4_1721377439916"/>
+                                                                        <Input xmlns="sap.m" value="" id="input4_1721377439916" liveChange="metodoSumar"/>
                                                                     </cells>
                                                                 </ColumnListItem>
 
                                                                 <ColumnListItem id="item2">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" id="input5_1721377442858"/>
+                                                                        <Input xmlns="sap.m" value="" id="input5_1721377442858"/>
 
-                                                                        <Input xmlns="sap.m" id="input6_1721377445026"/>
+                                                                        <Input xmlns="sap.m" value="" id="input6_1721377445026" liveChange="metodoSumar"/>
                                                                     </cells>
                                                                 </ColumnListItem>
 
                                                                 <ColumnListItem id="item3">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" id="input8_1721377454370"/>
+                                                                        <Input xmlns="sap.m" value="" id="input8_1721377454370"/>
 
-                                                                        <Input xmlns="sap.m" id="input11_1721377485489"/>
+                                                                        <Input xmlns="sap.m" value="" id="input11_1721377485489" liveChange="metodoSumar"/>
                                                                     </cells>
                                                                 </ColumnListItem>
 
                                                                 <ColumnListItem id="item1_1721377335122">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" id="input7_17213749328"/>
+                                                                        <Input xmlns="sap.m" value="" id="input7_17213749328"/>
 
-                                                                        <Input xmlns="sap.m" id="input7_1721377449328"/>
+                                                                        <Input xmlns="sap.m" value="" id="input7_1721377449328" liveChange="metodoSumar"/>
                                                                     </cells>
                                                                 </ColumnListItem>
 
                                                                 <ColumnListItem id="item0_1721377331534">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" id="input9"/>
+                                                                        <Input xmlns="sap.m" value="" id="input9"/>
 
-                                                                        <Input xmlns="sap.m" id="input10"/>
+                                                                        <Input xmlns="sap.m" value="" id="input10" liveChange="metodoSumar"/>
                                                                     </cells>
                                                                 </ColumnListItem>
 
-                                                                <ColumnListItem type="Active" id="item0_1721311953573">
+                                                                  <ColumnListItem id="item0_172137731534">
                                                                     <cells>
-                                                                        <Text xmlns="sap.m" text="Total" id="text24_1721378380443"/>
-
-                                                                        <Text xmlns="sap.m" text="%" id="text25_1721378384439" textAlign="End" textDirection="LTR"/>
+                                                                    <Label text="Total" id="label0_1718830913" textAlign="Center"/>
+                                                                    
+                                                                       <Text id="text73_172746565340567" text=""/>
                                                                     </cells>
                                                                 </ColumnListItem>
+
+                                                                
                                                             </items>
 
                                                             <columns>
@@ -550,7 +581,8 @@
                                                             <items>
                                                                 <ColumnListItem type="Active" id="item0_1718882030913">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" value="" id="input0_1718884507993"/>
+
+                                                                        <DatePicker xmlns="sap.m" id="picker0" displayFormat="yyyy-MM-dd"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input6_1718884539620"/>
 
@@ -560,7 +592,8 @@
 
                                                                 <ColumnListItem type="Active" id="ite">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" value="" id="input1_1718884511058"/>
+
+                                                                        <DatePicker xmlns="sap.m" id="picker1" displayFormat="yyyy-MM-dd"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input5_1718884535732"/>
 
@@ -572,7 +605,8 @@
 
                                                                 <ColumnListItem id="item0_1718884640237">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" value="" id="input6_1718884699153"/>
+
+                                                                        <DatePicker xmlns="sap.m" id="picker2" displayFormat="yyyy-MM-dd"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input3_1718884677565"/>
 
@@ -582,7 +616,8 @@
 
                                                                 <ColumnListItem id="item1_1718884655263">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" value="" id="input2_1718884671366"/>
+
+                                                                        <DatePicker xmlns="sap.m" id="picker3" displayFormat="yyyy-MM-dd"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input4_1718884681583"/>
 
@@ -592,7 +627,8 @@
 
                                                                 <ColumnListItem type="Active" id="itefttt">
                                                                     <cells>
-                                                                        <Input xmlns="sap.m" value="" id="input2_1718884515836"/>
+
+                                                                        <DatePicker xmlns="sap.m" id="picker4" displayFormat="yyyy-MM-dd"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input3_1718884526227"/>
 
@@ -621,8 +657,12 @@
                                                                 </Column>
                                                             </columns>
                                                         </Table>
+                                                               
                                                     </items>
+                                                
                                                 </FlexBox>
+
+                                            
                                             </content>
                                         </Panel>
                         </IconTabFilter>
@@ -708,7 +748,7 @@
                                                 <FlexBox width="100%" id="box0_1714747137718" class="sapUiTinyMargin">
                                                     <items>
                                                         <ScrollContainer id="scroll_container" width="100%" height="auto">
-                                                               <Button id="ddffgh" text="Añadir Fila" press="onAddRowPress('table_dimicFecha')"/>
+                                                               <Button id="d4855h" text="Añadir Fila" press="onAddRowPress('table_dimicFecha')"/>
 
                                                      <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="2000px">
                                                                 <headerToolbar>
@@ -759,19 +799,19 @@
                                                                     <cells>
                                                                         <Select xmlns="sap.m" id="select2_17242325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item6"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item6"/>
                                                                             </items>
                                                                             
                                                                         </Select>
                                                                         <Select xmlns="sap.m" id="select3" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item9"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item9"/>
                                                                                 </items>
                                                                             
                                                                         </Select>
                                                                         <Select xmlns="sap.m" id="select4" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item11"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item11"/>
                                                                                 </items>
                                                                             
                                                                         </Select>
@@ -791,19 +831,19 @@
                                                                         <cells>
                                                           <Select xmlns="sap.m" id="select2_1723542325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item212"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item212"/>
                                                                                 </items>
                                                                             
                                                                         </Select>
                                                                         <Select xmlns="sap.m" id="select334" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item332"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item332"/>
                                                                                 </items>
                                                                             
                                                                         </Select>
                                                                         <Select xmlns="sap.m" id="select409" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                             <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="itewm11"/>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="itewm11"/>
                                                                                 </items>
                                                                             
                                                                         </Select>
@@ -819,138 +859,7 @@
                                                                         <Text xmlns="sap.m" text="" id="text32_172341599"/>                                                        
                                                                          </cells>
                                                                     </ColumnListItem>
-                                                                    <ColumnListItem id="item0_1723543780563">
-                                                                        <cells>
-                                                                            <Title xmlns="sap.m" text="Otros Recursos " id="title44"/>
-                                                                        </cells>
-                                                                    </ColumnListItem>
-                                                                    <ColumnListItem id="item0_172354393445">
-                                                                        <cells>
-                                                                        <Select xmlns="sap.m" id="select187" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item2_17235452431"/>
-                                                                            </items>
-                                                                            
-                                                                        </Select>
-                                                              
-                                                                        <Select xmlns="sap.m" id="select2_172354530484" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item085"/>
-                                                                            </items>
-                                                                            
-                                                                        </Select>
-
-                                                                        <Text xmlns="sap.m" text="" id="text27_17235452792"/>
-
-                                                                         <Input xmlns="sap.m" id="input0552587" tooltip="Codigo Proyecto"/>
-
-                                                                        <Text xmlns="sap.m" text="" id="pmj6"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1235430075"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_172354536874"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_172545344700"/>
-                                                                        <Text xmlns="sap.m" text="" id="text33_17354532636"/>
-                                                                        <Text xmlns="sap.m" text="" id="text084"/>
-                                                                        <Text xmlns="sap.m" text="" id="tex05"/>
-                                                                        <Text xmlns="sap.m" text="" id="text368"/>
-                                                                        <Text xmlns="sap.m" text="" id="text3887"/>
-                                                                        <Text xmlns="sap.m" text="" id="text3888"/>
-                                                                        </cells>
-                                                                    </ColumnListItem>
-
-                                                            
-                                                                <ColumnListItem id="item1_1723544014499">
-                                                                    <cells>
-
-
-
-                                                                    <Select xmlns="sap.m" id="select0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-
-                                                                        <items>
-                                                                            <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item0_1723547152451"/>
-                                                                        </items>
-
-                                                                    </Select>
- 
-
-                                                                    <Select xmlns="sap.m" id="select1" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item3_1723547174354"/>
-
-                                                                        </items>
-
-                                                                    </Select>
-
-                                                                    <Text xmlns="sap.m" text="" id="text31_17235471659"/>
-
-                                                                    <Input xmlns="sap.m" id="input855025865"/>             
-
-                                                                    <Text xmlns="sap.m" text="" id="pmj4"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text33_1723547184800"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text34"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text35"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text36"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text37"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text38"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text39"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text40"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text41"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text42"/>
-
-                                                                    </cells>
-                                                                    </ColumnListItem>
-
-
-
-                                                                    <ColumnListItem id="item2_1723544025255">
-                                                                        <cells>
-                                                                            <Title xmlns="sap.m" text="Gastos de viaje" id="title43"/>
-                                                                        </cells>
-                                                                    </ColumnListItem>
-
-                                                                    <ColumnListItem id="item3_1723544157941">
-                                                                    <cells>
-                                                     
-                                                        <Select xmlns="sap.m" id="select2_1325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                <items>
-                                                                     <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item456"/>
-                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect4" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item1561"/>
-                                                                            </items>
-                                                                            
-                                                                        </Select>
-
-                                                                       <Text xmlns="sap.m" text="" id="text27_172792"/>
-
-                                                                        <Input xmlns="sap.m" value="" id="input0_17235423780"/>
-                                                                        <Text xmlns="sap.m" id="pmj1" text=""/>
-                                                                        <Text xmlns="sap.m" id="text25_172354240710"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723542467727"/>
-                                                                        <Text xmlns="sap.m" id="text2767"/>
-                                                                        <Text xmlns="sap.m" id="text2558"/>
-                                                                        <Text xmlns="sap.m" id="text2559"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_17235424030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17251572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_172354299"/>
-                                                                    </cells>
-                                                                    </ColumnListItem>
-                                                                     
-                                                        
+                                                                  
                                                         </items>
 
                                                                 <columns>
@@ -1031,6 +940,243 @@
                                                         </ScrollContainer>
                                                     </items>
                                                 </FlexBox>
+
+
+                                                <FlexBox width="100%" id="box0_1727879568594">
+                                                    <items>
+                                                      <ScrollContainer id="scroll_container23" width="100%" height="auto">
+                                            
+                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="2000px">
+                                                            <items>
+                                                                 <ColumnListItem id="item3_1723544157941">
+                                                                    <cells>
+                                                     
+                                                        <Select xmlns="sap.m" id="select2_1325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                <items>
+                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item456"/>
+                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                       
+
+                                                   <Select xmlns="sap.m" id="select165678" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item5423547174354"/>
+
+                                                                        </items>
+
+                                                                    </Select>
+                                                                       
+
+                                                                       <Text xmlns="sap.m" text="" id="text27_172792"/>
+
+                                                                        <Input xmlns="sap.m" value="" id="input0_17235423780"/>
+                                                                        <Text xmlns="sap.m" id="pmj1" text=""/>
+                                                                        <Text xmlns="sap.m" id="text25_172354240710"/>
+                                                                        <Text xmlns="sap.m" id="text26_1723542467727"/>
+                                                                        <Text xmlns="sap.m" id="text2767"/>
+                                                                        <Text xmlns="sap.m" id="text2558"/>
+                                                                        <Text xmlns="sap.m" id="text2559"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_17235424030"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17251572"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_172354299"/>
+                                                                    </cells>
+                                                                    </ColumnListItem>
+                                                            </items>
+                                                            <columns>
+                                                                <Column id="column0_1727879576856">
+                                                                <header>
+                                                                    <Title xmlns:mvc="sap.ui.core.mvc" text="Gastos de viaje" id="title43_copy"/>
+                                                
+                                                                </header>
+                                                                </Column>
+
+
+                                                                <Column id="column5_84" vAlign="Bottom">
+                                                                        <header>
+                                                                           
+                                                                        </header>
+                                                                    </Column>
+
+
+                                                                <Column id="column1_172879576857">
+
+                                                                </Column>
+
+                                                                
+                                                                <Column id="column1_172787582676857">
+
+                                                                </Column>
+
+
+                                                                <Column id="colum8279576857">
+
+                                                                </Column>
+                                                                
+                                                                 <Column id="column1_1728279576857">
+
+                                                                </Column>    
+                                                                  <Column id="col8279576857">
+
+                                                                </Column>        
+                                                                 <Column id="column729576857">
+
+                                                                </Column>      
+                                                                 <Column id="column858279576857">
+
+                                                                </Column>
+                                                                <Column id="column1_1728776857">
+
+                                                                </Column>
+                                                                
+                                                                <Column id="column1_1727576857">
+
+                                                                </Column>
+                                                                
+                                                                <Column id="column1_172779576857">
+
+                                                                </Column>
+
+                                                                <Column id="column2_179576857">
+                                                                </Column></columns>
+                                                                
+                                                                </Table>
+                                                                </ScrollContainer>
+                                                    </items>
+                                                </FlexBox>
+                                                <FlexBox width="100%" id="box0_1727879817594">
+                                                   
+                                                    <items>
+                                                     <ScrollContainer id="scroll_container2983" width="100%" height="auto">
+                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879940116" width="2000px">
+                                                            <items>
+                                                                <ColumnListItem id="item0_172354393445">
+                                                                        <cells>
+                                                                        <Select xmlns="sap.m" id="select187" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item2_17235452431"/>
+                                                                            </items>
+                                                                            
+                                                                        </Select>
+                                                              
+                                                                        <Select xmlns="sap.m" id="select2_172354530484" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item085"/>
+                                                                            </items>
+                                                                            
+                                                                        </Select>
+
+                                                                        <Text xmlns="sap.m" text="" id="text27_17235452792"/>
+
+                                                                         <Input xmlns="sap.m" id="input0552587" tooltip="Codigo Proyecto"/>
+
+                                                                        <Text xmlns="sap.m" text="" id="pmj6"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1235430075"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_172354536874"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_172545344700"/>
+                                                                        <Text xmlns="sap.m" text="" id="text33_17354532636"/>
+                                                                        <Text xmlns="sap.m" text="" id="text084"/>
+                                                                        <Text xmlns="sap.m" text="" id="tex05"/>
+                                                                        <Text xmlns="sap.m" text="" id="text368"/>
+                                                                        <Text xmlns="sap.m" text="" id="text3887"/>
+                                                                        <Text xmlns="sap.m" text="" id="text3888"/>
+                                                                        </cells>
+                                                                    </ColumnListItem>
+
+                                                            
+                                                                <ColumnListItem id="item1_1723544014499">
+                                                                    <cells>
+
+
+
+                                                                    <Select xmlns="sap.m" id="select0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+
+                                                                        <items>
+                                                                            <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item0_1723547152451"/>
+                                                                        </items>
+
+                                                                    </Select>
+ 
+
+                                                                    <Select xmlns="sap.m" id="select1" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item3_1723547174354"/>
+
+                                                                        </items>
+
+                                                                    </Select>
+
+                                                                    <Text xmlns="sap.m" text="" id="text31_17235471659"/>
+
+                                                                    <Input xmlns="sap.m" id="input855025865"/>             
+
+                                                                    <Text xmlns="sap.m" text="" id="pmj4"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text33_1723547184800"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text34"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text35"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text36"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text37"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text38"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text39"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text40"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text41"/>
+
+                                                                    <Text xmlns="sap.m" text="" id="text42"/>
+
+                                                                    </cells>
+                                                                    </ColumnListItem>                                                                   
+                                                        
+                                                            </items>
+                                                            <columns>
+                                                                <Column id="column0_1727879940115">
+                                                                    <header>
+                                                                    
+                                                                            <Title xmlns="sap.m" text="Otros Recursos " id="title44"/>
+                                                               
+                                                                   
+                                                                    </header>
+                                                                </Column>
+                                                                <Column id="column1_1727879940115">
+                                                                </Column>
+                                                                <Column id="column2_1700000115">
+                                                                </Column>
+                                                                 <Column id="column2_17278791940115">
+                                                                </Column> 
+                                                                
+                                                                <Column id="column1727879940115">
+                                                                </Column>
+
+                                                                 <Column id="column2t_1727815">
+                                                                </Column>
+                                                                 <Column id="columtn2_1727845">
+                                                                </Column>
+                                                                 <Column id="colum79940415456">
+                                                                </Column>
+                                                                 <Column id="columt8579940115">
+                                                                </Column>
+                                                                 <Column id="coluomn787994540115">
+                                                                </Column>
+                                                                <Column id="coluomn7879945465850115">
+                                                                </Column>
+                                                                  <Column id="coluomn78799454890115">
+                                                                </Column>
+                                                                <Column id="co6890115">
+                                                                </Column>
+                                                                </columns>
+                                                                
+                                                                </Table>
+                                                                   </ScrollContainer>
+                                                    </items>
+                                                </FlexBox>
                                             
                                             <FlexBox width="100%" id="box0_1721815443829" class="sapUiTinyMargin">
                             
@@ -1047,20 +1193,20 @@
                                                             <cells>
                                                                 <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_1723539571815"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_1723539571815"/>
                                                                         </items>
                                                                     
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select5" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item13"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item13"/>
                                                                 
                                                                         </items>
                                                                     
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select6" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item145"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item145"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1082,7 +1228,7 @@
                                                                   
                                          <Select xmlns="sap.m" id="select2_1723539576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_17235395"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17235395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
@@ -1095,7 +1241,7 @@
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select6543" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item15"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item15"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1119,20 +1265,20 @@
                                                                 <cells>
                                                                         <Select xmlns="sap.m" id="select2_1723559576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_17535395"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17535395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select23455" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item135888"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item135888"/>
                                                                 
                                                                         </items>
                                                                     
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select65443" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item44415"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item44415"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1150,156 +1296,9 @@
 
                                                                 </cells>
                                                             </ColumnListItem>
-                                                            <ColumnListItem id="item0_1724397730065">
-                                                                <cells>
-                                                                    <Title xmlns="sap.m" text="Otros Servicios" id="title45"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item1_1724397774576">
-                                                                <cells>
-                                                               <Select xmlns="sap.m" id="select2_132531067" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item45106"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                        
-                                                                    
-                                                                        <Select xmlns="sap.m" id="seect104" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item156101"/>
-                                                                            </items>
-                                                                            
-                                                                        </Select>
-
-
-                                                                         <Text xmlns="sap.m" text="" id="text27_17279210"/>
-
-
-                                                                          <Input xmlns="sap.m" id="input0552896767" tooltip="Codigo Proyecto"/>
-
-
-
-                                                                        <Text xmlns="sap.m" id="text29410"/>
-                                                                        <Text xmlns="sap.m" id="text25_172354240710100"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354246701727"/>
-                                                                        <Text xmlns="sap.m" id="text271067"/>
-                                                                        <Text xmlns="sap.m" id="text250158"/>
-                                                                        <Text xmlns="sap.m" id="text255109"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1723542104030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725157102"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235429910"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item2_1724397821392">
-                                                                <cells>
-                                                                     <Select xmlns="sap.m" id="select2_13205367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item4560"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect40" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                            <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item17561"/>
-                                                                           </items>
-                                                                            
-                                                                        </Select>
-
-                                                                <Text xmlns="sap.m" text="" id="text27_1702792"/>
-                                                                      
-                                                                 <Input xmlns="sap.m" id="input05" tooltip="Codigo Proyecto"/>
-
-                                                                      
-                                                                        <Text xmlns="sap.m" id="text2904"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723542710"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723542427"/>
-                                                                        <Text xmlns="sap.m" id="text276007"/>
-                                                                        <Text xmlns="sap.m" id="text25058"/>
-                                                                        <Text xmlns="sap.m" id="text25059"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1723540204030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725015072"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_1702354299"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item3_1724397879032">
-                                                                <cells>
-                                                                                                                
-                                                               <Title xmlns="sap.m" text="Gastos de viaje" id="title4145"/>
-
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item0_1724399567964">
-                                                                <cells>
-                                                                   <Select xmlns="sap.m" id="select2_17325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item4576"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-
-
-                                                                        
-                                                                        <Select xmlns="sap.m" id="seect488" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item15861"/>
-                                                                 </items>
-                                                                            
-                                                               </Select>
-                                                                         <Text xmlns="sap.m" text="" id="text27_1728792"/>
-                                                                       
-                                                                <Input xmlns="sap.m" id="input55605"/>
-                                                                    
-                                                                      <Text xmlns="sap.m" id="text2943"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235440710"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354246727"/>
-                                                                        <Text xmlns="sap.m" id="text27677"/>
-                                                                        <Text xmlns="sap.m" id="text25578"/>
-                                                                        <Text xmlns="sap.m" id="text25597"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_17235424430"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725152572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235452299"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item1_1724399587539">
-                                                                <cells>
-                                                                  <Select xmlns="sap.m" id="select2_132785367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item4541476"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                       
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect4144" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item154161"/>
-                                                                                </items>
-
-                                                                        
-                                                                            
-                                                                        </Select>
-
-
-                                                                          <Text xmlns="sap.m" text="" id="text27_17241792"/>
-
-                                                                           <Input xmlns="sap.m" id="input054645"/>
-
-                                                                        <Text xmlns="sap.m" id="text2947"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235424010"/>
-                                                                        <Text xmlns="sap.m" id="text26_17235467727"/>
-                                                                        <Text xmlns="sap.m" id="text2767527"/>
-                                                                        <Text xmlns="sap.m" id="text2418"/>
-                                                                        <Text xmlns="sap.m" id="text25459"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1777235424030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1724551572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235475299"/>
-                                                                </cells>
-                                                            </ColumnListItem>
+                                                            
+                                                           
+                                                          
                                                         </items>
                                                         <columns>
                                                             <Column id="column3_1721815314201">
@@ -1372,15 +1371,304 @@
                                                 </ScrollContainer>
                                             <items/>
                                             </FlexBox>
+                                            
+                                            <FlexBox width="100%" id="box0_1727948724833">
+                                            
+                                                <items>
+
+                                                  <ScrollContainer id="scroll_containe345" width="100%">
+
+                                            
+                                                    <Table noDataText="Drop column list items here and columns in the area above" id="idOtroserConsu" width="2000px">
+                                            
+                                                        <items>
+                                            
+                                                          <ColumnListItem id="item1_1724397774576">
+                                                                <cells>
+                                                               <Select xmlns="sap.m" id="select2_132531067" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item45106"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                        
+                                                                    
+                                                                        <Select xmlns="sap.m" id="seect104" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item156101"/>
+                                                                            </items>
+                                                                            
+                                                                        </Select>
 
 
-                        <FlexBox width="100%" id="box0_17218154429" class="sapUiTinyMargin">
+                                                                         <Text xmlns="sap.m" text="" id="text27_17279210"/>
+
+
+                                                                          <Input xmlns="sap.m" id="input0552896767" tooltip="Codigo Proyecto"/>
+
+
+
+                                                                        <Text xmlns="sap.m" id="text29410"/>
+                                                                        <Text xmlns="sap.m" id="text25_172354240710100"/>
+                                                                        <Text xmlns="sap.m" id="text26_172354246701727"/>
+                                                                        <Text xmlns="sap.m" id="text271067"/>
+                                                                        <Text xmlns="sap.m" id="text250158"/>
+                                                                        <Text xmlns="sap.m" id="text255109"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1723542104030"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725157102"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235429910"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                            <ColumnListItem id="item2_1724397821392">
+                                                                <cells>
+                                                                     <Select xmlns="sap.m" id="select2_13205367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item4560"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect40" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                            <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item17561"/>
+                                                                           </items>
+                                                                            
+                                                                        </Select>
+
+                                                                <Text xmlns="sap.m" text="" id="text27_1702792"/>
+                                                                      
+                                                                 <Input xmlns="sap.m" id="input05" tooltip="Codigo Proyecto"/>
+
+                                                                      
+                                                                        <Text xmlns="sap.m" id="text2904"/>
+                                                                        <Text xmlns="sap.m" id="text25_1723542710"/>
+                                                                        <Text xmlns="sap.m" id="text26_1723542427"/>
+                                                                        <Text xmlns="sap.m" id="text276007"/>
+                                                                        <Text xmlns="sap.m" id="text25058"/>
+                                                                        <Text xmlns="sap.m" id="text25059"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1723540204030"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725015072"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_1702354299"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                            
+                                                        </items>
+                                            
+                                                        <columns>
+                                            
+                                                            <Column id="column0_1727948918033">
+                                            
+                                                                <header>
+                                            
+                                                                    <Title xmlns="sap.m" text="Otros Servicios" id="title45"/>
+                                            
+                                                                </header>
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column1_1727948918033">
+                                            
+                                                            </Column>
+                                            
+                                                       
+                                                          
+                                                            <Column id="column2_1727948918033">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column4_1727948937547">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column5_1727948940622">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column7_1727948946436">
+                                            
+                                                            </Column>
+                                     
+                                            
+                                                            <Column id="column6_1727948943601">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column8_1727948948989">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column11_1727948977071">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column9_1727948952449">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column10_1727948956089">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column3_1727948934250">
+                                            
+                                                            </Column></columns></Table>
+                                             </ScrollContainer>
+                                                </items>
+                                            
+                                            </FlexBox>
+                                            
+                                            <FlexBox width="100%" id="box0_1727950351451">
+                                            
+                                                <items>
+                                            
+                                                    <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727950359288" width="2000px">
+                                            
+                                                        <items>
+                                            
+                                                              <ColumnListItem id="item0_1724399567964">
+                                                                <cells>
+                                                                   <Select xmlns="sap.m" id="select2_17325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item4576"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+
+
+                                                                        
+                                                                        <Select xmlns="sap.m" id="seect488" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item15861"/>
+                                                                 </items>
+                                                                            
+                                                               </Select>
+                                                                         <Text xmlns="sap.m" text="" id="text27_1728792"/>
+                                                                       
+                                                                <Input xmlns="sap.m" id="input55605"/>
+                                                                    
+                                                                      <Text xmlns="sap.m" id="text2943"/>
+                                                                        <Text xmlns="sap.m" id="text25_17235440710"/>
+                                                                        <Text xmlns="sap.m" id="text26_172354246727"/>
+                                                                        <Text xmlns="sap.m" id="text27677"/>
+                                                                        <Text xmlns="sap.m" id="text25578"/>
+                                                                        <Text xmlns="sap.m" id="text25597"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_17235424430"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725152572"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235452299"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                            <ColumnListItem id="item1_1724399587539">
+                                                                <cells>
+                                                                  <Select xmlns="sap.m" id="select2_132785367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item4541476"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                       
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect4144" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item154161"/>
+                                                                                </items>
+
+                                                                        
+                                                                            
+                                                                        </Select>
+
+
+                                                                          <Text xmlns="sap.m" text="" id="text27_17241792"/>
+
+                                                                           <Input xmlns="sap.m" id="input054645"/>
+
+                                                                        <Text xmlns="sap.m" id="text2947"/>
+                                                                        <Text xmlns="sap.m" id="text25_17235424010"/>
+                                                                        <Text xmlns="sap.m" id="text26_17235467727"/>
+                                                                        <Text xmlns="sap.m" id="text2767527"/>
+                                                                        <Text xmlns="sap.m" id="text2418"/>
+                                                                        <Text xmlns="sap.m" id="text25459"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1777235424030"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1724551572"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235475299"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                            
+                                                        </items>
+                                            
+                                                        <columns>
+                                            
+                                                            <Column id="column0_1727950359285">
+                                            
+                                                                <header>
+                                        
+                                             <Title xmlns="sap.m" text="Gastos de viaje" id="title4145"/>
+
+                                                                </header>
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column7_1727950403610">
+                                            
+                                                                <header>
+                                            
+                                                                </header>
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column4_1727950396824">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column9_1727950408140">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column10_1727950410822">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column6_1727950401522">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column12_1727950435214">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column8_1727950405901">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column5_1727950399522">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column3_1727950372051">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column1_1727950359287">
+                                            
+                                                            </Column>
+                                            
+                                                            <Column id="column2_1727950359288">
+                                            
+                                                            </Column></columns></Table>
+                                            
+                                                </items>
+                                            
+                                            </FlexBox>
+
+  <FlexBox width="100%" id="box0_17218154429" class="sapUiTinyMargin">
                             
                                                 <ScrollContainer id="scroll_containe3" width="100%">
-                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" class="sapUiLargeMarginTop">
+                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" class="sapUiLargeMarginTop" width="2000px">
                                                         <headerToolbar>
                                                             <Toolbar id="toolbr03">
-                                                                <Title text="Recurso Externo" id="tituo500" class="customTextColor" width="2000px"/>
+                                                                <Title text="Recurso Externo" id="tituo500" class="customTextColor"/>
                                                                 <ToolbarSpacer id="d4005"/>
                                                             </Toolbar>
                                                         </headerToolbar>
@@ -1389,7 +1677,7 @@
                                                             <cells>
                                                                 <Select xmlns="sap.m" id="select2_172353950816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_172353957100815"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_172353957100815"/>
                                                                         </items>
                                                                     
                                                                 </Select>
@@ -1402,7 +1690,7 @@
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select16" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item14015"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item14015"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1424,7 +1712,7 @@
                                                                   
                                          <Select xmlns="sap.m" id="select2_172353956" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_172353595"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_172353595"/>
                                                                         </items>
                                                                     
                                                                 </Select>
@@ -1437,7 +1725,7 @@
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select6544" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item1745"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item1745"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1469,14 +1757,14 @@
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select2355" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="411477898652"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="411477898652"/>
                                                                 
                                                                         </items>
                                                                     
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select065443" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombrePerfil}" id="item4400415"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item4400415"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1494,149 +1782,10 @@
 
                                                                 </cells>
                                                             </ColumnListItem>
-                                                            <ColumnListItem id="item0_17243497730065">
-                                                                <cells>
-                                                                    <Title xmlns="sap.m" text="Otros Servicios" id="title4445"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item1_17243977745476">
-                                                                <cells>
-                                                               <Select xmlns="sap.m" id="select2_13253067" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item451067"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                      
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect10204" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item15610101"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                    <Text xmlns="sap.m" text="" id="text27_1727910"/>
-
-                                                            <Input xmlns="sap.m" id="input05545" tooltip="Codigo Proyecto"/>
-
-
-                                                                        <Text xmlns="sap.m" id="text2910"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723542407100"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723246701727"/>
-                                                                        <Text xmlns="sap.m" id="text2717"/>
-                                                                        <Text xmlns="sap.m" id="text2508"/>
-                                                                        <Text xmlns="sap.m" id="text25519"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1723542130"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17251502"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235410"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item2_1724397822">
-                                                                <cells>
-                                                                     <Select xmlns="sap.m" id="select2_132054367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item45460"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                        
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect40414" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item17404561"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-
-                                                                     <Text xmlns="sap.m" text="" id="text27_17024792"/>
-                                                                
-                                                                     <Input xmlns="sap.m" id="input055287"/>
-
-                                                                        <Text xmlns="sap.m" id="text294004"/>
-                                                                        <Text xmlns="sap.m" id="text25_172340542710"/>
-                                                                        <Text xmlns="sap.m" id="text26_17235042427"/>
-                                                                        <Text xmlns="sap.m" id="text27600407"/>
-                                                                        <Text xmlns="sap.m" id="text2504058"/>
-                                                                        <Text xmlns="sap.m" id="text2505940"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1723540200004030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1724050015072"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_170235429409"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item3_17243879000032">
-                                                                <cells>
-                                                                                                                
-                                                               <Title xmlns="sap.m" text="Gastos de viaje" id="title400145"/>
-
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item0_172439956007964">
-                                                                <cells>
-                                                                   <Select xmlns="sap.m" id="select2_1725367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item455276"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                        
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect48588" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item15868251"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-
-                                                                <Text xmlns="sap.m" text="" id="text27_172852792"/>
-                                                                 <Input xmlns="sap.m" id="input0555436287"/>
-
-
-                                                                        <Text xmlns="sap.m" id="text8692943"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235465340710"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354256346727"/>
-                                                                        <Text xmlns="sap.m" id="text27656377"/>
-                                                                        <Text xmlns="sap.m" id="text255765638"/>
-                                                                        <Text xmlns="sap.m" id="text2556397"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725635152572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235465352299"/>
-                                                                </cells>
-                                                            </ColumnListItem>
-                                                            <ColumnListItem id="item1_172439965587539">
-                                                                <cells>
-                                                                  <Select xmlns="sap.m" id="select2_132785365367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                            <items>
-                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item454221476"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-                                                                       
-
-                                                                        <Select xmlns="sap.m" id="seect415675444" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item188854161"/>
-                                                                                </items>
-                                                                            
-                                                                        </Select>
-
-                                                                 <Text xmlns="sap.m" text="" id="text27_1724122792"/>
-
-                                                                  <Input xmlns="sap.m" id="input05528856877"/>
-                                                                 
-                                                                        <Text xmlns="sap.m" id="text2945567"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723542401550"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354677545427"/>
-                                                                        <Text xmlns="sap.m" id="text2767544427"/>
-                                                                        <Text xmlns="sap.m" id="text24148"/>
-                                                                        <Text xmlns="sap.m" id="text25454744449"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_1777230"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17245544572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_23545299"/>
-                                                                </cells>
-                                                            </ColumnListItem>
+                                                   
+                                                           
+                                                
+                                                           
                                                         </items>
                                                         <columns>
                                                             <Column id="column3_172221815314201">
@@ -1711,7 +1860,455 @@
                                             <items/>
                                             </FlexBox>
 
-                             <FlexBox width="100%" id="box0_17254429" class="sapUiLargeMarginTop">
+
+
+
+
+                        <FlexBox width="100%" id="box0_1727953252765">
+
+
+                            <items>
+
+
+                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727953262177" width="2000px">
+
+
+                                    <items>
+
+
+                                     <ColumnListItem id="item1_17243977745476">
+                                                                <cells>
+                                                               <Select xmlns="sap.m" id="select2_13253067" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item451067"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                      
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect10204" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item15610101"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                    <Text xmlns="sap.m" text="" id="text27_1727910"/>
+
+                                                            <Input xmlns="sap.m" id="input05545" tooltip="Codigo Proyecto"/>
+
+
+                                                                        <Text xmlns="sap.m" id="text2910"/>
+                                                                        <Text xmlns="sap.m" id="text25_1723542407100"/>
+                                                                        <Text xmlns="sap.m" id="text26_1723246701727"/>
+                                                                        <Text xmlns="sap.m" id="text2717"/>
+                                                                        <Text xmlns="sap.m" id="text2508"/>
+                                                                        <Text xmlns="sap.m" id="text25519"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1723542130"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17251502"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235410"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                            <ColumnListItem id="item2_1724397822">
+                                                                <cells>
+                                                                     <Select xmlns="sap.m" id="select2_132054367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item45460"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                        
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect40414" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item17404561"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+
+                                                                     <Text xmlns="sap.m" text="" id="text27_17024792"/>
+                                                                
+                                                                     <Input xmlns="sap.m" id="input055287"/>
+
+                                                                        <Text xmlns="sap.m" id="text294004"/>
+                                                                        <Text xmlns="sap.m" id="text25_172340542710"/>
+                                                                        <Text xmlns="sap.m" id="text26_17235042427"/>
+                                                                        <Text xmlns="sap.m" id="text27600407"/>
+                                                                        <Text xmlns="sap.m" id="text2504058"/>
+                                                                        <Text xmlns="sap.m" id="text2505940"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1723540200004030"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1724050015072"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_170235429409"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+
+                                    </items>
+
+
+                                    <columns>
+
+
+                                        <Column id="column3_1727953316919">
+
+
+                                            <header>
+                                <Title xmlns="sap.m" text="Otros Servicios" id="title4445"/>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column11_1727953342801">
+
+
+                                        </Column>
+
+
+                                        <Column id="column8_1727953333880">
+
+
+                                        </Column>
+
+
+                                        <Column id="column10_1727953340239">
+
+
+                                        </Column>
+
+
+                                        <Column id="column12_1727953346004">
+
+
+                                        </Column>
+
+
+                                        <Column id="column9_1727953335905">
+
+
+                                        </Column>
+
+
+                                        <Column id="column7_1727953331492">
+
+
+                                        </Column>
+
+
+                                        <Column id="column0_1727953262176">
+
+
+                                        </Column>
+
+
+                                        <Column id="column6_1727953328949">
+
+
+                                        </Column>
+
+
+                                        <Column id="column4_1727953320366">
+
+
+                                        </Column>
+
+
+                                        <Column id="column5_1727953325886">
+
+
+                                        </Column>
+
+
+                                        <Column id="column1_1727953262176">
+
+
+                                            <header>
+
+
+                                                <Label text="Header 2" id="label1_1727953262176"/>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column2_1727953262177">
+
+
+                                            <header>
+
+
+                                                <Label text="Header 3" id="label2_1727953262177"/>
+
+
+                                            </header>
+
+
+                                        </Column></columns></Table>
+
+
+                            </items>
+
+
+                        </FlexBox>
+
+
+                        <FlexBox width="100%" id="box1_1727953468615">
+
+
+                            <items>
+
+
+                                <Table noDataText="Drop column list items here and columns in the area above" id="table1_1727953477171" width="2000px">
+
+
+                                    <items>
+
+
+                                      <ColumnListItem id="item0_172439956007964">
+                                                                <cells>
+                                                                   <Select xmlns="sap.m" id="select2_1725367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item455276"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                        
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect48588" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item15868251"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+
+                                                                <Text xmlns="sap.m" text="" id="text27_172852792"/>
+                                                                 <Input xmlns="sap.m" id="input0555436287"/>
+
+
+                                                                        <Text xmlns="sap.m" id="text8692943"/>
+                                                                        <Text xmlns="sap.m" id="text25_17235465340710"/>
+                                                                        <Text xmlns="sap.m" id="text26_172354256346727"/>
+                                                                        <Text xmlns="sap.m" id="text27656377"/>
+                                                                        <Text xmlns="sap.m" id="text255765638"/>
+                                                                        <Text xmlns="sap.m" id="text2556397"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725635152572"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235465352299"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                            <ColumnListItem id="item1_172439965587539">
+                                                                <cells>
+                                                                  <Select xmlns="sap.m" id="select2_132785365367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item454221476"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+                                                                       
+
+                                                                        <Select xmlns="sap.m" id="seect415675444" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                    <items>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item188854161"/>
+                                                                                </items>
+                                                                            
+                                                                        </Select>
+
+                                                                 <Text xmlns="sap.m" text="" id="text27_1724122792"/>
+
+                                                                  <Input xmlns="sap.m" id="input05528856877"/>
+                                                                 
+                                                                        <Text xmlns="sap.m" id="text2945567"/>
+                                                                        <Text xmlns="sap.m" id="text25_1723542401550"/>
+                                                                        <Text xmlns="sap.m" id="text26_172354677545427"/>
+                                                                        <Text xmlns="sap.m" id="text2767544427"/>
+                                                                        <Text xmlns="sap.m" id="text24148"/>
+                                                                        <Text xmlns="sap.m" id="text25454744449"/>
+                                                                        <Text xmlns="sap.m" text="" id="text30_1777230"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17245544572"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_23545299"/>
+                                                                </cells>
+                                                            </ColumnListItem>
+
+                                    </items>
+
+
+                                    <columns>
+
+
+                                        <Column id="column13_1727953477166">
+
+
+                                            <header>
+
+
+           
+                                                                                                                
+                                                               <Title xmlns="sap.m" text="Gastos de viaje" id="title400145"/>
+
+                                                        
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column0_1727955320651">
+
+
+                                            <header>
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column14_1727953477167">
+
+
+                                            <header>
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column9_1727955353197">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column1_1727955323593">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column5_1727955342170">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column8_1727955350313">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column4_1727955339745">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column7_1727955348070">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column6_1727955344912">
+
+
+                                            <header>
+
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column3_1727955329344">
+
+
+                                            <header>
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column2_1727955326936">
+
+
+                                            <header>
+
+
+
+                                            </header>
+
+
+                                        </Column>
+
+
+                                        <Column id="column15_1727953477170">
+
+
+                                            <header>
+
+
+
+                                            </header>
+
+
+                                        </Column></columns></Table>
+
+
+                            </items>
+
+
+                        </FlexBox><FlexBox width="100%" id="box0_17254429" class="sapUiLargeMarginTop">
                                                 <ScrollContainer id="scroll_containe4" width="100%">
 
                         <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724413700665" class="" width="2000px">
@@ -1748,7 +2345,7 @@
 
                                         <Select xmlns="sap.m" id="select0_1724421301612" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                 <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item1_1724421301610"/>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item1_1724421301610"/>
 
                                                 </items>
 
@@ -1780,7 +2377,7 @@
 
                                     <Select xmlns="sap.m" id="select1_1724421323918" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                 <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item3_1724421323916"/>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item3_1724421323916"/>
 
                                             </items>
                                     </Select>
@@ -1805,81 +2402,10 @@
                                 </ColumnListItem>
 
 
-                                <ColumnListItem id="item5">
+                            
 
 
-                                    <cells>
-
-
-                                        <Title xmlns="sap.m" id="title60" text="Licencias "/>
-
-
-                                    </cells>
-
-
-                                </ColumnListItem>
-
-
-                                <ColumnListItem id="item7">
-
-
-                                <cells>
-
-  
-                                    <Select xmlns="sap.m" id="select2_1724421568007" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item8_1724421568005"/>
-
-                                            </items>
-
-
-                                        
-
-
-                                    </Select>
-
-  
-                                    <Text xmlns="sap.m" id="text72_1724608268260"/>
-
-  
-                                    <Input xmlns="sap.m" id="input1_1724608279183"/>
-
-
-                                </cells>
-
-
-                                </ColumnListItem>
-
-
-                                <ColumnListItem id="item6_1724421342842">
-
-
-                                <cells>
-
-
-                                    <Select xmlns="sap.m" id="select3_1724421586106" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreVertical}" id="item10"/>
-
-                           </items>
-
-
-                                        
-
-
-                                    </Select>
-
-
-                                    <Text xmlns="sap.m" id="text73_1724608398319"/>
-
-
-                                    <Input xmlns="sap.m" id="input2"/>
-
-
-                                </cells>
-
-
-                                </ColumnListItem>
+                        
 
 
                             </items>
@@ -2072,7 +2598,201 @@
                                 <items>
                                     <Input xmlns="sap.m" value="Value" id="input0_1724608249163"/>
                                 </items>
-                                </FlexBox> 
+                                </FlexBox>
+
+                        
+
+                             <FlexBox width="100%" id="box0_1727955568380">
+
+                        
+
+                                 <items>
+
+                        
+
+                                     <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="2000px">
+
+                        
+
+                                         <items>
+
+                        
+
+                                            <ColumnListItem id="item7">
+
+
+                                <cells>
+
+  
+                                    <Select xmlns="sap.m" id="select2_1724421568007" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_1724421568005"/>
+
+                                            </items>
+
+
+                                        
+
+
+                                    </Select>
+
+  
+                                    <Text xmlns="sap.m" id="text72_1724608268260"/>
+
+  
+                                    <Input xmlns="sap.m" id="input1_1724608279183"/>
+
+
+                                </cells>
+
+
+                                </ColumnListItem>
+
+
+                                <ColumnListItem id="item6_1724421342842">
+
+
+                                <cells>
+
+
+                                    <Select xmlns="sap.m" id="select3_1724421586106" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item10"/>
+
+                           </items>
+
+
+                                        
+
+
+                                    </Select>
+
+
+                                    <Text xmlns="sap.m" id="text73_1724608398319"/>
+
+
+                                    <Input xmlns="sap.m" id="input2"/>
+
+
+                                </cells>
+
+
+                                </ColumnListItem>
+
+                        
+
+                                         </items>
+
+                        
+
+                                         <columns>
+
+                        
+
+                                             <Column id="column0_1727955577123">
+
+                        
+
+                                                 <header>
+
+                        
+
+                                                  <Title xmlns="sap.m" id="title65680" text="Licencias "/>
+                        
+
+                                                 </header>
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column3_1727955658552">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column8_1727955671439">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column4_1727955660992">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column10_1727955676540">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column9_1727955674062">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column7_1727955668700">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column6_1727955665646">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column5_1727955663538">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column1_1727955577123">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column2_1727955577123">
+
+                        
+
+                                             </Column></columns></Table>
+
+                        
+
+                                 </items>
+
+                        
+
+                             </FlexBox> 
 
 
 
@@ -3548,8 +4268,8 @@
                     <OverflowToolbar id="toolba1">
                         <ToolbarSpacer id="25432"/>
 
-                        <Button id="564433" type="Accept" text="Accept" press="onSave"/>
-                        <Button id="15254574" type="Reject" text="Reject" press="onClearFields"/>
+                        <Button id="564433" type="Accept" text="Enviar" press="onSave"/>
+                        <Button id="15254574" type="Reject" text="Borrar" press="onClearFields"/>
                     </OverflowToolbar>
                 </footer>
 </Page>

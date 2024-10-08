@@ -79,6 +79,8 @@ modules:
       commands:
         - npm install
         - npm run build:cf
+        - npm ci
+        - npm run build
       supported-platforms:
         []
 
@@ -97,6 +99,23 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
       - name: DatosCdo-auth
+      - name: datosCdo-html5-runtime
+
+  - name: datosCdo-app-deployer
+    type: com.sap.application.content
+    path: gen
+    requires:
+      - name: datosCdo-app-deployer
+        parameters:
+          content-target: true
+      - name: datosCdo_html_repo_host
+    build-parameters:
+      build-result: app/
+      requires:
+        - name: project1
+          artifacts:
+            - project1.zip
+          target-path: app/
 resources:
   - name: datosCdo-db
     type: com.sap.xs.hdi-container
@@ -145,6 +164,11 @@ resources:
       service: html5-apps-repo
       service-name: datosCdo-html5-app-host-service
       service-plan: app-host
+  - name: datosCdo-html5-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
