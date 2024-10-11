@@ -73,6 +73,56 @@ sap.ui.define([
 
       //--------------------------------------METODOS TRAER INFORMACION ---------------------------------------
       //--------metodo traerdatos----------------- 
+      highlightControls: function() {
+        const controlsToHighlight = [
+            this.byId("input0"),
+            this.byId("input1"),
+            this.byId("int_clienteFun"),
+            this.byId("id_Cfactur"),
+            this.byId("id_Cfactur"),
+            this.byId("idObje"),
+            this.byId("idAsunyRestri"),
+            this.byId("box_multiJuridica"),
+            this.byId("box_pluriAnual"),
+            this.byId("slct_area"),
+            this.byId("slct_Jefe"),
+            this.byId("slct_verti"),
+            this.byId("slct_inic"),
+            this.byId("idNatu"),
+            this.byId("selct_Amrecp"),
+            this.byId("selc_ejcu"),
+            this.byId("selc_Segui"),
+            this.byId("slct_client"),
+            this.byId("date_inico"),
+            this.byId("date_fin"),
+            this.byId("input0"),
+            this.byId("input1"),
+            this.byId("box_pluriAnual"),
+            this.byId("id_Cfactur"),
+            this.byId("box_multiJuridica")
+
+            // Agrega más controles aquí según sea necesario
+        ];
+    
+        // Establecer el ValueState a Warning (amarillo)
+        controlsToHighlight.forEach(control => {
+            if (control && control.setValueState) {
+                control.setValueState("Success");
+            }
+        });
+    
+        // Revertir el ValueState después de 2 segundos
+        setTimeout(() => {
+            controlsToHighlight.forEach(control => {
+                if (control && control.setValueState) {
+                    control.setValueState("None");
+                }
+            });
+        }, 2000); // 2000 ms = 2 segundos
+    },
+    
+    
+
 
       _onObjectMatched: async function (oEvent) {
 
@@ -118,8 +168,12 @@ sap.ui.define([
             this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
             this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
             this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
-            this.byId("date_inico").setDateValue(oData.fechaInicio ? new Date(oData.fechaInicio) : null);
-            this.byId("date_fin").setDateValue(oData.fechaInicio ? new Date(oData.fechaFin) : null);
+            this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
+            this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
+            this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
+            this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
+            this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
+            this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
             this.byId("input0").setValue(oData.codigoProyect);
             this.byId("input1").setValue(oData.nameProyect);
             this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
@@ -130,6 +184,7 @@ sap.ui.define([
             await this.leerProveedor(sProjectID);
             await this.leerFacturacion(sProjectID);
             await this.leerClientFactura(sProjectID);
+            await this.leerRecursos(sProjectID);
 
 
             // Cambiar el texto del botón de "Enviar" a "Guardar"
@@ -148,6 +203,8 @@ sap.ui.define([
           console.error("Error al obtener los datos del proyecto:", error);
           sap.m.MessageToast.show("Error al cargar los datos del proyecto");
         }
+        this.highlightControls(); // Llama al método para resaltar los controles
+
       },
       //----------------------------------------------
 
@@ -296,10 +353,15 @@ sap.ui.define([
 
               // Asegúrate de que el índice es correcto para cada input
               if (aCells.length > 1) {
-                aCells[0].setValue(Facturacion.fechaEstimida || ""); // Input para valueCondi
-                aCells[1].setValue(Facturacion.descripcionHito || ""); // Input para valueProvee
-                aCells[2].setValue(Facturacion.facturacion || ""); // Input para valueProvee
-
+                if (aCells[0] instanceof sap.m.Input) {
+                  aCells[0].setDateValue(Facturacion.fechaEstimida || ""); // Input para fecha estimada
+              }
+              if (aCells[1] instanceof sap.m.Input) {
+                aCells[1].setValue(Facturacion.descripcionHito || ""); // Input para descripción
+            }
+            if (aCells[2] instanceof sap.m.Input) {
+                aCells[2].setValue(Facturacion.facturacion || ""); // Input para facturación
+            }
               }
 
 
@@ -452,9 +514,58 @@ sap.ui.define([
 
 
 
-      leerRecursos: async function (projectID) {
-
-      },
+          leerRecursos: async function (projectID) {
+            var sUrl = `/odata/v4/datos-cdo/RecursosInternos?$filter=datosProyect_ID eq ${projectID}`;
+            try {
+                const response = await fetch(sUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Network response was not ok: ' + errorText);
+                }
+        
+                const oData = await response.json();
+                console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
+        
+                var oTable = this.byId("table_dimicFecha");
+                var aItems = oTable.getItems();
+        
+                // Verificar si hay datos en oData.value
+                if (oData.value && oData.value.length > 0) {
+                    var Recurso = oData.value[0]; // Toma solo el primer recurso
+        
+                    // Asegúrate de que la tabla tenga al menos una fila
+                    if (aItems.length > 0) {
+                        var oItem = aItems[0]; // Selecciona solo la primera fila
+                        var aCells = oItem.getCells();
+        
+                        // Asegúrate de que el índice es correcto para cada input/select
+                        if (aCells.length > 1) {
+                            aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                            aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                            aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                            aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                            aCells[4].setText(Recurso.PMJ || ""); // Para el Input (PMJ)
+                            aCells[5].setText(Recurso.total || ""); // Para el Input (Cantidad)
+                          
+                          }
+                    }
+                } else {
+                    console.log("No hay datos de recursos internos disponibles.");
+                }
+        
+            } catch (error) {
+                console.error("Error al obtener los datos de Recursos Internos:", error);
+                sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+            }
+        },
+        
 
       //---------------------------------------------------------------------------------
 
@@ -839,6 +950,19 @@ sap.ui.define([
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
 
+
+ // Instanciar el formateador de fechas
+ var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+  pattern: "yyyy-MM-dd'T'HH:mm:ss" // Formato requerido por OData
+});
+
+// Formatear las fechas a texto en el formato correcto
+const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
+const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
+
+
+
+
         // Acceder a los controles Select
         const sSelectedKey = this.byId("idNatu").getSelectedKey();
         const sSelecKeyA = this.byId("slct_area").getSelectedKey();
@@ -846,6 +970,7 @@ sap.ui.define([
         const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
         const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
         const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
+        const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
         const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
 
@@ -902,21 +1027,30 @@ sap.ui.define([
           objetivoAlcance: sObjetivoAlcance,
           AsuncionesyRestricciones: sAsunyRestric,
           Vertical_ID: sSelectKeyVerti,
-          Fechainicio: sFechaIni,
-          FechaFin: sFechaFin,
+          Fechainicio: sFechaIniFormatted,
+          FechaFin: sFechaFinFormatted,
+          Seguimiento_ID: sSelectKeySegui,
+          EjecucionVia_ID : sSelectKeyEjcu,
+          AmReceptor_ID: sSelectKeyAmrep,
+          clienteFuncional_ID : sSelectKeyClienNuevo,
+          Estado: "Pendiente",
 
         };
 
 
-
+/*
 // Solo añadir Fechainicio y FechaFin si tienen un valor válido
 if (sFechaIni) {
   payload.Fechainicio = sFechaIni.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
+      console.log(sFechaFin);
+  //    console.log(Fechainicio);
+
 }
 
 if (sFechaFin) {
   payload.FechaFin = sFechaFin.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
-}
+
+}*/
 
 
 
@@ -2571,15 +2705,15 @@ for (let i = 0; i < aItems.length; i++) {
 
       //--------------Visible table Facturacion------------
       onSelectOpx: function (oEvent) {
-        var selectedItem = oEvent.getParameter("selectedItem").getKey();
-
+        var selectedItem = this.byId("slct_inic").getSelectedItem();
+        var selectedText = selectedItem.getText();
         console.log(selectedItem);
         var oTable = this.getView().byId("table0");
 
-        if (selectedItem === "Opex Servicios") {
-          oTable.setVisible(false);
-        } else {
+        if (selectedText === "Opex Servicios") {
           oTable.setVisible(true);
+        } else {
+          oTable.setVisible(false);
         }
       },
       //------------------------------------------------------

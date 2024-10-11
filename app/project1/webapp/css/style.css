@@ -28,4 +28,9 @@
     background-color: #dff0d8; /* Cambia este color al que prefieras */
   }
 
-
+  .highlight-border {
+    border: 1px solid yellow;
+    transition: border 0.5s ease-in-out;
+  }
+  
+  

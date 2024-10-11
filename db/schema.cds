@@ -26,13 +26,6 @@ type ProyectNaturaleza   : String enum {
     Opex_Servicios;
 };
 
-type proyectSeguimiento  : String enum {
-    Agile;
-    Mixto;
-    Waterfall;
-    Sin_Seguimiento;
-    Servicio;
-};
 
 type proyectEjecucionVia : String enum {
     Si;
@@ -108,7 +101,7 @@ entity DatosProyect {
         Estado                   : String;
         Fechainicio              : DateTime;
         FechaFin                 : DateTime;
-        clienteFuncional         : String;
+        clienteFuncional         : Association to clienteFuncional;
         TipoServicio             : Association to TipoServicio;
         Vertical                 : Association to Vertical;
         Naturaleza               : Association to Naturaleza;

@@ -7,7 +7,7 @@ module.exports = cds.service.impl(async function () {
 
   this.on('CREATE', 'DatosProyect', async (req) => {
 
-    const { codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID , Seguimiento_ID,EjecucionVia_ID, AmReceptor_ID , Vertical_ID  } = req.data;
+    const { codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID , Seguimiento_ID,EjecucionVia_ID, AmReceptor_ID , Vertical_ID ,clienteFuncional_ID  } = req.data;
 
 
     try {
@@ -16,7 +16,7 @@ module.exports = cds.service.impl(async function () {
         codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones,
 
         Naturaleza: { ID: Naturaleza_ID }, Iniciativa: { ID: Iniciativa_ID }, Area: { ID: Area_ID }, jefeProyectID: { ID: jefeProyectID_ID }, Seguimiento: {ID: Seguimiento_ID }, 
-        EjecucionVia: { ID: EjecucionVia_ID }, AmReceptor: {ID: AmReceptor_ID},  Vertical: {ID: Vertical_ID}
+        EjecucionVia: { ID: EjecucionVia_ID }, AmReceptor: {ID: AmReceptor_ID},  Vertical: {ID: Vertical_ID}, clienteFuncional: { ID: clienteFuncional_ID }
       });
 
 
