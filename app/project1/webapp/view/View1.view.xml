@@ -17,7 +17,7 @@
             <ObjectHeader id="oh1" responsive="true" fullScreenOptimized="true" intro="Comite de oportunidades" title="Ficha Solicitud Aprobación Proyecto - Comité de Oportunidades" numberUnit="" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header">
                         <ObjectAttribute id="dddtg" title="Email address" text="DeniseSmith@sap.com" active="true"/>
                         <ObjectAttribute id="nolmd" title="Office Phone" text="+33 6 453 564"/>
-                        <ObjectAttribute id="unam" title="Functional Area" text="Development"/>
+                        <ObjectAttribute id="unam" title="Area" text="Development"/>
                         <statuses>
                             <ObjectStatus id="23437" title="Approval" text="Pending" state="Warning"/>
                         </statuses>
@@ -26,7 +26,7 @@
                             <ObjectMarker id="23443" type="Favorite"/>
                         </markers>
             <headerContainer>
-                <IconTabBar id="itb1333" selectedKey="key3" upperCase="true">
+                <IconTabBar id="itb1333" selectedKey="key2" upperCase="true">
                     <items>
                     <!--    <IconTabFilter id="234h" text="Info" count="" key="key1">
                             <l:VerticalLayout id="274143" class="sapUiContentPadding" width="100%">
@@ -37,8 +37,6 @@
                         </IconTabFilter>-->
 
                         <IconTabFilter id="idIniu" text="Activities" count="" key="key2" class=".miClase">
-
-                            <FlexBox width="100%" id="box0_14728022858"/>
                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel1">
                                 <headerToolbar>
                                     <Toolbar id="toolbar3341">
@@ -128,7 +126,7 @@
                                                 <items>
                                                     <ColumnListItem type="Active" id="item8">
                                                         <cells>
-                                                            <Select xmlns="sap.m" id="slct_inic" change="onSelectIniMethod" selectedKey="{TipoIniciativa>valueinicia}" forceSelection="false"  items="{/TipoIniciativa}">
+                                                            <Select xmlns="sap.m" id="slct_inic" change="onSelectIniMethod" selectedKey="{TipoIniciativa>valueinicia}" forceSelection="false" items="{/TipoIniciativa}">
                                                                 <items>
                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreIniciativa}" id="item159"/>
                                                                 </items>
@@ -829,12 +827,12 @@
                                                                             
                                                                         </Select>
                                                                         <Input xmlns="sap.m" value="" id="input0_1723542368780"/>
-                                                                        <Text xmlns="sap.m" id="pmj3"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723542407010"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723542427727"/>
-                                                                        <Text xmlns="sap.m" id="text27"/>
-                                                                        <Text xmlns="sap.m" id="text28"/>
-                                                                        <Text xmlns="sap.m" id="text29"/>
+                                                                        <Text xmlns="sap.m" text="" id="pmj3"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_1723542407010"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_1723542427727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text27"/>
+                                                                        <Text xmlns="sap.m" text="" id="text28"/>
+                                                                        <Text xmlns="sap.m" text="" id="text29"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723542463030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1723542471572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_1723542481599"/>
@@ -861,12 +859,12 @@
                                                                             
                                                                         </Select>
                                                                         <Input xmlns="sap.m" value="" id="input0_17235428780"/>
-                                                                        <Text xmlns="sap.m" id="pmj5"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723407010"/>
-                                                                        <Text xmlns="sap.m" id="text26_17235427727"/>
-                                                                        <Text xmlns="sap.m" id="text334d"/>
-                                                                        <Text xmlns="sap.m" id="text2t56"/>
-                                                                        <Text xmlns="sap.m" id="text29666"/>
+                                                                        <Text xmlns="sap.m" text="" id="pmj5"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_1723407010"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_17235427727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text334d"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2t56"/>
+                                                                        <Text xmlns="sap.m" text="" id="text29666"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_172463030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_172351572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_172341599"/>                                                        
@@ -958,7 +956,8 @@
                                                 <FlexBox width="100%" id="box0_1727879568594">
                                                     <items>
                                                       <ScrollContainer id="scroll_container23" width="100%" height="auto">
-                                            
+                                                        
+
                                                         <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="2000px">
                                                             <items>
                                                                  <ColumnListItem id="item3_1723544157941">
@@ -1057,6 +1056,8 @@
                                                                 </ScrollContainer>
                                                     </items>
                                                 </FlexBox>
+
+
                                                 <FlexBox width="100%" id="box0_1727879817594">
                                                    
                                                     <items>
@@ -1192,17 +1193,20 @@
                                                 </FlexBox>
                                             
                                             <FlexBox width="100%" id="box0_1721815443829" class="sapUiTinyMargin">
-                            
-                                                <ScrollContainer id="scroll_containe2" width="100%">
-                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaConsuExter" class="sapUiLargeMarginTop">
+                                            <items>
+                                                <ScrollContainer id="scroll_containe2" width="100%" height="auto">
+
+                                                <Button id="d4855ynh" text="Añadir Fila" press="onAddRowPress('tablaConsuExter')" class="sapUiLargeMarginTop"/>
+
+                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaConsuExter" width="2000px">
                                                         <headerToolbar>
                                                             <Toolbar id="toolbr3">
-                                                                <Title text="Consumo Externo" id="tituo5" class="customTextColor" width="2000px"/>
+                                                                <Title text="Consumo Externo" id="tituo5" class="customTextColor"/>
                                                                 <ToolbarSpacer id="d4ds5"/>
                                                             </Toolbar>
                                                         </headerToolbar>
                                                         <items>
-                                                            <ColumnListItem type="Active" id="item1_1721815314200">
+                                                            <ColumnListItem id="item1_1721815314200">
                                                             <cells>
                                                                 <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
@@ -1382,14 +1386,14 @@
                                                         </columns>
                                                     </Table>
                                                 </ScrollContainer>
-                                            <items/>
-                                            </FlexBox>
+                                            </items>
+                                        </FlexBox>
                                             
                                             <FlexBox width="100%" id="box0_1727948724833">
                                             
                                                 <items>
 
-                                                  <ScrollContainer id="scroll_containe345" width="100%">
+                                                  <ScrollContainer id="scroll_containe345968" width="100%" height="auto">
 
                                             
                                                     <Table noDataText="Drop column list items here and columns in the area above" id="idOtroserConsu" width="2000px">
@@ -1532,9 +1536,11 @@
                                             
                                             </FlexBox>
                                             
-                                            <FlexBox width="100%" id="box0_1727950351451">
-                                            
+                                            <FlexBox id="box0_1727950351451" width="100%" height="auto">
+                                                         
                                                 <items>
+
+                                                <ScrollContainer id="scroll_containe345" width="100%" height="auto">
                                             
                                                     <Table noDataText="Drop column list items here and columns in the area above" id="idGastoViajeConsu" width="2000px">
                                             
@@ -1671,14 +1677,17 @@
                                             
                                                             </Column></columns></Table>
                                             
+                                              
+                                              </ScrollContainer>
                                                 </items>
-                                            
                                             </FlexBox>
 
-  <FlexBox width="100%" id="box0_17218154429" class="sapUiTinyMargin">
+                                 <FlexBox width="100%" id="box0_17218154429" class="sapUiTinyMargin">
                             
                                                 <ScrollContainer id="scroll_containe3" width="100%">
-                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" class="sapUiLargeMarginTop" width="2000px">
+                                          <Button id="d48155ynh" text="Añadir Fila" press="onAddRowPress('tablaRecExterno')" class="sapUiLargeMarginTop"/>
+
+                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" width="2000px">
                                                         <headerToolbar>
                                                             <Toolbar id="toolbr03">
                                                                 <Title text="Recurso Externo" id="tituo500" class="customTextColor"/>
@@ -1686,7 +1695,7 @@
                                                             </Toolbar>
                                                         </headerToolbar>
                                                         <items>
-                                                            <ColumnListItem type="Active" id="item1_17215314200">
+                                                            <ColumnListItem id="item1_17215314200">
                                                             <cells>
                                                                 <Select xmlns="sap.m" id="select2_172353950816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
@@ -1878,10 +1887,8 @@
 
 
                         <FlexBox width="100%" id="box0_1727953252765">
-
-
                             <items>
-
+                                <ScrollContainer id="scroll_containe345222" width="100%" height="auto">
 
                                 <Table noDataText="Drop column list items here and columns in the area above" id="idServiExterno" width="2000px">
 
@@ -1977,15 +1984,13 @@
 
                                         <Column id="column11_1727953342801">
 
-
                                         </Column>
 
 
-                                        <Column id="column8_1727953333880">
+                                    <Column id="column865420">
 
 
                                         </Column>
-
 
                                         <Column id="column10_1727953340239">
 
@@ -2041,7 +2046,7 @@
                                             <header>
 
 
-                                                <Label text="Header 2" id="label1_1727953262176"/>
+                                                <Label text="" id="label1_1727953262176"/>
 
 
                                             </header>
@@ -2056,15 +2061,16 @@
                                             <header>
 
 
-                                                <Label text="Header 3" id="label2_1727953262177"/>
+                                                <Label text="" id="label2_1727953262177"/>
 
 
                                             </header>
 
 
-                                        </Column></columns></Table>
+                                        </Column></columns>
+                                        </Table>
 
-
+                                </ScrollContainer>
                             </items>
 
 
@@ -2072,11 +2078,9 @@
 
 
                         <FlexBox width="100%" id="box1_1727953468615">
-
-
                             <items>
 
-
+                            <ScrollContainer id="scroll_containe341115" width="100%" height="auto">
                                 <Table noDataText="Drop column list items here and columns in the area above" id="idGastoRecuExter" width="2000px">
 
 
@@ -2105,11 +2109,11 @@
                                                                  <Input xmlns="sap.m" id="input0555436287"/>
 
 
-                                                                        <Text xmlns="sap.m" id="text8692943"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235465340710"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354256346727"/>
-                                                                        <Text xmlns="sap.m" id="text27656377"/>
-                                                                        <Text xmlns="sap.m" id="text255765638"/>
+                                                                        <Text xmlns="sap.m" text=" " id="text8692943"/>
+                                                                        <Text xmlns="sap.m" text=" " id="text25_17235465340710"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_172354256346727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text27656377"/>
+                                                                        <Text xmlns="sap.m" text="" id="text255765638"/>
                                                                         <Text xmlns="sap.m" id="text2556397"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725635152572"/>
@@ -2315,14 +2319,17 @@
                                             </header>
 
 
-                                        </Column></columns></Table>
+                                            </Column>
+                                        </columns>
+                                    </Table>
+                                </ScrollContainer>
+                           </items>
+                        </FlexBox>
 
+                        
+                        <FlexBox width="100%" id="box0_17254429" class="sapUiLargeMarginTop">
 
-                            </items>
-
-
-                        </FlexBox><FlexBox width="100%" id="box0_17254429" class="sapUiLargeMarginTop">
-                                                <ScrollContainer id="scroll_containe4" width="100%">
+                            <ScrollContainer id="scroll_containe4" width="100%" height="auto">
 
                         <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724413700665" class="" width="2000px">
                                                      <headerToolbar>
@@ -2593,9 +2600,7 @@
                                 
                                 </Table>
                                 </ScrollContainer>
-                                <items>
-                                    <Input xmlns="sap.m" value="Value" id="input0_1724608249163"/>
-                                </items>
+
                                 </FlexBox>
 
                         
@@ -2799,7 +2804,9 @@
 
                                            
                                         </Panel>
-                                    </IconTabFilter><IconTabFilter id="coste652" text="Resumen Costes y Margen" count="" key="key3">
+                                    </IconTabFilter>
+                                    
+                                    <IconTabFilter id="coste652" text="Resumen Costes y Margen" count="" key="key3">
                     
                     <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0">
                         <headerToolbar>
@@ -3134,14 +3141,11 @@
                             </content>
                         </Panel>
                     
-                    </IconTabFilter><IconTabFilter id="coste6552" text="Resumen Ingresos Vs costes" count="" key="key4">
-                    
-                    
                     </IconTabFilter>
-                    </items>
-                <content>
                     
-                <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0_1725710852901">
+                    <IconTabFilter id="coste6552" text="Resumen Ingresos Vs costes" count="" key="key4">
+                    
+                     <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0_1725710852901">
                     
                     <headerToolbar>
                     
@@ -3279,18 +3283,72 @@
 
                  
 
-        <FlexBox width="3500px" id="box0_1728586490864">
-         
-          <items>
+                       <FlexBox width="3500px" id="box0_1728586490864">
+                
+                     <items>
                 
                 <HBox width="3500px" id="hbox0" class="sapUiMediumMargin">
 
                         <Title text="Tipo Servicios" id="gogdfgd55645d" level="H1" class="sapUiLargeMarginTop customTextColor"/>
+
+                        <Table ariaLabelledBy="__xmlview0--label017257878978979865736747" noDataText="Drop column list items here and columns in the area above" id="table0_1729085670197">
+
+
+                            
+                                 <headerToolbar>
+                                    <Toolbar id="hijo567">
+                                        <Title id="Gtof5d91211087" text="" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+
+                            <items>
+
+                                <ColumnListItem type="Active" id="item0_1729085670195">
+
+                                    <cells>
+
+                                        <Text text="" id="text66_1729085670190"/>
+
+                                        <Text text="Total" id="text67_1729085670192"/>
+
+                                    </cells>
+
+                                </ColumnListItem>
+
+                            </items>
+
+                            <columns>
+
+                                  <Column id="column0_1725865736987897747">
+                    
+                                    <header>
+                    
+                                        <Label text="Vertical" id="label7362355555v47"/>
+                    
+                                    </header>
+                    
+                                </Column>
+                    
+
+                             <Column id="column0_17258686786745">
+                    
+                                    <header>
+                    
+                                        <Label text="Tipo de Servicios" id="label7362355555747"/>
+                    
+                                    </header>
+                    
+                                </Column>
+                    
+                            </columns>
+                            
+                            </Table>
                         <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725865736748">
                     
                                                              <headerToolbar>
                                                                 <Toolbar id="dhyffespew">
-                                                                    <Title id="2ffrito" text="Ingresos" level="H2" class="myText2"/>
+                                                                    <Title id="2ffrito" text="" level="H2" class="myText2"/>
                                                                 </Toolbar>
                                                             </headerToolbar>
 
@@ -3304,7 +3362,6 @@
                                 <ColumnListItem type="Active" id="item0_1725865736747">
                     
                                     <cells>
-                                      <Text text="Total" id="text6735865736778567528242" width="100px"/>
 
 
                                         <Text text="" id="text6735865736742"/>
@@ -3328,27 +3385,7 @@
 
                     
                             <columns>
-                             <Column id="column0_1725865736987897747">
-                    
-                                    <header>
-                    
-                                        <Label text="Vertical" id="label017257878978979865736747"/>
-                    
-                                    </header>
-                    
-                                </Column>
-                    
-
-                             <Column id="column0_17258686786745">
-                    
-                                    <header>
-                    
-                                        <Label text="Tipo de Servicios" id="label7362355555747"/>
-                    
-                                    </header>
-                    
-                                </Column>
-                    
+                         
                                 <Column id="column0_1725865736747">
                     
                                     <header>
@@ -3779,6 +3816,7 @@
         </Column>
     </columns>
 </Table>
+                 <items/>
                  </HBox>
       
               </items>
@@ -3792,6 +3830,55 @@
      <HBox width="3500px" id="hbox12" class="sapUiMediumMargin">
 
                         <Title text="Concepto Oferta" id="fser5d" level="H1" class="sapUiLargeMarginTop customTextColor"/>
+
+                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729086577084">
+
+
+                                 <headerToolbar>
+                                    <Toolbar id="Nosr3119">
+                                        <Title id="Cad5d98714" text="" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+                            <items>
+
+                                <ColumnListItem type="Active" id="item0_1729086577083">
+
+                                    <cells>
+
+                                        <Text text="" id="text66_1729086577078"/>
+
+                                        <Text text="Total" id="text67_1729086577080"/>
+
+                                    </cells>
+
+                                </ColumnListItem>
+
+                            </items>
+
+                            <columns>
+
+                                <Column id="column0_1729086577083">
+
+                                    <header>
+
+                                        <Label text="Vertical" id="label0_1729086577083"/>
+
+                                    </header>
+
+                                </Column>
+
+                                <Column id="column1_1729086577084">
+
+                                    <header>
+
+                                        <Label text="Concepto Oferta" id="label1_1729086577084"/>
+
+                                    </header>
+
+                                </Column>
+
+                                </columns>
+                            </Table>
                         <Table noDataText="Drop column list items here and columns in the area above" id="table26748">
                     
                                                              <headerToolbar>
@@ -3810,7 +3897,6 @@
                                 <ColumnListItem type="Active" id="item0747">
                     
                                     <cells>
-                                      <Text text="Total" id="text67034" width="100px"/>
 
                                         <Text text="" id="textJEr"/>
                                       <Text text="111.04" id="text6673"/>
@@ -3833,26 +3919,7 @@
 
                     
                             <columns>
-                             <Column id="column000047">
-                    
-                                    <header>
-                    
-                                        <Label text="Vertical" id="labelAPue"/>
-                    
-                                    </header>
-                    
-                                </Column>
-                    
-
-                             <Column id="column01115">
-                    
-                                    <header>
-                    
-                                        <Label text="Concepto Oferta" id="Puert"/>
-                    
-                                    </header>
-                    
-                                </Column>
+                          
                     
                                 <Column id="columj6747">
                     
@@ -4751,6 +4818,12 @@
 
 
 
+                 <items/>
+                    
+
+
+
+
                  </HBox>
                                
           </items>
@@ -4762,6 +4835,37 @@
 
                 <HBox width="100%" id="hbox0_1728589351058" class="sapUiMediumMargin">
 <Title text="Tipo Recursos" id="title_concepto_oferta_002" level="H1" class="sapUiLargeMarginTop customTextColor"/>
+<Table noDataText="Drop column list items here and columns in the area above" id="table1_1729086584619">
+
+
+                                 <headerToolbar>
+                                    <Toolbar id="No1sr311489">
+                                        <Title id="Ca111d5d987" text="" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+    <items>
+        <ColumnListItem type="Active" id="item1_1729086584618">
+            <cells>
+                <Text text="" id="text69_1729086584611"/>
+               <Text text="Total" id="text_total_0012" width="100px"/>
+
+            </cells>
+        </ColumnListItem>
+    </items>
+    <columns>
+        <Column id="column3_1729086584618">
+            <header>
+                <Label text="Vertical" id="label3_1729086584618"/>
+            </header>
+        </Column>
+        <Column id="column4_1729086584619">
+            <header>
+                <Label text="Tipo Recurso" id="label4_1729086584619"/>
+            </header>
+        </Column>
+
+       </columns>
+        </Table>
 <Table noDataText="Drop column list items here and columns in the area above" id="table_ingresos_002">
     <headerToolbar>
         <Toolbar id="toolbar_ingresos_002">
@@ -4771,8 +4875,7 @@
     <items>
         <ColumnListItem type="Active" id="item_ingresos_002">
             <cells>
-                <Text text="Total" id="text_total_002" width="100px"/>
-                <Text text="" id="text_empty_002"/>
+               <Text text="" id="text_empty_002"/>
                 <Text text="111.04" id="text_value_1_002"/>
                 <Text text="23.419" id="text_value_2_002"/>
                 <Text text="0" id="text_value_3_002"/>
@@ -4785,16 +4888,7 @@
         </ColumnListItem>
     </items>
     <columns>
-        <Column id="column_vertical_002">
-            <header>
-                <Label text="Vertical" id="label_vertical_002"/>
-            </header>
-        </Column>
-        <Column id="column_tipo_servicios_002">
-            <header>
-                <Label text="Tipo Recurso" id="label_tipo_servicios_002"/>
-            </header>
-        </Column>
+        
         <Column id="column_2024_002">
             <header>
                 <Label text="2024" id="label_2024_002"/>
@@ -5014,7 +5108,7 @@
     <items>
         <ColumnListItem type="Active" id="itemBeneficio_1">
             <cells>
-                <Text text="Row 1 Cell 1" id="cellBeneficio_1_1"/>
+                <Text text="" id="cellBeneficio_1_1"/>
                 <Text text="Row 1 Cell 2" id="cellBeneficio_1_2"/>
                 <Text text="Row 1 Cell 3" id="cellBeneficio_1_3"/>
                 <Text xmlns="sap.m" text="Text" id="cellBeneficio_1_4"/>
@@ -5065,9 +5159,1495 @@
 
                 
 
+                <items/>
+
+                
+
                 </HBox>
 
             </items>
+
+        </FlexBox>
+
+        <FlexBox width="3500px" id="box0_1729073186524">
+        <items>
+
+  <HBox width="100%" id="hbox056" class="sapUiMediumMargin">
+
+          <Title text="Tipo Recursos 1" id="IdTable234" level="H1" class="sapUiLargeMarginTop customTextColor"/>
+
+
+          <Table noDataText="Drop column list items here and columns in the area above" id="table1_1729073599724">
+
+                <headerToolbar>
+                        <Toolbar id="toolbar45895">
+                            <Title id="iDfied15" text="" level="H2" class="myText2"/>
+                        </Toolbar>
+                    </headerToolbar>
+
+              <items>
+
+
+                  <ColumnListItem id="item2_1729074265728">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Recursos Internos" id="text73_1729077037975"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item3_1729074273283">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Consumo Externo" id="text75_1729077061209"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item4_1729074282333">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Recursos Externos" id="text74_1729077053691"/>
+
+
+                          <Label text="Cell" id="label4_1729074282332"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text70_1729076946491"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item5">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Licencias" id="text76_1729077076684"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item1_1729074262615">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Infraestructuras" id="text69_1729076897627"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item0_1729074233586">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Gastos de Viaje      Internos  " id="text77_1729077103765"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem type="Active" id="item1_1729073599723">
+
+
+                      <cells>
+
+
+                          <Text text="TOTAL" id="text69_1729073599717"/>
+
+
+    
+                    </cells>
+
+
+                  </ColumnListItem>
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column3_1729073599723">
+
+
+                      <header>
+
+
+                          <Label text="Tipo Recursos" id="label3_1729073599723"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+         
+                  
+                  </columns>
+        </Table>
+
+
+        
+          <Table noDataText="Drop column list items here and columns in the area above" id="table4_1729073623135">
+            <headerToolbar>
+                    <Toolbar id="tootble23">
+                        <Title id="IdIgre" text="Ingresos" level="H2" class="myText2"/>
+                    </Toolbar>
+          </headerToolbar>
+
+              <items>
+
+
+                  <ColumnListItem id="item6_1729074302362">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text79_1729077206637"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text80_1729077210224"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text78_1729077203649"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text81_1729077213529"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text83_1729077301855"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text84_1729077305255"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text92"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item10_1729074317086">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text85_1729077313319"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text86_1729077317194"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text87_1729077320933"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text89_1729077335929"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text90_1729077339030"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text91_1729077343635"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text93"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item14">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text94"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text95"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text96"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text97"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text98"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text99"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text100"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item18">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text101"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text102"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text106"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text107"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text105"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text103"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text104"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item22">
+
+
+                  <cells>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text108"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text109"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text110"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text111"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text112"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text113"/>
+
+
+                      <Text xmlns="sap.m" text="Text" id="text114"/>
+
+
+                  </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item26">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text116"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text117"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text118"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text119"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text120"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text121"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text122"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem type="Active" id="item4_1729073623133">
+
+
+                      <cells>
+
+
+                          <Text text="Row 1 Cell 2" id="text79_1729073623129"/>
+
+
+                          <Text text="Row 1 Cell 3" id="text80_1729073623133"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text123"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text124"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text125"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text126"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text127"/></cells>
+
+
+                  </ColumnListItem>
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column12_1729073623134">
+
+
+                      <header>
+
+
+                          <Label text="2024" id="label12_1729073623134"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column13_1729073623134">
+
+
+                      <header>
+
+
+                          <Label text="2025" id="label13_1729073623134"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column2_1729074839765">
+
+
+                      <header>
+
+
+                          <Text text="2026" id="text68_1729074839764"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column14_1729073623135">
+
+
+                      <header>
+
+
+                          <Label text="2027" id="label14_1729073623135"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column3_1729074842441">
+
+
+                      <header>
+
+
+                          <Text text="2028" id="text69_1729074842441"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column5_1729074931826">
+
+
+                      <header>
+
+
+                          <Text text="2029" id="text71_1729074931826"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column0_1729074833782">
+
+
+                      <header>
+
+
+                          <Text text="Total" id="text66_1729074833782"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                </columns></Table>
+
+
+          <Table noDataText="Drop column list items here and columns in the area above" id="table3">
+
+                             <headerToolbar>
+                                    <Toolbar id="Nosr34">
+                                        <Title id="Cad5d" text="Costes Directos" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+              <items>
+
+
+                  <ColumnListItem id="item7_1729074305217">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text129"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text128"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text140"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text141"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text143"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text70_1729079344938"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item11_1729074320189">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text130"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text134"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text135"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text136"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text138"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text137"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text139"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item15_1729074334146">
+
+
+                      <cells>
+
+                <Text xmlns="sap.m" text="Text 41" id="text400"/>
+                    <Text xmlns="sap.m" text="Text 42" id="text401"/>
+                    <Text xmlns="sap.m" text="Text 43" id="text402"/>
+                    <Text xmlns="sap.m" text="Text 44" id="text403"/>
+                    <Text xmlns="sap.m" text="Text 45" id="text404"/>
+                    <Text xmlns="sap.m" text="Text 46" id="text405"/>
+                    <Text xmlns="sap.m" text="Text 47" id="text406"/>
+                    <Text xmlns="sap.m" text="Text 48" id="text407"/>
+                    <Text xmlns="sap.m" text="Text 49" id="text408"/>
+                    <Text xmlns="sap.m" text="Text 50" id="text409"/>
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item19">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text133"/>
+                       <Text xmlns="sap.m" text="Text 2" id="text1341"/>
+                        <Text xmlns="sap.m" text="Text 3" id="text1352"/>
+                        <Text xmlns="sap.m" text="Text 4" id="text1363"/>
+                        <Text xmlns="sap.m" text="Text 5" id="text1374"/>
+                        <Text xmlns="sap.m" text="Text 6" id="text1385"/>
+                        <Text xmlns="sap.m" text="Text 7" id="text1396"/>
+                        <Text xmlns="sap.m" text="Text 8" id="text1407"/>
+                        <Text xmlns="sap.m" text="Text 9" id="text1418"/>
+                        <Text xmlns="sap.m" text="Text 10" id="text1492"/>
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item27">
+
+
+                      <cells>
+
+
+                          <Text xmlns="sap.m" text="Text 1" id="text200"/>
+                            <Text xmlns="sap.m" text="Text 2" id="text201"/>
+                            <Text xmlns="sap.m" text="Text 3" id="text202"/>
+                            <Text xmlns="sap.m" text="Text 4" id="text203"/>
+                            <Text xmlns="sap.m" text="Text 5" id="text204"/>
+                            <Text xmlns="sap.m" text="Text 6" id="text205"/>
+                            <Text xmlns="sap.m" text="Text 7" id="text206"/>
+                            <Text xmlns="sap.m" text="Text 8" id="text207"/>
+                            <Text xmlns="sap.m" text="Text 9" id="text208"/>
+                            <Text xmlns="sap.m" text="Text 10" id="text209"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem id="item23">
+
+
+                      <cells>
+
+
+        <Text xmlns="sap.m" text="Text 11" id="text210"/>
+        <Text xmlns="sap.m" text="Text 12" id="text211"/>
+        <Text xmlns="sap.m" text="Text 13" id="text212"/>
+        <Text xmlns="sap.m" text="Text 14" id="text213"/>
+        <Text xmlns="sap.m" text="Text 15" id="text214"/>
+        <Text xmlns="sap.m" text="Text 16" id="text215"/>
+        <Text xmlns="sap.m" text="Text 17" id="text216"/>
+        <Text xmlns="sap.m" text="Text 18" id="text217"/>
+        <Text xmlns="sap.m" text="Text 19" id="text218"/>
+        <Text xmlns="sap.m" text="Text 20" id="text219"/>
+
+
+                      </cells>
+
+
+                  </ColumnListItem>
+
+
+                  <ColumnListItem type="Active" id="item3_1729073618736">
+
+
+                      <cells>
+
+
+                          <Text text="Row 1 Cell 1" id="text75_1729073618729"/>
+
+
+                          <Text text="Row 1 Cell 2" id="text76_1729073618732"/>
+
+
+                          <Text text="Row 1 Cell 3" id="text77_1729073618734"/>
+                             <Text xmlns="sap.m" text="Text 31" id="text300"/>
+                            <Text xmlns="sap.m" text="Text 32" id="text301"/>
+                            <Text xmlns="sap.m" text="Text 33" id="text302"/>
+                            <Text xmlns="sap.m" text="Text 34" id="text303"/>
+                            <Text xmlns="sap.m" text="Text 35" id="text304"/>
+                          
+                          </cells>
+
+
+                  </ColumnListItem>
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column9_1729073618737">
+
+
+                      <header>
+
+
+                          <Label text="2024" id="label9_1729073618737"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column1_1729074996661">
+
+
+                      <header>
+
+
+                          <Text text="2025" id="text67_1729074996661"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column3_1729075003015">
+
+
+                      <header>
+
+
+                          <Text text="2026" id="text69_1729075003015"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+            
+
+                  <Column id="column10_1729073618738">
+
+
+                      <header>
+
+
+                          <Label text="2027" id="label10_1729073618737"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column11_1729073618738">
+
+
+                      <header>
+
+
+                          <Label text="2028" id="label11_1729073618738"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column0_1729074992732">
+
+
+                      <header>
+
+
+                          <Text text="2029" id="text66_1729074992731"/>
+
+
+                      </header>
+
+
+                  </Column>
+                  
+                           <Column id="column0_17290749900002732">
+
+
+                      <header>
+
+
+                          <Text text="Total" id="text66_1729074992700031"/>
+
+
+                      </header>
+
+
+                  </Column>
+                  
+                  
+                  
+                  
+                  </columns></Table>
+
+
+          <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729074461791">
+                                <headerToolbar>
+                                    <Toolbar id="Nosr34111">
+                                        <Title id="Cad5d111" text="Costes Indirectos" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+              <items>
+<ColumnListItem id="item31">
+    <cells>
+        <Text xmlns="sap.m" text="Text A1" id="text500"/>
+        <Text xmlns="sap.m" text="Text A2" id="text501"/>
+        <Text xmlns="sap.m" text="Text A3" id="text502"/>
+        <Text xmlns="sap.m" text="Text A4" id="text5403"/>
+        <Text xmlns="sap.m" text="Text A5" id="text50544"/>
+        <Text xmlns="sap.m" text="Text A6" id="text505"/>
+        <Text xmlns="sap.m" text="Text A7" id="text506"/>
+
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item32">
+    <cells>
+        <Text xmlns="sap.m" text="Text B1" id="text510"/>
+        <Text xmlns="sap.m" text="Text B2" id="text511"/>
+        <Text xmlns="sap.m" text="Text B3" id="text512"/>
+        <Text xmlns="sap.m" text="Text B4" id="text513"/>
+        <Text xmlns="sap.m" text="Text B5" id="text5174"/>
+        <Text xmlns="sap.m" text="Text B6" id="text515"/>
+        <Text xmlns="sap.m" text="Text B7" id="text516"/>
+
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item33">
+    <cells>
+        <Text xmlns="sap.m" text="Text C1" id="text520"/>
+        <Text xmlns="sap.m" text="Text C2" id="text521"/>
+        <Text xmlns="sap.m" text="Text C3" id="text522"/>
+        <Text xmlns="sap.m" text="Text C4" id="text523"/>
+        <Text xmlns="sap.m" text="Text C5" id="text524"/>
+        <Text xmlns="sap.m" text="Text C6" id="text525"/>
+        <Text xmlns="sap.m" text="Text C7" id="text526"/>
+     
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item34">
+    <cells>
+        <Text xmlns="sap.m" text="Text D1" id="text530"/>
+        <Text xmlns="sap.m" text="Text D2" id="text531"/>
+        <Text xmlns="sap.m" text="Text D3" id="text532"/>
+        <Text xmlns="sap.m" text="Text D4" id="text533"/>
+        <Text xmlns="sap.m" text="Text D5" id="text534"/>
+        <Text xmlns="sap.m" text="Text D6" id="text535"/>
+        <Text xmlns="sap.m" text="Text D7" id="text5368"/>
+      
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item35">
+    <cells>
+        <Text xmlns="sap.m" text="Text E1" id="text540"/>
+        <Text xmlns="sap.m" text="Text E2" id="text541"/>
+        <Text xmlns="sap.m" text="Text E3" id="text542"/>
+        <Text xmlns="sap.m" text="Text E4" id="text543"/>
+        <Text xmlns="sap.m" text="Text E5" id="text544"/>
+        <Text xmlns="sap.m" text="Text E6" id="text545"/>
+        <Text xmlns="sap.m" text="Text E7" id="text546"/>
+
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item36">
+    <cells>
+        <Text xmlns="sap.m" text="Text F1" id="text550"/>
+        <Text xmlns="sap.m" text="Text F2" id="text551"/>
+        <Text xmlns="sap.m" text="Text F3" id="text5522"/>
+        <Text xmlns="sap.m" text="Text F4" id="text553"/>
+        <Text xmlns="sap.m" text="Text F5" id="text554"/>
+        <Text xmlns="sap.m" text="Text F6" id="text555"/>
+        <Text xmlns="sap.m" text="Text F7" id="text556"/>
+
+    </cells>
+</ColumnListItem>
+
+
+
+                  <ColumnListItem type="Active" id="item30">
+
+
+                      <cells>
+
+
+                          <Text text="Row 1 Cell 1" id="text67_1729074461761"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text67_1729079322040"/>
+
+
+                          <Text text="Row 1 Cell 2" id="text68_1729074461766"/>
+
+
+                          <Text text="Row 1 Cell 3" id="text69_1729074461769"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text66_1729079318344"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text68_1729079325388"/>
+
+
+                          <Text xmlns="sap.m" text="Text" id="text69_1729079329715"/></cells>
+
+
+                  </ColumnListItem>
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column1_1729074461780">
+
+
+                      <header>
+
+
+                          <Label text="2024" id="label30"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column4_1729075007390">
+
+
+                      <header>
+
+
+                          <Text text="2025" id="text70_1729075007390"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column2_1729074461785">
+
+
+                      <header>
+
+
+                          <Label text="2026" id="label31"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column9_1729075024383">
+
+
+                      <header>
+
+
+                          <Text text="2027" id="text75_1729075024382"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column6_1729075013996">
+
+
+                      <header>
+
+
+                          <Text text="2028" id="text72_1729075013994"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column8_1729075021357">
+
+
+                      <header>
+
+
+                          <Text text="2029" id="text74_1729075021356"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column7_1729075017235">
+
+
+                      <header>
+
+
+                          <Text text="Total" id="text73_1729075017233"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                
+
+               </columns></Table>
+
+
+          <Table ariaLabelledBy="__label5" noDataText="Drop column list items here and columns in the area above" id="table2_1729073605332">
+
+
+
+                                 <headerToolbar>
+                                    <Toolbar id="Nosr3489">
+                                        <Title id="Cad5d987" text="Costes Totales" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+              <items>
+
+
+            
+    <ColumnListItem id="item8_1729074308323">
+        <cells>
+            <Text xmlns="sap.m" text="Text A1" id="textA1_1"/>
+            <Text xmlns="sap.m" text="Text A2" id="textA2_1"/>
+            <Text xmlns="sap.m" text="Text A3" id="textA3_1"/>
+            <Text xmlns="sap.m" text="Text A4" id="textA4_1"/>
+            <Text xmlns="sap.m" text="Text A5" id="textA5_1"/>
+            <Text xmlns="sap.m" text="Text A6" id="textA6_1"/>
+            <Text xmlns="sap.m" text="Text A7" id="textA7_1"/>
+        </cells>
+    </ColumnListItem>
+
+    <ColumnListItem id="item12">
+        <cells>
+            <Text xmlns="sap.m" text="Text B1" id="textB1_2"/>
+            <Text xmlns="sap.m" text="Text B2" id="textB2_2"/>
+            <Text xmlns="sap.m" text="Text B3" id="textB3_2"/>
+            <Text xmlns="sap.m" text="Text B4" id="textB4_2"/>
+            <Text xmlns="sap.m" text="Text B5" id="textB5_2"/>
+            <Text xmlns="sap.m" text="Text B6" id="textB6_2"/>
+            <Text xmlns="sap.m" text="Text B7" id="textB7_2"/>
+        </cells>
+    </ColumnListItem>
+
+    <ColumnListItem id="item16">
+        <cells>
+            <Text xmlns="sap.m" text="Text C1" id="textC1_3"/>
+            <Text xmlns="sap.m" text="Text C2" id="textC2_3"/>
+            <Text xmlns="sap.m" text="Text C3" id="textC3_3"/>
+            <Text xmlns="sap.m" text="Text C4" id="textC4_3"/>
+            <Text xmlns="sap.m" text="Text C5" id="textC5_3"/>
+            <Text xmlns="sap.m" text="Text C6" id="textC6_3"/>
+            <Text xmlns="sap.m" text="Text C7" id="textC7_3"/>
+        </cells>
+    </ColumnListItem>
+
+    <ColumnListItem id="item24">
+        <cells>
+            <Text xmlns="sap.m" text="Text D1" id="textD1_4"/>
+            <Text xmlns="sap.m" text="Text D2" id="textD2_4"/>
+            <Text xmlns="sap.m" text="Text D3" id="textD3_4"/>
+            <Text xmlns="sap.m" text="Text D4" id="textD4_4"/>
+            <Text xmlns="sap.m" text="Text D5" id="textD5_4"/>
+            <Text xmlns="sap.m" text="Text D6" id="textD6_4"/>
+            <Text xmlns="sap.m" text="Text D7" id="textD7_4"/>
+        </cells>
+    </ColumnListItem>
+
+    <ColumnListItem id="item20">
+        <cells>
+            <Text xmlns="sap.m" text="Text E1" id="textE1_5"/>
+            <Text xmlns="sap.m" text="Text E2" id="textE2_5"/>
+            <Text xmlns="sap.m" text="Text E3" id="textE3_5"/>
+            <Text xmlns="sap.m" text="Text E4" id="textE4_5"/>
+            <Text xmlns="sap.m" text="Text E5" id="textE5_5"/>
+            <Text xmlns="sap.m" text="Text E6" id="textE6_5"/>
+            <Text xmlns="sap.m" text="Text E7" id="textE7_5"/>
+        </cells>
+    </ColumnListItem>
+
+    <ColumnListItem id="item28">
+        <cells>
+            <Text xmlns="sap.m" text="Text F1" id="textF1_6"/>
+            <Text xmlns="sap.m" text="Text F2" id="textF2_6"/>
+            <Text xmlns="sap.m" text="Text F3" id="textF3_6"/>
+            <Text xmlns="sap.m" text="Text F4" id="textF4_6"/>
+            <Text xmlns="sap.m" text="Text F5" id="textF5_6"/>
+            <Text xmlns="sap.m" text="Text F6" id="textF6_6"/>
+            <Text xmlns="sap.m" text="Text F7" id="textF7_6"/>
+        </cells>
+    </ColumnListItem>
+<ColumnListItem id="item40">
+    <cells>
+        <Text xmlns="sap.m" text="Text G1" id="textG1_7"/>
+        <Text xmlns="sap.m" text="Text G2" id="textG2_7"/>
+        <Text xmlns="sap.m" text="Text G3" id="textG3_7"/>
+        <Text xmlns="sap.m" text="Text G4" id="textG4_7"/>
+        <Text xmlns="sap.m" text="Text G5" id="textG5_7"/>
+        <Text xmlns="sap.m" text="Text G6" id="textG6_7"/>
+        <Text xmlns="sap.m" text="Text G7" id="textG7_7"/>
+    </cells>
+</ColumnListItem>
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column6_1729073605321">
+
+
+                      <header>
+
+
+                          <Label text="2024" id="label6_1729073605320"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column13_1729075038211">
+
+
+                      <header>
+
+
+                          <Text text="2025" id="text79_1729075038210"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column7_1729073605326">
+
+
+                      <header>
+
+
+                          <Label text="2026" id="label7_1729073605324"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column10_1729075028735">
+
+
+                      <header>
+
+
+                          <Text text="2027" id="text76_1729075028735"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column12_1729075034494">
+
+
+                      <header>
+
+
+                          <Text text="2028" id="text78_1729075034493"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column11_1729075031991">
+
+
+                      <header>
+
+
+                          <Text text="2029" id="text77_1729075031990"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column8_1729073605331">
+
+
+                      <header>
+
+
+                          <Label text="Total" id="label8_1729073605330"/>
+
+
+                      </header>
+
+
+                  </Column></columns>
+            </Table>
+
+
+          <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729073521933">
+
+                                 <headerToolbar>
+                                    <Toolbar id="Nosr77773489">
+                                        <Title id="Cad5d9777787" text="Beneficios" level="H2" class="myText2"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+              <items>
+
+
+                 <ColumnListItem id="item41">
+    <cells>
+        <Text xmlns="sap.m" text="Row 1 Cell 1" id="text1_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 2" id="text2_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 3" id="text3_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 4" id="text4_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 5" id="text5_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 6" id="text6_41"/>
+        <Text xmlns="sap.m" text="Row 1 Cell 7" id="text7_41"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item42">
+    <cells>
+        <Text xmlns="sap.m" text="Row 2 Cell 1" id="text1_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 2" id="text2_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 3" id="text3_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 4" id="text4_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 5" id="text5_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 6" id="text6_42"/>
+        <Text xmlns="sap.m" text="Row 2 Cell 7" id="text7_42"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item43">
+    <cells>
+        <Text xmlns="sap.m" text="Row 3 Cell 1" id="text1_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 2" id="text2_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 3" id="text3_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 4" id="text4_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 5" id="text5_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 6" id="text6_43"/>
+        <Text xmlns="sap.m" text="Row 3 Cell 7" id="text7_43"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item44">
+    <cells>
+        <Text xmlns="sap.m" text="Row 4 Cell 1" id="text1_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 2" id="text2_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 3" id="text3_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 4" id="text4_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 5" id="text5_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 6" id="text6_44"/>
+        <Text xmlns="sap.m" text="Row 4 Cell 7" id="text7_44"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item45">
+    <cells>
+        <Text xmlns="sap.m" text="Row 5 Cell 1" id="text1_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 2" id="text2_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 3" id="text3_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 4" id="text4_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 5" id="text5_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 6" id="text6_45"/>
+        <Text xmlns="sap.m" text="Row 5 Cell 7" id="text7_45"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item46">
+    <cells>
+        <Text xmlns="sap.m" text="Row 6 Cell 1" id="text1_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 2" id="text2_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 3" id="text3_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 4" id="text4_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 5" id="text5_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 6" id="text6_46"/>
+        <Text xmlns="sap.m" text="Row 6 Cell 7" id="text7_46"/>
+    </cells>
+</ColumnListItem>
+
+<ColumnListItem id="item47">
+    <cells>
+        <Text xmlns="sap.m" text="Row 7 Cell 1" id="text1_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 2" id="text2_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 3" id="text3_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 4" id="text4_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 5" id="text5_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 6" id="text6_47"/>
+        <Text xmlns="sap.m" text="Row 7 Cell 7" id="text7_47"/>
+    </cells>
+</ColumnListItem>
+
+
+
+              </items>
+
+
+              <columns>
+
+
+                  <Column id="column0_1729073521931">
+
+
+                      <header>
+
+
+                          <Label text="2024" id="label0_1729073521931"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column15_1729075046507">
+
+
+                      <header>
+
+
+                          <Text text="2025" id="text81_1729075046504"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column1_1729073521932">
+
+
+                      <header>
+
+
+                          <Label text="2026" id="label1_1729073521931"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column14_1729075043557">
+
+
+                      <header>
+
+
+                          <Text text="2027" id="text80_1729075043557"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column16_1729075049600">
+
+
+                      <header>
+
+
+                          <Text text="2028" id="text82_1729075049597"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column18_1729075055855">
+
+
+                      <header>
+
+
+                          <Text text="2029" id="text84_1729075055852"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                  <Column id="column17_1729075052988">
+
+
+                      <header>
+
+
+                          <Text text="Total" id="text83_1729075052984"/>
+
+
+                      </header>
+
+
+                  </Column>
+
+
+                 </columns>
+            </Table>
+
+
+        </HBox>
+        </items>
+
 
         </FlexBox>
                     
@@ -5075,11 +6655,69 @@
                     
                         </content>
                     
-                    </Panel>
-                    
+                   </Panel>
+                    </IconTabFilter>
+
+                    <IconTabFilter id="idHojaAdi" text="Anexos" count="" key="key5">
+       <content>
+            
+                    <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0_1729068544153">
+            
+                        <headerToolbar>
+            
+                            <Toolbar id="toolbar651">
+            
+                                <Title id="idtitleAnexo" text="Informacion Adicional"/>
+            
+                                <ToolbarSpacer id="idToan"/>
+            
+                                <Button id="idbtnSefitn1" icon="sap-icon://settings"/>
+            
+                                </Toolbar>
+            
+                            
+            
+                        </headerToolbar>
+            
+                        <content>
+            
+                            <Text text="Información adicional considerada relevante a presentar junto con la solicitud del proyecto" class="**`sapUiTinyMargin sapUiSmallMarginBottom" id="text66_1729068544144"/>
+            
+                            <FlexBox width="100%" id="box0_1729069223752">
+            
+                                <items>
+            
+                                    <core:Icon src="sap-icon://customer-order-entry" class="customIconColor sapUiMediumMargin" size="2em" id="icon2"/>
+            
+                                    <TextArea xmlns="sap.m" value="" placeholder="Informacion extra..." rows="4" id="area0" width="500px"/>
+            
+                                </items>
+            
+                            </FlexBox>
+            
+                            
+            
+                        </content>
+            
+                        </Panel>
+            
                 </content>
+
+
+                    </IconTabFilter>
+
+
+
+                    </items>
+            
+         
+            
                 </IconTabBar>
+
+
             </headerContainer>
+
+
             </ObjectHeader>
         </items>
     </VBox>

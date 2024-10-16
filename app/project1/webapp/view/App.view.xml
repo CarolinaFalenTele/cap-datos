@@ -32,12 +32,12 @@
  
                                 <headerContainer>
                               
-                                    <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding" select="onIconTabSelect">
+                                    <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding"   select="onIconTabSelect">
                                         <items>
                                          <!--  <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
                                                 <Text id="ma2" text="Info content goes here ..." />
                                             </IconTabFilter>--> 
-                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" count="{/DatosProyect/$count}">
+                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" tooltip="Solicitudes pendientes" count="{/DatosProyect/$count}">
                                                 <Table id="idPendientes" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="headerToolbar">
@@ -102,7 +102,7 @@
 
                                                                 <items>
 
-                                                                    <Button xmlns="sap.m"  icon="sap-icon://activity-2" text="" id="button0"  press="onActivityPress">
+                                                                    <Button xmlns="sap.m"  icon="sap-icon://activity-2" text=""  tooltip="Proceso Solicitud" id="button0"  press="onActivityPress">
 
                                                                <customData>
                                                                
@@ -128,7 +128,7 @@
                                                 </Table>
 
                                             </IconTabFilter>
-                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes" count="">
+                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes"  tooltip="Solicitudes Aprobadas" count="">
 
                                                 <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{ListaCdo>/listaCdo}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>
@@ -177,14 +177,14 @@
                                                 </Table>
 
                                             </IconTabFilter>
-                                            <IconTabFilter id="ma77" key="people" icon="sap-icon://process">
+                                            <IconTabFilter id="ma77" key="people"  tooltip="Seguimiento de Proceso" icon="sap-icon://process" >
          <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel5887540">
                               
                                             <headerToolbar>
                               
                                                 <Toolbar id="toolbar1_1728554177158">
                               
-                                                    <Title id="jdkfnsdjlk" text="Header"/>
+                                                    <Title id="idTitleProceso" text="Proceso"/>
                               
                                                     <ToolbarSpacer id="jdfkjsdfs"/>
                               
@@ -198,7 +198,7 @@
                               
                                             <content>
                               
-                                                <Text text="Panel Content" id="text1881"/>
+                                                <Text text="Proceso de Solictud" id="text1881"/>
  
     <suite:ProcessFlow id="processflow1" nodePress="onNodePress">
     <suite:nodes>

@@ -97,6 +97,7 @@ entity DatosProyect {
         costeEstructura          : Integer;
         objetivoAlcance          : LargeString;
         AsuncionesyRestricciones : LargeString;
+        datosExtra               : LargeString;
         CambioEuRUSD             : Integer;
         Estado                   : String;
         Fechainicio              : DateTime;
@@ -129,7 +130,7 @@ entity DatosProyect {
 
         otrosConceptos           : Association to many otrosConceptos
                                        on otrosConceptos.datosProyect_ID = ID;
-
+        tableProcessFlow         : Association to  many tableProcessFlow on tableProcessFlow.datosProyect_ID = ID;
 };
 
 
@@ -395,3 +396,10 @@ entity ClientFactura {
         datosProyect_ID : UUID;
 
 };
+
+
+entity tableProcessFlow{
+  key ID : UUID @cds.auto;
+     estado: String;
+    datosProyect_ID : UUID;
+}

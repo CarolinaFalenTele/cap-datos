@@ -13,7 +13,7 @@ module.exports = cds.service.impl(async function () {
     try {
 
       const result = await INSERT.into(DatosProyect).entries({
-        codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones,
+        codigoProyect, nameProyect, spluriAnual,datosExtra, sClienteFac, sMultiJuri, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones,
 
         Naturaleza: { ID: Naturaleza_ID }, Iniciativa: { ID: Iniciativa_ID }, Area: { ID: Area_ID }, jefeProyectID: { ID: jefeProyectID_ID }, Seguimiento: {ID: Seguimiento_ID }, 
         EjecucionVia: { ID: EjecucionVia_ID }, AmReceptor: {ID: AmReceptor_ID},  Vertical: {ID: Vertical_ID}, clienteFuncional: { ID: clienteFuncional_ID }

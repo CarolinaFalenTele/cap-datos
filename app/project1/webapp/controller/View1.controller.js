@@ -73,55 +73,55 @@ sap.ui.define([
 
       //--------------------------------------METODOS TRAER INFORMACION ---------------------------------------
       //--------metodo traerdatos----------------- 
-      highlightControls: function() {
+      highlightControls: function () {
         const controlsToHighlight = [
-            this.byId("input0"),
-            this.byId("input1"),
-            this.byId("int_clienteFun"),
-            this.byId("id_Cfactur"),
-            this.byId("id_Cfactur"),
-            this.byId("idObje"),
-            this.byId("idAsunyRestri"),
-            this.byId("box_multiJuridica"),
-            this.byId("box_pluriAnual"),
-            this.byId("slct_area"),
-            this.byId("slct_Jefe"),
-            this.byId("slct_verti"),
-            this.byId("slct_inic"),
-            this.byId("idNatu"),
-            this.byId("selct_Amrecp"),
-            this.byId("selc_ejcu"),
-            this.byId("selc_Segui"),
-            this.byId("slct_client"),
-            this.byId("date_inico"),
-            this.byId("date_fin"),
-            this.byId("input0"),
-            this.byId("input1"),
-            this.byId("box_pluriAnual"),
-            this.byId("id_Cfactur"),
-            this.byId("box_multiJuridica")
+          this.byId("input0"),
+          this.byId("input1"),
+          this.byId("int_clienteFun"),
+          this.byId("id_Cfactur"),
+          this.byId("id_Cfactur"),
+          this.byId("idObje"),
+          this.byId("idAsunyRestri"),
+          this.byId("box_multiJuridica"),
+          this.byId("box_pluriAnual"),
+          this.byId("slct_area"),
+          this.byId("slct_Jefe"),
+          this.byId("slct_verti"),
+          this.byId("slct_inic"),
+          this.byId("idNatu"),
+          this.byId("selct_Amrecp"),
+          this.byId("selc_ejcu"),
+          this.byId("selc_Segui"),
+          this.byId("slct_client"),
+          this.byId("date_inico"),
+          this.byId("date_fin"),
+          this.byId("input0"),
+          this.byId("input1"),
+          this.byId("box_pluriAnual"),
+          this.byId("id_Cfactur"),
+          this.byId("box_multiJuridica")
 
-            // Agrega más controles aquí según sea necesario
+          // Agrega más controles aquí según sea necesario
         ];
-    
+
         // Establecer el ValueState a Warning (amarillo)
         controlsToHighlight.forEach(control => {
-            if (control && control.setValueState) {
-                control.setValueState("Success");
-            }
+          if (control && control.setValueState) {
+            control.setValueState("Success");
+          }
         });
-    
+
         // Revertir el ValueState después de 2 segundos
         setTimeout(() => {
-            controlsToHighlight.forEach(control => {
-                if (control && control.setValueState) {
-                    control.setValueState("None");
-                }
-            });
+          controlsToHighlight.forEach(control => {
+            if (control && control.setValueState) {
+              control.setValueState("None");
+            }
+          });
         }, 2000); // 2000 ms = 2 segundos
-    },
-    
-    
+      },
+
+
 
 
       _onObjectMatched: async function (oEvent) {
@@ -328,18 +328,13 @@ sap.ui.define([
             }
           });
 
-
           if (!response.ok) {
             const errorText = await response.text();
             throw new Error('Network response was not ok: ' + errorText);
           }
 
           const oData = await response.json();
-          console.log("Datos de proveedor:", oData);
-
-
-
-
+          console.log("Datos de Facturacion :", oData);
 
           var oTable = this.byId("table0");
           var aItems = oTable.getItems();
@@ -348,26 +343,27 @@ sap.ui.define([
           if (oData.value && oData.value.length > 0) {
             var Facturacion = oData.value[0]; // Asumiendo que quieres el primer proveedor
 
+            console.log("Valor de fecha estimada:", Facturacion.fechaEstimida); // Verifica el valor de la fecha
+
             aItems.forEach(function (oItem) {
               var aCells = oItem.getCells();
 
               // Asegúrate de que el índice es correcto para cada input
               if (aCells.length > 1) {
-                if (aCells[0] instanceof sap.m.Input) {
-                  aCells[0].setDateValue(Facturacion.fechaEstimida || ""); // Input para fecha estimada
+                if (aCells[0] instanceof sap.m.DatePicker) {
+                  console.log("Tipo de celda:", aCells[0].constructor.name); // Verifica el tipo de celda
+                  aCells[0].setDateValue(Facturacion.fechaEstimida ? new Date(Facturacion.fechaEstimida) : null);
+                }
+                if (aCells[1] instanceof sap.m.Input) {
+                  aCells[1].setValue(Facturacion.descripcionHito || ""); // Input para descripción
+                }
+                if (aCells[2] instanceof sap.m.Input) {
+                  aCells[2].setValue(Facturacion.facturacion || ""); // Input para facturación
+                }
               }
-              if (aCells[1] instanceof sap.m.Input) {
-                aCells[1].setValue(Facturacion.descripcionHito || ""); // Input para descripción
-            }
-            if (aCells[2] instanceof sap.m.Input) {
-                aCells[2].setValue(Facturacion.facturacion || ""); // Input para facturación
-            }
-              }
-
-
             }.bind(this));
           } else {
-            console.log("No hay datos de proveedores disponibles.");
+            console.log("No hay datos de Facturacion disponibles.");
           }
 
         } catch (error) {
@@ -375,8 +371,6 @@ sap.ui.define([
           sap.m.MessageToast.show("Error al cargar los datos de Facturacion");
         }
       },
-
-
 
       leerClientFactura: async function (projectID) {
         var sUrl = `/odata/v4/datos-cdo/ClientFactura?$filter=datosProyect_ID eq ${projectID}`;
@@ -514,58 +508,58 @@ sap.ui.define([
 
 
 
-          leerRecursos: async function (projectID) {
-            var sUrl = `/odata/v4/datos-cdo/RecursosInternos?$filter=datosProyect_ID eq ${projectID}`;
-            try {
-                const response = await fetch(sUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-        
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error('Network response was not ok: ' + errorText);
-                }
-        
-                const oData = await response.json();
-                console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
-        
-                var oTable = this.byId("table_dimicFecha");
-                var aItems = oTable.getItems();
-        
-                // Verificar si hay datos en oData.value
-                if (oData.value && oData.value.length > 0) {
-                    var Recurso = oData.value[0]; // Toma solo el primer recurso
-        
-                    // Asegúrate de que la tabla tenga al menos una fila
-                    if (aItems.length > 0) {
-                        var oItem = aItems[0]; // Selecciona solo la primera fila
-                        var aCells = oItem.getCells();
-        
-                        // Asegúrate de que el índice es correcto para cada input/select
-                        if (aCells.length > 1) {
-                            aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
-                            aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
-                            aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
-                            aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
-                            aCells[4].setText(Recurso.PMJ || ""); // Para el Input (PMJ)
-                            aCells[5].setText(Recurso.total || ""); // Para el Input (Cantidad)
-                          
-                          }
-                    }
-                } else {
-                    console.log("No hay datos de recursos internos disponibles.");
-                }
-        
-            } catch (error) {
-                console.error("Error al obtener los datos de Recursos Internos:", error);
-                sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+      leerRecursos: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/RecursosInternos?$filter=datosProyect_ID eq ${projectID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
             }
-        },
-        
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
+
+          var oTable = this.byId("table_dimicFecha");
+          var aItems = oTable.getItems();
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+
+            // Asegúrate de que la tabla tenga al menos una fila
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              // Asegúrate de que el índice es correcto para cada input/select
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ || ""); // Para el Input (PMJ)
+                aCells[5].setText(Recurso.total || ""); // Para el Input (Cantidad)
+
+              }
+            }
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
 
       //---------------------------------------------------------------------------------
 
@@ -804,15 +798,168 @@ sap.ui.define([
 
 
 
+// Evento para la primera tabla
+onPerfilChangeTabla1: function (oEvent) {
+  this.updateRowData(oEvent, ["table_dimicFecha", "tablaConsuExter", "tablaRecExterno"]);
+},
+
+//---- Método selección de ítems y cambio para múltiples tablas ----
+updateRowData: function (oEvent, aTableIds) {
+  // Obtén el ID del Select que ha generado el evento
+  const oSource = oEvent.getSource();
+
+  // Lógica para cada tabla
+  aTableIds.forEach((oTableId) => {
+      // Encuentra la tabla
+      var oTable = this.byId(oTableId);
+
+      // Obtén el índice de la fila seleccionada desde el Select
+      var oItem = oSource.getParent(); // Obtiene el ColumnListItem
+      var iIndex = oTable.indexOfItem(oItem); // Obtiene el índice de la fila
+
+      if (iIndex === -1) {
+          console.error(`Índice de la fila no encontrado en la tabla ${oTableId}. Verifica la estructura de la tabla.`);
+          return;
+      }else{
+        console.log("Encontrada");
+      }
+
+      // Obtén las celdas de la fila
+      var aItems = oTable.getItems();
+      var oRowData = aItems[iIndex].getCells();
+
+      if (!oRowData || oRowData.length === 0) {
+          console.error(`Datos de la fila no encontrados en la tabla ${oTableId}.`);
+          return;
+      }
+
+      // Obtén el valor seleccionado del Select
+      var sSelectedText = oSource.getSelectedItem().getText();
+
+      // Define un objeto de configuración para las actualizaciones
+      var oConfig = {
+        "Director": {
+          PMJ: 1370.88,
+          "2024": 41.00,
+          "2025": 15.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+
+
+        },
+        "CG4.C": {
+          PMJ: 186.72,
+          "2024": 5.00,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        },
+        "CG4.A": {
+          PMJ: 331.24,
+          "2024": 51.93,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        },
+        "CG4.B": {
+          PMJ: 225.11,
+          "2024": 51.93,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        },
+        "CG3": {
+          PMJ: 408.81,
+          "2024": 0.00,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        },
+        "CG2": {
+          PMJ: 520.79,
+          "2024": 0.00,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        },
+        "CG1": {
+          PMJ: 656.80,
+          "2024": 51.93,
+          "2025": 0.00,
+          "2026": 0.00,
+          "2027": 0.00,
+          "2028": 0.00,
+          "2029": 0.00,
+        }
+      };
+
+      // Lógica para actualizar datos basados en la selección del Select
+      var oUpdate = oConfig[sSelectedText];
+
+      if (oUpdate) {
+          oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
+          oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
+          oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
+          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
+          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
+          oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
+
+          // Suma de 2024 y 2025 para 'Total'
+          var total = oUpdate["2024"] + oUpdate["2025"];
+          oRowData[11].setText(total);  // Coloca la suma en 'Total'
+
+          // Suma de PMJ + Total para 'Total1'
+          var total1 = oUpdate.PMJ + total;
+          oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
+          console.log(total1);
+
+          // Asigna 5.00 a las columnas que no sean junio, julio o agosto y 4.00 a las correspondientes
+          var months = ["junio", "julio", "agosto"];
+
+          // Obtén las columnas de la tabla
+          var oColumns = oTable.getColumns();
+
+        // Empieza desde la columna después de 'Total1' (columna 12 en adelante)
+          for (var i = 13; i < oRowData.length; i++) {
+            var columnHeaderText = oColumns[i].getHeader().getText().toLowerCase();
+
+            if (months.some(month => columnHeaderText.includes(month))) {
+                oRowData[i].setText("4.00");  // Asignar 4.00 a junio, julio, agosto
+            } else {
+                oRowData[i].setText("5.00");  // Asignar 5.00 a los demás meses
+            }
+          }
+
+      } else {
+          console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
+      }
+  });
+},
 
 
       // Evento para la primera tabla
-      onPerfilChangeTabla1: function (oEvent) {
-        this.updateRowData(oEvent, "table_dimicFecha"); // Reemplaza con el ID de tu primera tabla
+    /*  onPerfilChangeTabla1: function (oEvent) {
+        this.updateRowData(oEvent, ["table_dimicFecha", "tablaConsuExter", "tablaRecExterno"]);
       },
 
+
+
+
       //---- MEtodo seleccion de items  y cambio ------
-      updateRowData: function (oEvent, oTableId) {
+     updateRowData: function (oEvent, oTableId) {
         // Obtén el ID del Select que ha generado el evento
         const oSource = oEvent.getSource();
 
@@ -854,7 +1001,7 @@ sap.ui.define([
 
           },
           "CG4.C": {
-            PMJ: 182.72,
+            PMJ: 186.72,
             "2024": 5.00,
             "2025": 0.00,
             "2026": 0.00,
@@ -879,7 +1026,35 @@ sap.ui.define([
             "2027": 0.00,
             "2028": 0.00,
             "2029": 0.00,
+          },
+          "CG3": {
+            PMJ: 408.81,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "CG2": {
+            PMJ: 520.79,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "CG1": {
+            PMJ: 656.80,
+            "2024": 51.93,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
           }
+
 
         };
 
@@ -921,7 +1096,7 @@ sap.ui.define([
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
-      },
+      },*/
       //----------------------------------------------
 
 
@@ -947,18 +1122,19 @@ sap.ui.define([
         const sClienteFunc = this.byId("int_clienteFun").getValue();
         const sObjetivoAlcance = this.byId("idObje").getValue();
         const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+        const sDatosExtra = this.byId("area0").getValue();
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
 
 
- // Instanciar el formateador de fechas
- var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
-  pattern: "yyyy-MM-dd'T'HH:mm:ss" // Formato requerido por OData
-});
+        // Instanciar el formateador de fechas
+        var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+          pattern: "yyyy-MM-dd'T'HH:mm:ss" // Formato requerido por OData
+        });
 
-// Formatear las fechas a texto en el formato correcto
-const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
-const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
+        // Formatear las fechas a texto en el formato correcto
+        const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
+        const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
 
 
 
@@ -977,20 +1153,20 @@ const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
         // Función de validación
         const validateField = (control, value, fieldName) => {
           if (!value || (typeof value === 'string' && value.trim() === "")) {
-              control.setValueState("Error");
-              control.setValueStateText("Este campo es obligatorio");
-              errorCount++;
-  
-              // Agregar el nombre del campo al array
-              if (!incompleteFields.includes(fieldName)) {
-                  incompleteFields.push(fieldName);
-              }
-  
+            control.setValueState("Error");
+            control.setValueStateText("Este campo es obligatorio");
+            errorCount++;
+
+            // Agregar el nombre del campo al array
+            if (!incompleteFields.includes(fieldName)) {
+              incompleteFields.push(fieldName);
+            }
+
           } else {
-              control.setValueState("None");
+            control.setValueState("None");
           }
-      };
-  
+        };
+
 
         // Validar cada campo
         validateField(this.byId("input0"), scodigoProyect, "Código del Proyecto");
@@ -1005,7 +1181,7 @@ const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
 
           const message = `Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`;
           sap.m.MessageBox.warning(message, {
-              title: "Advertencia"
+            title: "Advertencia"
           });
 
           const oIconTabFilter = this.byId("idIniu");
@@ -1030,27 +1206,28 @@ const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
           Fechainicio: sFechaIniFormatted,
           FechaFin: sFechaFinFormatted,
           Seguimiento_ID: sSelectKeySegui,
-          EjecucionVia_ID : sSelectKeyEjcu,
+          EjecucionVia_ID: sSelectKeyEjcu,
           AmReceptor_ID: sSelectKeyAmrep,
-          clienteFuncional_ID : sSelectKeyClienNuevo,
+          clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
+          datosExtra : sDatosExtra,
 
         };
 
 
-/*
-// Solo añadir Fechainicio y FechaFin si tienen un valor válido
-if (sFechaIni) {
-  payload.Fechainicio = sFechaIni.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
-      console.log(sFechaFin);
-  //    console.log(Fechainicio);
-
-}
-
-if (sFechaFin) {
-  payload.FechaFin = sFechaFin.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
-
-}*/
+        /*
+        // Solo añadir Fechainicio y FechaFin si tienen un valor válido
+        if (sFechaIni) {
+          payload.Fechainicio = sFechaIni.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
+              console.log(sFechaFin);
+          //    console.log(Fechainicio);
+        
+        }
+        
+        if (sFechaFin) {
+          payload.FechaFin = sFechaFin.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
+        
+        }*/
 
 
 
@@ -1108,7 +1285,7 @@ if (sFechaFin) {
 
               await this.insertCosumoExterno(generatedId);
 
-              await this.insertRecursoExterno(generatedId); 
+              await this.insertRecursoExterno(generatedId);
 
               await this.insertarOtrosConceptos(generatedId);
 
@@ -1178,7 +1355,11 @@ if (sFechaFin) {
         var oTablaFac = this.byId("table0");
         var itemsF = oTablaFac.getItems();
         var DataFac = [];
+       var totalFacturacion = parseInt(this.byId("text73_172746565340567").getText(), 10);
 
+    //   const totalFacturacion = this._totalOferta;
+
+        console.log("Total facturación:", totalFacturacion);
 
         itemsF.forEach(function (oItem) {
           // Obtener las celdas (inputs) de la fila
@@ -1206,7 +1387,7 @@ if (sFechaFin) {
                   fechaEstimida: sFormattedDate,
                   descripcionHito: descripcionHito,
                   facturacion: facturacion,
-                  total: 0, // Total puede calcularse si es necesario
+                  total: totalFacturacion, // Total puede calcularse si es necesario
                   datosProyect_ID: generatedId // ID del proyecto
                 });
               } else {
@@ -1695,13 +1876,13 @@ if (sFechaFin) {
           }
         }
       },
- //-----------------------------------------------------------
+      //-----------------------------------------------------------
 
 
 
-  //------------RECURSO EXTERNO ------------------------
+      //------------RECURSO EXTERNO ------------------------
 
-     insertRecursoExterno: async function (generatedId) {
+      insertRecursoExterno: async function (generatedId) {
         // Obtener la tabla por su ID
         const oTable = this.byId("tablaRecExterno");
 
@@ -1900,130 +2081,131 @@ if (sFechaFin) {
       },
 
 
-  insertarOtrosConceptos: async function (generatedId) {
- // Obtener la tabla por su ID
- const oTable = this.byId("table0_1724413700665");
+      insertarOtrosConceptos: async function (generatedId) {
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table0_1724413700665");
 
- // Obtener todos los elementos del tipo ColumnListItem
- const aItems = oTable.getItems();
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
 
- // Iterar sobre cada fila
- for (let i = 0; i < aItems.length; i++) {
-   const oItem = aItems[i];  // Obtener la fila actual
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
 
-   // Obtener los controles dentro de cada celda
-   const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-   const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
-   const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
-   const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
-   const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
 
 
-   // Validar si todos los datos son válidos
-   if (!sVertical  || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-     sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-     return; // Si hay un error, no se envía la solicitud
-   }
+          // Validar si todos los datos son válidos
+          if (!sVertical || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
 
-   // Construir el payload para cada fila
-   const payload = {
-     Vertical_ID: sVertical,
-     ConceptoOferta: sConcepto,
-     PMJ: sPMJ,
-     total: sTotal,
-     totalC: stotalRe,
-     datosProyect_ID: generatedId
-    };
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalC: stotalRe,
+            datosProyect_ID: generatedId
+          };
 
-   try {
-     // Hacer el fetch de manera asincrónica para cada fila
-     const response = await fetch("/odata/v4/datos-cdo/otrosConceptos", {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json"
-       },
-       body: JSON.stringify(payload)
-     });
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/otrosConceptos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
 
-     if (response.ok) {
-       const result = await response.json();
-       const idOtrosConcep = result.ID; 
-        await this.insertarLicencia(idOtrosConcep);
+            if (response.ok) {
+              const result = await response.json();
+              const idOtrosConcep = result.ID;
+              await this.insertarLicencia(idOtrosConcep);
 
-       console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
-     } else {
-       const errorMessage = await response.text();
-       console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-       sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
-     }
-   } catch (error) {
-     console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-     sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
-   }
- }
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
       },
 
+      
       insertarLicencia: async function (idOtrosConcep) {
 
-// Obtener la tabla por su ID
-const oTable = this.byId("table0_1727955577124");
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table0_1727955577124");
 
-// Obtener todos los elementos del tipo ColumnListItem
-const aItems = oTable.getItems();
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
 
-// Iterar sobre cada fila
-for (let i = 0; i < aItems.length; i++) {
-  const oItem = aItems[i];  // Obtener la fila actual
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
 
-  // Obtener los controles dentro de cada celda
-  const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-  const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
-  const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
-  const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
-  const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
-
-
-  // Validar si todos los datos son válidos
-  if (!sVertical  || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-    sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-    return; // Si hay un error, no se envía la solicitud
-  }
-
-  // Construir el payload para cada fila
-  const payload = {
-    Vertical_ID: sVertical,
-    ConceptoOferta: sConcepto,
-    PMJ: sPMJ,
-    total: sTotal,
-    totalC: stotalRe,
-    otrosConceptos_ID: idOtrosConcep
-   };
-
-  try {
-    // Hacer el fetch de manera asincrónica para cada fila
-    const response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      const result = await response.json();
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
+          const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
 
 
-      console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
-    } else {
-      const errorMessage = await response.text();
-      console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-      sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
-    }
-  } catch (error) {
-    console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-    sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
-  }
-}
+          // Validar si todos los datos son válidos
+          if (!sVertical || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            total: sTotal,
+            totalC: stotalRe,
+            otrosConceptos_ID: idOtrosConcep
+          };
+
+          try {
+            // Hacer el fetch de manera asincrónica para cada fila
+            const response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
 
 
       },
@@ -2311,94 +2493,101 @@ for (let i = 0; i < aItems.length; i++) {
        },*/
 
 
-       metodoSumar: function () {
+      metodoSumar: function () {
+
+        
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
         var totalOferta = 0;
-    
+
         console.log("Cantidad de filas en la tabla:", aItems.length);
-    
+
         // Iterar solo sobre las filas de datos (excluyendo la última)
         aItems.forEach(function (oItem, index) {
-            // Verifica si es la fila de total (última fila)
-            if (index < aItems.length - 1) { // Excluye la última fila
-                var aCells = oItem.getCells();
-                var valueOferta = "";
-    
-                // Obtiene el valor de la segunda celda (columna de Oferta)
-                var ofertaCell = aCells[1];
-    
-                // Verifica si la celda es de tipo Input y obtiene el valor
-                if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
-                    valueOferta = ofertaCell.getValue();
-                }
-    
-                // Limpiar espacios y convertir a número
-                valueOferta = valueOferta.trim();
-                var numericValue = parseFloat(valueOferta);
-    
-                // Imprimir para depuración
-                console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
-    
-                // Solo sumar si valueOferta es un número válido
-                if (!isNaN(numericValue)) {
-                    totalOferta += numericValue; // Solo sumar si es un número
-                    console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
-                }
-            }
-        });
-    
-        // Actualiza el control Text con el total de la oferta
-        this.byId("text73_172746565340567").setText(totalOferta.toFixed(2));
-    
-        console.log("Total de la columna oferta:", totalOferta);
-    },
-    
-
-    metodoSumarFac: function () {
-      var oTablaFac = this.byId("table0");
-      var aItems = oTablaFac.getItems();
-      var totalOferta = 0;
-  
-      console.log("Cantidad de filas en la tabla:", aItems.length);
-  
-      // Iterar solo sobre las filas de datos (excluyendo la última)
-      aItems.forEach(function (oItem, index) {
           // Verifica si es la fila de total (última fila)
           if (index < aItems.length - 1) { // Excluye la última fila
-              var aCells = oItem.getCells();
-              var valueOferta = "";
-  
-              // Obtiene el valor de la segunda celda (columna de Oferta)
-              var ofertaCell = aCells[2];
-  
-              // Verifica si la celda es de tipo Input y obtiene el valor
-              if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
-                  valueOferta = ofertaCell.getValue();
-              }
-  
-              // Limpiar espacios y convertir a número
-              valueOferta = valueOferta.trim();
-              var numericValue = parseFloat(valueOferta);
-  
-              // Imprimir para depuración
-              console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
-  
-              // Solo sumar si valueOferta es un número válido
-              if (!isNaN(numericValue)) {
-                  totalOferta += numericValue; // Solo sumar si es un número
-                  console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
-              }
+            var aCells = oItem.getCells();
+            var valueOferta = "";
+
+            // Obtiene el valor de la segunda celda (columna de Oferta)
+            var ofertaCell = aCells[1];
+
+            // Verifica si la celda es de tipo Input y obtiene el valor
+            if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+              valueOferta = ofertaCell.getValue();
+            }
+
+            // Limpiar espacios y convertir a número
+            valueOferta = valueOferta.trim();
+            var numericValue = parseFloat(valueOferta);
+
+            // Imprimir para depuración
+            console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+
+            // Solo sumar si valueOferta es un número válido
+            if (!isNaN(numericValue)) {
+              totalOferta += numericValue; // Solo sumar si es un número
+              console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+            }
           }
-      });
-  
-      // Actualiza el control Text con el total de la oferta
-      this.byId("text73_172746565340569997").setText(totalOferta.toFixed(2));
-  
-      console.log("Total de la columna oferta:", totalOferta);
-  },
-  
-    
+        });
+
+        // Actualiza el control Text con el total de la oferta
+        this.byId("text73_172746565340567").setText(totalOferta.toFixed(2));
+
+          
+        console.log("Total de la columna oferta:", totalOferta);
+
+
+         this._totalOferta = totalOferta;
+
+      },
+
+
+      metodoSumarFac: function () {
+        var oTablaFac = this.byId("table0");
+        var aItems = oTablaFac.getItems();
+        var totalOferta = 0;
+
+        console.log("Cantidad de filas en la tabla:", aItems.length);
+
+        // Iterar solo sobre las filas de datos (excluyendo la última)
+        aItems.forEach(function (oItem, index) {
+          // Verifica si es la fila de total (última fila)
+          if (index < aItems.length - 1) { // Excluye la última fila
+            var aCells = oItem.getCells();
+            var valueOferta = "";
+
+            // Obtiene el valor de la segunda celda (columna de Oferta)
+            var ofertaCell = aCells[2];
+
+            // Verifica si la celda es de tipo Input y obtiene el valor
+            if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+              valueOferta = ofertaCell.getValue();
+            }
+
+            // Limpiar espacios y convertir a número
+            valueOferta = valueOferta.trim();
+            var numericValue = parseFloat(valueOferta);
+
+            // Imprimir para depuración
+            console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+
+            // Solo sumar si valueOferta es un número válido
+            if (!isNaN(numericValue)) {
+              totalOferta += numericValue; // Solo sumar si es un número
+              console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+            }
+          }
+        });
+
+        // Actualiza el control Text con el total de la oferta
+        this.byId("text73_172746565340569997").setText(totalOferta.toFixed(2));
+
+        console.log("Total de la columna oferta:", totalOferta);
+      },
+
+
 
       /*   insertClientFactura: async function (generatedId) {
            //Tabla facturacion 
@@ -2581,110 +2770,205 @@ for (let i = 0; i < aItems.length; i++) {
           console.error("No se encontró la tabla con ID: " + sTableId);
         }
       },
-      //--------------------------
+      //--------------------------------------------
 
 
 
-      // Fechas dinamicas y tabla dinamica  
+      // Fechas dinamicas y tabla dinamica---------  
       onDateChange: function () {
         this.updateVizFrame();
       },
-      //----------------------------------
+      //-------------------------------------------
 
+        // Método para manejar las dinámicas de fechas
+        fechasDinamicas: function (oEvent) {
+          // Obtener las fechas seleccionadas de los DatePickers
+          var startDatePicker = this.getView().byId("date_inico");
+          var endDatePicker = this.getView().byId("date_fin");
 
+          // Comprobar si los DatePickers tienen valores seleccionados
+          if (!startDatePicker || !endDatePicker) {
+              console.error("Error: No se pudieron obtener los DatePickers.");
+              return;
+          }
 
-      fechasDinamicas: function (oEvent) {
+          var startDate = startDatePicker.getDateValue();
+          var endDate = endDatePicker.getDateValue();
+
+          // Si las fechas no están definidas, salir de la función
+          if (!startDate || !endDate) {
+              console.log("Esperando a que se seleccionen ambas fechas.");
+              return;
+          }
+
+          // Calcular el número de meses en el rango
+          var diffMonths = this.getMonthsDifference(startDate, endDate);
+
+          // Definir las IDs de las tablas
+          var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno", "idOtroserConsu" , "idGastoViajeConsu" , "idServiExterno" , "idGastoRecuExter" , "table0_1724413700665" , "table0_1727955577124"];
+
+          // Iterar sobre cada tabla
+          tableIds.forEach(function (tableId) {
+              var oTable = this.getView().byId(tableId);
+              if (!oTable) {
+                  console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+                  return;
+              }
+
+              var totalColumnIndex = this.findTotalColumnIndex(oTable);
+
+              // Eliminar las columnas dinámicas existentes después de la columna encontrada
+              var columnCount = oTable.getColumns().length;
+              for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+                  oTable.removeColumn(j);
+              }
+
+              // Agregar nuevas columnas
+              for (var i = 0; i <= diffMonths; i++) {
+                  var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+                  var year = columnDate.getFullYear();
+                  var month = columnDate.toLocaleString("default", { month: "long" });
+                  var columnHeaderText = year + "-" + month;
+                  var oColumn = new sap.m.Column({
+                      header: new sap.m.Label({ text: columnHeaderText }),
+                      width: "100px",
+                  });
+                  oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+              }
+
+              // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+              var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+              if (oScrollContainer) {
+                  oScrollContainer.setHorizontal(true);
+                  oScrollContainer.setVertical(false);
+                  oScrollContainer.setWidth("100%");
+              }
+
+              console.log("startDate:", startDate);
+              console.log("endDate:", endDate);
+          }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
+      },
+
+      // Método para encontrar el índice de la columna 'Total1'
+      findTotalColumnIndex: function (oTable) {
+          var columns = oTable.getColumns();
+          var lastColumnIndex = columns.length - 1;  // Índice de la última columna
+
+          // Buscar la columna 'Total1'
+          for (var i = 0; i < columns.length; i++) {
+              var headerLabel = columns[i].getHeader();
+              if (headerLabel && headerLabel.getText() === "Total1") {
+                  return i;  // Devuelve el índice de la columna 'Total1'
+              }
+          }
+
+          // Si no encuentra 'Total1', devolver el índice de la última columna
+          console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+          return lastColumnIndex + 1; // Devuelve el índice justo después de la última columna
+      },
+
+      // Método para calcular la diferencia en meses entre dos fechas
+      getMonthsDifference: function (startDate, endDate) {
+          var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+          diffMonths -= startDate.getMonth();
+          diffMonths += endDate.getMonth();
+          return diffMonths;
+      },
+
+    
+
+    /*  fechasDinamicas: function (oEvent) {
         // Obtener las fechas seleccionadas de los DatePickers
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
-    
+
         // Comprobar si los DatePickers tienen valores seleccionados
         if (!startDatePicker || !endDatePicker) {
-            console.error("Error: No se pudieron obtener los DatePickers.");
-            return;
+          console.error("Error: No se pudieron obtener los DatePickers.");
+          return;
         }
-    
+
         var startDate = startDatePicker.getDateValue();
         var endDate = endDatePicker.getDateValue();
-    
+
         // Si las fechas no están definidas, salir de la función
         if (!startDate || !endDate) {
-            console.log("Esperando a que se seleccionen ambas fechas.");
-            return;
+          console.log("Esperando a que se seleccionen ambas fechas.");
+          return;
         }
-    
+
         // Calcular el número de meses en el rango
         var diffMonths = this.getMonthsDifference(startDate, endDate);
-    
+
         // Definir las IDs de las tablas
         var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno"];
-    
+
         // Iterar sobre cada tabla
         tableIds.forEach(function (tableId) {
-            var oTable = this.getView().byId(tableId);
-            if (!oTable) {
-                console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-                return;
-            }
-    
-            var totalColumnIndex = this.findTotalColumnIndex(oTable);
-    
-            // Eliminar las columnas dinámicas existentes después de la columna encontrada
-            var columnCount = oTable.getColumns().length;
-            for (var j = columnCount - 1; j > totalColumnIndex; j--) {
-                oTable.removeColumn(j);
-            }
-    
-            // Agregar nuevas columnas
-            for (var i = 0; i <= diffMonths; i++) {
-                var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-                var year = columnDate.getFullYear();
-                var month = columnDate.toLocaleString("default", { month: "long" });
-                var columnHeaderText = year + "-" + month;
-                var oColumn = new sap.m.Column({
-                    header: new sap.m.Label({ text: columnHeaderText }),
-                    width: "100px",
-                });
-                oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-            }
-    
-            // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
-            var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-            if (oScrollContainer) {
-                oScrollContainer.setHorizontal(true);
-                oScrollContainer.setVertical(false);
-                oScrollContainer.setWidth("100%");
-            }
-    
-            console.log("startDate:", startDate);
-            console.log("endDate:", endDate);
+          var oTable = this.getView().byId(tableId);
+          if (!oTable) {
+            console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+            return;
+          }
+
+          var totalColumnIndex = this.findTotalColumnIndex(oTable);
+
+          // Eliminar las columnas dinámicas existentes después de la columna encontrada
+          var columnCount = oTable.getColumns().length;
+          for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+            oTable.removeColumn(j);
+          }
+
+          // Agregar nuevas columnas
+          for (var i = 0; i <= diffMonths; i++) {
+            var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            var year = columnDate.getFullYear();
+            var month = columnDate.toLocaleString("default", { month: "long" });
+            var columnHeaderText = year + "-" + month;
+            var oColumn = new sap.m.Column({
+              header: new sap.m.Label({ text: columnHeaderText }),
+              width: "100px",
+            });
+            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+          }
+
+          // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+          if (oScrollContainer) {
+            oScrollContainer.setHorizontal(true);
+            oScrollContainer.setVertical(false);
+            oScrollContainer.setWidth("100%");
+          }
+
+          console.log("startDate:", startDate);
+          console.log("endDate:", endDate);
         }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
-    },
-    
-    findTotalColumnIndex: function (oTable) {
+      },
+
+      findTotalColumnIndex: function (oTable) {
         var columns = oTable.getColumns();
         var lastColumnIndex = columns.length - 1;  // Índice de la última columna
-    
+
         // Buscar la columna 'Total1'
         for (var i = 0; i < columns.length; i++) {
-            var headerLabel = columns[i].getHeader();
-            if (headerLabel && headerLabel.getText() === "Total1") {
-                return i;  // Devuelve el índice de la columna 'Total1'
-            }
+          var headerLabel = columns[i].getHeader();
+          if (headerLabel && headerLabel.getText() === "Total1" ) {
+            return i;  // Devuelve el índice de la columna 'Total1'
+          }
         }
-    
+
         // Si no encuentra 'Total1', devuelve el índice de la última columna
         console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
         return lastColumnIndex;
-    },
-    
-    getMonthsDifference: function (startDate, endDate) {
+      },
+
+      getMonthsDifference: function (startDate, endDate) {
         var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
         diffMonths -= startDate.getMonth();
         diffMonths += endDate.getMonth();
         return diffMonths;
-    },
-    
+      },
+*/
       //------------------------------------------------------------------------
 
 
@@ -2751,7 +3035,6 @@ for (let i = 0; i < aItems.length; i++) {
         var sNombrePro = this.byId("input1").getValue();
         var sClienteFact = this.byId("id_Cfactur").getValue();
         var sClienteFuncio = this.byId("int_clienteFun").getValue();
-        console.log(sCodeValue, sNombrePro);
 
         var oSelect2 = this.byId("slct_area");
         var sSelectValue2 = "";
@@ -2760,8 +3043,6 @@ for (let i = 0; i < aItems.length; i++) {
         if (oSelect2 && oSelect2.getSelectedItem()) {
           sSelectValue2 = oSelect2.getSelectedItem().getText();
           sKey2 = oSelect2.getSelectedItem().getKey();
-          console.log("Selected Key:", sKey2);
-          console.log("Selected Text:", sSelectValue2);
         }
 
         var oSelect1 = this.byId("slct_Jefe");
@@ -2769,7 +3050,6 @@ for (let i = 0; i < aItems.length; i++) {
 
         if (oSelect1 && oSelect1.getSelectedItem()) {
           sSelectValue1 = oSelect1.getSelectedItem().getText();
-          console.log("Selected Jefe Text:", sSelectValue1);
         }
 
         var oSelect3 = this.byId("slct_client");
@@ -2777,7 +3057,6 @@ for (let i = 0; i < aItems.length; i++) {
 
         if (oSelect3 && oSelect3.getSelectedItem()) {
           sSelectValue3 = oSelect3.getSelectedItem().getText();
-          console.log("Selected Function Text:", sSelectValue3);
         }
 
         var oStartDatePicker = this.byId("date_inico");
@@ -2796,7 +3075,6 @@ for (let i = 0; i < aItems.length; i++) {
 
         if (oSelect4 && oSelect4.getSelectedItem()) {
           sSelectValue4 = oSelect4.getSelectedItem().getText();
-          console.log("Selected Function Text:", sSelectValue4);
         }
 
 
@@ -2805,7 +3083,6 @@ for (let i = 0; i < aItems.length; i++) {
 
         if (oselectPerf5 && oselectPerf5.getSelectedItem()) {
           sSelectValue5 = oselectPerf5.getSelectedItem().getText();
-          console.log("Selected Function Text:", sSelectValue5);
         }
 
         var oDatePicker = this.byId("date_fin");
@@ -2818,9 +3095,6 @@ for (let i = 0; i < aItems.length; i++) {
           }).format(sDateValue);
         }
 
-        // Imprime las fechas formateadas
-        console.log("Formatted Start Date: ", sFormattedDateIni);
-        console.log("Formatted End Date: ", sFormattedDate);
 
         this.byId("txt_codig").setText(sCodeValue);
         this.byId("txt_nomPro").setText(sNombrePro);
@@ -3118,214 +3392,6 @@ for (let i = 0; i < aItems.length; i++) {
          },*/
       //------------------------------------------------- 
 
-      // ---------- Metodo Save ----------------- 
-      /*    onSave: async function (oEvent) {
-    
-    
-            let errorCount = 0;
-    
-    
-            const sProjectID = this._sProjectID; // Aquí usamos el ID del proyecto almacenado en _onObjectMatched
-    
-            const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
-    
-            const snameProyect = this.byId("input1").getValue();
-    
-            const spluriAnual = this.byId("box_pluriAnual").getSelected();
-    
-            const sClienteFac = this.byId("id_Cfactur").getValue();
-    
-            const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-    
-            const sFechaIni = this.byId("date_inico").getDateValue();
-    
-            const sFechaFin = this.byId("date_fin").getDateValue();
-    
-            const sClienteFunc = this.byId("int_clienteFun").getValue();
-    
-            const sObjetivoAlcance = this.byId("idObje").getValue();
-    
-            const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-    
-    
-    
-            // Accede al control Select usando su ID
-    
-            var oSelect = this.byId("idNatu");
-    
-            var sSelectedKey = oSelect.getSelectedKey();
-    
-            var oselectA = this.byId("slct_area");
-    
-            var sSelecKeyA = oselectA.getSelectedKey();
-    
-            var oSelectJe = this.byId("slct_Jefe");
-    
-            var sSelecKeyJe = oSelectJe.getSelectedKey();
-    
-            var oSelectInic = this.byId("slct_inic");
-    
-            var sSelectKeyIni = oSelectInic.getSelectedKey();
-    
-            var oSelectSegui = this.byId("selc_Segui");
-    
-            var sSelectKeySegui = oSelectSegui.getSelectedKey();
-    
-            var oSelectEjecu = this.byId("selc_ejcu");
-    
-            var sSelectKeyEjcu = oSelectEjecu.getSelectedKey();
-    
-            var oSelectVerti = this.byId("slct_verti");
-    
-            var sSelectKeyVerti = oSelectVerti.getSelectedKey();
-    
-            var oSelectAmRep = this.byId("selct_Amrecp");
-    
-            var sSelectKeyAmrep = oSelectAmRep.getSelectedKey();
-    
-    
-            // Función para verificar campo vacío y marcar error
-    
-            const validateField = (control, value) => {
-    
-              if (!value || (typeof value === 'string' && value.trim() === "")) {
-    
-                control.setValueState("Error");
-    
-                control.setValueStateText("Este campo es obligatorio");
-    
-                errorCount++;
-    
-              } else {
-    
-                control.setValueState("None");
-    
-              }
-    
-            };
-    
-    
-    
-            // Validar cada campo
-    
-            validateField(this.byId("input0"), scodigoProyect);
-    
-            validateField(this.byId("input1"), snameProyect);
-    
-            validateField(this.byId("id_Cfactur"), sClienteFac);
-    
-            validateField(this.byId("int_clienteFun"), sClienteFunc);
-    
-            validateField(this.byId("idNatu"), sSelectedKey);
-    
-    
-    
-            // Si hay errores, actualizar IconTabFilter y detener el envío
-    
-            if (errorCount > 0) {
-    
-              const oIconTabFilter = this.byId("idIniu");
-    
-              oIconTabFilter.setCount(errorCount);
-    
-              return; // Detener el proceso si hay errores
-    
-            }
-    
-    
-    
-    
-    
-            // Prepara el payload /  / Creación delPayload
-    
-            const payload = {
-    
-              codigoProyect: scodigoProyect,
-    
-              nameProyect: this.byId("input1").getValue(),
-    
-              pluriAnual: spluriAnual,
-    
-              clienteFacturacion: sClienteFac,
-    
-              multijuridica: sMultiJuri,
-    
-              Fechainicio: sFechaIni,
-    
-              FechaFin: sFechaFin,
-    
-              clienteFuncional: sClienteFunc,
-    
-              Naturaleza_ID: sSelectedKey,
-    
-              Area_ID: sSelecKeyA,
-    
-              Iniciativa_ID: sSelectKeyIni,
-    
-              jefeProyectID_ID: sSelecKeyJe,
-    
-              objetivoAlcance: sObjetivoAlcance,
-    
-              AsuncionesyRestricciones: sAsunyRestric,
-    
-              Vertical_ID: sSelectKeyVerti,
-    
-              //          AmReceptor_ID : sSelectKeyAmrep
-          //    planificaciones: aChartData
-            };
-    
-    
-    
-    
-    
-              try {
-    
-            let response;
-            if (sProjectID) {
-              console.log(sProjectID);
-                // Si hay un ID, es una actualización (PATCH)
-                response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectID})`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } else {
-                // Si no hay ID, es una creación (POST)
-                response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-    
-                
-    
-    
-            }
-    
-            if (response.ok) {
-                const result = await response.json();
-                const generatedId = result.ID || sProjectID;
-                console.log("Guardado con éxito. ID:", generatedId);
-    
-                // Navegar de vuelta a la vista principal o hacer lo que necesites después de guardar
-                const oRouter = this.getOwnerComponent().getRouter();
-                oRouter.navTo("app", {
-                    newId: generatedId
-                });
-    
-                console.log(oRouter);
-            } else {
-                const errorMessage = await response.text();
-                console.log("Error al guardar el proyecto:", errorMessage);
-            }
-        } catch (error) {
-          console.log("Error en la llamada al servicio:", error);
-        }
-    },*/
 
 
 
