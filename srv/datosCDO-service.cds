@@ -35,5 +35,6 @@ service DatosCDOService {
     entity otrosServiciosConsu as projection on datos.otrosServiciosConsu;
     entity GastoViajeConsumo as projection on datos.GastoViajeConsumo;
     entity tableProcessFlow  as projection on datos.tableProcessFlow;
+    entity PerfilConsumo as projection on datos.PerfilConsumo;
 
 }

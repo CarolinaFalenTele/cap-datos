@@ -14,7 +14,7 @@
 <content>
     <VBox id="vbox1230">
         <items>
-            <ObjectHeader id="oh1" responsive="true" fullScreenOptimized="true" intro="Comite de oportunidades" title="Ficha Solicitud Aprobación Proyecto - Comité de Oportunidades" numberUnit="" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header">
+            <ObjectHeader id="oh1" responsive="true" fullScreenOptimized="true" intro="Comite de oportunidades" title="Ficha Solicitud Aprobación Proyecto - Comité de Oportunidades" numberUnit="" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header miHeader">
                         <ObjectAttribute id="dddtg" title="Email address" text="DeniseSmith@sap.com" active="true"/>
                         <ObjectAttribute id="nolmd" title="Office Phone" text="+33 6 453 564"/>
                         <ObjectAttribute id="unam" title="Area" text="Development"/>
@@ -26,7 +26,7 @@
                             <ObjectMarker id="23443" type="Favorite"/>
                         </markers>
             <headerContainer>
-                <IconTabBar id="itb1333" selectedKey="key2" upperCase="true">
+                <IconTabBar id="itb1333" selectedKey="key2" upperCase="true" select="onTabSelect">
                     <items>
                     <!--    <IconTabFilter id="234h" text="Info" count="" key="key1">
                             <l:VerticalLayout id="274143" class="sapUiContentPadding" width="100%">
@@ -756,12 +756,12 @@
                                                         </Table>
                                                     </items>
                                                 </FlexBox>
-                                                <FlexBox width="100%" id="box0_1714747137718" class="sapUiTinyMargin">
+                                                <FlexBox width="2000px" id="box0_1714747137718" class="sapUiTinyMargin">
                                                     <items>
                                                         <ScrollContainer id="scroll_container" width="100%" height="auto">
                                                                <Button id="d4855h" text="Añadir Fila" press="onAddRowPress('table_dimicFecha')"/>
 
-                                                     <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="2000px">
+                                                     <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="auto">
                                                                 <headerToolbar>
                                                                     <Toolbar id="toolbr1">
                                                                         <Title text="Recursos Interno" id="tituo1" class="customTextColor"/>
@@ -953,12 +953,12 @@
                                                 </FlexBox>
 
 
-                                                <FlexBox width="100%" id="box0_1727879568594">
+                                                <FlexBox width="2000px" id="box0_1727879568594">
                                                     <items>
                                                       <ScrollContainer id="scroll_container23" width="100%" height="auto">
                                                         
 
-                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="2000px">
+                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="auto">
                                                             <items>
                                                                  <ColumnListItem id="item3_1723544157941">
                                                                     <cells>
@@ -984,11 +984,11 @@
 
                                                                         <Input xmlns="sap.m" value="" id="input0_17235423780"/>
                                                                         <Text xmlns="sap.m" id="pmj1" text=""/>
-                                                                        <Text xmlns="sap.m" id="text25_172354240710"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723542467727"/>
-                                                                        <Text xmlns="sap.m" id="text2767"/>
-                                                                        <Text xmlns="sap.m" id="text2558"/>
-                                                                        <Text xmlns="sap.m" id="text2559"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_172354240710"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_1723542467727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2767"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2558"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2559"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17235424030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_17251572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_172354299"/>
@@ -1058,11 +1058,11 @@
                                                 </FlexBox>
 
 
-                                                <FlexBox width="100%" id="box0_1727879817594">
+                                                <FlexBox width="2000px" id="box0_1727879817594">
                                                    
                                                     <items>
                                                      <ScrollContainer id="scroll_container2983" width="100%" height="auto">
-                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879940116" width="2000px">
+                                                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879940116" width="auto">
                                                             <items>
                                                                 <ColumnListItem id="item0_172354393445">
                                                                         <cells>
@@ -1094,6 +1094,7 @@
                                                                         <Text xmlns="sap.m" text="" id="text368"/>
                                                                         <Text xmlns="sap.m" text="" id="text3887"/>
                                                                         <Text xmlns="sap.m" text="" id="text3888"/>
+                                                                        <Text xmlns="sap.m" text="" id="text69_1729178343561"/>
                                                                         </cells>
                                                                     </ColumnListItem>
 
@@ -1185,6 +1186,16 @@
                                                                 </Column>
                                                                 <Column id="co6890115">
                                                                 </Column>
+                                                                <Column id="column0_1729178258164">
+                                                                    <header>
+                                                                        <Text text="" id="text66_1729178258164"/>
+                                                                    </header>
+                                                                </Column>
+                                                                <Column id="column1_1729178309307">
+                                                                    <header>
+                                                                        <Text text="" id="text67_1729178309307"/>
+                                                                    </header>
+                                                                </Column>
                                                                 </columns>
                                                                 
                                                                 </Table>
@@ -1192,13 +1203,13 @@
                                                     </items>
                                                 </FlexBox>
                                             
-                                            <FlexBox width="100%" id="box0_1721815443829" class="sapUiTinyMargin">
+                                            <FlexBox width="2000px" id="box0_1721815443829" class="sapUiTinyMargin">
                                             <items>
                                                 <ScrollContainer id="scroll_containe2" width="100%" height="auto">
 
-                                                <Button id="d4855ynh" text="Añadir Fila" press="onAddRowPress('tablaConsuExter')" class="sapUiLargeMarginTop"/>
+                                                <Button id="d4855ynh" text="Añadir Fila" press="onAddRowPress2('tablaConsuExter')" class="sapUiLargeMarginTop"/>
 
-                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaConsuExter" width="2000px">
+                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaConsuExter" width="auto">
                                                         <headerToolbar>
                                                             <Toolbar id="toolbr3">
                                                                 <Title text="Consumo Externo" id="tituo5" class="customTextColor"/>
@@ -1208,22 +1219,22 @@
                                                         <items>
                                                             <ColumnListItem id="item1_1721815314200">
                                                             <cells>
-                                                                <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_1723539571815"/>
-                                                                        </items>
+                                                                </items>
                                                                     
-                                                                </Select>
-                                                                <Select xmlns="sap.m" id="select5" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                            </Select>
+                                                                <Select xmlns="sap.m" id="select5" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item13"/>
                                                                 
-                                                                        </items>
+                                                                    </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select6" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
+                                                                <Select xmlns="sap.m" id="select6" selectedKey="{PerfilConsumo>valuePerfilC}" forceSelection="false" tooltip="Seleccionar un perfil de la lista en caso de estar predefinido en caso contrario, introducir el Perfil y el PMJ aplicable al mismo en la columna PMJ" items="{/PerfilConsumo}" change="selectFuncionchange">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item145"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{nombrePerfilC}" id="item145"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1243,22 +1254,22 @@
                                                             <ColumnListItem id="item0_1723561579633">
                                                                 <cells>
                                                                   
-                                         <Select xmlns="sap.m" id="select2_1723539576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                         <Select xmlns="sap.m" id="select2_1723539576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}"  >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17235395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select2345" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                <Select xmlns="sap.m" id="select2345" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item13888"/>
                                                                 
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select6543" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
+                                                                <Select xmlns="sap.m" id="select6543" selectedKey="{PerfilConsumo>valuePerfilC}" forceSelection="false" tooltip="Seleccionar un perfil de la lista en caso de estar predefinido en caso contrario, introducir el Perfil y el PMJ aplicable al mismo en la columna PMJ" items="{/PerfilConsumo}" change="selectFuncionchange">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item15"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}"  text="{nombrePerfilC}" id="item15"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1280,22 +1291,22 @@
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item1_1723561596033">
                                                                 <cells>
-                                                                        <Select xmlns="sap.m" id="select2_1723559576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                        <Select xmlns="sap.m" id="select2_1723559576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17535395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select23455" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                <Select xmlns="sap.m" id="select23455" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item135888"/>
                                                                 
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select65443" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
+                                                                <Select xmlns="sap.m" id="select65443" selectedKey="{PerfilConsumo>valuePerfilC}" tooltip="Seleccionar un perfil de la lista en caso de estar predefinido en caso contrario, introducir el Perfil y el PMJ aplicable al mismo en la columna PMJ" forceSelection="false" items="{/PerfilConsumo}" change="selectFuncionchange">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item44415"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{nombrePerfilC}" id="item44415"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1389,14 +1400,14 @@
                                             </items>
                                         </FlexBox>
                                             
-                                            <FlexBox width="100%" id="box0_1727948724833">
+                                            <FlexBox width="2000px" id="box0_1727948724833">
                                             
                                                 <items>
 
                                                   <ScrollContainer id="scroll_containe345968" width="100%" height="auto">
 
-                                            
-                                                    <Table noDataText="Drop column list items here and columns in the area above" id="idOtroserConsu" width="2000px">
+
+                                                    <Table noDataText="Drop column list items here and columns in the area above" id="idOtroserConsu" width="auto">
                                             
                                                         <items>
                                             
@@ -1425,12 +1436,12 @@
 
 
 
-                                                                        <Text xmlns="sap.m" id="text29410"/>
-                                                                        <Text xmlns="sap.m" id="text25_172354240710100"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354246701727"/>
-                                                                        <Text xmlns="sap.m" id="text271067"/>
-                                                                        <Text xmlns="sap.m" id="text250158"/>
-                                                                        <Text xmlns="sap.m" id="text255109"/>
+                                                                        <Text xmlns="sap.m" text="" id="text29410"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_172354240710100"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_172354246701727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text271067"/>
+                                                                        <Text xmlns="sap.m" text="" id="text250158"/>
+                                                                        <Text xmlns="sap.m" text="" id="text255109"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723542104030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725157102"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_17235429910"/>
@@ -1459,12 +1470,12 @@
                                                                  <Input xmlns="sap.m" id="input05" tooltip="Codigo Proyecto"/>
 
                                                                       
-                                                                        <Text xmlns="sap.m" id="text2904"/>
-                                                                        <Text xmlns="sap.m" id="text25_1723542710"/>
-                                                                        <Text xmlns="sap.m" id="text26_1723542427"/>
-                                                                        <Text xmlns="sap.m" id="text276007"/>
-                                                                        <Text xmlns="sap.m" id="text25058"/>
-                                                                        <Text xmlns="sap.m" id="text25059"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2904"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_1723542710"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_1723542427"/>
+                                                                        <Text xmlns="sap.m" text="" id="text276007"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25058"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25059"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723540204030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725015072"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_1702354299"/>
@@ -1492,6 +1503,10 @@
                                                        
                                                           
                                                             <Column id="column2_1727948918033">
+                                            
+                                                            </Column>
+
+                                                               <Column id="column2_172794891804533">
                                             
                                                             </Column>
                                             
@@ -1536,13 +1551,13 @@
                                             
                                             </FlexBox>
                                             
-                                            <FlexBox id="box0_1727950351451" width="100%" height="auto">
+                                            <FlexBox id="box0_1727950351451" width="2000px">
                                                          
                                                 <items>
 
                                                 <ScrollContainer id="scroll_containe345" width="100%" height="auto">
                                             
-                                                    <Table noDataText="Drop column list items here and columns in the area above" id="idGastoViajeConsu" width="2000px">
+                                                    <Table noDataText="Drop column list items here and columns in the area above" id="idGastoViajeConsu" width="auto">
                                             
                                                         <items>
                                             
@@ -1567,12 +1582,12 @@
                                                                        
                                                                 <Input xmlns="sap.m" id="input55605"/>
                                                                     
-                                                                      <Text xmlns="sap.m" id="text2943"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235440710"/>
-                                                                        <Text xmlns="sap.m" id="text26_172354246727"/>
-                                                                        <Text xmlns="sap.m" id="text27677"/>
-                                                                        <Text xmlns="sap.m" id="text25578"/>
-                                                                        <Text xmlns="sap.m" id="text25597"/>
+                                                                      <Text xmlns="sap.m" text="" id="text2943"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_17235440710"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_172354246727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text27677"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25578"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25597"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17235424430"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725152572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_17235452299"/>
@@ -1603,12 +1618,12 @@
 
                                                                            <Input xmlns="sap.m" id="input054645"/>
 
-                                                                        <Text xmlns="sap.m" id="text2947"/>
-                                                                        <Text xmlns="sap.m" id="text25_17235424010"/>
-                                                                        <Text xmlns="sap.m" id="text26_17235467727"/>
-                                                                        <Text xmlns="sap.m" id="text2767527"/>
-                                                                        <Text xmlns="sap.m" id="text2418"/>
-                                                                        <Text xmlns="sap.m" id="text25459"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2947"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25_17235424010"/>
+                                                                        <Text xmlns="sap.m" text="" id="text26_17235467727"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2767527"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2418"/>
+                                                                        <Text xmlns="sap.m" text="" id="text25459"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1777235424030"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1724551572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_17235475299"/>
@@ -1668,6 +1683,10 @@
                                                             <Column id="column3_1727950372051">
                                             
                                                             </Column>
+
+                                                               <Column id="column378_1727950372051">
+                                            
+                                                            </Column>
                                             
                                                             <Column id="column1_1727950359287">
                                             
@@ -1682,12 +1701,12 @@
                                                 </items>
                                             </FlexBox>
 
-                                 <FlexBox width="100%" id="box0_17218154429" class="sapUiTinyMargin">
+                                 <FlexBox width="2000px" id="box0_17218154429" class="sapUiTinyMargin">
                             
                                                 <ScrollContainer id="scroll_containe3" width="100%">
-                                          <Button id="d48155ynh" text="Añadir Fila" press="onAddRowPress('tablaRecExterno')" class="sapUiLargeMarginTop"/>
+                                          <Button id="d48155ynh" text="Añadir Fila" press="onAddRowPress3" class="sapUiLargeMarginTop"/>
 
-                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" width="2000px">
+                                               <Table noDataText="Drop column list items here and columns in the area above" id="tablaRecExterno" width="auto">
                                                         <headerToolbar>
                                                             <Toolbar id="toolbr03">
                                                                 <Title text="Recurso Externo" id="tituo500" class="customTextColor"/>
@@ -1710,13 +1729,9 @@
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select16" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item14015"/>
-                                                                    
-                                                                    </items>
-                                                                    
-                                                                </Select>
+   
+                                                               <Input xmlns="sap.m" value="" id="input0_1723652356052643"/>
+
                                                                 <Input xmlns="sap.m" value="" id="input0_172356052643"/>
                                                                 <Text xmlns="sap.m" text="" id="text4801"/>
                                                                 <Text xmlns="sap.m" text="" id="text4902"/>
@@ -1745,13 +1760,9 @@
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select6544" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item1745"/>
-                                                                    
-                                                                    </items>
-                                                                    
-                                                                </Select>
+                                                     
+                                                              <Input xmlns="sap.m" value="" id="inpumt0_172360523"/>
+
                                                                 <Input xmlns="sap.m" value="" id="input0_172360523"/>
 
 
@@ -1784,13 +1795,9 @@
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select065443" selectedKey="{PerfilServicio>valuePerfil}" forceSelection="false" items="{/PerfilServicio}" change="onPerfilChangeTabla1">
-                                                                    <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombrePerfil}" id="item4400415"/>
-                                                                    
-                                                                    </items>
-                                                                    
-                                                                </Select>
+
+                                                              <Input xmlns="sap.m" value="" id="input0_1007210114323"/>
+
                                                                 <Input xmlns="sap.m" value="" id="input0_10072323"/>
                                                                 <Text xmlns="sap.m" text="" id="text4809108"/>
                                                                 <Text xmlns="sap.m" text="" id="text010049"/>
@@ -1886,11 +1893,11 @@
 
 
 
-                        <FlexBox width="100%" id="box0_1727953252765">
+                        <FlexBox width="2000px" id="box0_1727953252765">
                             <items>
                                 <ScrollContainer id="scroll_containe345222" width="100%" height="auto">
 
-                                <Table noDataText="Drop column list items here and columns in the area above" id="idServiExterno" width="2000px">
+                                <Table noDataText="Drop column list items here and columns in the area above" id="idServiExterno" width="auto">
 
 
                                     <items>
@@ -2077,11 +2084,11 @@
                         </FlexBox>
 
 
-                        <FlexBox width="100%" id="box1_1727953468615">
+                        <FlexBox width="2000px" id="box1_1727953468615">
                             <items>
 
                             <ScrollContainer id="scroll_containe341115" width="100%" height="auto">
-                                <Table noDataText="Drop column list items here and columns in the area above" id="idGastoRecuExter" width="2000px">
+                                <Table noDataText="Drop column list items here and columns in the area above" id="idGastoRecuExter" width="auto">
 
 
                                     <items>
@@ -2114,7 +2121,7 @@
                                                                         <Text xmlns="sap.m" text="" id="text26_172354256346727"/>
                                                                         <Text xmlns="sap.m" text="" id="text27656377"/>
                                                                         <Text xmlns="sap.m" text="" id="text255765638"/>
-                                                                        <Text xmlns="sap.m" id="text2556397"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2556397"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725635152572"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_17235465352299"/>
@@ -2331,7 +2338,10 @@
 
                             <ScrollContainer id="scroll_containe4" width="100%" height="auto">
 
-                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724413700665" class="" width="2000px">
+
+                                                <Button id="d4549527462485855ynh" text="Añadir Fila" press="onAddRowPress4" class="sapUiLargeMarginTop"/>
+
+                        <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724413700665" class="" width="auto">
                                                      <headerToolbar>
                                                             <Toolbar id="toolbr6">
                                                                 <Title text="Otros conceptos" id="tituo6" class="customTextColor borderedTable" width="2000px"/>
@@ -2365,6 +2375,33 @@
 
 
                                         <Input xmlns="sap.m" value=" " id="input0_1724422144416"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text69_1729172956538"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text71_1729173066345"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text72_1729173082482"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text73_1729173098474"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text74_1729173156735"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text75_1729173165560"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text76_1729173175636"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text77_1729173187036"/>
+
+
+                                        <Text xmlns="sap.m" text="" id="text78_1729173199360"/>
 
 
 
@@ -2596,16 +2633,17 @@
                                     </header>
 
 
-                                </Column></columns>
+                                </Column>
+                            </columns>
                                 
-                                </Table>
+                        </Table>
                                 </ScrollContainer>
 
                                 </FlexBox>
 
                         
 
-                             <FlexBox width="100%" id="box0_1727955568380">
+                             <FlexBox width="2000px" id="box0_1727955568380">
 
                         
 
@@ -2613,7 +2651,7 @@
 
                         
 
-                                     <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="2000px">
+                                     <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="auto">
 
                         
 
@@ -2645,6 +2683,33 @@
   
                                     <Input xmlns="sap.m" id="input1_1724608279183"/>
 
+  
+                                    <Text xmlns="sap.m" text="" id="text80_1729173297936"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text82_1729173316711"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text83_1729173320937"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text85_1729173332094"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text84_1729173328578"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text87_1729173377445"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text86_1729173336987"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text88_1729173381996"/>
+
+  
+                                    <Text xmlns="sap.m" text="" id="text90_1729173466313"/>
+
 
                                 </cells>
 
@@ -2674,7 +2739,34 @@
                                     <Text xmlns="sap.m" id="text73_1724608398319"/>
 
 
-                                    <Input xmlns="sap.m" id="input2"/>
+                                    <Input xmlns="sap.m" value="" id="input2"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text69_1729177354727"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text67_1729177335361"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text68_1729177339385"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text70_1729177361584"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text71_1729177364955"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text72_1729177370550"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text73_1729177374604"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text74_1729177380906"/>
+
+
+                                    <Text xmlns="sap.m" text="" id="text75_1729177384465"/>
 
 
                                 </cells>
@@ -2776,6 +2868,14 @@
                         
 
                                              <Column id="column1_1727955577123">
+
+                        
+
+                                             </Column>
+
+                        
+
+                                             <Column id="column0_1729173455651">
 
                         
 

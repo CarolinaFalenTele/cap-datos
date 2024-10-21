@@ -140,6 +140,13 @@ entity Area {
         NombreArea : String;
 };
 
+entity PerfilConsumo {
+    key ID         : UUID @cds.auto;
+    nombrePerfilC : String; 
+    valuePerfilC : String; 
+
+    
+}
 
 entity Vertical {
     key ID             : UUID @cds.auto;
@@ -267,7 +274,7 @@ entity ConsumoExternos {
         GastosdeViaje       : arrGastosdeViaje;
         tipoServicio        : Association to TipoServicio;
         Vertical            : Association to Vertical;
-        PerfilServicio      : Association to PerfilServicio;
+        PerfilConsumo      : Association to PerfilConsumo;
         datosProyect_ID     : UUID;
         otrosServiciosConsu : Association to many otrosServiciosConsu
                                   on otrosServiciosConsu.ConsumoExternos_ID = ID;
@@ -311,7 +318,7 @@ entity RecursosExternos {
         GastosdeViaje      : arrGastosdeViaje;
         tipoServicio       : Association to TipoServicio;
         Vertical           : Association to Vertical;
-        PerfilServicio     : Association to PerfilServicio;
+        PerfilServicio     : String;
         serviRecurExter    : Association to many serviRecurExter
                                  on serviRecurExter.RecursosExternos_ID = ID;
         GastoViajeRecExter : Association to many GastoViajeRecExter

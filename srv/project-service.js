@@ -191,7 +191,7 @@ this.on('otrosRecursos', async (req) => {
 
 
 this.on('ConsumoExternos', async (req) => {
-  const { ID, datosProyect_ID,  Vertical_ID, PerfilServicio_ID ,tipoServicio_ID } = req.data;
+  const { ID, datosProyect_ID,  Vertical_ID, PerfilConsumo_ID ,tipoServicio_ID } = req.data;
   // Verifica que ID no esté vacío o nulo
   if (!ID) {
       req.error(400, 'ID is required');
@@ -201,7 +201,7 @@ this.on('ConsumoExternos', async (req) => {
   try {
       const result = await INSERT.into(ConsumoExternos).entries({
 
-        ConceptoOferta, PMJ, total, mesYear,  total , totalC ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID} });
+        ConceptoOferta, PMJ, total, mesYear,  total , totalC ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID}, PerfilConsumo:{ID: PerfilConsumo_ID} });
       
       return result;
 
@@ -269,7 +269,7 @@ this.on('RecursosExternos', async (req) => {
   try {
       const result = await INSERT.into(RecursosExternos).entries({
 
-        ConceptoOferta, PMJ, total, mesYear,  total , totalR ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio :{ID : PerfilServicio_ID} , tipoServicio : {ID: tipoServicio_ID} });
+        ConceptoOferta, PMJ, total, mesYear,  total , totalR ,datosProyect_ID,  Vertical: {ID: Vertical_ID}, PerfilServicio , tipoServicio : {ID: tipoServicio_ID} });
       
       return result;
 

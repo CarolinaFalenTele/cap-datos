@@ -57,7 +57,7 @@ sap.ui.define([
         oVizframe2.setVizProperties({ "title": { "text": "Plan" } })
 
 
-        console.log(oModel);
+        // console.log(oModel);
 
         // Inicializar el gráfico con los datos actuales
         this.updateVizFrame1();
@@ -68,12 +68,19 @@ sap.ui.define([
 
         this.updateVizFrame2();
 
+
       },
+
+
 
 
       //--------------------------------------METODOS TRAER INFORMACION ---------------------------------------
       //--------metodo traerdatos----------------- 
+
+
       highlightControls: function () {
+        console.log("Se cambiaron las pestañas debido a campos vacíos.");
+
         const controlsToHighlight = [
           this.byId("input0"),
           this.byId("input1"),
@@ -108,8 +115,10 @@ sap.ui.define([
         controlsToHighlight.forEach(control => {
           if (control && control.setValueState) {
             control.setValueState("Success");
+
           }
         });
+
 
         // Revertir el ValueState después de 2 segundos
         setTimeout(() => {
@@ -119,6 +128,7 @@ sap.ui.define([
             }
           });
         }, 2000); // 2000 ms = 2 segundos
+
       },
 
 
@@ -260,6 +270,8 @@ sap.ui.define([
         }
       },
       //-------------------------------------------------
+
+
 
       //----------Leer Proveedor------------------------
       leerProveedor: async function (projectID) {
@@ -798,181 +810,33 @@ sap.ui.define([
 
 
 
-// Evento para la primera tabla
-onPerfilChangeTabla1: function (oEvent) {
-  this.updateRowData(oEvent, ["table_dimicFecha", "tablaConsuExter", "tablaRecExterno"]);
-},
-
-//---- Método selección de ítems y cambio para múltiples tablas ----
-updateRowData: function (oEvent, aTableIds) {
-  // Obtén el ID del Select que ha generado el evento
-  const oSource = oEvent.getSource();
-
-  // Lógica para cada tabla
-  aTableIds.forEach((oTableId) => {
-      // Encuentra la tabla
-      var oTable = this.byId(oTableId);
-
-      // Obtén el índice de la fila seleccionada desde el Select
-      var oItem = oSource.getParent(); // Obtiene el ColumnListItem
-      var iIndex = oTable.indexOfItem(oItem); // Obtiene el índice de la fila
-
-      if (iIndex === -1) {
-          console.error(`Índice de la fila no encontrado en la tabla ${oTableId}. Verifica la estructura de la tabla.`);
-          return;
-      }else{
-        console.log("Encontrada");
-      }
-
-      // Obtén las celdas de la fila
-      var aItems = oTable.getItems();
-      var oRowData = aItems[iIndex].getCells();
-
-      if (!oRowData || oRowData.length === 0) {
-          console.error(`Datos de la fila no encontrados en la tabla ${oTableId}.`);
-          return;
-      }
-
-      // Obtén el valor seleccionado del Select
-      var sSelectedText = oSource.getSelectedItem().getText();
-
-      // Define un objeto de configuración para las actualizaciones
-      var oConfig = {
-        "Director": {
-          PMJ: 1370.88,
-          "2024": 41.00,
-          "2025": 15.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-
-
-        },
-        "CG4.C": {
-          PMJ: 186.72,
-          "2024": 5.00,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        },
-        "CG4.A": {
-          PMJ: 331.24,
-          "2024": 51.93,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        },
-        "CG4.B": {
-          PMJ: 225.11,
-          "2024": 51.93,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        },
-        "CG3": {
-          PMJ: 408.81,
-          "2024": 0.00,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        },
-        "CG2": {
-          PMJ: 520.79,
-          "2024": 0.00,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        },
-        "CG1": {
-          PMJ: 656.80,
-          "2024": 51.93,
-          "2025": 0.00,
-          "2026": 0.00,
-          "2027": 0.00,
-          "2028": 0.00,
-          "2029": 0.00,
-        }
-      };
-
-      // Lógica para actualizar datos basados en la selección del Select
-      var oUpdate = oConfig[sSelectedText];
-
-      if (oUpdate) {
-          oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
-          oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
-          oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
-          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
-          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
-          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
-          oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
-
-          // Suma de 2024 y 2025 para 'Total'
-          var total = oUpdate["2024"] + oUpdate["2025"];
-          oRowData[11].setText(total);  // Coloca la suma en 'Total'
-
-          // Suma de PMJ + Total para 'Total1'
-          var total1 = oUpdate.PMJ + total;
-          oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
-          console.log(total1);
-
-          // Asigna 5.00 a las columnas que no sean junio, julio o agosto y 4.00 a las correspondientes
-          var months = ["junio", "julio", "agosto"];
-
-          // Obtén las columnas de la tabla
-          var oColumns = oTable.getColumns();
-
-        // Empieza desde la columna después de 'Total1' (columna 12 en adelante)
-          for (var i = 13; i < oRowData.length; i++) {
-            var columnHeaderText = oColumns[i].getHeader().getText().toLowerCase();
-
-            if (months.some(month => columnHeaderText.includes(month))) {
-                oRowData[i].setText("4.00");  // Asignar 4.00 a junio, julio, agosto
-            } else {
-                oRowData[i].setText("5.00");  // Asignar 5.00 a los demás meses
-            }
-          }
-
-      } else {
-          console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
-      }
-  });
-},
-
-
       // Evento para la primera tabla
-    /*  onPerfilChangeTabla1: function (oEvent) {
-        this.updateRowData(oEvent, ["table_dimicFecha", "tablaConsuExter", "tablaRecExterno"]);
+      onPerfilChangeTabla1: function (oEvent) {
+        this.updateRowData(oEvent, ["table_dimicFecha"]);
       },
 
 
 
-
-      //---- MEtodo seleccion de items  y cambio ------
-     updateRowData: function (oEvent, oTableId) {
+      //---- Método selección de ítems y cambio para múltiples tablas ----
+      updateRowData: function (oEvent) {
         // Obtén el ID del Select que ha generado el evento
         const oSource = oEvent.getSource();
 
+        // var  aTableIds = this.byId("table_dimicFecha");
+
+
         // Encuentra la tabla
-        var oTable = this.byId(oTableId);
+        var oTable = this.byId("table_dimicFecha");
 
         // Obtén el índice de la fila seleccionada desde el Select
         var oItem = oSource.getParent(); // Obtiene el ColumnListItem
         var iIndex = oTable.indexOfItem(oItem); // Obtiene el índice de la fila
 
         if (iIndex === -1) {
-          console.error("Índice de la fila no encontrado. Verifica la estructura de la tabla.");
+          console.error(`Índice de la fila no encontrado en la tabla ${oTableId}. Verifica la estructura de la tabla.`);
           return;
+        } else {
+          console.log("Encontrada");
         }
 
         // Obtén las celdas de la fila
@@ -980,7 +844,7 @@ updateRowData: function (oEvent, aTableIds) {
         var oRowData = aItems[iIndex].getCells();
 
         if (!oRowData || oRowData.length === 0) {
-          console.error("Datos de la fila no encontrados.");
+          console.error(`Datos de la fila no encontrados en la tabla ${oTableId}.`);
           return;
         }
 
@@ -991,8 +855,8 @@ updateRowData: function (oEvent, aTableIds) {
         var oConfig = {
           "Director": {
             PMJ: 1370.88,
-            "2024": 41.00,
-            "2025": 15.00,
+            "2024": 0.00,
+            "2025": 0.00,
             "2026": 0.00,
             "2027": 0.00,
             "2028": 0.00,
@@ -1002,7 +866,7 @@ updateRowData: function (oEvent, aTableIds) {
           },
           "CG4.C": {
             PMJ: 186.72,
-            "2024": 5.00,
+            "2024": 0.00,
             "2025": 0.00,
             "2026": 0.00,
             "2027": 0.00,
@@ -1020,7 +884,7 @@ updateRowData: function (oEvent, aTableIds) {
           },
           "CG4.B": {
             PMJ: 225.11,
-            "2024": 51.93,
+            "2024": 0.00,
             "2025": 0.00,
             "2026": 0.00,
             "2027": 0.00,
@@ -1047,15 +911,13 @@ updateRowData: function (oEvent, aTableIds) {
           },
           "CG1": {
             PMJ: 656.80,
-            "2024": 51.93,
+            "2024": 0.00,
             "2025": 0.00,
             "2026": 0.00,
             "2027": 0.00,
             "2028": 0.00,
             "2029": 0.00,
           }
-
-
         };
 
         // Lógica para actualizar datos basados en la selección del Select
@@ -1065,10 +927,10 @@ updateRowData: function (oEvent, aTableIds) {
           oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
           oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
           oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
-          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2025
-          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2025
-          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2025
-          oRowData[10].setText(oUpdate["2029"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
+          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
+          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
+          oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
 
           // Suma de 2024 y 2025 para 'Total'
           var total = oUpdate["2024"] + oUpdate["2025"];
@@ -1077,27 +939,193 @@ updateRowData: function (oEvent, aTableIds) {
           // Suma de PMJ + Total para 'Total1'
           var total1 = oUpdate.PMJ + total;
           oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
+          console.log(total1);
 
-          // Asigna 5.00 a las columnas que no sean junio, julio o agosto y 4.00 a las correspondientes
-          var months = ["junio", "julio", "agosto"];
 
-          // Obtén las columnas de la tabla
-          var oColumns = oTable.getColumns();
-
-          // Empieza desde la columna después de 'Total1' (columna 9 en adelante)
-          for (var i = 9; i < oRowData.length; i++) {
-            var columnHeaderText = oColumns[i].getHeader().getText().toLowerCase();
-
-            if (months.some(month => columnHeaderText.includes(month))) {
-              oRowData[i].setText("4.00");  // Asignar 4.00 a junio, julio, agosto
-            }
-          }
 
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
-      },*/
-      //----------------------------------------------
+
+      },
+
+
+      selectFuncionchange: function (oEvent) {
+        // Obtén el ID del Select que ha generado el evento
+        const oSource = oEvent.getSource();
+
+        // Encuentra la tabla
+        const oTable = this.byId("tablaConsuExter");
+
+        // Obtén el índice de la fila seleccionada desde el Select
+        var oItem = oSource.getParent(); // Obtiene el ColumnListItem
+        var iIndex = oTable.indexOfItem(oItem); // Obtiene el índice de la fila
+
+        if (iIndex === -1) {
+          console.error(`Índice de la fila no encontrado en la tabla ${oTableId}. Verifica la estructura de la tabla.`);
+          return;
+        }
+
+        // Obtén las celdas de la fila
+        var aItems = oTable.getItems();
+        var oRowData = aItems[iIndex].getCells();
+
+        if (!oRowData || oRowData.length === 0) {
+          console.error(`Datos de la fila no encontrados en la tabla ${oTableId}.`);
+          return;
+        }
+
+        // Obtén el valor seleccionado del Select
+        var sSelectedText = oSource.getSelectedItem().getText();
+
+        // Define un objeto de configuración para las actualizaciones
+        var oConfig = {
+          "Equipo Argentina - Analista": {
+            PMJ: 216.18,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+
+
+          },
+          "Equipo Argentina - Asistente": {
+            PMJ: 190.74,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Equipo Argentina - Jefe": {
+            PMJ: 296.13,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Equipo Argentina - Gerente": {
+            PMJ: 478.34,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Basis - Consultor Junior": {
+            PMJ: 207.19,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Basis - Consultor Senior": {
+            PMJ: 356.21,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Basis - Arquitecto": {
+            PMJ: 356.21,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "QA - Análisis Funcional": {
+            PMJ: 278.00,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "QA - Jefe Proyecto": {
+            PMJ: 320.00,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "Testing - Análisis Funcional": {
+            PMJ: 180.00,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "TA - Consultor Senior 1-2": {
+            PMJ: 379.17,
+            "2024": 0.00,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+          "TA - Consultor Senior 3": {
+            PMJ: 455.40,
+            "2024": 0.93,
+            "2025": 0.00,
+            "2026": 0.00,
+            "2027": 0.00,
+            "2028": 0.00,
+            "2029": 0.00,
+          },
+        };
+
+        // Lógica para actualizar datos basados en la selección del Select
+        var oUpdate = oConfig[sSelectedText];
+
+        if (oUpdate) {
+          oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
+          oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
+          oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
+          oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
+          oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
+          oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
+          oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
+
+          // Suma de 2024 y 2025 para 'Total'
+          var total = oUpdate["2024"] + oUpdate["2025"];
+          oRowData[11].setText(total);  // Coloca la suma en 'Total'
+
+          // Suma de PMJ + Total para 'Total1'
+          var total1 = oUpdate.PMJ + total;
+          oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
+          console.log(total1);
+
+
+        } else {
+          console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
+        }
+
+      },
+
+
+
+
+
+
+
 
 
 
@@ -1210,7 +1238,7 @@ updateRowData: function (oEvent, aTableIds) {
           AmReceptor_ID: sSelectKeyAmrep,
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
-          datosExtra : sDatosExtra,
+          datosExtra: sDatosExtra,
 
         };
 
@@ -1355,9 +1383,9 @@ updateRowData: function (oEvent, aTableIds) {
         var oTablaFac = this.byId("table0");
         var itemsF = oTablaFac.getItems();
         var DataFac = [];
-       var totalFacturacion = parseInt(this.byId("text73_172746565340567").getText(), 10);
+        var totalFacturacion = parseInt(this.byId("text73_172746565340567").getText(), 10);
 
-    //   const totalFacturacion = this._totalOferta;
+        //   const totalFacturacion = this._totalOferta;
 
         console.log("Total facturación:", totalFacturacion);
 
@@ -1713,7 +1741,7 @@ updateRowData: function (oEvent, aTableIds) {
             total: sTotal,
             totalC: stotalRe,
             tipoServicio_ID: stipoServi,
-            PerfilServicio_ID: sPerfil,
+            PerfilConsumo_ID: sPerfil,
             datosProyect_ID: generatedId
           };
 
@@ -1896,7 +1924,7 @@ updateRowData: function (oEvent, aTableIds) {
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
-          const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
+          const sPerfil = oItem.getCells()[2].getValue(); // Select de PerfilServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
           const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
@@ -1916,7 +1944,7 @@ updateRowData: function (oEvent, aTableIds) {
             total: sTotal,
             totalR: stotalRe,
             tipoServicio_ID: stipoServi,
-            PerfilServicio_ID: sPerfil,
+            PerfilServicio: sPerfil,
             datosProyect_ID: generatedId
           };
 
@@ -2144,7 +2172,7 @@ updateRowData: function (oEvent, aTableIds) {
         }
       },
 
-      
+
       insertarLicencia: async function (idOtrosConcep) {
 
         // Obtener la tabla por su ID
@@ -2495,7 +2523,7 @@ updateRowData: function (oEvent, aTableIds) {
 
       metodoSumar: function () {
 
-        
+
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
         var totalOferta = 0;
@@ -2535,11 +2563,11 @@ updateRowData: function (oEvent, aTableIds) {
         // Actualiza el control Text con el total de la oferta
         this.byId("text73_172746565340567").setText(totalOferta.toFixed(2));
 
-          
+
         console.log("Total de la columna oferta:", totalOferta);
 
 
-         this._totalOferta = totalOferta;
+        this._totalOferta = totalOferta;
 
       },
 
@@ -2751,7 +2779,191 @@ updateRowData: function (oEvent, aTableIds) {
                     text: "{NombrePerfil}",
                   }),
                 },
+
+                change: this.updateRowData.bind(this) // Asocia el evento de cambio aquí
+
               }),
+              new sap.m.Input({ value: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+            ],
+          });
+
+          oTable.addItem(oNewItem);
+          var oEvent = { getSource: () => oNewItem };  // Simular un evento con getSource
+          this.updateRowData(oEvent);  // Pasar el evento simulado       
+
+
+
+        } else {
+          console.error("No se encontró la tabla con ID: " + sTableId);
+        }
+      },
+      //--------------------------------------------
+
+
+
+
+
+      onAddRowPress2: function (sTableId) {
+
+
+        var oTable = this.byId(sTableId);
+
+
+        if (!oTable) {
+          // Si no funciona, intenta con sap.ui.getCore().byId y el ID completo
+          oTable = sap.ui.getCore().byId("container-project1---view--tablaConsuExter");
+        }
+
+
+
+        if (oTable) {
+          var oNewItem = new sap.m.ColumnListItem({
+            cells: [
+              new sap.m.Select({
+                selectedKey: "{Vertical>valueVertical}",
+                forceSelection: false,
+                items: {
+                  path: "/Vertical",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{NombreVertical}",
+                  }),
+                },
+              }),
+              new sap.m.Select({
+                selectedKey: "{TipoServicio>valueTipoServ}",
+                forceSelection: false,
+                items: {
+                  path: "/TipoServicio",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{NombreTipoServ}",
+                  }),
+                },
+              }),
+              new sap.m.Select({
+                selectedKey: "{PerfilConsumo>valuePerfilC}",
+                forceSelection: false,
+                items: {
+                  path: "/PerfilConsumo",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{nombrePerfilC}",
+                  }),
+                },
+                change: this.selectFuncionchange.bind(this) // Asocia el evento de cambio aquí
+
+              }),
+              new sap.m.Input({ value: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+
+            ],
+
+          });
+          oTable.addItem(oNewItem);
+
+           this.fechasDinamicas();
+
+          var oEvent = { getSource: () => oNewItem };  // Simular un evento con getSource
+          this.selectFuncionchange(oEvent);  // Pasar el evento simulado       
+
+
+        } else {
+          console.error("No se encontró la tabla con ID: " + sTableId);
+        }
+
+      },
+
+      onAddRowPress4: function (sTableId) {
+        console.log(sTableId);
+
+        var oTable = this.byId("table0_1724413700665");
+        if (oTable) {
+
+
+          var oNewItem = new sap.m.ColumnListItem({
+            cells: [
+              new sap.m.Select({
+                selectedKey: "{Vertical>valueVertical}",
+                forceSelection: false,
+                items: {
+                  path: "/Vertical",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{NombreVertical}",
+                  }),
+                },
+              }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Input({ value: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+              new sap.m.Text({ text: "" }),
+            ],
+          });
+          oTable.addItem(oNewItem);
+
+
+        } else {
+          console.error("No se encontró la tabla con ID: " + sTableId);
+        }
+      },
+
+      onAddRowPress3: function (sTableId) {
+        console.log(sTableId);
+
+        var oTable = this.byId("tablaRecExterno");
+        if (oTable) {
+          var oNewItem = new sap.m.ColumnListItem({
+            cells: [
+              new sap.m.Select({
+                selectedKey: "{Vertical>valueVertical}",
+                forceSelection: false,
+                items: {
+                  path: "/Vertical",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{NombreVertical}",
+                  }),
+                },
+              }),
+              new sap.m.Select({
+                selectedKey: "{TipoServicio>valueTipoServ}",
+                forceSelection: false,
+                items: {
+                  path: "/TipoServicio",
+                  template: new sap.ui.core.Item({
+                    key: "{ID}",
+                    text: "{NombreTipoServ}",
+                  }),
+                },
+              }),
+              new sap.m.Input({ value: "" }),
               new sap.m.Input({ value: "" }),
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
@@ -2770,8 +2982,6 @@ updateRowData: function (oEvent, aTableIds) {
           console.error("No se encontró la tabla con ID: " + sTableId);
         }
       },
-      //--------------------------------------------
-
 
 
       // Fechas dinamicas y tabla dinamica---------  
@@ -2780,104 +2990,13 @@ updateRowData: function (oEvent, aTableIds) {
       },
       //-------------------------------------------
 
-        // Método para manejar las dinámicas de fechas
-        fechasDinamicas: function (oEvent) {
-          // Obtener las fechas seleccionadas de los DatePickers
-          var startDatePicker = this.getView().byId("date_inico");
-          var endDatePicker = this.getView().byId("date_fin");
 
-          // Comprobar si los DatePickers tienen valores seleccionados
-          if (!startDatePicker || !endDatePicker) {
-              console.error("Error: No se pudieron obtener los DatePickers.");
-              return;
-          }
 
-          var startDate = startDatePicker.getDateValue();
-          var endDate = endDatePicker.getDateValue();
 
-          // Si las fechas no están definidas, salir de la función
-          if (!startDate || !endDate) {
-              console.log("Esperando a que se seleccionen ambas fechas.");
-              return;
-          }
 
-          // Calcular el número de meses en el rango
-          var diffMonths = this.getMonthsDifference(startDate, endDate);
 
-          // Definir las IDs de las tablas
-          var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno", "idOtroserConsu" , "idGastoViajeConsu" , "idServiExterno" , "idGastoRecuExter" , "table0_1724413700665" , "table0_1727955577124"];
+      fechasDinamicas: function (oEvent) {
 
-          // Iterar sobre cada tabla
-          tableIds.forEach(function (tableId) {
-              var oTable = this.getView().byId(tableId);
-              if (!oTable) {
-                  console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-                  return;
-              }
-
-              var totalColumnIndex = this.findTotalColumnIndex(oTable);
-
-              // Eliminar las columnas dinámicas existentes después de la columna encontrada
-              var columnCount = oTable.getColumns().length;
-              for (var j = columnCount - 1; j > totalColumnIndex; j--) {
-                  oTable.removeColumn(j);
-              }
-
-              // Agregar nuevas columnas
-              for (var i = 0; i <= diffMonths; i++) {
-                  var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-                  var year = columnDate.getFullYear();
-                  var month = columnDate.toLocaleString("default", { month: "long" });
-                  var columnHeaderText = year + "-" + month;
-                  var oColumn = new sap.m.Column({
-                      header: new sap.m.Label({ text: columnHeaderText }),
-                      width: "100px",
-                  });
-                  oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-              }
-
-              // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
-              var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-              if (oScrollContainer) {
-                  oScrollContainer.setHorizontal(true);
-                  oScrollContainer.setVertical(false);
-                  oScrollContainer.setWidth("100%");
-              }
-
-              console.log("startDate:", startDate);
-              console.log("endDate:", endDate);
-          }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
-      },
-
-      // Método para encontrar el índice de la columna 'Total1'
-      findTotalColumnIndex: function (oTable) {
-          var columns = oTable.getColumns();
-          var lastColumnIndex = columns.length - 1;  // Índice de la última columna
-
-          // Buscar la columna 'Total1'
-          for (var i = 0; i < columns.length; i++) {
-              var headerLabel = columns[i].getHeader();
-              if (headerLabel && headerLabel.getText() === "Total1") {
-                  return i;  // Devuelve el índice de la columna 'Total1'
-              }
-          }
-
-          // Si no encuentra 'Total1', devolver el índice de la última columna
-          console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
-          return lastColumnIndex + 1; // Devuelve el índice justo después de la última columna
-      },
-
-      // Método para calcular la diferencia en meses entre dos fechas
-      getMonthsDifference: function (startDate, endDate) {
-          var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
-          diffMonths -= startDate.getMonth();
-          diffMonths += endDate.getMonth();
-          return diffMonths;
-      },
-
-    
-
-    /*  fechasDinamicas: function (oEvent) {
         // Obtener las fechas seleccionadas de los DatePickers
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
@@ -2900,11 +3019,51 @@ updateRowData: function (oEvent, aTableIds) {
         // Calcular el número de meses en el rango
         var diffMonths = this.getMonthsDifference(startDate, endDate);
 
+
+
+        var flexBoxIds = [
+          "box0_1714747137718",
+          "box0_1727879568594",
+          "box0_1727879817594",
+          "box0_1721815443829",
+          "box0_1727948724833",
+          "box0_1727950351451",
+          "box0_17218154429",
+          "box0_1727953252765",
+          "box1_1727953468615",
+          "box0_17254429",
+          "box0_1727955568380"
+          // Añadir más IDs de FlexBox según sea necesario
+        ];
+
+
+
+
+        flexBoxIds.forEach((flexBoxId) => {
+          var flexBox = this.getView().byId(flexBoxId);
+          if (flexBox) {
+            flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+          }
+        });
+
+
         // Definir las IDs de las tablas
-        var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno"];
+        var tableIds = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+          "idOtroserConsu",
+          "idGastoViajeConsu",
+          "idServiExterno",
+          "idGastoRecuExter",
+          "table0_1724413700665",
+          "table0_1727955577124",
+          "table0_1727879576857",
+          "table0_1727879940116"
+        ];
 
         // Iterar sobre cada tabla
-        tableIds.forEach(function (tableId) {
+        tableIds.forEach((tableId) => { // Usar función de flecha para el contexto
           var oTable = this.getView().byId(tableId);
           if (!oTable) {
             console.error("Error: No se pudo obtener la tabla con ID " + tableId);
@@ -2912,6 +3071,7 @@ updateRowData: function (oEvent, aTableIds) {
           }
 
           var totalColumnIndex = this.findTotalColumnIndex(oTable);
+          var existingColumnDates = [];
 
           // Eliminar las columnas dinámicas existentes después de la columna encontrada
           var columnCount = oTable.getColumns().length;
@@ -2925,11 +3085,33 @@ updateRowData: function (oEvent, aTableIds) {
             var year = columnDate.getFullYear();
             var month = columnDate.toLocaleString("default", { month: "long" });
             var columnHeaderText = year + "-" + month;
+
+            // Crear la columna
+
             var oColumn = new sap.m.Column({
               header: new sap.m.Label({ text: columnHeaderText }),
-              width: "100px",
+              width: "100px"
             });
+
+        
+
+            // Agregar la columna a la tabla
             oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+
+            // Crear un input para cada celda de la nueva columna
+            for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+              var oRow = oTable.getItems()[rowIndex];
+              var oCell = oRow.getCells()[totalColumnIndex + 1 + i]; // Obtiene la celda correspondiente
+
+              // Si la celda es null, creamos un nuevo Input
+              if (!oCell) {
+                var oInput = new sap.m.Input({
+                  placeholder: "0.00"
+                });
+
+                oRow.addCell(oInput); // Agregar el Input a la fila
+              }
+            }
           }
 
           // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
@@ -2940,35 +3122,228 @@ updateRowData: function (oEvent, aTableIds) {
             oScrollContainer.setWidth("100%");
           }
 
+
           console.log("startDate:", startDate);
           console.log("endDate:", endDate);
-        }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
+        });
       },
 
+      // Método para encontrar el índice de la columna 'Total1'
       findTotalColumnIndex: function (oTable) {
         var columns = oTable.getColumns();
-        var lastColumnIndex = columns.length - 1;  // Índice de la última columna
+        var lastColumnIndex = columns.length - 1; // Índice de la última columna
 
         // Buscar la columna 'Total1'
         for (var i = 0; i < columns.length; i++) {
           var headerLabel = columns[i].getHeader();
-          if (headerLabel && headerLabel.getText() === "Total1" ) {
-            return i;  // Devuelve el índice de la columna 'Total1'
+          if (headerLabel && headerLabel.getText() === "Total1") { //NUEVO
+            return i; // Devuelve el índice de la columna 'Total1'
           }
         }
 
-        // Si no encuentra 'Total1', devuelve el índice de la última columna
+        // Si no encuentra 'Total1', devolver el índice de la última columna
         console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
-        return lastColumnIndex;
+        return lastColumnIndex + 1; // Devuelve el índice justo después de la última columna
       },
 
+      // Método para calcular la diferencia en meses entre dos fechas
       getMonthsDifference: function (startDate, endDate) {
         var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
         diffMonths -= startDate.getMonth();
         diffMonths += endDate.getMonth();
-        return diffMonths;
+        return diffMonths < 0 ? 0 : diffMonths; // Devuelve 0 si es negativo
       },
-*/
+
+
+      // Método para manejar las dinámicas de fechas
+      /*     fechasDinamicas: function (oEvent) {
+             // Obtener las fechas seleccionadas de los DatePickers
+             var startDatePicker = this.getView().byId("date_inico");
+             var endDatePicker = this.getView().byId("date_fin");
+   
+             // Comprobar si los DatePickers tienen valores seleccionados
+             if (!startDatePicker || !endDatePicker) {
+                 console.error("Error: No se pudieron obtener los DatePickers.");
+                 return;
+             }
+   
+             var startDate = startDatePicker.getDateValue();
+             var endDate = endDatePicker.getDateValue();
+   
+             // Si las fechas no están definidas, salir de la función
+             if (!startDate || !endDate) {
+                 console.log("Esperando a que se seleccionen ambas fechas.");
+                 return;
+             }
+   
+             // Calcular el número de meses en el rango
+             var diffMonths = this.getMonthsDifference(startDate, endDate);
+   
+             // Definir las IDs de las tablas
+             var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno", "idOtroserConsu" , "idGastoViajeConsu" , "idServiExterno" , "idGastoRecuExter" , "table0_1724413700665" , "table0_1727955577124"];
+   
+             // Iterar sobre cada tabla
+             tableIds.forEach(function (tableId) {
+                 var oTable = this.getView().byId(tableId);
+                 if (!oTable) {
+                     console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+                     return;
+                 }
+   
+                 var totalColumnIndex = this.findTotalColumnIndex(oTable);
+   
+                 // Eliminar las columnas dinámicas existentes después de la columna encontrada
+                 var columnCount = oTable.getColumns().length;
+                 for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+                     oTable.removeColumn(j);
+                 }
+   
+                 // Agregar nuevas columnas
+                 for (var i = 0; i <= diffMonths; i++) {
+                     var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+                     var year = columnDate.getFullYear();
+                     var month = columnDate.toLocaleString("default", { month: "long" });
+                     var columnHeaderText = year + "-" + month;
+                     var oColumn = new sap.m.Column({
+                         header: new sap.m.Label({ text: columnHeaderText }),
+                         width: "100px",
+                     });
+                     oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+                 }
+   
+                 // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+                 var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+                 if (oScrollContainer) {
+                     oScrollContainer.setHorizontal(true);
+                     oScrollContainer.setVertical(false);
+                     oScrollContainer.setWidth("100%");
+                 }
+   
+                 console.log("startDate:", startDate);
+                 console.log("endDate:", endDate);
+             }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
+         },
+   
+         // Método para encontrar el índice de la columna 'Total1'
+         findTotalColumnIndex: function (oTable) {
+             var columns = oTable.getColumns();
+             var lastColumnIndex = columns.length - 1;  // Índice de la última columna
+   
+             // Buscar la columna 'Total1'
+             for (var i = 0; i < columns.length; i++) {
+                 var headerLabel = columns[i].getHeader();
+                 if (headerLabel && headerLabel.getText() === "Total1") {
+                     return i;  // Devuelve el índice de la columna 'Total1'
+                 }
+             }
+   
+             // Si no encuentra 'Total1', devolver el índice de la última columna
+             console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+             return lastColumnIndex + 1; // Devuelve el índice justo después de la última columna
+         },
+   
+         // Método para calcular la diferencia en meses entre dos fechas
+         getMonthsDifference: function (startDate, endDate) {
+             var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+             diffMonths -= startDate.getMonth();
+             diffMonths += endDate.getMonth();
+             return diffMonths;
+         },*/
+
+
+
+      /*  fechasDinamicas: function (oEvent) {
+          // Obtener las fechas seleccionadas de los DatePickers
+          var startDatePicker = this.getView().byId("date_inico");
+          var endDatePicker = this.getView().byId("date_fin");
+  
+          // Comprobar si los DatePickers tienen valores seleccionados
+          if (!startDatePicker || !endDatePicker) {
+            console.error("Error: No se pudieron obtener los DatePickers.");
+            return;
+          }
+  
+          var startDate = startDatePicker.getDateValue();
+          var endDate = endDatePicker.getDateValue();
+  
+          // Si las fechas no están definidas, salir de la función
+          if (!startDate || !endDate) {
+            console.log("Esperando a que se seleccionen ambas fechas.");
+            return;
+          }
+  
+          // Calcular el número de meses en el rango
+          var diffMonths = this.getMonthsDifference(startDate, endDate);
+  
+          // Definir las IDs de las tablas
+          var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno"];
+  
+          // Iterar sobre cada tabla
+          tableIds.forEach(function (tableId) {
+            var oTable = this.getView().byId(tableId);
+            if (!oTable) {
+              console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+              return;
+            }
+  
+            var totalColumnIndex = this.findTotalColumnIndex(oTable);
+  
+            // Eliminar las columnas dinámicas existentes después de la columna encontrada
+            var columnCount = oTable.getColumns().length;
+            for (var j = columnCount - 1; j > totalColumnIndex; j--) {
+              oTable.removeColumn(j);
+            }
+  
+            // Agregar nuevas columnas
+            for (var i = 0; i <= diffMonths; i++) {
+              var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+              var year = columnDate.getFullYear();
+              var month = columnDate.toLocaleString("default", { month: "long" });
+              var columnHeaderText = year + "-" + month;
+              var oColumn = new sap.m.Column({
+                header: new sap.m.Label({ text: columnHeaderText }),
+                width: "100px",
+              });
+              oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+            }
+  
+            // Ajustar el ancho de la tabla y habilitar el desplazamiento horizontal
+            var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+            if (oScrollContainer) {
+              oScrollContainer.setHorizontal(true);
+              oScrollContainer.setVertical(false);
+              oScrollContainer.setWidth("100%");
+            }
+  
+            console.log("startDate:", startDate);
+            console.log("endDate:", endDate);
+          }, this); // Asegúrate de pasar 'this' como contexto para acceder a las funciones internas
+        },
+  
+        findTotalColumnIndex: function (oTable) {
+          var columns = oTable.getColumns();
+          var lastColumnIndex = columns.length - 1;  // Índice de la última columna
+  
+          // Buscar la columna 'Total1'
+          for (var i = 0; i < columns.length; i++) {
+            var headerLabel = columns[i].getHeader();
+            if (headerLabel && headerLabel.getText() === "Total1" ) {
+              return i;  // Devuelve el índice de la columna 'Total1'
+            }
+          }
+  
+          // Si no encuentra 'Total1', devuelve el índice de la última columna
+          console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+          return lastColumnIndex;
+        },
+  
+        getMonthsDifference: function (startDate, endDate) {
+          var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+          diffMonths -= startDate.getMonth();
+          diffMonths += endDate.getMonth();
+          return diffMonths;
+        },
+  */
       //------------------------------------------------------------------------
 
 
