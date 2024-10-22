@@ -1050,6 +1050,9 @@
                                                                 </Column>
 
                                                                 <Column id="column2_179576857">
+                                                                <header>
+                                                                    <Text xmlns="sap.m" id="text71_1729582650577"/>
+                                                                </header>
                                                                 </Column></columns>
                                                                 
                                                                 </Table>
@@ -1219,13 +1222,13 @@
                                                         <items>
                                                             <ColumnListItem id="item1_1721815314200">
                                                             <cells>
-                                                                <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" >
+                                                                <Select xmlns="sap.m" id="select2_1723539571816" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_1723539571815"/>
                                                                 </items>
                                                                     
                                                             </Select>
-                                                                <Select xmlns="sap.m" id="select5" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
+                                                                <Select xmlns="sap.m" id="select5" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item13"/>
                                                                 
@@ -1254,13 +1257,13 @@
                                                             <ColumnListItem id="item0_1723561579633">
                                                                 <cells>
                                                                   
-                                         <Select xmlns="sap.m" id="select2_1723539576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}"  >
+                                         <Select xmlns="sap.m" id="select2_1723539576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17235395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select2345" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
+                                                                <Select xmlns="sap.m" id="select2345" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="ID" text="{NombreTipoServ}" id="item13888"/>
                                                                 
@@ -1269,7 +1272,7 @@
                                                                 </Select>
                                                                 <Select xmlns="sap.m" id="select6543" selectedKey="{PerfilConsumo>valuePerfilC}" forceSelection="false" tooltip="Seleccionar un perfil de la lista en caso de estar predefinido en caso contrario, introducir el Perfil y el PMJ aplicable al mismo en la columna PMJ" items="{/PerfilConsumo}" change="selectFuncionchange">
                                                                     <items>
-                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}"  text="{nombrePerfilC}" id="item15"/>
+                                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{nombrePerfilC}" id="item15"/>
                                                                     
                                                                     </items>
                                                                     
@@ -1291,13 +1294,13 @@
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item1_1723561596033">
                                                                 <cells>
-                                                                        <Select xmlns="sap.m" id="select2_1723559576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" >
+                                                                        <Select xmlns="sap.m" id="select2_1723559576" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_17535395"/>
                                                                         </items>
                                                                     
                                                                 </Select>
-                                                                <Select xmlns="sap.m" id="select23455" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}" >
+                                                                <Select xmlns="sap.m" id="select23455" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
                                                                     <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item135888"/>
                                                                 

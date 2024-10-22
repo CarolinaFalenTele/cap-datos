@@ -2991,11 +2991,158 @@ sap.ui.define([
       //-------------------------------------------
 
 
-
-
-
-
       fechasDinamicas: function (oEvent) {
+        var startDatePicker = this.getView().byId("date_inico");
+        var endDatePicker = this.getView().byId("date_fin");
+    
+        if (!startDatePicker || !endDatePicker) {
+            console.error("Error: No se pudieron obtener los DatePickers.");
+            return;
+        }
+    
+        var startDate = startDatePicker.getDateValue();
+        var endDate = endDatePicker.getDateValue();
+    
+        if (!startDate || !endDate) {
+            console.log("Esperando a que se seleccionen ambas fechas.");
+            return;
+        }
+    
+        var diffMonths = this.getMonthsDifference(startDate, endDate);
+    
+        var flexBoxIds = [
+            "box0_1714747137718",
+            "box0_1727879568594",
+            "box0_1727879817594",
+            "box0_1721815443829",
+            "box0_1727948724833",
+            "box0_1727950351451",
+            "box0_17218154429",
+            "box0_1727953252765",
+            "box1_1727953468615",
+            "box0_17254429",
+            "box0_1727955568380"
+        ];
+    
+        flexBoxIds.forEach((flexBoxId) => {
+            var flexBox = this.getView().byId(flexBoxId);
+            if (flexBox) {
+                flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+            }
+        });
+    
+        var tableIds = [
+            "tablaConsuExter",
+            "table_dimicFecha",
+            "tablaRecExterno",
+            "idOtroserConsu",
+            "idGastoViajeConsu",
+            "idServiExterno",
+            "idGastoRecuExter",
+            "table0_1724413700665",
+            "table0_1727955577124",
+            "table0_1727879576857",
+            "table0_1727879940116"
+        ];
+    
+        tableIds.forEach((tableId) => {
+            var oTable = this.getView().byId(tableId);
+            if (!oTable) {
+                console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+                return;
+            }
+    
+            // Eliminar columnas anteriores que fueron añadidas dinámicamente
+            var columnCount = oTable.getColumns().length;
+            for (var j = columnCount - 1; j >= 0; j--) {
+                var columnHeader = oTable.getColumns()[j].getHeader();
+                
+                // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
+                if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+                    oTable.removeColumn(oTable.getColumns()[j]);
+                }
+            }
+    
+            var totalColumnIndex = this.findTotalColumnIndex(oTable);
+    
+            // Añadir nuevas columnas dinámicas
+            for (var i = 0; i <= diffMonths; i++) {
+                var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+                var year = columnDate.getFullYear();
+                var month = columnDate.toLocaleString("default", { month: "long" });
+                var columnHeaderText = year + "-" + month;
+    
+                var oColumn = new sap.m.Column({
+                    header: new sap.m.Label({ text: columnHeaderText }),
+                    width: "100px"
+                });
+    
+                oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+    
+                for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+                    var oRow = oTable.getItems()[rowIndex];
+    
+                    // Obtener la celda correspondiente
+                    var oCell = oRow.getCells()[totalColumnIndex + 1 + i];
+                    
+                    // Validación para no sobrescribir las celdas que ya tienen controles o valores
+                    if (oCell && (oCell.getValue && oCell.getValue() !== "")) {
+                        continue; // Saltar las celdas que ya tienen un valor/control
+                    }
+    
+                    // Verificar si la celda ya tiene un control, de ser así, no hacer nada
+                    if (oCell && oCell.getAggregation("content")) {
+                        continue; // Ya existe un control en esta celda
+                    }
+    
+                    // Si no hay un valor/control, añadir un nuevo Input
+                    var oInput = new sap.m.Input({
+                        placeholder: "0.00"
+                    });
+    
+                    oRow.addCell(oInput); // Añadir el Input a la celda
+                }
+            }
+    
+            var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+            if (oScrollContainer) {
+                oScrollContainer.setHorizontal(true);
+                oScrollContainer.setVertical(false);
+                oScrollContainer.setWidth("100%");
+            }
+    
+            console.log("startDate:", startDate);
+            console.log("endDate:", endDate);
+        });
+    },
+
+    
+    
+    findTotalColumnIndex: function (oTable) {
+        var columns = oTable.getColumns();
+        var lastColumnIndex = columns.length - 1;
+    
+        for (var i = 0; i < columns.length; i++) {
+            var headerLabel = columns[i].getHeader();
+            if (headerLabel && (headerLabel.getText() === "Total1" || headerLabel.getText() === "")) {
+                return i;
+            }
+        }
+    
+        console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+        return lastColumnIndex + 1;
+    },
+    
+    getMonthsDifference: function (startDate, endDate) {
+        var diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+        diffMonths -= startDate.getMonth();
+        diffMonths += endDate.getMonth();
+        return diffMonths < 0 ? 0 : diffMonths;
+    },
+    
+    
+
+    /*  fechasDinamicas: function (oEvent) {
 
         // Obtener las fechas seleccionadas de los DatePickers
         var startDatePicker = this.getView().byId("date_inico");
@@ -3071,7 +3218,7 @@ sap.ui.define([
           }
 
           var totalColumnIndex = this.findTotalColumnIndex(oTable);
-          var existingColumnDates = [];
+          var existingColumns = oTable.getColumns().map(col => col.getHeader().getText());
 
           // Eliminar las columnas dinámicas existentes después de la columna encontrada
           var columnCount = oTable.getColumns().length;
@@ -3136,7 +3283,7 @@ sap.ui.define([
         // Buscar la columna 'Total1'
         for (var i = 0; i < columns.length; i++) {
           var headerLabel = columns[i].getHeader();
-          if (headerLabel && headerLabel.getText() === "Total1") { //NUEVO
+          if (headerLabel && headerLabel.getText() === "Total1" || headerLabel && headerLabel.getText() === "") { //NUEVO
             return i; // Devuelve el índice de la columna 'Total1'
           }
         }
@@ -3152,7 +3299,7 @@ sap.ui.define([
         diffMonths -= startDate.getMonth();
         diffMonths += endDate.getMonth();
         return diffMonths < 0 ? 0 : diffMonths; // Devuelve 0 si es negativo
-      },
+      },*/
 
 
       // Método para manejar las dinámicas de fechas
