@@ -795,15 +795,15 @@
                                          
                                                                             <Input xmlns="sap.m" id="input0_2958934"/>
 
-                                                                            <Text xmlns="sap.m" id="pmj2"/>
+                                                                            <Text xmlns="sap.m" id="pmj2" class="boldText"/>
                                                                             <Text xmlns="sap.m" id="text26"/>
                                                                             <Text xmlns="sap.m" id="idtest5"/>
                                                                             <Text xmlns="sap.m" id="txt2026r"/>
                                                                             <Text xmlns="sap.m" id="migt5"/>
                                                                             <Text xmlns="sap.m" id="text30"/>
                                                                             <Text xmlns="sap.m" id="text31"/>
-                                                                            <Text xmlns="sap.m" id="text32"/>
-                                                                            <Text xmlns="sap.m" id="text33"/>
+                                                                            <Text xmlns="sap.m" id="text32" class="boldText"/>
+                                                                            <Text xmlns="sap.m" id="text33" class="boldText"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                     <ColumnListItem id="item0">
@@ -827,15 +827,15 @@
                                                                             
                                                                         </Select>
                                                                         <Input xmlns="sap.m" value="" id="input0_1723542368780"/>
-                                                                        <Text xmlns="sap.m" text="" id="pmj3"/>
+                                                                        <Text xmlns="sap.m" text="" id="pmj3" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_1723542407010"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_1723542427727"/>
                                                                         <Text xmlns="sap.m" text="" id="text27"/>
                                                                         <Text xmlns="sap.m" text="" id="text28"/>
                                                                         <Text xmlns="sap.m" text="" id="text29"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723542463030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1723542471572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_1723542481599"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1723542471572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_1723542481599" class="boldText"/>
                                                                     </cells>
                                                                     </ColumnListItem>
                                                                     <ColumnListItem id="item1_1723542179949">
@@ -859,15 +859,15 @@
                                                                             
                                                                         </Select>
                                                                         <Input xmlns="sap.m" value="" id="input0_17235428780"/>
-                                                                        <Text xmlns="sap.m" text="" id="pmj5"/>
+                                                                        <Text xmlns="sap.m" text="" id="pmj5" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_1723407010"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_17235427727"/>
                                                                         <Text xmlns="sap.m" text="" id="text334d"/>
                                                                         <Text xmlns="sap.m" text="" id="text2t56"/>
                                                                         <Text xmlns="sap.m" text="" id="text29666"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_172463030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_172351572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_172341599"/>                                                        
+                                                                        <Text xmlns="sap.m" text="" id="text31_172351572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_172341599" class="boldText"/>                                                        
                                                                          </cells>
                                                                     </ColumnListItem>
                                                                   
@@ -983,15 +983,15 @@
                                                                        <Text xmlns="sap.m" text="" id="text27_172792"/>
 
                                                                         <Input xmlns="sap.m" value="" id="input0_17235423780"/>
-                                                                        <Text xmlns="sap.m" id="pmj1" text=""/>
+                                                                        <Text xmlns="sap.m" id="pmj1" text="" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_172354240710"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_1723542467727"/>
                                                                         <Text xmlns="sap.m" text="" id="text2767"/>
                                                                         <Text xmlns="sap.m" text="" id="text2558"/>
                                                                         <Text xmlns="sap.m" text="" id="text2559"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17235424030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17251572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_172354299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17251572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_172354299" class="boldText"/>
                                                                     </cells>
                                                                     </ColumnListItem>
                                                             </items>
@@ -1084,20 +1084,16 @@
                                                                         </Select>
 
                                                                         <Text xmlns="sap.m" text="" id="text27_17235452792"/>
-
                                                                          <Input xmlns="sap.m" id="input0552587" tooltip="Codigo Proyecto"/>
-
-                                                                        <Text xmlns="sap.m" text="" id="pmj6"/>
+                                                                        <Text xmlns="sap.m" text="" id="pmj6" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1235430075"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_172354536874"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_172545344700"/>
                                                                         <Text xmlns="sap.m" text="" id="text33_17354532636"/>
                                                                         <Text xmlns="sap.m" text="" id="text084"/>
                                                                         <Text xmlns="sap.m" text="" id="tex05"/>
-                                                                        <Text xmlns="sap.m" text="" id="text368"/>
-                                                                        <Text xmlns="sap.m" text="" id="text3887"/>
-                                                                        <Text xmlns="sap.m" text="" id="text3888"/>
-                                                                        <Text xmlns="sap.m" text="" id="text69_1729178343561"/>
+                                                                        <Text xmlns="sap.m" text="" id="text3887" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text3888" class="boldText"/>
                                                                         </cells>
                                                                     </ColumnListItem>
 
@@ -1128,7 +1124,7 @@
 
                                                                     <Input xmlns="sap.m" id="input855025865"/>             
 
-                                                                    <Text xmlns="sap.m" text="" id="pmj4"/>
+                                                                    <Text xmlns="sap.m" text="" id="pmj4" class="boldText"/>
 
                                                                     <Text xmlns="sap.m" text="" id="text33_1723547184800"/>
 
@@ -1142,13 +1138,11 @@
 
                                                                     <Text xmlns="sap.m" text="" id="text38"/>
 
-                                                                    <Text xmlns="sap.m" text="" id="text39"/>
+                                                                    <Text xmlns="sap.m" text="" id="text39"  class="boldText"/>
 
-                                                                    <Text xmlns="sap.m" text="" id="text40"/>
+                                                                    <Text xmlns="sap.m" text="" id="text40" class="boldText"/>
 
-                                                                    <Text xmlns="sap.m" text="" id="text41"/>
-
-                                                                    <Text xmlns="sap.m" text="" id="text42"/>
+                                                                
 
                                                                     </cells>
                                                                     </ColumnListItem>                                                                   
@@ -1188,16 +1182,6 @@
                                                                   <Column id="coluomn78799454890115">
                                                                 </Column>
                                                                 <Column id="co6890115">
-                                                                </Column>
-                                                                <Column id="column0_1729178258164">
-                                                                    <header>
-                                                                        <Text text="" id="text66_1729178258164"/>
-                                                                    </header>
-                                                                </Column>
-                                                                <Column id="column1_1729178309307">
-                                                                    <header>
-                                                                        <Text text="" id="text67_1729178309307"/>
-                                                                    </header>
                                                                 </Column>
                                                                 </columns>
                                                                 
@@ -1243,15 +1227,15 @@
                                                                     
                                                                 </Select>
                                                                 <Input xmlns="sap.m" value="" id="input0_1723560526473"/>
-                                                                <Text xmlns="sap.m" text="" id="text481"/>
+                                                                <Text xmlns="sap.m" text="" id="text481" class="boldText"/>
                                                                 <Text xmlns="sap.m" text="" id="text492"/>
                                                                 <Text xmlns="sap.m" text="" id="text503"/>
                                                                 <Text xmlns="sap.m" text="" id="text514"/>
                                                                 <Text xmlns="sap.m" text="" id="text552"/>
                                                                 <Text xmlns="sap.m" text="" id="text536"/>
                                                                 <Text xmlns="sap.m" text="" id="text547"/>
-                                                                <Text xmlns="sap.m" text="" id="text558"/>
-                                                                <Text xmlns="sap.m" text="" id="text560"/>
+                                                                <Text xmlns="sap.m" text="" id="text558" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text560" class="boldText"/>
                                                             </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item0_1723561579633">
@@ -1278,15 +1262,15 @@
                                                                     
                                                                 </Select>
                                                                 <Input xmlns="sap.m" value="" id="input0_1723560523"/>
-                                                                <Text xmlns="sap.m" text="" id="text4898"/>
+                                                                <Text xmlns="sap.m" text="" id="text4898" class="boldText"/>
                                                                 <Text xmlns="sap.m" text="" id="text49"/>
                                                                 <Text xmlns="sap.m" text="" id="text50"/>
                                                                 <Text xmlns="sap.m" text="" id="text51"/>
                                                                 <Text xmlns="sap.m" text="" id="text52"/>
                                                                 <Text xmlns="sap.m" text="" id="text53"/>
                                                                 <Text xmlns="sap.m" text="" id="text54"/>
-                                                                <Text xmlns="sap.m" text="" id="text55"/>
-                                                                <Text xmlns="sap.m" text="" id="text56"/>
+                                                                <Text xmlns="sap.m" text="" id="text55" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text56" class="boldText"/>
 
 
 
@@ -1315,15 +1299,15 @@
                                                                     
                                                                 </Select>
                                                                 <Input xmlns="sap.m" value="" id="input0_100723560523"/>
-                                                                <Text xmlns="sap.m" text="" id="text48098"/>
+                                                                <Text xmlns="sap.m" text="" id="text48098" class="boldText"/>
                                                                 <Text xmlns="sap.m" text="" id="text0049"/>
                                                                 <Text xmlns="sap.m" text="" id="text5000"/>
                                                                 <Text xmlns="sap.m" text="" id="text5100"/>
                                                                 <Text xmlns="sap.m" text="" id="text5002"/>
                                                                 <Text xmlns="sap.m" text="" id="text5003"/>
                                                                 <Text xmlns="sap.m" text="" id="text5004"/>
-                                                                <Text xmlns="sap.m" text="" id="text5005"/>
-                                                                <Text xmlns="sap.m" text="" id="text50006"/>
+                                                                <Text xmlns="sap.m" text="" id="text5005" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text50006" class="boldText"/>
 
                                                                 </cells>
                                                             </ColumnListItem>
@@ -1439,15 +1423,15 @@
 
 
 
-                                                                        <Text xmlns="sap.m" text="" id="text29410"/>
+                                                                        <Text xmlns="sap.m" text="" id="text29410" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_172354240710100"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_172354246701727"/>
                                                                         <Text xmlns="sap.m" text="" id="text271067"/>
                                                                         <Text xmlns="sap.m" text="" id="text250158"/>
                                                                         <Text xmlns="sap.m" text="" id="text255109"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723542104030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725157102"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235429910"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725157102" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235429910" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item2_1724397821392">
@@ -1473,15 +1457,15 @@
                                                                  <Input xmlns="sap.m" id="input05" tooltip="Codigo Proyecto"/>
 
                                                                       
-                                                                        <Text xmlns="sap.m" text="" id="text2904"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2904" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_1723542710"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_1723542427"/>
                                                                         <Text xmlns="sap.m" text="" id="text276007"/>
                                                                         <Text xmlns="sap.m" text="" id="text25058"/>
                                                                         <Text xmlns="sap.m" text="" id="text25059"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723540204030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725015072"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_1702354299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725015072" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_1702354299" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                             
@@ -1548,7 +1532,8 @@
                                             
                                                             <Column id="column3_1727948934250">
                                             
-                                                            </Column></columns></Table>
+                                                            </Column>
+                                                            </columns></Table>
                                              </ScrollContainer>
                                                 </items>
                                             
@@ -1585,15 +1570,15 @@
                                                                        
                                                                 <Input xmlns="sap.m" id="input55605"/>
                                                                     
-                                                                      <Text xmlns="sap.m" text="" id="text2943"/>
+                                                                      <Text xmlns="sap.m" text="" id="text2943" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_17235440710"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_172354246727"/>
                                                                         <Text xmlns="sap.m" text="" id="text27677"/>
                                                                         <Text xmlns="sap.m" text="" id="text25578"/>
                                                                         <Text xmlns="sap.m" text="" id="text25597"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17235424430"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725152572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235452299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725152572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235452299" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item1_1724399587539">
@@ -1621,15 +1606,15 @@
 
                                                                            <Input xmlns="sap.m" id="input054645"/>
 
-                                                                        <Text xmlns="sap.m" text="" id="text2947"/>
+                                                                        <Text xmlns="sap.m" text="" id="text2947" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_17235424010"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_17235467727"/>
                                                                         <Text xmlns="sap.m" text="" id="text2767527"/>
                                                                         <Text xmlns="sap.m" text="" id="text2418"/>
                                                                         <Text xmlns="sap.m" text="" id="text25459"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1777235424030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1724551572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235475299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1724551572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235475299" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                             
@@ -1734,17 +1719,16 @@
                                                                 </Select>
    
                                                                <Input xmlns="sap.m" value="" id="input0_1723652356052643"/>
-
-                                                                <Input xmlns="sap.m" value="" id="input0_172356052643"/>
-                                                                <Text xmlns="sap.m" text="" id="text4801"/>
+                                                                <Input xmlns="sap.m" value="" id="input0_1723560528897864314"/>
+                                                               <Input xmlns="sap.m" value="" id="input140_17235605264314"/>
                                                                 <Text xmlns="sap.m" text="" id="text4902"/>
                                                                 <Text xmlns="sap.m" text="" id="text50003"/>
                                                                 <Text xmlns="sap.m" text="" id="text5104"/>
                                                                 <Text xmlns="sap.m" text="" id="text5502"/>
                                                                 <Text xmlns="sap.m" text="" id="text53600"/>
                                                                 <Text xmlns="sap.m" text="" id="text5407"/>
-                                                                <Text xmlns="sap.m" text="" id="text55008"/>
-                                                                <Text xmlns="sap.m" text="" id="text56000"/>
+                                                                <Text xmlns="sap.m" text="" id="text55008" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text56000" class="boldText"/>
                                                             </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item0_172356157633">
@@ -1768,7 +1752,7 @@
 
                                                                 <Input xmlns="sap.m" value="" id="input0_172360523"/>
 
-
+                                                             <Input xmlns="sap.m" value="" id="input0_172360145641523"/>
                                                                 <Text xmlns="sap.m" text="" id="text480948"/>
                                                                 <Text xmlns="sap.m" text="" id="text419"/>
                                                                 <Text xmlns="sap.m" text="" id="text504"/>
@@ -1776,8 +1760,8 @@
                                                                 <Text xmlns="sap.m" text="" id="text5442"/>
                                                                 <Text xmlns="sap.m" text="" id="text5344"/>
                                                                 <Text xmlns="sap.m" text="" id="text5444"/>
-                                                                <Text xmlns="sap.m" text="" id="text5544"/>
-                                                                <Text xmlns="sap.m" text="" id="text5644"/>
+                                                                <Text xmlns="sap.m" text="" id="text5544" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text5644" class="boldText"/>
 
 
 
@@ -1802,15 +1786,17 @@
                                                               <Input xmlns="sap.m" value="" id="input0_1007210114323"/>
 
                                                                 <Input xmlns="sap.m" value="" id="input0_10072323"/>
-                                                                <Text xmlns="sap.m" text="" id="text4809108"/>
+
+
+                                                                   <Input xmlns="sap.m" value="" id="input0_1724585865452360523"/>
                                                                 <Text xmlns="sap.m" text="" id="text010049"/>
                                                                 <Text xmlns="sap.m" text="" id="text15000"/>
                                                                 <Text xmlns="sap.m" text="" id="text51004"/>
                                                                 <Text xmlns="sap.m" text="" id="text501402"/>
                                                                 <Text xmlns="sap.m" text="" id="text50043"/>
                                                                 <Text xmlns="sap.m" text="" id="text54004"/>
-                                                                <Text xmlns="sap.m" text="" id="text50405"/>
-                                                                <Text xmlns="sap.m" text="" id="text500406"/>
+                                                                <Text xmlns="sap.m" text="" id="text50405" class="boldText"/>
+                                                                <Text xmlns="sap.m" text="" id="text500406" class="boldText"/>
 
                                                                 </cells>
                                                             </ColumnListItem>
@@ -1935,8 +1921,8 @@
                                                                         <Text xmlns="sap.m" id="text2508"/>
                                                                         <Text xmlns="sap.m" id="text25519"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723542130"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17251502"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235410"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17251502" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235410" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item2_1724397822">
@@ -1961,15 +1947,15 @@
                                                                 
                                                                      <Input xmlns="sap.m" id="input055287"/>
 
-                                                                        <Text xmlns="sap.m" id="text294004"/>
+                                                                        <Text xmlns="sap.m" id="text294004" class="boldText"/>
                                                                         <Text xmlns="sap.m" id="text25_172340542710"/>
                                                                         <Text xmlns="sap.m" id="text26_17235042427"/>
                                                                         <Text xmlns="sap.m" id="text27600407"/>
                                                                         <Text xmlns="sap.m" id="text2504058"/>
                                                                         <Text xmlns="sap.m" id="text2505940"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1723540200004030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1724050015072"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_170235429409"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1724050015072" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_170235429409" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
 
@@ -2053,28 +2039,13 @@
                                         <Column id="column1_1727953262176">
 
 
-                                            <header>
-
-
-                                                <Label text="" id="label1_1727953262176"/>
-
-
-                                            </header>
+                                    
 
 
                                         </Column>
 
 
                                         <Column id="column2_1727953262177">
-
-
-                                            <header>
-
-
-                                                <Label text="" id="label2_1727953262177"/>
-
-
-                                            </header>
 
 
                                         </Column></columns>
@@ -2126,8 +2097,8 @@
                                                                         <Text xmlns="sap.m" text="" id="text255765638"/>
                                                                         <Text xmlns="sap.m" text="" id="text2556397"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_1725635152572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_17235465352299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_1725635152572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_17235465352299" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item1_172439965587539">
@@ -2158,8 +2129,8 @@
                                                                         <Text xmlns="sap.m" id="text24148"/>
                                                                         <Text xmlns="sap.m" id="text25454744449"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1777230"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_17245544572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_23545299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_17245544572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_23545299" class="boldText"/>
                                                                 </cells>
                                                             </ColumnListItem>
 
@@ -2380,7 +2351,7 @@
                                         <Input xmlns="sap.m" value=" " id="input0_1724422144416"/>
 
 
-                                        <Text xmlns="sap.m" text="" id="text69_1729172956538"/>
+                                        <Text xmlns="sap.m" text="" id="text69_1729172956538" class="boldText"/>
 
 
                                         <Text xmlns="sap.m" text="" id="text71_1729173066345"/>
@@ -2401,10 +2372,10 @@
                                         <Text xmlns="sap.m" text="" id="text76_1729173175636"/>
 
 
-                                        <Text xmlns="sap.m" text="" id="text77_1729173187036"/>
+                                        <Text xmlns="sap.m" text="" id="text77_1729173187036" class="boldText"/>
 
 
-                                        <Text xmlns="sap.m" text="" id="text78_1729173199360"/>
+                                        <Text xmlns="sap.m" text="" id="text78_1729173199360" class="boldText"/>
 
 
 
@@ -2431,15 +2402,15 @@
 
                                                            <Input xmlns="sap.m" value=" " id="input05528857"/>
                                                                  
-                                                                        <Text xmlns="sap.m" text="" id="text29467"/>
+                                                                        <Text xmlns="sap.m" text="" id="text29467" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text25_172342450"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_172357545427"/>
                                                                         <Text xmlns="sap.m" text="" id="text2754427"/>
                                                                         <Text xmlns="sap.m" text="" id="text2418528"/>
                                                                         <Text xmlns="sap.m" text="" id="text25449"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_17354030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_4544572"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_171145299"/>
+                                                                        <Text xmlns="sap.m" text="" id="text31_4544572" class="boldText"/>
+                                                                        <Text xmlns="sap.m" text="" id="text32_171145299" class="boldText"/>
 
                                 </cells>
 
@@ -2687,7 +2658,7 @@
                                     <Input xmlns="sap.m" id="input1_1724608279183"/>
 
   
-                                    <Text xmlns="sap.m" text="" id="text80_1729173297936"/>
+                                    <Text xmlns="sap.m" text="" id="text80_1729173297936" class="boldText"/>
 
   
                                     <Text xmlns="sap.m" text="" id="text82_1729173316711"/>
@@ -2708,10 +2679,10 @@
                                     <Text xmlns="sap.m" text="" id="text86_1729173336987"/>
 
   
-                                    <Text xmlns="sap.m" text="" id="text88_1729173381996"/>
+                                    <Text xmlns="sap.m" text="" id="text88_1729173381996" class="boldText"/>
 
   
-                                    <Text xmlns="sap.m" text="" id="text90_1729173466313"/>
+                                    <Text xmlns="sap.m" text="" id="text90_1729173466313" class="boldText"/>
 
 
                                 </cells>
@@ -2745,7 +2716,7 @@
                                     <Input xmlns="sap.m" value="" id="input2"/>
 
 
-                                    <Text xmlns="sap.m" text="" id="text69_1729177354727"/>
+                                    <Text xmlns="sap.m" text="" id="text69_1729177354727" class="boldText"/>
 
 
                                     <Text xmlns="sap.m" text="" id="text67_1729177335361"/>
@@ -2766,10 +2737,10 @@
                                     <Text xmlns="sap.m" text="" id="text73_1729177374604"/>
 
 
-                                    <Text xmlns="sap.m" text="" id="text74_1729177380906"/>
+                                    <Text xmlns="sap.m" text="" id="text74_1729177380906" class="boldText"/>
 
 
-                                    <Text xmlns="sap.m" text="" id="text75_1729177384465"/>
+                                    <Text xmlns="sap.m" text="" id="text75_1729177384465" class="boldText"/>
 
 
                                 </cells>
@@ -2986,7 +2957,7 @@
                                                     <Label width="100%" id="label0_1724751459061"/>
 
                                                     <VBox id="sdkjfhsodfhj" width="100%">
-                                                    <Input xmlns="sap.m" description="Jornada de Recursos Internos" value="113.0" editable="false" id="input0_1724751475780" width="105%" fieldWidth="25%"/>
+                                                    <Input xmlns="sap.m" description="Jornada de Recursos Internos" value="0.00" editable="false" id="inputReInter" width="105%" fieldWidth="25%"/>
                                                     <Input xmlns="sap.m" value="00.0" description="Jornada Consumo Externo" id="input1_1724751501654" editable="false" width="105%" fieldWidth="25%"/>
                                                     <Input xmlns="sap.m" value="00.0" id="input2_1724751504527" description="Jornada Consumo Externo" editable="false" width="105%" fieldWidth="25%"/>
                                                     <Text xmlns="sap.m" text="________________________" id="text72_1724755428618"/>

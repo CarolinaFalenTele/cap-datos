@@ -4,7 +4,9 @@
     color: hsl(226, 100%, 60%); /* Cambia este valor por el color que desees */
     font-weight: bold; /* Opcional: puedes añadir otras propiedades de estilo */
 }
-
+.boldText {
+    font-weight: bold;
+}
 
 .customHeaderColor .sapMListTblHeader .sapMListTblCell  {
     background-color: black; /* Color verde */
