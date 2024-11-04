@@ -45,3 +45,8 @@
 }
 
 
+.miInputNoEditable .sapMInputBaseReadonly {
+    background-color: #f9f9d1; /* Color de fondo personalizado */
+    color: #333333; /* Color del texto */
+}
+

@@ -840,10 +840,10 @@
                                                                     </ColumnListItem>
                                                                     <ColumnListItem id="item1_1723542179949">
                                                                         <cells>
-                                                          <Select xmlns="sap.m" id="select2_1723542325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                        <Select xmlns="sap.m" id="select2_1723542325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                                             <items>
                                                                                 <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item212"/>
-                                                                                </items>
+                                                                            </items>
                                                                             
                                                                         </Select>
                                                                         <Select xmlns="sap.m" id="select334" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
@@ -963,18 +963,16 @@
                                                                  <ColumnListItem id="item3_1723544157941">
                                                                     <cells>
                                                      
-                                                        <Select xmlns="sap.m" id="select2_1325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                                <items>
-                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item456"/>
-                                                                </items>
-                                                                            
-                                                                        </Select>
+                                                                    <Select xmlns="sap.m" id="select2_1325367" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <items>
+                                                                                <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item456"/>
+                                                                            </items>                 
+                                                                    </Select>
                                                                        
 
-                                                   <Select xmlns="sap.m" id="select165678" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
-                                                                    <items>
+                                                                  <Select xmlns="sap.m" id="select165678" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                        <items>
                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item5423547174354"/>
-
                                                                         </items>
 
                                                                     </Select>
@@ -1138,7 +1136,7 @@
 
                                                                     <Text xmlns="sap.m" text="" id="text38"/>
 
-                                                                    <Text xmlns="sap.m" text="" id="text39"  class="boldText"/>
+                                                                    <Text xmlns="sap.m" text="" id="text39" class="boldText"/>
 
                                                                     <Text xmlns="sap.m" text="" id="text40" class="boldText"/>
 
@@ -1748,18 +1746,15 @@
                                                                     
                                                                 </Select>
                                                      
-                                                              <Input xmlns="sap.m" value="" id="inpumt0_172360523"/>
-
+                                                                <Input xmlns="sap.m" value="" id="inpumt0_172360523"/>
                                                                 <Input xmlns="sap.m" value="" id="input0_172360523"/>
-
-                                                             <Input xmlns="sap.m" value="" id="input0_172360145641523"/>
+                                                                <Input xmlns="sap.m" value="" id="input0_172360145641523"/>
                                                                 <Text xmlns="sap.m" text="" id="text480948"/>
                                                                 <Text xmlns="sap.m" text="" id="text419"/>
                                                                 <Text xmlns="sap.m" text="" id="text504"/>
                                                                 <Text xmlns="sap.m" text="" id="text5144"/>
                                                                 <Text xmlns="sap.m" text="" id="text5442"/>
                                                                 <Text xmlns="sap.m" text="" id="text5344"/>
-                                                                <Text xmlns="sap.m" text="" id="text5444"/>
                                                                 <Text xmlns="sap.m" text="" id="text5544" class="boldText"/>
                                                                 <Text xmlns="sap.m" text="" id="text5644" class="boldText"/>
 
@@ -2086,10 +2081,8 @@
                                                                             
                                                                         </Select>
 
-                                                                <Text xmlns="sap.m" text="" id="text27_172852792"/>
-                                                                 <Input xmlns="sap.m" id="input0555436287"/>
-
-
+                                                                        <Text xmlns="sap.m" text="" id="text27_172852792"/>
+                                                                        <Input xmlns="sap.m" id="input0555436287"/>
                                                                         <Text xmlns="sap.m" text=" " id="text8692943"/>
                                                                         <Text xmlns="sap.m" text=" " id="text25_17235465340710"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_172354256346727"/>
@@ -2099,6 +2092,7 @@
                                                                         <Text xmlns="sap.m" text="" id="text30_17256335424430"/>
                                                                         <Text xmlns="sap.m" text="" id="text31_1725635152572" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_17235465352299" class="boldText"/>
+                                                                      
                                                                 </cells>
                                                             </ColumnListItem>
                                                             <ColumnListItem id="item1_172439965587539">
@@ -2308,9 +2302,9 @@
                         </FlexBox>
 
                         
-                        <FlexBox width="100%" id="box0_17254429" class="sapUiLargeMarginTop">
+                <FlexBox width="2000px" id="box0_17254429" class="sapUiLargeMarginTop">
 
-                            <ScrollContainer id="scroll_containe4" width="100%" height="auto">
+                    <ScrollContainer id="scroll_containe4" width="100%" height="auto">
 
 
                                                 <Button id="d4549527462485855ynh" text="Añadir Fila" press="onAddRowPress4" class="sapUiLargeMarginTop"/>
@@ -2325,30 +2319,23 @@
 
                             <items>
 
-
                                 <ColumnListItem id="item0_1724421285072">
 
 
                                     <cells>
-
 
                                         <Select xmlns="sap.m" id="select0_1724421301612" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
                                                 <items>
                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item1_1724421301610"/>
 
                                                 </items>
-
-
-                                            
-
-
                                         </Select>
 
 
                                         <Text xmlns="sap.m" text="" id="text67"/>
 
 
-                                        <Input xmlns="sap.m" value=" " id="input0_1724422144416"/>
+                                        <Input xmlns="sap.m" value="" id="input0_1724422144416"/>
 
 
                                         <Text xmlns="sap.m" text="" id="text69_1729172956538" class="boldText"/>
@@ -2388,41 +2375,31 @@
                                 <ColumnListItem id="item1_1724414006634">
 
 
-                                <cells>
+                                    <cells>
 
 
-                                    <Select xmlns="sap.m" id="select1_1724421323918" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item3_1724421323916"/>
+                                        <Select xmlns="sap.m" id="select1_1724421323918" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                    <items>
+                                                        <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item3_1724421323916"/>
+                                                    </items>
+                                        </Select>
 
-                                            </items>
-                                    </Select>
+                                                            <Text xmlns="sap.m" text="" id="text6527"/>
+                                                            <Input xmlns="sap.m" value="" id="input05528857"/>      
+                                                            <Text xmlns="sap.m" text="" id="text29467" class="boldText"/>
+                                                            <Text xmlns="sap.m" text="" id="text25_172342450"/>
+                                                            <Text xmlns="sap.m" text="" id="text26_172357545427"/>
+                                                            <Text xmlns="sap.m" text="" id="text2754427"/>
+                                                            <Text xmlns="sap.m" text="" id="text2418528"/>
+                                                            <Text xmlns="sap.m" text="" id="text25449"/>
+                                                            <Text xmlns="sap.m" text="" id="text30_17354030"/>
+                                                            <Text xmlns="sap.m" text="" id="text31_4544572" class="boldText"/>
+                                                            <Text xmlns="sap.m" text="" id="text32_171145299" class="boldText"/>
 
-                                                        <Text xmlns="sap.m" text="" id="text6527"/>
-
-                                                           <Input xmlns="sap.m" value=" " id="input05528857"/>
-                                                                 
-                                                                        <Text xmlns="sap.m" text="" id="text29467" class="boldText"/>
-                                                                        <Text xmlns="sap.m" text="" id="text25_172342450"/>
-                                                                        <Text xmlns="sap.m" text="" id="text26_172357545427"/>
-                                                                        <Text xmlns="sap.m" text="" id="text2754427"/>
-                                                                        <Text xmlns="sap.m" text="" id="text2418528"/>
-                                                                        <Text xmlns="sap.m" text="" id="text25449"/>
-                                                                        <Text xmlns="sap.m" text="" id="text30_17354030"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_4544572" class="boldText"/>
-                                                                        <Text xmlns="sap.m" text="" id="text32_171145299" class="boldText"/>
-
-                                </cells>
+                                    </cells>
 
 
                                 </ColumnListItem>
-
-
-                            
-
-
-                        
-
 
                             </items>
 
@@ -2611,264 +2588,93 @@
                             </columns>
                                 
                         </Table>
-                                </ScrollContainer>
-
-                                </FlexBox>
-
-                        
-
-                             <FlexBox width="2000px" id="box0_1727955568380">
+                     </ScrollContainer>
+                </FlexBox>
 
                         
 
+<FlexBox width="2000px" id="box0_1727955568380">
                                  <items>
-
-                        
-
-                                     <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="auto">
-
-                        
-
-                                         <items>
-
-                        
-
-                                            <ColumnListItem id="item7">
-
-
-                                <cells>
-
-  
-                                    <Select xmlns="sap.m" id="select2_1724421568007" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item8_1724421568005"/>
-
-                                            </items>
-
-
-                                        
-
-
-                                    </Select>
-
-  
-                                    <Text xmlns="sap.m" id="text72_1724608268260"/>
-
-  
-                                    <Input xmlns="sap.m" id="input1_1724608279183"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text80_1729173297936" class="boldText"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text82_1729173316711"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text83_1729173320937"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text85_1729173332094"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text84_1729173328578"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text87_1729173377445"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text86_1729173336987"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text88_1729173381996" class="boldText"/>
-
-  
-                                    <Text xmlns="sap.m" text="" id="text90_1729173466313" class="boldText"/>
-
-
-                                </cells>
-
-
-                                </ColumnListItem>
-
-
-                                <ColumnListItem id="item6_1724421342842">
-
-
-                                <cells>
-
-
-                                    <Select xmlns="sap.m" id="select3_1724421586106" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
-                                                <items>
-                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item10"/>
-
-                           </items>
-
-
-                                        
-
-
-                                    </Select>
-
-
-                                    <Text xmlns="sap.m" id="text73_1724608398319"/>
-
-
-                                    <Input xmlns="sap.m" value="" id="input2"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text69_1729177354727" class="boldText"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text67_1729177335361"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text68_1729177339385"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text70_1729177361584"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text71_1729177364955"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text72_1729177370550"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text73_1729177374604"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text74_1729177380906" class="boldText"/>
-
-
-                                    <Text xmlns="sap.m" text="" id="text75_1729177384465" class="boldText"/>
-
-
-                                </cells>
-
-
-                                </ColumnListItem>
-
-                        
-
-                                         </items>
-
-                        
-
-                                         <columns>
-
-                        
-
-                                             <Column id="column0_1727955577123">
-
-                        
-
-                                                 <header>
-
-                        
-
-                                                  <Title xmlns="sap.m" id="title65680" text="Licencias "/>
-                        
-
-                                                 </header>
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column3_1727955658552">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column8_1727955671439">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column4_1727955660992">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column10_1727955676540">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column9_1727955674062">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column7_1727955668700">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column6_1727955665646">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column5_1727955663538">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column1_1727955577123">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column0_1729173455651">
-
-                        
-
-                                             </Column>
-
-                        
-
-                                             <Column id="column2_1727955577123">
-
-                        
-
-                                             </Column></columns></Table>
-
-                        
-
+    
+ <Table xmlns="sap.m" noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="auto">
+    <columns>
+        <Column id="column0_1727955577123">
+            <header>
+                <Title id="title65680" text="Licencias"/>
+            </header>
+        </Column>
+        <Column id="column3_1727955658552">
+        </Column>
+        <Column id="column8_1727955671439">
+        </Column>
+        <Column id="column4_1727955660992">
+        </Column>
+        <Column id="column10_1727955676540">
+        </Column>
+        <Column id="column9_1727955674062">
+        </Column>
+        <Column id="column7_1727955668700">
+        </Column>
+        <Column id="column6_1727955665646">
+        </Column>
+        <Column id="column5_1727955663538">
+            <header>
+            </header>
+        </Column>
+        <Column id="column1_1727955577123">
+        </Column>
+        <Column id="column0_1729173455651">
+        </Column>
+        <Column id="column0_1730206050097">
+        </Column>
+    </columns>
+
+    <items>
+        <ColumnListItem id="item7">
+            <cells>
+                <Select id="select2_1724421568007" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                    <items>
+                        <core:Item xmlns:core="sap.ui.core" id="item8_1724421568005" key="{ID}" text="{NombreVertical}"/>
+                    </items>
+                </Select>
+                <Text id="text72_1724608268260"/>
+                <Input id="input1_1724608279183" value=""/>
+                <Text id="text80_1729173297936" class="boldText" text=""/>
+                <Text id="text82_1729173316711" text=""/>
+                <Text id="text83_1729173320937" text=""/>
+                <Text id="text85_1729173332094" text=""/>
+                <Text id="text84_1729173328578" text=""/>
+                <Text id="text87_1729173377445" text=""/>
+                <Text id="text86_1729173336987" text=""/>
+                <Text id="text88_1729173381996" class="boldText" text=""/>
+                <Text id="text90_1729173466313" class="boldText" text=""/>
+            </cells>
+        </ColumnListItem>
+
+        <ColumnListItem id="item6_1724421342842">
+            <cells>
+                <Select id="select3_1724421586106" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                    <items>
+                        <core:Item xmlns:core="sap.ui.core" id="item10" key="{ID}" text="{NombreVertical}"/>
+                    </items>
+                </Select>
+                <Text id="text73_1724608398319"/>
+                <Input id="input2" value=""/>
+                <Text id="text69_1729177354727" class="boldText" text=""/>
+                <Text id="text67_1729177335361" text=""/>
+                <Text id="text68_1729177339385" text=""/>
+                <Text id="text70_1729177361584" text=""/>
+                <Text id="text71_1729177364955" text=""/>
+                <Text id="text72_1729177370550" text=""/>
+                <Text id="text73_1729177374604" text=""/>
+                <Text id="text74_1729177380906" class="boldText" text=""/>
+                <Text id="text75_1729177384465" class="boldText" text=""/>
+
+            </cells>
+        </ColumnListItem>
+    </items>
+</Table>
                                  </items>
-
-                        
-
                              </FlexBox> 
 
 
@@ -2878,9 +2684,7 @@
 
                                            
                                         </Panel>
-                                    </IconTabFilter>
-                                    
-                                    <IconTabFilter id="coste652" text="Resumen Costes y Margen" count="" key="key3">
+                                    </IconTabFilter><IconTabFilter id="coste652" text="Resumen Costes y Margen" count="" key="key3">
                     
                     <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0">
                         <headerToolbar>
@@ -2902,7 +2706,8 @@
                                             <Text xmlns="sap.m" id="txt_Nombre2"/>
                                             <Text xmlns="sap.m" id="txt_area2"/>
                                             <Text xmlns="sap.m" id="txt_Fe_ini2"/>
-                                            <Text xmlns="sap.m" id="txt_Fe_fin2"/></cells>
+                                            <Text xmlns="sap.m" id="txt_Fe_fin2"/>
+                                        </cells>
                                     </ColumnListItem>
                                 </items>
                                 <columns>
@@ -2943,10 +2748,11 @@
                                         <header>
                                             <Text text="Fecha Fin " id="text69"/>
                                         </header>
-                                    </Column></columns></Table>
+                                    </Column></columns>
+                                </Table>
                             <FlexBox width="100%" id="box0_1724667519593">
                                 <items>
-                                    <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724667530565" width="1150px">
+                                    <Table noDataText="Drop column list items here and columns in the area above" id="tablaTotalesRecur" width="1180px">
                                 
                                  
                                         <items>
@@ -2956,28 +2762,28 @@
                                                     <Label id="label0_1724751005420"/>
                                                     <Label width="100%" id="label0_1724751459061"/>
 
-                                                    <VBox id="sdkjfhsodfhj" width="100%">
-                                                    <Input xmlns="sap.m" description="Jornada de Recursos Internos" value="0.00" editable="false" id="inputReInter" width="105%" fieldWidth="25%"/>
-                                                    <Input xmlns="sap.m" value="00.0" description="Jornada Consumo Externo" id="input1_1724751501654" editable="false" width="105%" fieldWidth="25%"/>
-                                                    <Input xmlns="sap.m" value="00.0" id="input2_1724751504527" description="Jornada Consumo Externo" editable="false" width="105%" fieldWidth="25%"/>
+                                                    <VBox id="vboxJorTotal" width="auto">
+                                                    <Input xmlns="sap.m" description="Jornada de Recursos Internos" class="miInputNoEditable" editable="false" id="inputReInter" width="105%" fieldWidth="35%"/>
+                                                    <Input xmlns="sap.m" value="" description="Jornada Consumo Externo" id="inputConsuEx" editable="false" width="105%" fieldWidth="35%"/>
+                                                    <Input xmlns="sap.m" value="" id="inputRcurExtern" description="Jornada Recurso Externo" editable="false" width="105%" fieldWidth="35%"/>
                                                     <Text xmlns="sap.m" text="________________________" id="text72_1724755428618"/>
-                                                    <Input xmlns="sap.m" value="113.0" description="Jornadas totales" id="input0_1724755524914" editable="false" width="105%" fieldWidth="15%"/>
+                                                    <Input xmlns="sap.m" value="" description="Jornadas totales" id="inputTotalJor" editable="false" width="auto" fieldWidth="35%"/>
             
                                                     </VBox>
 
 
 
-                                                    <VBox id="vbox205" width="100%">
+                                                    <VBox id="vbox205" width="auto">
 
-                                                    <Input xmlns="sap.m" value="57.300" description="Servicios" editable="false" width="105%" fieldWidth="35%" id="input4_1724751512413"/>
+                                                    <Input xmlns="sap.m" value="" description="Servicios" editable="false" width="auto" fieldWidth="45%" id="inputServi1" class="customNonEditableInput"/>
 
-                                                    <Input xmlns="sap.m" value="00.0" id="input1_1724756111337" description="Servicios" editable="false" width="105%" fieldWidth="35%"/>
+                                                    <Input xmlns="sap.m" value="" id="inputOtrosServi1" description="Otros Servicios" editable="false" width="auto" fieldWidth="45%"/>
 
-                                                    <Input xmlns="sap.m" value="00.0" id="input2_1724756121205" description=" Otros Servicios" editable="false" width="105%" fieldWidth="35%"/>
+                                                    <Input xmlns="sap.m" value="" id="inputGastoVia1" description=" Gastos de Viaje" editable="false" width="auto" fieldWidth="45%"/>
 
                                                     <Text xmlns="sap.m" text="__________________" id="text66_1724756152781"/>
 
-                                                    <Input xmlns="sap.m" value="57.300" id="input3_1724756135221" description=" Gastos de Viaje" editable="false" width="105%" fieldWidth="35%"/>
+                                                    <Input xmlns="sap.m" value="" id="totalRecuInter" description=" Gastos de Viaje" editable="false" width="auto" fieldWidth="45%"/>
 
 
                                                     
@@ -2999,18 +2805,18 @@
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input1_1724756830751" description="Servicios" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="inputServi2" description="Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input4_1724756865585" description="Otros Servicios " editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="inputOtroSer2" description="Otros Servicios " editable="false" width="105%" fieldWidth="45%"/>
 
-                                                            <Input xmlns="sap.m" value="" id="input0_1724756827211" description="Gastos de viaje" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="inptGastoVi2" description="Gastos de viaje" editable="false" width="105%" fieldWidth="45%"/>
 
                                                             <Text xmlns="sap.m" text="_________________" id="text66_1724756879494"/>
 
 
-                                                            <Input xmlns="sap.m" value="" id="input5_1724756891562" description="Consumo Externo" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="totalConsuExternot" description="Consumo Externo" editable="false" width="105%" fieldWidth="45%"/>
 
 
                                                         </items>
@@ -3029,15 +2835,15 @@
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input8_1724757012456" description="Servicios" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="inputServi" description="Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input10_1724757017406" description="Otros Servicios" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="input10_1724757017406" description="Otros Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
 
 
 
@@ -3045,7 +2851,7 @@
 
 
 
-                                                            <Input xmlns="sap.m" value="" id="input7_1724757010090" description="Recursos Externos" editable="false" width="105%" fieldWidth="35%"/>
+                                                            <Input xmlns="sap.m" value="" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
 
 
 
@@ -3090,8 +2896,8 @@
                                     
                                                         <Label width="100%" id="label1_1724758443032"/>
                                     
-                                                        <Input xmlns="sap.m" value="00.0" id="input0_1724758359582" description="Infraestructura" editable="false" width="105%" fieldWidth="35%"/>
-                                                         <Input xmlns="sap.m" value="00.0" id="input0_1724758359" description="Licencia" editable="false" width="105%" fieldWidth="50%"/>
+                                                        <Input xmlns="sap.m" value="00.0" id="totalInfraestruc" description="Infraestructura" editable="false" width="105%" fieldWidth="50%"/>
+                                                         <Input xmlns="sap.m" value="" id="input0_1724758359" description="Licencia" editable="false" width="105%" fieldWidth="50%"/>
 
                                     
                                                     </items>
@@ -3102,7 +2908,7 @@
                                     
                                             </cells>
                                     
-                                            </ColumnListItem>
+                                        </ColumnListItem>
 
                                 
                                         </items>
@@ -3134,7 +2940,7 @@
 
                                  
                                             </Column>
-                                            <Column id="column3_1724667573396">
+                                            <Column id="column3_1724667573396" width="260px">
 
 
                                                 <header>
@@ -3151,7 +2957,7 @@
 
                                             </Column>
                                       
-                                            <Column id="column4_1724667576735">
+                                            <Column id="column4_1724667576735" width="260px">
                                                 <header>
 
                                                     <VBox id="vox2"> 
@@ -3162,10 +2968,10 @@
 
                                                 </header>
                                             </Column>
-                                            <Column id="column5_1724667579931">
+                                            <Column id="column5_1724667579931" width="250px"> 
                                                 <header>
                                                      <VBox id="vox3"> 
-                                                    <Text text="Consumo Externo" id="text752890"/>
+                                                    <Text text="Recurso Externo" id="text752890"/>
                                                   <Text xmlns="sap.m" text="Ezfuerzo PMJ Coste" id="text67_17241"/>
 
                                                   </VBox>
@@ -3174,39 +2980,40 @@
                                             </Column>
                                             </columns>
 
-                                            </Table>
+                                    </Table>
                                 </items>
                             </FlexBox>
 
                             <HBox id="cambio344" justifyContent="End">
 
-                            <Table noDataText="Drop column list items here and columns in the area above" id="table1_1725623729321" width="500px" class="sapUiLargeMarginTop">
+                            <Table noDataText="Drop column list items here and columns in the area above" id="table1_1725623729321" width="900px" class="sapUiLargeMarginTop">
                                 <items>
                                     <ColumnListItem id="item2_1725624112050">
                                         <cells>
     <VBox width="100%" direction="Column" id="vbox3">
         <items>
-            <Text xmlns="sap.m" text="&#9;&#9;&#9;&#9;&#9;Valor de referencia 0%. Cualquier cambio a este dato debe ser acordado con Control" id="text66_1728582744699"/>
+            <Text xmlns="sap.m" text="Valor de referencia 0%. Cualquier cambio a este dato debe ser acordado con Control" wrapping="false" id="text66_1728582744699"/>
             <Text xmlns="sap.m" id="text68_1728582813602"/>
-            <Text xmlns="sap.m" id="text69_1728582826496"/><Text xmlns="sap.m" id="text67_1728582763477" text="&#9;&#9;&#9;&#9;Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%"/>
+            <Text xmlns="sap.m" id="text67_1728582763477" text="&#9;&#9;&#9;&#9;Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%"/>
         </items>
     </VBox>
     <VBox width="100%" direction="Column" id="vbox1_1728582556153">
         <items>
-            <Input xmlns="sap.m" value="00.0" id="input2_17247561215" description="Subtotal" editable="false" width="105%" fieldWidth="20%"/>
-            <Input xmlns="sap.m" value="00.0" id="input2_172475612" description="Coste Estructura%" editable="false" width="105%" fieldWidth="20%"/>
-            <Input xmlns="sap.m" value="00.0" id="input2_1724756105" description="Margen sobre Ingresos %" editable="false" width="105%" fieldWidth="20%"/>
-            <Input xmlns="sap.m" value="00.0" id="input2_17221205" description="Margen sobre ingresos " editable="false" width="105%" fieldWidth="20%"/>
-            <Input xmlns="sap.m" value="00.0" id="input2_1756121205" description="Coste estructura" editable="false" width="105%" fieldWidth="20%"/>
-            <Input xmlns="sap.m" value="Value" id="input0_1725625161348" description="Total" editable="false"/>
+            <Input xmlns="sap.m" value="" id="totalSubtotal" description="Subtotal" editable="false" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="5.00" id="input2_172475612" description="Coste Estructura%" editable="false" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen sobre ingresos " width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_1756121205" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false"/>
         </items>
-    </VBox>                                        </cells>
+    </VBox>                    
+                        </cells>
                                     </ColumnListItem>
                                 </items>
                                 <columns>
-                                    <Column id="column3_1725623729321">
+                                    <Column id="column3_1725623729321" width="90px">
                                     </Column>
-                                    <Column id="column4_1725623729321">
+                                    <Column id="column4_1725623729321" width="50px">
                                     </Column></columns>
                                     </Table>
 
@@ -3438,14 +3245,14 @@
                                     <cells>
 
 
-                                        <Text text="" id="text6735865736742"/>
-                                      <Text text="111.04" id="text66735865736742"/>
+                                        <Text text="0€" id="text6735865736742"/>
+                                      <Text text="0€" id="text66735865736742"/>
 
-                                        <Text text="23.419" id="text67_17985865736744"/>
+                                        <Text text="0€" id="text67_17985865736744"/>
                     
-                                        <Text text="0" id="text68_1725889736746"/>
-                                        <Text text="0" id="text68_1725164555746"/>
-                                       <Text text="0" id="text68_17258615744546"/>
+                                        <Text text="0€" id="text68_1725889736746"/>
+                                        <Text text="0€" id="text68_1725164555746"/>
+                                       <Text text="0€" id="text68_17258615744546"/>
                                        <Text xmlns="sap.m" text="0" id="text66_1725868327136"/>
                                        <Text xmlns="sap.m" text="0" id="text67_1725868342117"/>
                                        <Text xmlns="sap.m" text="0" id="text68_1725868351277"/>
@@ -3475,16 +3282,6 @@
                                     <header>
                     
                                         <Label text="2025" id="label1_1725865736747"/>
-                    
-                                    </header>
-                    
-                                </Column>
-                    
-                                <Column id="column2_1725865736748">
-                    
-                                    <header>
-                    
-                                        <Label text="2026" id="label2_1725865736748"/>
                     
                                     </header>
                     
@@ -3560,19 +3357,19 @@
                     
                                             <cells>
                     
-                                                <Text text="1000.100" id="text66_1725869118989"/>
+                                                <Text text="0€" id="text66_1725869118989"/>
                     
-                                                <Text text="21.0077" id="text67_1725869118992"/>
+                                                <Text text="0€" id="text67_1725869118992"/>
                     
-                                                <Text text="0" id="tel3434"/>
+                                                <Text text="0€" id="tel3434"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="text66_1725870051148"/>
+                                                <Text xmlns="sap.m" text="0€" id="text66_1725870051148"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="text67_1725870054195"/>
+                                                <Text xmlns="sap.m" text="0€" id="text67_1725870054195"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="text68_1725870057096"/>
+                                                <Text xmlns="sap.m" text="0€" id="text68_1725870057096"/>
                     
-                                                <Text xmlns="sap.m" text="121.77" id="text69_1725870061350"/>
+                                                <Text xmlns="sap.m" text="0€" id="text69_1725870061350"/>
                                                 </cells>
                     
                                         </ColumnListItem>
@@ -3665,13 +3462,13 @@
     <items>
         <ColumnListItem type="Active" id="item_costes_indirectos_001">
             <cells>
-                <Text text="0" id="text_cell_1_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_2_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_3_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_4_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_5_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_6_costes_indirectos_001"/>
-                <Text text="0" id="text_cell_7_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_1_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_2_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_3_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_4_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_5_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_6_costes_indirectos_001"/>
+                <Text text="0€" id="text_cell_7_costes_indirectos_001"/>
             </cells>
         </ColumnListItem>
     </items>
@@ -3725,45 +3522,45 @@
     <items>
         <ColumnListItem type="Active" id="item_costes_totales_001">
             <cells>
-                <Text text="Row 1 Cell 1" id="text_cell_1_001"/>
-                <Text text="Row 1 Cell 2" id="text_cell_2_001"/>
-                <Text text="Row 1 Cell 3" id="text_cell_3_001"/>
-                <Text text="Text" id="text_additional_1_001"/>
-                <Text text="Text" id="text_additional_2_001"/>
-                <Text text="Text" id="text_additional_3_001"/>
-                <Text text="Text" id="text_additional_4_001"/>
+                <Text text="0€" id="text_cell_1_001"/>
+                <Text text="0€" id="text_cell_2_001"/>
+                <Text text="0€" id="text_cell_3_001"/>
+                <Text text="0€" id="text_additional_1_001"/>
+                <Text text="0€" id="text_additional_2_001"/>
+                <Text text="0€" id="text_additional_3_001"/>
+                <Text text="0€" id="text_additional_4_001"/>
             </cells>
         </ColumnListItem>
     </items>
     <columns>
         <Column id="column_1_costes_totales_001">
             <header>
-                <Label text="Header 1" id="label_header_1_costes_totales_001"/>
+                <Label text="2024" id="label_header_1_costes_totales_001"/>
             </header>
         </Column>
         <Column id="column_2_costes_totales_001">
             <header>
-                <Label text="Header 2" id="label_header_2_costes_totales_001"/>
+                <Label text="2025" id="label_header_2_costes_totales_001"/>
             </header>
         </Column>
         <Column id="column_3_costes_totales_001">
             <header>
-                <Label text="Header 3" id="label_header_3_costes_totales_001"/>
+                <Label text="2026" id="label_header_3_costes_totales_001"/>
             </header>
         </Column>
         <Column id="column_4_costes_totales_001">
             <header>
-                <Text text="Header" id="text_header_1_costes_totales_001"/>
+                <Text text="2027" id="text_header_1_costes_totales_001"/>
             </header>
         </Column>
         <Column id="column_5_costes_totales_001">
             <header>
-                <Text text="Header" id="text_header_2_costes_totales_001"/>
+                <Text text="2028" id="text_header_2_costes_totales_001"/>
             </header>
         </Column>
         <Column id="column_6_costes_totales_001">
             <header>
-                <Text text="Header" id="text_header_3_costes_totales_001"/>
+                <Text text="2029" id="text_header_3_costes_totales_001"/>
             </header>
         </Column>
                       
@@ -3779,42 +3576,7 @@
 
 
                     
-                                        <Text text="Header" id="tbier2531584"/>
-                    
-                      
-                        
-
-
-                    
-                                    </header>
-                    
-                      
-                        
-
-
-                    
-                                </Column>
-                    
-                      
-                        
-
-
-                    
-                                <Column id="comireno25872545887">
-                    
-                      
-                        
-
-
-                    
-                                    <header>
-                    
-                      
-                        
-
-
-                    
-                                        <Text text="Header" id="textsuer887"/>
+                                        <Text text="Total" id="tbier2531584"/>
                     
                       
                         
@@ -3842,50 +3604,50 @@
     <items>
         <ColumnListItem type="Active" id="item_beneficio_001">
             <cells>
-                <Text text="Row 1 Cell 1" id="text_cell_1_beneficio_001"/>
-                <Text text="Row 1 Cell 2" id="text_cell_2_beneficio_001"/>
-                <Text text="Row 1 Cell 3" id="text_cell_3_beneficio_001"/>
-                <Text text="Text" id="text_additional_1_beneficio_001"/>
-                <Text text="Text" id="text_additional_2_beneficio_001"/>
-                <Text text="Text" id="text_additional_3_beneficio_001"/>
-                <Text text="Text" id="text_additional_4_beneficio_001"/>
+                <Text text="0€" id="text_cell_1_beneficio_001"/>
+                <Text text="0€" id="text_cell_2_beneficio_001"/>
+                <Text text="0€" id="text_cell_3_beneficio_001"/>
+                <Text text="0€" id="text_additional_1_beneficio_001"/>
+                <Text text="0€" id="text_additional_2_beneficio_001"/>
+                <Text text="0€" id="text_additional_3_beneficio_001"/>
+                <Text text="0€" id="text_additional_4_beneficio_001"/>
             </cells>
         </ColumnListItem>
     </items>
     <columns>
         <Column id="column_1_beneficio_001">
             <header>
-                <Label text="Header 1" id="label_header_1_beneficio_001"/>
+                <Label text="2024" id="label_header_1_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_2_beneficio_001">
             <header>
-                <Label text="Header 2" id="label_header_2_beneficio_001"/>
+                <Label text="2025" id="label_header_2_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_3_beneficio_001">
             <header>
-                <Label text="Header 3" id="label_header_3_beneficio_001"/>
+                <Label text="2026" id="label_header_3_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_4_beneficio_001">
             <header>
-                <Text text="Header" id="text_header_1_beneficio_001"/>
+                <Text text="2027" id="text_header_1_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_5_beneficio_001">
             <header>
-                <Text text="Header" id="text_header_2_beneficio_001"/>
+                <Text text="2028" id="text_header_2_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_6_beneficio_001">
             <header>
-                <Text text="Header" id="text_header_3_beneficio_001"/>
+                <Text text="2029" id="text_header_3_beneficio_001"/>
             </header>
         </Column>
         <Column id="column_7_beneficio_001">
             <header>
-                <Text text="Header" id="text_header_4_beneficio_001"/>
+                <Text text="Total" id="text_header_4_beneficio_001"/>
             </header>
         </Column>
     </columns>
@@ -3972,15 +3734,15 @@
                     
                                     <cells>
 
-                                        <Text text="" id="textJEr"/>
-                                      <Text text="111.04" id="text6673"/>
+                                        <Text text="0€" id="textJEr"/>
+                                      <Text text="0€" id="text6673"/>
 
-                                        <Text text="23.419" id="text03400"/>
+                                        <Text text="0€" id="text03400"/>
                     
-                                        <Text text="0" id="text677"/>
-                                        <Text text="0" id="text68557460"/>
-                                       <Text text="0" id="text657445460"/>
-                                       <Text xmlns="sap.m" text="0" id="text96_172500"/>
+                                        <Text text="0€" id="text677"/>
+                                        <Text text="0€" id="text68557460"/>
+                                       <Text text="0€" id="text657445460"/>
+                                       <Text xmlns="sap.m" text="0€" id="text96_172500"/>
                                        <Text xmlns="sap.m" text="0" id="text870000"/>
                                        <Text xmlns="sap.m" text="0" id="text6780000"/>
                                     </cells>
@@ -4095,19 +3857,19 @@
                     
                                             <cells>
                     
-                                                <Text text="1000.100" id="tex1725869118989"/>
+                                                <Text text="0€" id="tex1725869118989"/>
                     
-                                                <Text text="21.0077" id="text6869118992"/>
+                                                <Text text="0€" id="text6869118992"/>
                     
-                                                <Text text="0" id="text68_1725869118994"/>
+                                                <Text text="0€" id="text68_1725869118994"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="tex_172587340051148"/>
+                                                <Text xmlns="sap.m" text="0€" id="tex_172587340051148"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="text699970054195"/>
+                                                <Text xmlns="sap.m" text="0€" id="text699970054195"/>
                     
-                                                <Text xmlns="sap.m" text="0" id="text68_9999970057096"/>
+                                                <Text xmlns="sap.m" text="0€" id="text68_9999970057096"/>
                     
-                                                <Text xmlns="sap.m" text="121.77" id="text6999999999"/>
+                                                <Text xmlns="sap.m" text="0€" id="text6999999999"/>
                                                 </cells>
                     
                                         </ColumnListItem>
@@ -4207,15 +3969,15 @@
                     
                                     <cells>
                     
-                                        <Text text="0" id="text81"/>
+                                        <Text text="0€" id="text81"/>
                     
-                                        <Text text="0" id="text82"/>
+                                        <Text text="0€" id="text82"/>
                     
-                                        <Text text="0" id="text83"/><Text xmlns="sap.m" text="0" id="text88"/><Text xmlns="sap.m" text="0" id="text89"/>
+                                        <Text text="0€" id="text83"/><Text xmlns="sap.m" text="0€" id="text88"/><Text xmlns="sap.m" text="0€" id="text89"/>
                     
-                                        <Text xmlns="sap.m" text="0" id="text90"/>
+                                        <Text xmlns="sap.m" text="0€" id="text90"/>
                     
-                                        <Text xmlns="sap.m" text="0" id="text91"/></cells>
+                                        <Text xmlns="sap.m" text="0€" id="text91"/></cells>
                     
                                 </ColumnListItem>
                     
@@ -4329,49 +4091,49 @@
 
 
                     
-                                        <Text text="Row 1 Cell 1" id="text66_1725872132581"/>
+                                        <Text text="0€" id="text66_1725872132581"/>
                     
                       
                         
 
 
                     
-                                        <Text text="Row 1 Cell 2" id="text67_1725872132583"/>
+                                        <Text text="0€" id="text67_1725872132583"/>
                     
                       
                         
 
 
                     
-                                        <Text text="Row 1 Cell 3" id="text68_1725872132588"/>
+                                        <Text text="0€" id="text68_1725872132588"/>
                     
                       
                         
 
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text70_1725872564852"/>
+                                        <Text xmlns="sap.m" text="0€" id="text70_1725872564852"/>
                     
                       
                         
 
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text71_1725872576376"/>
+                                        <Text xmlns="sap.m" text="0€" id="text71_1725872576376"/>
                     
                       
                         
 
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text72_1725872587928"/>
+                                        <Text xmlns="sap.m" text="0€" id="text72_1725872587928"/>
                     
                       
                         
 
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text73_1725872598268"/></cells>
+                                        <Text xmlns="sap.m" text="0€" id="text73_1725872598268"/></cells>
                     
                       
                         
@@ -4413,7 +4175,7 @@
 
 
                     
-                                        <Label text="Header 1" id="label0_1725872132589"/>
+                                        <Label text="2024" id="label0_1725872132589"/>
                     
                       
                         
@@ -4448,7 +4210,7 @@
 
 
                     
-                                        <Label text="Header 2" id="label1_1725872132589"/>
+                                        <Label text="2025" id="label1_1725872132589"/>
                     
                       
                         
@@ -4483,7 +4245,7 @@
 
 
                     
-                                        <Label text="Header 3" id="label2_1725872132590"/>
+                                        <Label text="2026" id="label2_1725872132590"/>
                     
                       
                         
@@ -4518,7 +4280,7 @@
 
 
                     
-                                        <Text text="Header" id="text66_1725872519687"/>
+                                        <Text text="2027" id="text66_1725872519687"/>
                     
                       
                         
@@ -4553,7 +4315,7 @@
 
 
                     
-                                        <Text text="Header" id="text67_1725872525562"/>
+                                        <Text text="2028" id="text67_1725872525562"/>
                     
                       
                         
@@ -4588,7 +4350,7 @@
 
 
                     
-                                        <Text text="Header" id="text68_1725872531584"/>
+                                        <Text text="2029" id="text68_1725872531584"/>
                     
                       
                         
@@ -4623,7 +4385,7 @@
 
 
                     
-                                        <Text text="Header" id="text69_1725872545887"/>
+                                        <Text text="Total" id="text69_1725872545887"/>
                     
                       
                         
@@ -4666,37 +4428,37 @@
                       
 
                     
-                                        <Text text="Row 1 Cell 1" id="text74_1725872637611"/>
+                                        <Text text="0€" id="text74_1725872637611"/>
                     
                       
 
                     
-                                        <Text text="Row 1 Cell 2" id="text75_1725872637614"/>
+                                        <Text text="0€" id="text75_1725872637614"/>
                     
                       
 
                     
-                                        <Text text="Row 1 Cell 3" id="text76_1725872637617"/>
+                                        <Text text="0€" id="text76_1725872637617"/>
                     
                       
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text77_1725872660347"/>
+                                        <Text xmlns="sap.m" text="0€" id="text77_1725872660347"/>
                     
                       
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text78_1725872670504"/>
+                                        <Text xmlns="sap.m" text="0€" id="text78_1725872670504"/>
                     
                       
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text79_1725872677582"/>
+                                        <Text xmlns="sap.m" text="0€" id="text79_1725872677582"/>
                     
                       
 
                     
-                                        <Text xmlns="sap.m" text="Text" id="text80"/></cells>
+                                        <Text xmlns="sap.m" text="0€" id="text80"/></cells>
                     
                       
 
@@ -4726,7 +4488,7 @@
                       
 
                     
-                                        <Label text="Header 1" id="label0_1725872637618"/>
+                                        <Label text="2024" id="label0_1725872637618"/>
                     
                       
 
@@ -4751,7 +4513,7 @@
                       
 
                     
-                                        <Label text="Header 2" id="label1_1725872637618"/>
+                                        <Label text="2024" id="label1_1725872637618"/>
                     
                       
 
@@ -4776,7 +4538,7 @@
                       
 
                     
-                                        <Label text="Header 3" id="label2_1725872637619"/>
+                                        <Label text="2025" id="label2_1725872637619"/>
                     
                       
 
@@ -4801,7 +4563,7 @@
                       
 
                     
-                                        <Text text="Header" id="text81_1725872695702"/>
+                                        <Text text="2026" id="text81_1725872695702"/>
                     
                       
 
@@ -4826,7 +4588,7 @@
                       
 
                     
-                                        <Text text="Header" id="text82_1725872707110"/>
+                                        <Text text="2027" id="text82_1725872707110"/>
                     
                       
 
@@ -4851,7 +4613,7 @@
                       
 
                     
-                                        <Text text="Header" id="text83_1725872722822"/>
+                                        <Text text="2028" id="text83_1725872722822"/>
                     
                       
 
@@ -4876,7 +4638,7 @@
                       
 
                     
-                                        <Text text="Header" id="text84_1725872728490"/>
+                                        <Text text="Total" id="text84_1725872728490"/>
                     
                       
 
@@ -4949,9 +4711,9 @@
     <items>
         <ColumnListItem type="Active" id="item_ingresos_002">
             <cells>
-               <Text text="" id="text_empty_002"/>
-                <Text text="111.04" id="text_value_1_002"/>
-                <Text text="23.419" id="text_value_2_002"/>
+               <Text text="0€" id="text_empty_002"/>
+                <Text text="0€" id="text_value_1_002"/>
+                <Text text="0€" id="text_value_2_002"/>
                 <Text text="0" id="text_value_3_002"/>
                 <Text text="0" id="text_value_4_002"/>
                 <Text text="0" id="text_value_5_002"/>
@@ -5010,13 +4772,13 @@
     <items>
         <ColumnListItem type="Active" id="item_costes_directos_002">
             <cells>
-                <Text text="1000.100" id="text_costes_1_002"/>
-                <Text text="21.0077" id="text_costes_2_002"/>
+                <Text text="0€" id="text_costes_1_002"/>
+                <Text text="0€" id="text_costes_2_002"/>
                 <Text text="0" id="text_costes_3_002"/>
                 <Text xmlns="sap.m" text="0" id="text_costes_4_002"/>
                 <Text xmlns="sap.m" text="0" id="text_costes_5_002"/>
                 <Text xmlns="sap.m" text="0" id="text_costes_6_002"/>
-                <Text xmlns="sap.m" text="121.77" id="text_costes_7_002"/>
+                <Text xmlns="sap.m" text="0€" id="text_costes_7_002"/>
             </cells>
         </ColumnListItem>
     </items>
@@ -5124,50 +4886,50 @@
     <items>
         <ColumnListItem type="Active" id="itemCostesTotales_1">
             <cells>
-                <Text text="Row 1 Cell 1" id="cellCostesTotales_1_1"/>
-                <Text text="Row 1 Cell 2" id="cellCostesTotales_1_2"/>
-                <Text text="Row 1 Cell 3" id="cellCostesTotales_1_3"/>
-                <Text xmlns="sap.m" text="Text" id="cellCostesTotales_1_4"/>
-                <Text xmlns="sap.m" text="Text" id="cellCostesTotales_1_5"/>
-                <Text xmlns="sap.m" text="Text" id="cellCostesTotales_1_6"/>
-                <Text xmlns="sap.m" text="Text" id="cellCostesTotales_1_7"/>
+                <Text text="0€" id="cellCostesTotales_1_1"/>
+                <Text text="0€" id="cellCostesTotales_1_2"/>
+                <Text text="0€" id="cellCostesTotales_1_3"/>
+                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_4"/>
+                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_5"/>
+                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_6"/>
+                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_7"/>
             </cells>
         </ColumnListItem>
     </items>
     <columns>
         <Column id="columnCostesTotales_1">
             <header>
-                <Label text="Header 1" id="labelCostesTotales_1"/>
+                <Label text="2024" id="labelCostesTotales_1"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_2">
             <header>
-                <Label text="Header 2" id="labelCostesTotales_2"/>
+                <Label text="2025" id="labelCostesTotales_2"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_3">
             <header>
-                <Label text="Header 3" id="labelCostesTotales_3"/>
+                <Label text="2026" id="labelCostesTotales_3"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_4">
             <header>
-                <Text text="Header" id="headerCostesTotales_4"/>
+                <Text text="2027" id="headerCostesTotales_4"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_5">
             <header>
-                <Text text="Header" id="headerCostesTotales_5"/>
+                <Text text="2028" id="headerCostesTotales_5"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_6">
             <header>
-                <Text text="Header" id="headerCostesTotales_6"/>
+                <Text text="2029" id="headerCostesTotales_6"/>
             </header>
         </Column>
         <Column id="columnCostesTotales_7">
             <header>
-                <Text text="Header" id="headerCostesTotales_7"/>
+                <Text text="Total" id="headerCostesTotales_7"/>
             </header>
         </Column>
     </columns>
@@ -5182,50 +4944,50 @@
     <items>
         <ColumnListItem type="Active" id="itemBeneficio_1">
             <cells>
-                <Text text="" id="cellBeneficio_1_1"/>
-                <Text text="Row 1 Cell 2" id="cellBeneficio_1_2"/>
-                <Text text="Row 1 Cell 3" id="cellBeneficio_1_3"/>
-                <Text xmlns="sap.m" text="Text" id="cellBeneficio_1_4"/>
-                <Text xmlns="sap.m" text="Text" id="cellBeneficio_1_5"/>
-                <Text xmlns="sap.m" text="Text" id="cellBeneficio_1_6"/>
-                <Text xmlns="sap.m" text="Text" id="cellBeneficio_1_7"/>
+                <Text text="0€" id="cellBeneficio_1_1"/>
+                <Text text="0€" id="mygret"/>
+                <Text text="0€" id="cellBeneficio_1_3"/>
+                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_4"/>
+                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_5"/>
+                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_6"/>
+                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_7"/>
             </cells>
         </ColumnListItem>
     </items>
     <columns>
         <Column id="columnBeneficio_1">
             <header>
-                <Label text="Header 1" id="labelBeneficio_1"/>
+                <Label text="2024" id="labelBeneficio_1"/>
             </header>
         </Column>
         <Column id="columnBeneficio_2">
             <header>
-                <Label text="Header 2" id="labelBeneficio_2"/>
+                <Label text="2024" id="labelBeneficio_2"/>
             </header>
         </Column>
         <Column id="columnBeneficio_3">
             <header>
-                <Label text="Header 3" id="labelBeneficio_3"/>
+                <Label text="2025" id="labelBeneficio_3"/>
             </header>
         </Column>
         <Column id="columnBeneficio_4">
             <header>
-                <Text text="Header" id="headerBeneficio_4"/>
+                <Text text="2026" id="headerBeneficio_4"/>
             </header>
         </Column>
         <Column id="columnBeneficio_5">
             <header>
-                <Text text="Header" id="headerBeneficio_5"/>
+                <Text text="2027" id="headerBeneficio_5"/>
             </header>
         </Column>
         <Column id="columnBeneficio_6">
             <header>
-                <Text text="Header" id="headerBeneficio_6"/>
+                <Text text="2029" id="headerBeneficio_6"/>
             </header>
         </Column>
         <Column id="columnBeneficio_7">
             <header>
-                <Text text="Header" id="headerBeneficio_7"/>
+                <Text text="Total" id="headerBeneficio_7"/>
             </header>
         </Column>
     </columns>
@@ -5301,10 +5063,10 @@
                           <Text xmlns="sap.m" text="Recursos Externos" id="text74_1729077053691"/>
 
 
-                          <Label text="Cell" id="label4_1729074282332"/>
+                          <Label text="" id="label4_1729074282332"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text70_1729076946491"/>
+                          <Text xmlns="sap.m" text="" id="text70_1729076946491"/>
 
 
                       </cells>
@@ -5418,25 +5180,25 @@
                   <cells>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text79_1729077206637"/>
+                      <Text xmlns="sap.m" id="text79_1729077206637" text="0€"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text80_1729077210224"/>
+                      <Text xmlns="sap.m" text="0€" id="text80_1729077210224"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text78_1729077203649"/>
+                      <Text xmlns="sap.m" text="0€" id="text78_1729077203649"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text81_1729077213529"/>
+                      <Text xmlns="sap.m" text="0€" id="text81_1729077213529"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text83_1729077301855"/>
+                      <Text xmlns="sap.m" text="0€" id="text83_1729077301855"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text84_1729077305255"/>
+                      <Text xmlns="sap.m" text="0€" id="text84_1729077305255"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text92"/>
+                      <Text xmlns="sap.m" text="0€" id="text92"/>
 
 
                   </cells>
@@ -5451,25 +5213,25 @@
                   <cells>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text85_1729077313319"/>
+                      <Text xmlns="sap.m" text="0€" id="text85_1729077313319"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text86_1729077317194"/>
+                      <Text xmlns="sap.m" text="0€" id="text86_1729077317194"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text87_1729077320933"/>
+                      <Text xmlns="sap.m" text="0€" id="text87_1729077320933"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text89_1729077335929"/>
+                      <Text xmlns="sap.m" text="0€" id="text89_1729077335929"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text90_1729077339030"/>
+                      <Text xmlns="sap.m" text="0€" id="text90_1729077339030"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text91_1729077343635"/>
+                      <Text xmlns="sap.m" text="0€" id="text91_1729077343635"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text93"/>
+                      <Text xmlns="sap.m" text="0€" id="text93"/>
 
 
                   </cells>
@@ -5484,25 +5246,25 @@
                   <cells>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text94"/>
+                      <Text xmlns="sap.m" text="0€" id="text94"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text95"/>
+                      <Text xmlns="sap.m" text="0€" id="text95"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text96"/>
+                      <Text xmlns="sap.m" text="0€" id="text96"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text97"/>
+                      <Text xmlns="sap.m" text="0€" id="text97"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text98"/>
+                      <Text xmlns="sap.m" text="0€" id="text98"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text99"/>
+                      <Text xmlns="sap.m" text="0€" id="text99"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text100"/>
+                      <Text xmlns="sap.m" text="0€" id="text100"/>
 
 
                   </cells>
@@ -5517,25 +5279,25 @@
                   <cells>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text101"/>
+                      <Text xmlns="sap.m" text="0€" id="text101"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text102"/>
+                      <Text xmlns="sap.m" text="0€" id="text102"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text106"/>
+                      <Text xmlns="sap.m" text="0€" id="text106"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text107"/>
+                      <Text xmlns="sap.m" text="0€" id="text107"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text105"/>
+                      <Text xmlns="sap.m" text="0€" id="text105"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text103"/>
+                      <Text xmlns="sap.m" text="0€" id="text103"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text104"/>
+                      <Text xmlns="sap.m" text="0€" id="text104"/>
 
 
                   </cells>
@@ -5550,25 +5312,25 @@
                   <cells>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text108"/>
+                      <Text xmlns="sap.m" text="0€" id="text108"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text109"/>
+                      <Text xmlns="sap.m" text="0€" id="text109"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text110"/>
+                      <Text xmlns="sap.m" text="0€" id="text110"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text111"/>
+                      <Text xmlns="sap.m" text="0€" id="text111"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text112"/>
+                      <Text xmlns="sap.m" text="0€" id="text112"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text113"/>
+                      <Text xmlns="sap.m" text="0€" id="text113"/>
 
 
-                      <Text xmlns="sap.m" text="Text" id="text114"/>
+                      <Text xmlns="sap.m" text="0€" id="text114"/>
 
 
                   </cells>
@@ -5583,25 +5345,25 @@
                       <cells>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text116"/>
+                          <Text xmlns="sap.m" text="0€" id="text116"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text117"/>
+                          <Text xmlns="sap.m" text="0€" id="text117"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text118"/>
+                          <Text xmlns="sap.m" text="0€" id="text118"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text119"/>
+                          <Text xmlns="sap.m" text="0€" id="text119"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text120"/>
+                          <Text xmlns="sap.m" text="0€" id="text120"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text121"/>
+                          <Text xmlns="sap.m" text="0€" id="text121"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text122"/>
+                          <Text xmlns="sap.m" text="0€" id="text122"/>
 
 
                       </cells>
@@ -5616,25 +5378,25 @@
                       <cells>
 
 
-                          <Text text="Row 1 Cell 2" id="text79_1729073623129"/>
+                          <Text text="0€" id="text79_1729073623129"/>
 
 
-                          <Text text="Row 1 Cell 3" id="text80_1729073623133"/>
+                          <Text text="0€" id="text80_1729073623133"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text123"/>
+                          <Text xmlns="sap.m" text="0€" id="text123"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text124"/>
+                          <Text xmlns="sap.m" text="0€" id="text124"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text125"/>
+                          <Text xmlns="sap.m" text="0€" id="text125"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text126"/>
+                          <Text xmlns="sap.m" text="0€" id="text126"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text127"/></cells>
+                          <Text xmlns="sap.m" text="0€" id="text127"/></cells>
 
 
                   </ColumnListItem>
@@ -5771,22 +5533,22 @@
                       <cells>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text129"/>
+                          <Text xmlns="sap.m" text="0€" id="text129"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text128"/>
+                          <Text xmlns="sap.m" text="0€" id="text128"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text140"/>
+                          <Text xmlns="sap.m" text="0€" id="text140"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text141"/>
+                          <Text xmlns="sap.m" text="0€" id="text141"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text143"/>
+                          <Text xmlns="sap.m" text="0€" id="text143"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text70_1729079344938"/>
+                          <Text xmlns="sap.m" text="0€" id="text70_1729079344938"/>
 
 
                       </cells>
@@ -5801,25 +5563,25 @@
                       <cells>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text130"/>
+                          <Text xmlns="sap.m" text="0€" id="text130"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text134"/>
+                          <Text xmlns="sap.m" text="0€" id="text134"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text135"/>
+                          <Text xmlns="sap.m" text="0€" id="text135"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text136"/>
+                          <Text xmlns="sap.m" text="0€" id="text136"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text138"/>
+                          <Text xmlns="sap.m" text="0€" id="text138"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text137"/>
+                          <Text xmlns="sap.m" text="0€" id="text137"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text139"/>
+                          <Text xmlns="sap.m" text="0€" id="text139"/>
 
 
                       </cells>
@@ -5833,16 +5595,16 @@
 
                       <cells>
 
-                <Text xmlns="sap.m" text="Text 41" id="text400"/>
-                    <Text xmlns="sap.m" text="Text 42" id="text401"/>
-                    <Text xmlns="sap.m" text="Text 43" id="text402"/>
-                    <Text xmlns="sap.m" text="Text 44" id="text403"/>
-                    <Text xmlns="sap.m" text="Text 45" id="text404"/>
-                    <Text xmlns="sap.m" text="Text 46" id="text405"/>
-                    <Text xmlns="sap.m" text="Text 47" id="text406"/>
-                    <Text xmlns="sap.m" text="Text 48" id="text407"/>
-                    <Text xmlns="sap.m" text="Text 49" id="text408"/>
-                    <Text xmlns="sap.m" text="Text 50" id="text409"/>
+                <Text xmlns="sap.m" text="0€" id="text400"/>
+                    <Text xmlns="sap.m" text="0€" id="text401"/>
+                    <Text xmlns="sap.m" text="0€" id="text402"/>
+                    <Text xmlns="sap.m" text="0€" id="text403"/>
+                    <Text xmlns="sap.m" text="0€" id="text404"/>
+                    <Text xmlns="sap.m" text="0€" id="text405"/>
+                    <Text xmlns="sap.m" text="0€" id="text406"/>
+                    <Text xmlns="sap.m" text="0€" id="text407"/>
+                    <Text xmlns="sap.m" text="0€" id="text408"/>
+                    <Text xmlns="sap.m" text="0€" id="text409"/>
 
                       </cells>
 
@@ -5856,16 +5618,16 @@
                       <cells>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text133"/>
-                       <Text xmlns="sap.m" text="Text 2" id="text1341"/>
-                        <Text xmlns="sap.m" text="Text 3" id="text1352"/>
-                        <Text xmlns="sap.m" text="Text 4" id="text1363"/>
-                        <Text xmlns="sap.m" text="Text 5" id="text1374"/>
-                        <Text xmlns="sap.m" text="Text 6" id="text1385"/>
-                        <Text xmlns="sap.m" text="Text 7" id="text1396"/>
-                        <Text xmlns="sap.m" text="Text 8" id="text1407"/>
-                        <Text xmlns="sap.m" text="Text 9" id="text1418"/>
-                        <Text xmlns="sap.m" text="Text 10" id="text1492"/>
+                          <Text xmlns="sap.m" text="0€" id="text133"/>
+                       <Text xmlns="sap.m" text="0€" id="text1341"/>
+                        <Text xmlns="sap.m" text="0€" id="text1352"/>
+                        <Text xmlns="sap.m" text="0€" id="text1363"/>
+                        <Text xmlns="sap.m" text="0€" id="text1374"/>
+                        <Text xmlns="sap.m" text="0€" id="text1385"/>
+                        <Text xmlns="sap.m" text="0€" id="text1396"/>
+                        <Text xmlns="sap.m" text="0€" id="text1407"/>
+                        <Text xmlns="sap.m" text="0€" id="text1418"/>
+                        <Text xmlns="sap.m" text="0€" id="text1492"/>
 
                       </cells>
 
@@ -5879,16 +5641,16 @@
                       <cells>
 
 
-                          <Text xmlns="sap.m" text="Text 1" id="text200"/>
-                            <Text xmlns="sap.m" text="Text 2" id="text201"/>
-                            <Text xmlns="sap.m" text="Text 3" id="text202"/>
-                            <Text xmlns="sap.m" text="Text 4" id="text203"/>
-                            <Text xmlns="sap.m" text="Text 5" id="text204"/>
-                            <Text xmlns="sap.m" text="Text 6" id="text205"/>
-                            <Text xmlns="sap.m" text="Text 7" id="text206"/>
-                            <Text xmlns="sap.m" text="Text 8" id="text207"/>
-                            <Text xmlns="sap.m" text="Text 9" id="text208"/>
-                            <Text xmlns="sap.m" text="Text 10" id="text209"/>
+                          <Text xmlns="sap.m" text="0€" id="text200"/>
+                            <Text xmlns="sap.m" text="0€" id="text201"/>
+                            <Text xmlns="sap.m" text="0€" id="text202"/>
+                            <Text xmlns="sap.m" text="0€" id="text203"/>
+                            <Text xmlns="sap.m" text="0€" id="text204"/>
+                            <Text xmlns="sap.m" text="0€" id="text205"/>
+                            <Text xmlns="sap.m" text="0€" id="text206"/>
+                            <Text xmlns="sap.m" text="0€" id="text207"/>
+                            <Text xmlns="sap.m" text="0€" id="text208"/>
+                            <Text xmlns="sap.m" text="0€" id="text209"/>
 
 
                       </cells>
@@ -5903,16 +5665,16 @@
                       <cells>
 
 
-        <Text xmlns="sap.m" text="Text 11" id="text210"/>
-        <Text xmlns="sap.m" text="Text 12" id="text211"/>
-        <Text xmlns="sap.m" text="Text 13" id="text212"/>
-        <Text xmlns="sap.m" text="Text 14" id="text213"/>
-        <Text xmlns="sap.m" text="Text 15" id="text214"/>
-        <Text xmlns="sap.m" text="Text 16" id="text215"/>
-        <Text xmlns="sap.m" text="Text 17" id="text216"/>
-        <Text xmlns="sap.m" text="Text 18" id="text217"/>
-        <Text xmlns="sap.m" text="Text 19" id="text218"/>
-        <Text xmlns="sap.m" text="Text 20" id="text219"/>
+        <Text xmlns="sap.m" text="0€" id="text210"/>
+        <Text xmlns="sap.m" text="0€" id="text211"/>
+        <Text xmlns="sap.m" text="0€" id="text212"/>
+        <Text xmlns="sap.m" text="0€" id="text213"/>
+        <Text xmlns="sap.m" text="0€" id="text214"/>
+        <Text xmlns="sap.m" text="0€" id="text215"/>
+        <Text xmlns="sap.m" text="0€" id="text216"/>
+        <Text xmlns="sap.m" text="0€" id="text217"/>
+        <Text xmlns="sap.m" text="0€" id="text218"/>
+        <Text xmlns="sap.m" text="0€" id="text219"/>
 
 
                       </cells>
@@ -5927,18 +5689,18 @@
                       <cells>
 
 
-                          <Text text="Row 1 Cell 1" id="text75_1729073618729"/>
+                          <Text text="0€" id="text75_1729073618729"/>
 
 
-                          <Text text="Row 1 Cell 2" id="text76_1729073618732"/>
+                          <Text text="0€" id="text76_1729073618732"/>
 
 
-                          <Text text="Row 1 Cell 3" id="text77_1729073618734"/>
-                             <Text xmlns="sap.m" text="Text 31" id="text300"/>
-                            <Text xmlns="sap.m" text="Text 32" id="text301"/>
-                            <Text xmlns="sap.m" text="Text 33" id="text302"/>
-                            <Text xmlns="sap.m" text="Text 34" id="text303"/>
-                            <Text xmlns="sap.m" text="Text 35" id="text304"/>
+                          <Text text="0€" id="text77_1729073618734"/>
+                             <Text xmlns="sap.m" text="0€" id="text300"/>
+                            <Text xmlns="sap.m" text="0€" id="text301"/>
+                            <Text xmlns="sap.m" text="0€" id="text302"/>
+                            <Text xmlns="sap.m" text="0€" id="text303"/>
+                            <Text xmlns="sap.m" text="0€" id="text304"/>
                           
                           </cells>
 
@@ -6073,78 +5835,78 @@
               <items>
 <ColumnListItem id="item31">
     <cells>
-        <Text xmlns="sap.m" text="Text A1" id="text500"/>
-        <Text xmlns="sap.m" text="Text A2" id="text501"/>
-        <Text xmlns="sap.m" text="Text A3" id="text502"/>
-        <Text xmlns="sap.m" text="Text A4" id="text5403"/>
-        <Text xmlns="sap.m" text="Text A5" id="text50544"/>
-        <Text xmlns="sap.m" text="Text A6" id="text505"/>
-        <Text xmlns="sap.m" text="Text A7" id="text506"/>
+        <Text xmlns="sap.m" text="0€" id="text500"/>
+        <Text xmlns="sap.m" text="0€" id="text501"/>
+        <Text xmlns="sap.m" text="0€" id="text502"/>
+        <Text xmlns="sap.m" text="0€" id="text5403"/>
+        <Text xmlns="sap.m" text="0€" id="text50544"/>
+        <Text xmlns="sap.m" text="0€" id="text505"/>
+        <Text xmlns="sap.m" text="0€" id="text506"/>
 
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item32">
     <cells>
-        <Text xmlns="sap.m" text="Text B1" id="text510"/>
-        <Text xmlns="sap.m" text="Text B2" id="text511"/>
-        <Text xmlns="sap.m" text="Text B3" id="text512"/>
-        <Text xmlns="sap.m" text="Text B4" id="text513"/>
-        <Text xmlns="sap.m" text="Text B5" id="text5174"/>
-        <Text xmlns="sap.m" text="Text B6" id="text515"/>
-        <Text xmlns="sap.m" text="Text B7" id="text516"/>
+        <Text xmlns="sap.m" text="0€" id="text510"/>
+        <Text xmlns="sap.m" text="0€" id="text511"/>
+        <Text xmlns="sap.m" text="0€" id="text512"/>
+        <Text xmlns="sap.m" text="0€" id="text513"/>
+        <Text xmlns="sap.m" text="0€" id="text5174"/>
+        <Text xmlns="sap.m" text="0€" id="text515"/>
+        <Text xmlns="sap.m" text="0€" id="text516"/>
 
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item33">
     <cells>
-        <Text xmlns="sap.m" text="Text C1" id="text520"/>
-        <Text xmlns="sap.m" text="Text C2" id="text521"/>
-        <Text xmlns="sap.m" text="Text C3" id="text522"/>
-        <Text xmlns="sap.m" text="Text C4" id="text523"/>
-        <Text xmlns="sap.m" text="Text C5" id="text524"/>
-        <Text xmlns="sap.m" text="Text C6" id="text525"/>
-        <Text xmlns="sap.m" text="Text C7" id="text526"/>
+        <Text xmlns="sap.m" text="0€" id="text520"/>
+        <Text xmlns="sap.m" text="0€" id="text521"/>
+        <Text xmlns="sap.m" text="0€" id="text522"/>
+        <Text xmlns="sap.m" text="0€" id="text523"/>
+        <Text xmlns="sap.m" text="0€" id="text524"/>
+        <Text xmlns="sap.m" text="0€" id="text525"/>
+        <Text xmlns="sap.m" text="0€" id="text526"/>
      
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item34">
     <cells>
-        <Text xmlns="sap.m" text="Text D1" id="text530"/>
-        <Text xmlns="sap.m" text="Text D2" id="text531"/>
-        <Text xmlns="sap.m" text="Text D3" id="text532"/>
-        <Text xmlns="sap.m" text="Text D4" id="text533"/>
-        <Text xmlns="sap.m" text="Text D5" id="text534"/>
-        <Text xmlns="sap.m" text="Text D6" id="text535"/>
-        <Text xmlns="sap.m" text="Text D7" id="text5368"/>
+        <Text xmlns="sap.m" text="0€" id="text530"/>
+        <Text xmlns="sap.m" text="0€" id="text531"/>
+        <Text xmlns="sap.m" text="0€" id="text532"/>
+        <Text xmlns="sap.m" text="0€" id="text533"/>
+        <Text xmlns="sap.m" text="0€" id="text534"/>
+        <Text xmlns="sap.m" text="0€" id="text535"/>
+        <Text xmlns="sap.m" text="0€" id="text5368"/>
       
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item35">
     <cells>
-        <Text xmlns="sap.m" text="Text E1" id="text540"/>
-        <Text xmlns="sap.m" text="Text E2" id="text541"/>
-        <Text xmlns="sap.m" text="Text E3" id="text542"/>
-        <Text xmlns="sap.m" text="Text E4" id="text543"/>
-        <Text xmlns="sap.m" text="Text E5" id="text544"/>
-        <Text xmlns="sap.m" text="Text E6" id="text545"/>
-        <Text xmlns="sap.m" text="Text E7" id="text546"/>
+        <Text xmlns="sap.m" text="0€" id="text540"/>
+        <Text xmlns="sap.m" text="0€" id="text541"/>
+        <Text xmlns="sap.m" text="0€" id="text542"/>
+        <Text xmlns="sap.m" text="0€" id="text543"/>
+        <Text xmlns="sap.m" text="0€" id="text544"/>
+        <Text xmlns="sap.m" text="0€" id="text545"/>
+        <Text xmlns="sap.m" text="0€" id="text546"/>
 
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item36">
     <cells>
-        <Text xmlns="sap.m" text="Text F1" id="text550"/>
-        <Text xmlns="sap.m" text="Text F2" id="text551"/>
-        <Text xmlns="sap.m" text="Text F3" id="text5522"/>
-        <Text xmlns="sap.m" text="Text F4" id="text553"/>
-        <Text xmlns="sap.m" text="Text F5" id="text554"/>
-        <Text xmlns="sap.m" text="Text F6" id="text555"/>
-        <Text xmlns="sap.m" text="Text F7" id="text556"/>
+        <Text xmlns="sap.m" text="0€" id="text550"/>
+        <Text xmlns="sap.m" text="0€" id="text551"/>
+        <Text xmlns="sap.m" text="0€" id="text5522"/>
+        <Text xmlns="sap.m" text="0€" id="text553"/>
+        <Text xmlns="sap.m" text="0€" id="text554"/>
+        <Text xmlns="sap.m" text="0€" id="text555"/>
+        <Text xmlns="sap.m" text="0€" id="text556"/>
 
     </cells>
 </ColumnListItem>
@@ -6157,25 +5919,25 @@
                       <cells>
 
 
-                          <Text text="Row 1 Cell 1" id="text67_1729074461761"/>
+                          <Text text="0€" id="text67_1729074461761"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text67_1729079322040"/>
+                          <Text xmlns="sap.m" text="0€" id="text67_1729079322040"/>
 
 
-                          <Text text="Row 1 Cell 2" id="text68_1729074461766"/>
+                          <Text text="0€" id="text68_1729074461766"/>
 
 
-                          <Text text="Row 1 Cell 3" id="text69_1729074461769"/>
+                          <Text text="0€" id="text69_1729074461769"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text66_1729079318344"/>
+                          <Text xmlns="sap.m" text="0€" id="text66_1729079318344"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text68_1729079325388"/>
+                          <Text xmlns="sap.m" text="0€" id="text68_1729079325388"/>
 
 
-                          <Text xmlns="sap.m" text="Text" id="text69_1729079329715"/></cells>
+                          <Text xmlns="sap.m" text="0€" id="text69_1729079329715"/></cells>
 
 
                   </ColumnListItem>
@@ -6313,84 +6075,84 @@
             
     <ColumnListItem id="item8_1729074308323">
         <cells>
-            <Text xmlns="sap.m" text="Text A1" id="textA1_1"/>
-            <Text xmlns="sap.m" text="Text A2" id="textA2_1"/>
-            <Text xmlns="sap.m" text="Text A3" id="textA3_1"/>
-            <Text xmlns="sap.m" text="Text A4" id="textA4_1"/>
-            <Text xmlns="sap.m" text="Text A5" id="textA5_1"/>
-            <Text xmlns="sap.m" text="Text A6" id="textA6_1"/>
-            <Text xmlns="sap.m" text="Text A7" id="textA7_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA1_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA2_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA3_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA4_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA5_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA6_1"/>
+            <Text xmlns="sap.m" text="0€" id="textA7_1"/>
         </cells>
     </ColumnListItem>
 
     <ColumnListItem id="item12">
         <cells>
-            <Text xmlns="sap.m" text="Text B1" id="textB1_2"/>
-            <Text xmlns="sap.m" text="Text B2" id="textB2_2"/>
-            <Text xmlns="sap.m" text="Text B3" id="textB3_2"/>
-            <Text xmlns="sap.m" text="Text B4" id="textB4_2"/>
-            <Text xmlns="sap.m" text="Text B5" id="textB5_2"/>
-            <Text xmlns="sap.m" text="Text B6" id="textB6_2"/>
-            <Text xmlns="sap.m" text="Text B7" id="textB7_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB1_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB2_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB3_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB4_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB5_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB6_2"/>
+            <Text xmlns="sap.m" text="0€" id="textB7_2"/>
         </cells>
     </ColumnListItem>
 
     <ColumnListItem id="item16">
         <cells>
-            <Text xmlns="sap.m" text="Text C1" id="textC1_3"/>
-            <Text xmlns="sap.m" text="Text C2" id="textC2_3"/>
-            <Text xmlns="sap.m" text="Text C3" id="textC3_3"/>
-            <Text xmlns="sap.m" text="Text C4" id="textC4_3"/>
-            <Text xmlns="sap.m" text="Text C5" id="textC5_3"/>
-            <Text xmlns="sap.m" text="Text C6" id="textC6_3"/>
-            <Text xmlns="sap.m" text="Text C7" id="textC7_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC1_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC2_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC3_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC4_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC5_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC6_3"/>
+            <Text xmlns="sap.m" text="0€" id="textC7_3"/>
         </cells>
     </ColumnListItem>
 
     <ColumnListItem id="item24">
         <cells>
-            <Text xmlns="sap.m" text="Text D1" id="textD1_4"/>
-            <Text xmlns="sap.m" text="Text D2" id="textD2_4"/>
-            <Text xmlns="sap.m" text="Text D3" id="textD3_4"/>
-            <Text xmlns="sap.m" text="Text D4" id="textD4_4"/>
-            <Text xmlns="sap.m" text="Text D5" id="textD5_4"/>
-            <Text xmlns="sap.m" text="Text D6" id="textD6_4"/>
-            <Text xmlns="sap.m" text="Text D7" id="textD7_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD1_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD2_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD3_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD4_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD5_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD6_4"/>
+            <Text xmlns="sap.m" text="0€" id="textD7_4"/>
         </cells>
     </ColumnListItem>
 
     <ColumnListItem id="item20">
         <cells>
-            <Text xmlns="sap.m" text="Text E1" id="textE1_5"/>
-            <Text xmlns="sap.m" text="Text E2" id="textE2_5"/>
-            <Text xmlns="sap.m" text="Text E3" id="textE3_5"/>
-            <Text xmlns="sap.m" text="Text E4" id="textE4_5"/>
-            <Text xmlns="sap.m" text="Text E5" id="textE5_5"/>
-            <Text xmlns="sap.m" text="Text E6" id="textE6_5"/>
-            <Text xmlns="sap.m" text="Text E7" id="textE7_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE1_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE2_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE3_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE4_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE5_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE6_5"/>
+            <Text xmlns="sap.m" text="0€" id="textE7_5"/>
         </cells>
     </ColumnListItem>
 
     <ColumnListItem id="item28">
         <cells>
-            <Text xmlns="sap.m" text="Text F1" id="textF1_6"/>
-            <Text xmlns="sap.m" text="Text F2" id="textF2_6"/>
-            <Text xmlns="sap.m" text="Text F3" id="textF3_6"/>
-            <Text xmlns="sap.m" text="Text F4" id="textF4_6"/>
-            <Text xmlns="sap.m" text="Text F5" id="textF5_6"/>
-            <Text xmlns="sap.m" text="Text F6" id="textF6_6"/>
-            <Text xmlns="sap.m" text="Text F7" id="textF7_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF1_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF2_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF3_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF4_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF5_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF6_6"/>
+            <Text xmlns="sap.m" text="0€" id="textF7_6"/>
         </cells>
     </ColumnListItem>
 <ColumnListItem id="item40">
     <cells>
-        <Text xmlns="sap.m" text="Text G1" id="textG1_7"/>
-        <Text xmlns="sap.m" text="Text G2" id="textG2_7"/>
-        <Text xmlns="sap.m" text="Text G3" id="textG3_7"/>
-        <Text xmlns="sap.m" text="Text G4" id="textG4_7"/>
-        <Text xmlns="sap.m" text="Text G5" id="textG5_7"/>
-        <Text xmlns="sap.m" text="Text G6" id="textG6_7"/>
-        <Text xmlns="sap.m" text="Text G7" id="textG7_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG1_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG2_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG3_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG4_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG5_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG6_7"/>
+        <Text xmlns="sap.m" text="0€" id="textG7_7"/>
     </cells>
 </ColumnListItem>
 
@@ -6520,85 +6282,85 @@
 
                  <ColumnListItem id="item41">
     <cells>
-        <Text xmlns="sap.m" text="Row 1 Cell 1" id="text1_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 2" id="text2_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 3" id="text3_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 4" id="text4_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 5" id="text5_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 6" id="text6_41"/>
-        <Text xmlns="sap.m" text="Row 1 Cell 7" id="text7_41"/>
+        <Text xmlns="sap.m" text="0€" id="text1_41"/>
+        <Text xmlns="sap.m" text="0€" id="text2_41"/>
+        <Text xmlns="sap.m" text="0€" id="text3_41"/>
+        <Text xmlns="sap.m" text="0€" id="text4_41"/>
+        <Text xmlns="sap.m" text="0€" id="text5_41"/>
+        <Text xmlns="sap.m" text="0€" id="text6_41"/>
+        <Text xmlns="sap.m" text="0€" id="text7_41"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item42">
     <cells>
-        <Text xmlns="sap.m" text="Row 2 Cell 1" id="text1_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 2" id="text2_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 3" id="text3_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 4" id="text4_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 5" id="text5_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 6" id="text6_42"/>
-        <Text xmlns="sap.m" text="Row 2 Cell 7" id="text7_42"/>
+        <Text xmlns="sap.m" text="0€" id="text1_42"/>
+        <Text xmlns="sap.m" text="0€" id="text2_42"/>
+        <Text xmlns="sap.m" text="0€" id="text3_42"/>
+        <Text xmlns="sap.m" text="0€" id="text4_42"/>
+        <Text xmlns="sap.m" text="0€" id="text5_42"/>
+        <Text xmlns="sap.m" text="0€" id="text6_42"/>
+        <Text xmlns="sap.m" text="0€" id="text7_42"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item43">
     <cells>
-        <Text xmlns="sap.m" text="Row 3 Cell 1" id="text1_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 2" id="text2_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 3" id="text3_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 4" id="text4_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 5" id="text5_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 6" id="text6_43"/>
-        <Text xmlns="sap.m" text="Row 3 Cell 7" id="text7_43"/>
+        <Text xmlns="sap.m" text="0€" id="text1_43"/>
+        <Text xmlns="sap.m" text="0€" id="text2_43"/>
+        <Text xmlns="sap.m" text="0€" id="text3_43"/>
+        <Text xmlns="sap.m" text="0€" id="text4_43"/>
+        <Text xmlns="sap.m" text="0€" id="text5_43"/>
+        <Text xmlns="sap.m" text="0€" id="text6_43"/>
+        <Text xmlns="sap.m" text="0€" id="text7_43"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item44">
     <cells>
-        <Text xmlns="sap.m" text="Row 4 Cell 1" id="text1_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 2" id="text2_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 3" id="text3_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 4" id="text4_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 5" id="text5_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 6" id="text6_44"/>
-        <Text xmlns="sap.m" text="Row 4 Cell 7" id="text7_44"/>
+        <Text xmlns="sap.m" text="0€" id="text1_44"/>
+        <Text xmlns="sap.m" text="0€" id="text2_44"/>
+        <Text xmlns="sap.m" text="0€" id="text3_44"/>
+        <Text xmlns="sap.m" text="0€" id="text4_44"/>
+        <Text xmlns="sap.m" text="0€" id="text5_44"/>
+        <Text xmlns="sap.m" text="0€" id="text6_44"/>
+        <Text xmlns="sap.m" text="0€" id="text7_44"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item45">
     <cells>
-        <Text xmlns="sap.m" text="Row 5 Cell 1" id="text1_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 2" id="text2_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 3" id="text3_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 4" id="text4_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 5" id="text5_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 6" id="text6_45"/>
-        <Text xmlns="sap.m" text="Row 5 Cell 7" id="text7_45"/>
+        <Text xmlns="sap.m" text="0€" id="text1_45"/>
+        <Text xmlns="sap.m" text="0€" id="text2_45"/>
+        <Text xmlns="sap.m" text="0€" id="text3_45"/>
+        <Text xmlns="sap.m" text="0€" id="text4_45"/>
+        <Text xmlns="sap.m" text="0€" id="text5_45"/>
+        <Text xmlns="sap.m" text="0€" id="text6_45"/>
+        <Text xmlns="sap.m" text="0€" id="text7_45"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item46">
     <cells>
-        <Text xmlns="sap.m" text="Row 6 Cell 1" id="text1_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 2" id="text2_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 3" id="text3_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 4" id="text4_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 5" id="text5_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 6" id="text6_46"/>
-        <Text xmlns="sap.m" text="Row 6 Cell 7" id="text7_46"/>
+        <Text xmlns="sap.m" text="0€" id="text1_46"/>
+        <Text xmlns="sap.m" text="0€" id="text2_46"/>
+        <Text xmlns="sap.m" text="0€" id="text3_46"/>
+        <Text xmlns="sap.m" text="0€" id="text4_46"/>
+        <Text xmlns="sap.m" text="0€" id="text5_46"/>
+        <Text xmlns="sap.m" text="0€" id="text6_46"/>
+        <Text xmlns="sap.m" text="0€" id="text7_46"/>
     </cells>
 </ColumnListItem>
 
 <ColumnListItem id="item47">
     <cells>
-        <Text xmlns="sap.m" text="Row 7 Cell 1" id="text1_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 2" id="text2_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 3" id="text3_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 4" id="text4_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 5" id="text5_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 6" id="text6_47"/>
-        <Text xmlns="sap.m" text="Row 7 Cell 7" id="text7_47"/>
+        <Text xmlns="sap.m" text="0€" id="text1_47"/>
+        <Text xmlns="sap.m" text="0€" id="text2_47"/>
+        <Text xmlns="sap.m" text="0€" id="text3_47"/>
+        <Text xmlns="sap.m" text="0€" id="text4_47"/>
+        <Text xmlns="sap.m" text="0€" id="text5_47"/>
+        <Text xmlns="sap.m" text="0€" id="text6_47"/>
+        <Text xmlns="sap.m" text="0€" id="text7_47"/>
     </cells>
 </ColumnListItem>
 

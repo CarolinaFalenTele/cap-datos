@@ -78,6 +78,7 @@ sap.ui.define([
         // Inicializar el gráfico con los datos actuales
         this.updateVizFrame1();
         this.updateVizFrame3();
+
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
         oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
@@ -92,8 +93,6 @@ sap.ui.define([
           2028: 0,
           2029: 0,
         };
-
-
       },
 
 
@@ -319,27 +318,20 @@ sap.ui.define([
           const oData = await response.json();
           console.log("Datos de proveedor:", oData);
 
-          // Obtener la tabla por ID
           var oTable = this.byId("table2");
-          // Obtener todos los items (filas) de la tabla
           var aItems = oTable.getItems();
 
-          // Verificar si hay datos en oData.value
           if (oData.value && oData.value.length > 0) {
             var proveedorData = oData.value[0]; // Asumiendo que quieres el primer proveedor
 
-            // Recorrer cada fila de la tabla
             aItems.forEach(function (oItem) {
-              // Obtener las celdas (inputs) de la fila
               var aCells = oItem.getCells();
 
-              // Asegúrate de que el índice es correcto para cada input
               if (aCells.length > 1) {
                 aCells[0].setValue(proveedorData.valueCondi || ""); // Input para valueCondi
                 aCells[1].setValue(proveedorData.valueProvee || ""); // Input para valueProvee
               }
 
-              // Establecer valores para checkboxes
               this.byId("box_condi").setSelected(proveedorData.checkCondi || false); // Checkbox Condicionado
               this.byId("box_prove").setSelected(proveedorData.checkProveedor || false); // Checkbox Proveedores
             }.bind(this));
@@ -2739,11 +2731,11 @@ sap.ui.define([
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
-              new sap.m.Text({ text: "" }),
             ],
           });
 
           oTable.addItem(oNewItem);
+          this.fechasDinamicas();
           var oEvent = { getSource: () => oNewItem };  // Simular un evento con getSource
           this.updateRowData(oEvent);  // Pasar el evento simulado       
 
@@ -2869,10 +2861,10 @@ sap.ui.define([
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
-              new sap.m.Text({ text: "" }),
             ],
           });
           oTable.addItem(oNewItem);
+          this.fechasDinamicas();
 
 
         } else {
@@ -2911,8 +2903,7 @@ sap.ui.define([
               }),
               new sap.m.Input({ value: "" }),
               new sap.m.Input({ value: "" }),
-              new sap.m.Text({ text: "" }),
-              new sap.m.Text({ text: "" }),
+              new sap.m.Input({ value: "" }),
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
               new sap.m.Text({ text: "" }),
@@ -2924,6 +2915,8 @@ sap.ui.define([
             ],
           });
           oTable.addItem(oNewItem);
+          this.fechasDinamicas();
+
         } else {
           console.error("No se encontró la tabla con ID: " + sTableId);
         }
@@ -3119,12 +3112,18 @@ sap.ui.define([
         console.log("1. updateTotal ---->>> " + rowIndex + newValue);
         // Obtener el total acumulado para cada año
         var PMJCos = 0;
-        var totalFor2024 = this.getTotalForYear(2024, rowIndex, true);
-        var totalFor2025 = this.getTotalForYear(2025, rowIndex, true);
-        var totalFor2026 = this.getTotalForYear(2026, rowIndex, true);
-        var totalFor2027 = this.getTotalForYear(2027, rowIndex, true);
-        var totalFor2028 = this.getTotalForYear(2028, rowIndex, true);
-        var totalFor2029 = this.getTotalForYear(2029, rowIndex, true);
+        var totalSum1 = 0;
+        var totalSum2 = 0;
+        var totalSum3 = 0;
+        var totalJornada = 0;
+        let suma = 0;
+        var totalRecurExter, totalRecurIn, totalCons;
+        var totalFor2024 = this.getTotalForYear(2024, rowIndex, true, tableId);
+        var totalFor2025 = this.getTotalForYear(2025, rowIndex, true, tableId);
+        var totalFor2026 = this.getTotalForYear(2026, rowIndex, true, tableId);
+        var totalFor2027 = this.getTotalForYear(2027, rowIndex, true, tableId);
+        var totalFor2028 = this.getTotalForYear(2028, rowIndex, true, tableId);
+        var totalFor2029 = this.getTotalForYear(2029, rowIndex, true, tableId);
 
         // Lógica para cada tabla según la tabla seleccionada (tableId)
         if (tableId === "tablaConsuExter") {
@@ -3151,19 +3150,20 @@ sap.ui.define([
                 aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                totalSum1 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
                 var resulCon = PMJCos * newValue
 
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[11].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
                 aCells[12].setText(resulCon + "€"); // Celda para Total 
               }
             }
           });
+          // totalCons =  this.byId("inputConsuEx").setValue(totalSum1.toFixed(2));
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "table_dimicFecha") {
 
 
-          var totalSum = 0;
           // Obtener la tabla "table_dimicFecha"
           var oTable = this.byId("table_dimicFecha");
 
@@ -3189,19 +3189,19 @@ sap.ui.define([
                 aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
-                totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                totalSum2 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
                 var resulDina = PMJDi * newValue
 
 
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(resulDina + "€"); // Celda para Total 
-
+                aCells[11].setText(totalSum2.toFixed(2)); // Celda para Total 
+                aCells[12].setText(resulDina + "€"); // Celda para Total   
 
               }
             }
           });
-          var tae3 = this.byId("inputReInter").setValue(totalSum.toFixed(2));
+
+          //      totalRecurIn = this.byId("inputReInter").setValue(totalSum2.toFixed(2));
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "tablaRecExterno") {
           // Obtener la tabla "table_dimicFecha"
@@ -3228,16 +3228,16 @@ sap.ui.define([
                 aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                totalSum3 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
 
                 var resulRec = PMJRe * newValue
-
-
                 aCells[12].setText(resulRec + "€"); // Celda para Total 
+
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "idOtroserConsu") {
           var oTable = this.byId("idOtroserConsu");
@@ -3270,6 +3270,7 @@ sap.ui.define([
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "idGastoViajeConsu") {
           // Obtener la tabla "table_dimicFecha"
@@ -3303,6 +3304,7 @@ sap.ui.define([
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "idServiExterno") {
           // Obtener la tabla "table_dimicFecha"
@@ -3336,6 +3338,7 @@ sap.ui.define([
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "idGastoRecuExter") {
           // Obtener la tabla "table_dimicFecha"
@@ -3369,6 +3372,7 @@ sap.ui.define([
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "table0_1724413700665") {
           // Obtener la tabla "table_dimicFecha"
@@ -3388,20 +3392,21 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[4].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
+                aCells[5].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
+                aCells[6].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
+                aCells[7].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
+                aCells[8].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
+                aCells[9].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
                 var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "table0_1727955577124") {
           // Obtener la tabla "table_dimicFecha"
@@ -3418,24 +3423,25 @@ sap.ui.define([
             if (oItem) {
               var aCells = oItem.getCells(); // Obtener las celdas de la fila
 
-              if (aCells && aCells.length >= 11) {
+              if (aCells && aCells.length >= 12) {
                 // Actualizar las celdas con los valores específicos de las fechas
+                aCells[4].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
+                aCells[5].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
+                aCells[6].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
+                aCells[7].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
+                aCells[8].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
+                aCells[9].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
                 var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
 
+          this.onSumarColumna(tableId);
         } else if (tableId === "table0_1727879576857") {
           // Obtener la tabla "table_dimicFecha"
           var oTable = this.byId("table0_1727879576857");
@@ -3468,6 +3474,7 @@ sap.ui.define([
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         } else if (tableId === "table0_1727879940116") {
           // Obtener la tabla "table_dimicFecha"
@@ -3478,6 +3485,7 @@ sap.ui.define([
             return;
           }
 
+          console.log("tabla encontrada ", tableId);
           // Obtener los índices de las filas editadas
           this._editedRows[tableId].forEach(function (rowIndex) {
             var oItem = oTable.getItems()[rowIndex];
@@ -3495,23 +3503,29 @@ sap.ui.define([
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
                 var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total
+
+
+                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total1
+
               }
             }
           });
+          this.onSumarColumna(tableId);
 
         }
-
-
         else {
           console.error("Tabla no reconocida: " + tableId);
         }
 
+        //this.onSumarColumna();
+
         // Limpiar las filas editadas para que no se actualicen más de una vez
         this._editedRows[tableId].clear();
       },
+
+
 
 
       getTotalForYear: function (year, rowIndex) {
@@ -3537,11 +3551,160 @@ sap.ui.define([
 
 
 
+      onSumarColumna: function (tableId) {
+
+        var oTable = this.byId(tableId);
+        var aItems = oTable.getItems();
+        var suma = 0;
+        var Total1 = 0;
+        var totalSer = 0;
+        var totaOtrose = 0;
+        var otrosGasto = 0;
+
+        // Recorre cada fila de la tabla
+        aItems.forEach(function (oItem) {
+          var aCells = oItem.getCells();
+          // Verifica que aCells tenga al menos 13 elementos antes de acceder
+          var sPrecio = aCells.length > 11 && aCells[11].getText ? aCells[11].getText() : "0"; // Celda 12 (índice 11)
+          var sTotal1 = aCells.length > 12 && aCells[12].getText ? aCells[12].getText() : "0"; // Celda 13 (índice 12)
+
+
+          suma += parseFloat(sPrecio) || 0;
+          Total1 += parseFloat(sTotal1) || 0;
+          totalSer += parseFloat(sPrecio) || 0;
+          totaOtrose += parseFloat(sPrecio) || 0;
+          otrosGasto += parseFloat(sPrecio) || 0;
+        });
+
+        // Recurso Interno 
+        if (tableId === "table_dimicFecha") {
+          this.byId("inputReInter").setValue(suma.toFixed(2));
+          this.byId("inputServi1").setValue(Total1.toFixed(2) + "€");
+
+        } else if (tableId === "table0_1727879576857") {
+          this.byId("inputOtrosServi1").setValue(totalSer.toFixed(2) + "€");
+
+        } else if (tableId === "table0_1727879940116") {
+          this.byId("inputGastoVia1").setValue(totaOtrose.toFixed(2) + "€");
+
+        } else if (tableId === "table0_1727955577124") {  //if para Licencia 
+          this.byId("input0_1724758359").setValue(totalSer.toFixed(2) + "€");
+
+        }
+
+        // If Recurso Externo 
+        else if (tableId === "tablaRecExterno") {
+          this.byId("inputRcurExtern").setValue(suma.toFixed(2) + "€");
+          this.byId("inputServi").setValue(Total1.toFixed(2) + "€");
+
+
+        } else if (tableId === "idServiExterno") {
+          this.byId("input10_1724757017406").setValue(suma.toFixed(2) + "€");
+
+        } else if (tableId === "idGastoRecuExter") {
+          this.byId("input9_1724757015442").setValue(suma.toFixed(2) + "€");
+
+        }
+
+
+        // if Consumo Externo 
+        else if (tableId === "tablaConsuExter") {
+          this.byId("inputServi2").setValue(Total1.toFixed(2));
+          this.byId("inputConsuEx").setValue(suma.toFixed(2));
+
+        } else if (tableId === "idOtroserConsu") {
+          this.byId("inputOtroSer2").setValue(totalSer.toFixed(2) + "€");
+
+        } else if (tableId === "idGastoViajeConsu") {
+          this.byId("inptGastoVi2").setValue(totalSer.toFixed(2) + "€");
+
+        }
+
+        else if (tableId === "table0_1724413700665") {
+          this.byId("totalInfraestruc").setValue(suma.toFixed(2) + "€");
+
+        }
+
+        this.onColumnTotales();
+        console.log("Suma total de la columna Precio:", suma);
+        console.log("Suma total de la columna Precio:", Total1);
+        //  this.onColumnTotales();
+        return suma;
+      },
+
+
+
+      onColumnTotales: function () {
+        var totalJorn = 0;
+        var totalReinter = 0;
+        var totalconsuExter = 0;
+        var recursosExternos = 0;
+        var totalEntero = 0;
+
+        var totR = parseFloat(this.byId("inputReInter").getValue()) || 0;
+        var totC = parseFloat(this.byId("inputConsuEx").getValue()) || 0;
+        var totRE = parseFloat(this.byId("inputRcurExtern").getValue()) || 0;
+        totalJorn = totR + totC + totRE;
+        this.byId("inputTotalJor").setValue(totalJorn.toFixed(2));
+
+
+
+        var totRei = parseFloat(this.byId("inputServi1").getValue()) || 0;
+        var totSeR = parseFloat(this.byId("inputOtrosServi1").getValue()) || 0;
+        var totGaR = parseFloat(this.byId("inputGastoVia1").getValue()) || 0;
+        totalReinter = totRei + totSeR + totGaR;
+        this.byId("totalRecuInter").setValue(totalReinter.toFixed(2));
+
+
+
+        var totCEx = parseFloat(this.byId("inputServi2").getValue()) || 0;
+        var totSerC = parseFloat(this.byId("inputOtroSer2").getValue()) || 0;
+        var totOtgaC = parseFloat(this.byId("inptGastoVi2").getValue()) || 0;
+        totalconsuExter = totCEx + totSerC + totOtgaC;
+        this.byId("totalConsuExternot").setValue(totalconsuExter.toFixed(2));
+
+
+        var totRcEx = parseFloat(this.byId("inputServi").getValue()) || 0;
+        var totSerRx = parseFloat(this.byId("input10_1724757017406").getValue()) || 0;
+        var totOtgaRx = parseFloat(this.byId("input9_1724757015442").getValue()) || 0;
+        recursosExternos = totRcEx + totSerRx + totOtgaRx;
+        this.byId("totaRecurExterno").setValue(recursosExternos.toFixed(2));
+
+        var totaInfra = parseFloat(this.byId("totalInfraestruc").getValue()) || 0;
+        var totalLicencia = parseFloat(this.byId("input0_1724758359").getValue()) || 0;
+
+        totalEntero =  totalReinter + totalconsuExter + recursosExternos + totaInfra+ totalLicencia;
+        this.byId("totalSubtotal").setValue(totalEntero.toFixed(2));
+        var sMargen = parseFloat(this.byId("input2_172475612").getValue()) || 0;
+        var totaCosteEstruc = totalEntero * sMargen;
+        this.byId("input2_1724756105").setValue(totaCosteEstruc.toFixed(2));
+
+
+        //total MArgen 
+        var getMargen = parseFloat(this.byId("input2_17221205").getValue());
+        var totalSumaMar = totalEntero + totaCosteEstruc;
+        console.log("TOTAL SUMAMAR : " + totalSumaMar);
+        var total2 = totalSumaMar / getMargen;
+        console.log("TOTAL2  : " + total2);
+
+        var totalMargeSobreIn = total2 - totalSumaMar;
+        this.byId("input2_1756121205").setValue(totalMargeSobreIn.toFixed(2));
+
+        var TotalSumas =  totalEntero + totaCosteEstruc + totalMargeSobreIn 
+        this.byId("input0_1725625161348").setValue(TotalSumas.toFixed(2));
+
+
+      },
+
+
+
+
+
+
 
 
 
       // Función para hacer lo que quieras con el valor ingresado
-
       findTotalColumnIndex: function (oTable) {
         var columns = oTable.getColumns();
         var lastColumnIndex = columns.length - 1;
@@ -3935,17 +4098,60 @@ sap.ui.define([
 
       //--------------Visible table Facturacion------------
       onSelectOpx: function (oEvent) {
+
         var selectedItem = this.byId("slct_inic").getSelectedItem();
+        var selectNatu = this.byId("idNatu");
+
         var selectedText = selectedItem.getText();
-        console.log(selectedItem);
+
+
         var oTable = this.getView().byId("table0");
 
         if (selectedText === "Opex Servicios") {
           oTable.setVisible(true);
+
         } else {
           oTable.setVisible(false);
         }
+
+
+        if (selectedText === "Opex Servicios") {
+          this.byId("input2_172475612").setValue(parseFloat("0.00%".replace("%", "")));
+          this.byId("text67_1728582763477").setText("Opex Servicios - El Margen debe ser establecido al 0%");
+
+        } else if (selectedText === "Proyecto/Servicio de Inversión") {
+
+          this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
+          this.byId("input2_17221205").setValue(parseFloat("0.00%".replace("%", "")));
+
+        } else {
+          this.byId("input2_172475612").setValue(parseFloat("5.00%".replace("%", "")).toFixed(2));
+
+        }
+
+
+
+        if (selectedText === "Proyecto/Servicio a Cliente Externo") {
+          this.byId("input2_17221205").setValue(parseFloat("20.00".replace(",", ".")).toFixed(2));
+          this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
+
+        } else if (selectedText === "Proyecto/Servicio Interno PdV") {
+          this.byId("input2_17221205").setValue(parseFloat("10.00".replace(",", ".")).toFixed(2));
+          this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
+
+
+        } else {
+          this.byId("input2_17221205").setValue(" ");
+
+        }
+
+
       },
+
+
+
+
+
       //------------------------------------------------------
 
 
@@ -4072,10 +4278,6 @@ sap.ui.define([
         this.byId("txtAre3").setText(sSelectValue2);
         this.byId("txtFechInici3").setText(sFormattedDateIni);
         this.byId("txtFechFin3").setText(sFormattedDate);
-
-
-
-
 
       },
 
