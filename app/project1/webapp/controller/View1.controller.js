@@ -58,6 +58,7 @@ sap.ui.define([
 
         this.currentRow = 0; // Fila actualmente seleccionada
 
+        this.currentTable = 0; // Para la tabla actual (esto es lo que faltaba definir)
 
         var oFechasModel = new sap.ui.model.json.JSONModel({
           fechas: [
@@ -191,7 +192,7 @@ sap.ui.define([
             // Ejemplos de cómo poblar los controles
             this.byId("input0").setValue(oData.codigoProyect || "");
             this.byId("input1").setValue(oData.nameProyect || "");
-            this.byId("int_clienteFun").setValue(oData.clienteFuncional || "");
+            this.byId("int_clienteFun").setValue(oData.funcionalString || "");
             this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
             this.byId("idObje").setValue(oData.objetivoAlcance || "");
             this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
@@ -879,6 +880,7 @@ sap.ui.define([
             "2027": 0.00,
             "2028": 0.00,
             "2029": 0.00,
+
           },
           "CG4.A": {
             PMJ: 331.24,
@@ -1150,6 +1152,7 @@ sap.ui.define([
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
 
+        console.log(sClienteFunc);
 
         // Instanciar el formateador de fechas
         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
@@ -1218,6 +1221,7 @@ sap.ui.define([
           codigoProyect: scodigoProyect,
           nameProyect: snameProyect,
           pluriAnual: spluriAnual,
+          funcionalString: sClienteFunc,
           clienteFacturacion: sClienteFac,
           multijuridica: sMultiJuri,
           Naturaleza_ID: sSelectedKey,
@@ -1497,6 +1501,8 @@ sap.ui.define([
       //--- RECURSOS INTERNOS -----
 
       insertRecursosInternos: async function (generatedId) {
+
+         console.log("ENTRANDO A RECURSOS------"); 
         // Obtener la tabla por su ID
         const oTable = this.byId("table_dimicFecha");
 
@@ -1516,6 +1522,7 @@ sap.ui.define([
           const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
 
+
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
             sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
@@ -1531,7 +1538,7 @@ sap.ui.define([
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
             PerfilServicio_ID: sPerfil,
-            datosProyect_ID: generatedId
+            datosProyect_ID: generatedId,
           };
 
           try {
@@ -1550,7 +1557,11 @@ sap.ui.define([
 
               await this.insertOtrosGastos(idRecursos);
               await this.insertOtrosRecursos(idRecursos);
+          //    await this.pruebaInser(idRecursos);
+             await this.mesAñoRecurInterno(oItem, idRecursos);
 
+         console.log("TERMINANDO  RECURSOS------"); 
+      
               console.log("Fila " + (i + 1) + " guardada con éxito: RECUROSOS INTERNOS", result);
             } else {
               const errorMessage = await response.text();
@@ -1564,6 +1575,129 @@ sap.ui.define([
         }
       },
 
+
+     /* pruebaInser : async function(idRecursos) {
+        // Aquí puedes ajustar el valor de `mes` dinámicamente si es necesario
+        const mes = 'IdNov'; // Valor de ejemplo; puedes cambiarlo a uno dinámico si lo necesitas
+        const payload = {
+            RecursosInternos_ID: idRecursos,
+            mesAno: `2024-${mes}`, // Construimos el valor dinámico de `mesAño`
+            valor: 2034
+        };
+    
+        console.log("Payload preparado para enviar:", payload);
+    
+        try {
+            const response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+    
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+            } else {
+                console.log("Datos enviados con éxito para el mes:", payload.mesAño);
+            }
+        } catch (error) {
+            console.error("Error al enviar los datos:", error);
+        }
+    },*/
+    
+    
+
+      mesAñoRecurInterno: async function(oItem, idRecursos) {
+        const dynamicColumnsData = {};
+        const columns = oItem.getParent().getColumns();
+    
+        console.log("Columnas obtenidas:", columns);
+    
+        for (let j = 12; j < oItem.getCells().length; j++) {
+            const cell = oItem.getCells()[j];
+            let dynamicValue;
+    
+            if (typeof cell.getValue === "function") {
+                dynamicValue = cell.getValue();
+            } else if (typeof cell.getText === "function") {
+                dynamicValue = cell.getText();
+            } else {
+                console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+                continue;
+            }
+    
+            if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
+                console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+                continue;
+            }
+    
+            let columnHeader = `Columna_${j}`; 
+    
+            if (columns[j]) {
+                const header = columns[j].getHeader();
+                if (header && typeof header.getText === "function") {
+                    columnHeader = header.getText() || columnHeader;
+                } else {
+                    console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+                }
+            } else {
+                console.warn(`No se puede acceder a la columna en índice ${j}`);
+            }
+    
+            console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
+            console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
+    
+            dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
+        }
+    
+        console.log("Datos a enviar:", dynamicColumnsData);
+    
+        for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
+            if (valor === null || valor === undefined) {
+                console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+                continue;
+            }
+    
+            // Usa el encabezado de la columna (mes) como valor para `mesAño`
+            const payload = {
+                RecursosInternos_ID: idRecursos,
+                mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+                valor: valor
+            };
+    
+            console.log("Payload preparado para enviar:", payload);
+    
+            try {
+                const response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+    
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+                } else {
+                    console.log("Datos enviados con éxito para el mes:", mes);
+                }
+            } catch (error) {
+                console.error("Error al enviar los datos:", error);
+            }
+        }
+    },
+    
+    convertToInt: function(value) {
+        const parsedValue = parseInt(value, 10);
+        return isNaN(parsedValue) ? 0 : parsedValue;
+    },
+    
+    
+    
+    
 
       insertOtrosGastos: async function (idRecursos) {
 
@@ -1922,7 +2056,7 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sPerfil = oItem.getCells()[2].getValue(); // Select de PerfilServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getValue()); // Text de PMJ
           const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
 
@@ -3094,6 +3228,9 @@ sap.ui.define([
           this._yearlySums[rowIndex][year] = 0;
         }
 
+        this.currentTable = tableId;
+
+
         // Acumula el nuevo valor para la fila específica
         this._yearlySums[rowIndex][year] += newValue;
 
@@ -3151,7 +3288,7 @@ sap.ui.define([
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
                 totalSum1 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                var resulCon = PMJCos * newValue
+                var resulCon = PMJCos * totalSum1; 
 
                 aCells[11].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
                 aCells[12].setText(resulCon + "€"); // Celda para Total 
@@ -3190,7 +3327,7 @@ sap.ui.define([
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
 
                 totalSum2 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                var resulDina = PMJDi * newValue
+                var resulDina = PMJDi * totalSum2;
 
 
                 aCells[11].setText(totalSum2.toFixed(2)); // Celda para Total 
@@ -3231,7 +3368,7 @@ sap.ui.define([
                 totalSum3 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
                 aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
 
-                var resulRec = PMJRe * newValue
+                var resulRec = PMJRe * totalSum3  
                 aCells[12].setText(resulRec + "€"); // Celda para Total 
 
               }
@@ -3527,8 +3664,7 @@ sap.ui.define([
 
 
 
-
-      getTotalForYear: function (year, rowIndex) {
+     getTotalForYear: function (year, rowIndex, tableId) {
         console.log("1. AÑO GETTOTAL ----->>>", year + " Fila actual: ", rowIndex + " Datos actuales:", this._yearlySums);
 
         if (Number(rowIndex) !== Number(this.currentRow)) {
@@ -3635,6 +3771,7 @@ sap.ui.define([
 
 
       onColumnTotales: function () {
+
         var totalJorn = 0;
         var totalReinter = 0;
         var totalconsuExter = 0;
@@ -3687,12 +3824,13 @@ sap.ui.define([
         var total2 = totalSumaMar / getMargen;
         console.log("TOTAL2  : " + total2);
 
+
+
         var totalMargeSobreIn = total2 - totalSumaMar;
         this.byId("input2_1756121205").setValue(totalMargeSobreIn.toFixed(2));
 
         var TotalSumas =  totalEntero + totaCosteEstruc + totalMargeSobreIn 
         this.byId("input0_1725625161348").setValue(TotalSumas.toFixed(2));
-
 
       },
 

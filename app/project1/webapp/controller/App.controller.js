@@ -21,10 +21,132 @@ sap.ui.define(
                 oRouter.getRoute("app").attachPatternMatched(this._onObjectMatched, this);
 
                 this.bProcessFlowAllowed = false;  // Bandera para controlar el acceso al ProcessFlow
-
+                this.loadFilteredData();
+                this.loadFilteredDataPend();
 
             },
 
+
+
+
+            loadFilteredData: function() {
+                var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
+                var oTable = this.byId("idProductsTable");
+                var oBinding = oTable.getBinding("items");
+            
+                if (oBinding) {
+                    oBinding.filter([oFilter]);
+                    this.updateIconTabFilterCount(oBinding); // Llama a la función para actualizar el count
+                } else {
+                    oTable.attachEventOnce("updateFinished", function() {
+                        var oBinding = oTable.getBinding("items");
+                        oBinding.filter([oFilter]);
+                        this.updateIconTabFilterCount(oBinding);
+                    }.bind(this));
+                }
+            },
+            
+            updateIconTabFilterCount: function(oBinding) {
+                // Espera a que la tabla termine de procesar los datos filtrados
+                oBinding.attachEventOnce("dataReceived", function() {
+                    // Aquí debería estar el conteo correcto de los elementos
+                    var iCount = oBinding.getLength();
+                    console.log("TOTAL COUNT --> ", iCount);
+            
+                    // Actualiza el valor de "count" en el IconTabFilter
+                    this.byId("ma55").setCount(iCount.toString());
+                }.bind(this));
+            },
+
+
+
+            loadFilteredDataPend: function() {
+                // Crea el filtro para obtener solo los registros con estado "Aprobado"
+                var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+            
+                // Obtén la referencia a la tabla en la vista
+                var oTable = this.byId("idPendientes");
+            
+                // Verifica si el binding está disponible y aplica el filtro
+                var oBinding = oTable.getBinding("items");
+                if (oBinding){
+                    oBinding.filter([oFilter]);
+                    this.updateIconTabFilterCountPen(oBinding); // Llama a la función para actualizar el coun
+                } else { 
+                   oTable.attachEventOnce("updateFinished", function() {
+                        var oBinding = oTable.getBinding("items");
+                        oBinding.filter([oFilter]);
+                        this.updateIconTabFilterCountPen(oBinding);
+                    }.bind(this));
+                }
+            },
+
+        
+            updateIconTabFilterCountPen: function(oBinding) {
+                // Espera a que la tabla termine de procesar los datos filtrados
+                oBinding.attachEventOnce("dataReceived", function() {
+                    // Aquí debería estar el conteo correcto de los elementos
+                    var iCount = oBinding.getLength();
+        
+                    // Actualiza el valor de "count" en el IconTabFilter
+                    this.byId("ma3").setCount(iCount.toString());
+                }.bind(this));
+            },
+
+
+            onSearch: function (oEvent) {
+                // Obtener el valor ingresado en el SearchField
+                var sQuery = oEvent.getParameter("newValue");
+                var oTable = this.byId("idPendientes"); // Obtener la tabla
+                var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+            
+                // Crear el filtro de estado "Pendiente"
+                var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+            
+                // Crear el filtro de búsqueda para el nombre del proyecto
+                var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
+                if (sQuery && sQuery.length > 0) {
+                    var oSearchFilter = new sap.ui.model.Filter("nameProyect", sap.ui.model.FilterOperator.Contains, sQuery);
+                    aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                }
+            
+                // Combinar ambos filtros usando un filtro AND
+                var oCombinedFilter = new sap.ui.model.Filter({
+                    filters: aFilters,
+                    and: true
+                });
+            
+                // Aplicar el filtro combinado
+                oBinding.filter(oCombinedFilter);
+            },
+            
+
+            onSearchApro: function (oEvent) {
+                // Obtener el valor ingresado en el SearchField
+                var sQuery = oEvent.getParameter("newValue");
+                var oTable = this.byId("idProductsTable"); // Obtener la tabla
+                var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+            
+                // Crear el filtro de estado "Pendiente"
+                var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
+            
+                // Crear el filtro de búsqueda para el nombre del proyecto
+                var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
+                if (sQuery && sQuery.length > 0) {
+                    var oSearchFilter = new sap.ui.model.Filter("nameProyect", sap.ui.model.FilterOperator.Contains, sQuery);
+                    aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                }
+            
+                // Combinar ambos filtros usando un filtro AND
+                var oCombinedFilter = new sap.ui.model.Filter({
+                    filters: aFilters,
+                    and: true
+                });
+            
+                // Aplicar el filtro combinado
+                oBinding.filter(oCombinedFilter);
+            },
+            
 
             onActivityPress: function (oEvent) {
                 var oButton = oEvent.getSource();
@@ -544,19 +666,128 @@ sap.ui.define(
                  });
              },
              */
+             onDeletePress: async function (oEvent) {
+                var oButton = oEvent.getSource();
+                var sProjectId = oButton.getCustomData()[0].getValue();
+                console.log("ID del Proyecto a eliminar:", sProjectId);
+            
+                // Confirmación de eliminación
+                await new Promise(resolve => setTimeout(resolve, 50));
+            
+                sap.m.MessageBox.confirm("¿Estás seguro de que deseas eliminar este proyecto y todos sus registros relacionados?", {
+                    actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                    onClose: async function (oAction) {
+                        if (oAction === sap.m.MessageBox.Action.YES) {
+                            try {
+                                const paths = [
+                                    `planificacion`,
+                                    `Facturacion`,
+                                    `ClientFactura`,
+                                    `ProveedoresC`,
+                                    `RecursosInternos`,
+                                    `ConsumoExternos`,
+                                    `RecursosExternos`,
+                                    `otrosConceptos`
+                                ];
+            
+                                for (let path of paths) {
+                                    console.log(`Procesando entidad: ${path}`);
+            
+                                    // Solicitar registros hijos
+                                    let hijosResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
+                                        method: "GET",
+                                        headers: {
+                                            "Accept": "application/json",
+                                            "Content-Type": "application/json"
+                                        }
+                                    });
+            
+                                    if (!hijosResponse.ok) {
+                                        console.error(`Error al obtener los registros de ${path}`);
+                                        continue;
+                                    }
+            
+                                    const contentType = hijosResponse.headers.get("Content-Type");
+                                    if (contentType && contentType.includes("application/json")) {
+                                        const hijosData = await hijosResponse.json();
+                                        console.log(`Datos recibidos de ${path}:`, hijosData);
+            
+                                        // Verificar si es una lista o un objeto individual
+                                        if (Array.isArray(hijosData.value) && hijosData.value.length > 0) {
+                                            // Si es una lista, iterar y eliminar cada elemento
+                                            for (let hijo of hijosData.value) {
+                                                console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
+                                                let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json"
+                                                    }
+                                                });
+            
+                                                if (!deleteResponse.ok) {
+                                                    console.error(`Error al eliminar el hijo en ${path}: ${hijo.ID}`);
+                                                } else {
+                                                    console.log(`Hijo eliminado exitosamente en ${path}: ${hijo.ID}`);
+                                                }
+                                            }
+                                        } else if (hijosData.ID) {
+                                            // Si es un objeto individual, eliminar directamente
+                                            console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
+                                            let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijosData.ID})`, {
+                                                method: "DELETE",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                }
+                                            });
+            
+                                            if (!deleteResponse.ok) {
+                                                console.error(`Error al eliminar el hijo en ${path}: ${hijosData.ID}`);
+                                            } else {
+                                                console.log(`Hijo eliminado exitosamente en ${path}: ${hijosData.ID}`);
+                                            }
+                                        } else {
+                                            console.warn(`No se encontró ningún ID en la respuesta de ${path}`);
+                                        }
+                                    } else {
+                                        console.warn(`La respuesta de ${path} no es JSON o está vacía. Continuando con el siguiente...`);
+                                        continue;
+                                    }
+                                }
+            
+                                // Eliminar el proyecto principal
+                                console.log("Eliminando el proyecto principal con ID:", sProjectId);
+                                let response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
+                                    method: "DELETE",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+            
+                                if (response.ok) {
+                                    console.log("Proyecto eliminado exitosamente.");
+                                    sap.m.MessageToast.show("Proyecto y sus hijos eliminados exitosamente");
+            
+                                    const oTable = this.byId("idPendientes");
+                                    const oBinding = oTable.getBinding("items");
+                                    oBinding.refresh();
+            
+                                    var oModel = this.getView().getModel();
+                                    oModel.refresh();
+                                } else {
+                                    console.error("Error al eliminar el proyecto principal.");
+                                    sap.m.MessageToast.show("Error al eliminar el proyecto");
+                                }
+                            } catch (error) {
+                                console.error("Error eliminando el proyecto o sus hijos:", error);
+                                sap.m.MessageToast.show("Error al eliminar el proyecto o sus hijos");
+                            }
+                        }
+                    }.bind(this)
+                });
+            },
+            
 
-
-
-
-
-
-
-
-
-
-
-
-            onDeletePress: async function (oEvent) {
+          /*  onDeletePress: async function (oEvent) {
                 var oButton = oEvent.getSource();
                 var sProjectId = oButton.getCustomData()[0].getValue(); // Obtén el ID del proyecto
                 console.log(sProjectId);
@@ -646,15 +877,7 @@ sap.ui.define(
                         }
                     }.bind(this)
                 });
-            },
-
-
-
-
-
-
-
-
+            },*/
 
 
 

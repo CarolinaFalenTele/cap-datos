@@ -1,19 +1,19 @@
 
 module.exports = cds.service.impl(async function () {
 
-  const { DatosProyect, ProveedoresC,RecursosExternos,LicenciasCon, otrosConceptos , GastoViajeRecExter , serviRecurExter ,planificacion, Facturacion, ClientFactura , RecursosInternos, otrosGastoRecu, otrosRecursos, ConsumoExternos , GastoViajeConsumo , otrosServiciosConsu
+  const { DatosProyect, ProveedoresC,RecursosExternos,LicenciasCon, otrosConceptos ,ValorMensuReInter, GastoViajeRecExter , serviRecurExter ,planificacion, Facturacion, ClientFactura , RecursosInternos, otrosGastoRecu, otrosRecursos, ConsumoExternos , GastoViajeConsumo , otrosServiciosConsu
     
   } = this.entities;
 
   this.on('CREATE', 'DatosProyect', async (req) => {
 
-    const { codigoProyect, nameProyect, spluriAnual, sClienteFac, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID , Seguimiento_ID,EjecucionVia_ID, AmReceptor_ID , Vertical_ID ,clienteFuncional_ID  } = req.data;
+    const { codigoProyect, nameProyect, spluriAnual,funcionalString, sClienteFac, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID , Seguimiento_ID,EjecucionVia_ID, AmReceptor_ID , Vertical_ID ,clienteFuncional_ID  } = req.data;
 
 
     try {
 
       const result = await INSERT.into(DatosProyect).entries({
-        codigoProyect, nameProyect, spluriAnual,datosExtra, sClienteFac, sMultiJuri, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones,
+        codigoProyect, nameProyect, spluriAnual,datosExtra, funcionalString,  sClienteFac, sMultiJuri, sMultiJuri,objetivoAlcance,AsuncionesyRestricciones,
 
         Naturaleza: { ID: Naturaleza_ID }, Iniciativa: { ID: Iniciativa_ID }, Area: { ID: Area_ID }, jefeProyectID: { ID: jefeProyectID_ID }, Seguimiento: {ID: Seguimiento_ID }, 
         EjecucionVia: { ID: EjecucionVia_ID }, AmReceptor: {ID: AmReceptor_ID},  Vertical: {ID: Vertical_ID}, clienteFuncional: { ID: clienteFuncional_ID }
@@ -144,6 +144,53 @@ this.on('RecursosInternos', async (req) => {
       req.error(500, 'Error fetching data: ' + error.message);
   }
 });
+
+
+this.on('ValorMensuReInter', async (req) => {
+  const { ID, RecursosInternos_ID, mesAno, valor } = req.data;
+
+  // Verifica que los datos no sean nulos
+  console.log("Datos recibidos:", req.data);
+
+  if (!ID) {
+      req.error(400, 'ID is required');
+      return;
+  }
+
+  if (!RecursosInternos_ID) {
+      req.error(400, 'recursosInternos_ID is required');
+      return;
+  }
+
+  if (!mesAno) {
+      req.error(400, 'mesAño is required');
+      return;
+  }
+
+  if (valor === undefined || valor === null) {
+      req.error(400, 'valor is required');
+      return;
+  }
+
+  try {
+    console.log("Intentando insertar:", { mesAno, valor, RecursosInternos_ID });
+    await INSERT.into(ValorMensuReInter).entries({
+      mesAno, 
+      valor, 
+      RecursosInternos: { ID: RecursosInternos_ID }
+    });
+
+    return { message: "Datos insertados correctamente." };
+
+  } catch (error) {
+      console.error('Error en la inserción:', error); // Log del error
+      req.error(500, 'Error fetching data: ' + error.message);
+  }
+});
+
+
+
+
 
 
 

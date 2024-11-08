@@ -91,6 +91,7 @@ entity DatosProyect {
         codigoProyect            : Integer;
         nameProyect              : String;
         pluriAnual               : Boolean;
+        funcionalString          : String;
         clienteFacturacion       : String;
         multijuridica            : Boolean;
         IPC_apli                 : Integer;
@@ -130,7 +131,8 @@ entity DatosProyect {
 
         otrosConceptos           : Association to many otrosConceptos
                                        on otrosConceptos.datosProyect_ID = ID;
-        tableProcessFlow         : Association to  many tableProcessFlow on tableProcessFlow.datosProyect_ID = ID;
+        tableProcessFlow         : Association to many tableProcessFlow
+                                       on tableProcessFlow.datosProyect_ID = ID;
 };
 
 
@@ -141,11 +143,11 @@ entity Area {
 };
 
 entity PerfilConsumo {
-    key ID         : UUID @cds.auto;
-    nombrePerfilC : String; 
-    valuePerfilC : String; 
+    key ID            : UUID @cds.auto;
+        nombrePerfilC : String;
+        valuePerfilC  : String;
 
-    
+
 }
 
 entity Vertical {
@@ -220,22 +222,31 @@ entity Facturacion {
 };
 
 entity RecursosInternos {
-    key ID              : UUID @cds.auto;
-        ConceptoOferta  : String;
-        PMJ             : Integer;
-        mesYear         : Date;
-        total           : Integer;
-        totalE          : Integer;
-        tipoServicio    : Association to TipoServicio;
-        Vertical        : Association to Vertical;
-        PerfilServicio  : Association to PerfilServicio;
-        otrosGastoRecu  : Association to many otrosGastoRecu
-                              on otrosGastoRecu.RecursosInternos_ID = ID;
-        otrosRecursos   : Association to many otrosGastoRecu
-                              on otrosRecursos.RecursosInternos_ID = ID;
-        datosProyect_ID : UUID;
+    key ID                : UUID @cds.auto;
+        ConceptoOferta    : String;
+        PMJ               : Integer;
+        mesYear           : Date;
+        total             : Integer;
+        totalE            : Integer;
+        tipoServicio      : Association to TipoServicio;
+        Vertical          : Association to Vertical;
+        PerfilServicio    : Association to PerfilServicio;
+        otrosGastoRecu    : Association to many otrosGastoRecu
+                                on otrosGastoRecu.RecursosInternos_ID = ID;
+        otrosRecursos     : Association to many otrosGastoRecu
+                                on otrosRecursos.RecursosInternos_ID = ID;
+        datosProyect_ID   : UUID;
+        // Asociación a la tabla ValoresMensuales
+        ValorMensuReInter : Association to many ValorMensuReInter
+                                on ValorMensuReInter.RecursosInternos_ID = ID;
 };
 
+entity ValorMensuReInter {
+    key ID                  : UUID @cds.auto;
+        RecursosInternos_ID : UUID;
+        mesAno              : String;
+        valor               : Integer;
+};
 
 entity otrosGastoRecu {
     key ID                  : UUID @cds.auto;
@@ -274,7 +285,7 @@ entity ConsumoExternos {
         GastosdeViaje       : arrGastosdeViaje;
         tipoServicio        : Association to TipoServicio;
         Vertical            : Association to Vertical;
-        PerfilConsumo      : Association to PerfilConsumo;
+        PerfilConsumo       : Association to PerfilConsumo;
         datosProyect_ID     : UUID;
         otrosServiciosConsu : Association to many otrosServiciosConsu
                                   on otrosServiciosConsu.ConsumoExternos_ID = ID;
@@ -314,7 +325,7 @@ entity RecursosExternos {
         PMJ                : Integer;
         mesYear            : Date;
         total              : Integer;
-        totalR           : Integer;
+        totalR             : Integer;
         GastosdeViaje      : arrGastosdeViaje;
         tipoServicio       : Association to TipoServicio;
         Vertical           : Association to Vertical;
@@ -356,10 +367,10 @@ entity GastoViajeRecExter {
 entity otrosConceptos {
     key ID              : UUID @cds.auto;
         ConceptoOferta  : String;
-        PMJ                 : Integer;
-        mesYear             : Date;
-        total               : Integer;
-        totalC              : Integer;
+        PMJ             : Integer;
+        mesYear         : Date;
+        total           : Integer;
+        totalC          : Integer;
         Vertical        : Association to Vertical;
         datosProyect_ID : UUID;
         LicenciasCon    : Association to many LicenciasCon
@@ -371,10 +382,10 @@ entity otrosConceptos {
 entity LicenciasCon {
     key ID                : UUID @cds.auto;
         ConceptoOferta    : String;
-        PMJ                 : Integer;
-        mesYear             : Date;
-        total               : Integer;
-        totalC              : Integer;  
+        PMJ               : Integer;
+        mesYear           : Date;
+        total             : Integer;
+        totalC            : Integer;
         Vertical          : Association to Vertical;
         otrosConceptos_ID : UUID;
 };
@@ -405,8 +416,8 @@ entity ClientFactura {
 };
 
 
-entity tableProcessFlow{
-  key ID : UUID @cds.auto;
-     estado: String;
-    datosProyect_ID : UUID;
+entity tableProcessFlow {
+    key ID              : UUID @cds.auto;
+        estado          : String;
+        datosProyect_ID : UUID;
 }

@@ -53,8 +53,8 @@
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1">
                                                         <cells>
-                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto"/>
-                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Nombre Proyecto"/>
+                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto asignado por la PMO"/>
+                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud"/>
 
                                                             <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false">
                                                                 <items>
@@ -3002,7 +3002,7 @@
             <Input xmlns="sap.m" value="" id="totalSubtotal" description="Subtotal" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="5.00" id="input2_172475612" description="Coste Estructura%" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
-            <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen sobre ingresos " width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen sobre ingresos "  change=".onColumnTotales" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="" id="input2_1756121205" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false"/>
         </items>

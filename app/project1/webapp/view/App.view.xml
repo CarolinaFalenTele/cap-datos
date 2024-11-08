@@ -37,11 +37,13 @@
                                          <!--  <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
                                                 <Text id="ma2" text="Info content goes here ..." />
                                             </IconTabFilter>--> 
-                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" tooltip="Solicitudes pendientes" count="{/DatosProyect/$count}">
+                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" tooltip="Solicitudes pendientes" count="">
                                                 <Table id="idPendientes" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="headerToolbar">
                                                             <Title id="title" text="Pendientes a Aprobacion" level="H2"/>
+                                                              <SearchField id="searchField" liveChange="onSearch"  class="sapUiLargeMargin" placeholder="Buscar por Nombre de Proyecto" width="30%"/>
+
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
@@ -81,7 +83,7 @@
                                                                 <Text id="txtCellArea" text="{Area/NombreArea}"/>
                                                                 <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}"/>
                                                     
-                                                                <ObjectStatus id="objStatus" text="Pendiente" state="Warning"/>
+                                                                <ObjectStatus id="objStatus" text="{Estado}" state="Warning"/>
                                                                 
 
 
@@ -130,10 +132,12 @@
                                             </IconTabFilter>
                                             <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes"  tooltip="Solicitudes Aprobadas" count="">
 
-                                                <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{ListaCdo>/listaCdo}" class="sapFDynamicPageAlignContent" width="auto">
+                                                <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent aprobado" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="d">
                                                             <Title id="d2" text="Lista De Solicitudes" level="H2"/>
+                                                            <SearchField id="searchField2" liveChange="onSearchApro"  class="sapUiLargeMargin" placeholder="Buscar por Nombre de Proyecto" width="30%"/>
+
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
@@ -162,14 +166,14 @@
                                                     <items>
                                                         <ColumnListItem id="q111d">
                                                             <cells>
-                                                                <ObjectIdentifier id="1234d" title="{Name}" text="{ListaCdo>fecha}"/>
-                                                                <Text id="2333d" text="{ListaCdo>Codigo}"/>
-                                                                <Text id="00" text="{ListaCdo>NombreProyec}"/>
-                                                                <Text id="0" text="{ListaCdo>Descripcion}"/>
-                                                                <Text id="20" text="{ListaCdo>Area}"/>
-                                                                <Text id="210" text="{ListaCdo>Jefe Proyecto}"/>
+                                                                <ObjectIdentifier id="1234d" title="{path: 'Fechainicio', formatter: '.formatDate'}"/>
+                                                                <Text id="2333d" text="{codigoProyect}"/>
+                                                                <Text id="00" text="{nameProyect}"/>
+                                                                <Text id="0" text=""/>
+                                                                <Text id="20" text="{Area/NombreArea}"/>
+                                                                <Text id="210" text="{jefeProyectID/name}"/>
 
-                                                                <ObjectStatus id="status02" text="{ListaCdo>Estado}" state="Success"/>
+                                                                <ObjectStatus id="status02" text="{Estado}" state="Success"/>
 
                                                             </cells>
                                                         </ColumnListItem>
