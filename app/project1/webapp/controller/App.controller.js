@@ -93,8 +93,76 @@ sap.ui.define(
                 }.bind(this));
             },
 
-
             onSearch: function (oEvent) {
+                // Obtener el valor ingresado en el SearchField
+                var sQuery = oEvent.getParameter("newValue");
+                var oTable = this.byId("idPendientes"); // Obtener la tabla
+                var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+            
+                // Crear el filtro de estado "Pendiente"
+                var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+            
+                // Crear el filtro de búsqueda para el nombre del proyecto
+                var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
+                if (sQuery && sQuery.length > 0) {
+                    // Crear un filtro que sea insensible al caso (case insensitive)
+                    var oSearchFilter = new sap.ui.model.Filter({
+                        path: "nameProyect",
+                        operator: sap.ui.model.FilterOperator.Contains,
+                        value1: sQuery.toLowerCase(),  // Convertir a minúsculas el valor de búsqueda
+                        caseSensitive: false           // Configurar el filtro para que no sea sensible al caso
+                    });
+                    aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                }
+            
+                // Combinar ambos filtros usando un filtro AND
+                var oCombinedFilter = new sap.ui.model.Filter({
+                    filters: aFilters,
+                    and: true
+                });
+            
+                // Aplicar el filtro combinado
+                oBinding.filter(oCombinedFilter);
+            },
+            
+            
+            
+            onSearchApro: function (oEvent) {
+                // Obtener el valor ingresado en el SearchField
+                var sQuery = oEvent.getParameter("newValue");
+                var oTable = this.byId("idProductsTable"); // Obtener la tabla
+                var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+            
+                // Crear el filtro de estado "Pendiente"
+                var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
+            
+                // Crear el filtro de búsqueda para el nombre del proyecto
+                var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
+                if (sQuery && sQuery.length > 0) {
+                    // Crear un filtro que sea insensible al caso (case insensitive)
+                    var oSearchFilter = new sap.ui.model.Filter({
+                        path: "nameProyect",
+                        operator: sap.ui.model.FilterOperator.Contains,
+                        value1: sQuery.toLowerCase(),  // Convertir a minúsculas el valor de búsqueda
+                        caseSensitive: false           // Configurar el filtro para que no sea sensible al caso
+                    });
+                    aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                }
+            
+                // Combinar ambos filtros usando un filtro AND
+                var oCombinedFilter = new sap.ui.model.Filter({
+                    filters: aFilters,
+                    and: true
+                });
+            
+                // Aplicar el filtro combinado
+                oBinding.filter(oCombinedFilter);
+            },
+            
+            
+            
+
+            /*onSearch: function (oEvent) {
                 // Obtener el valor ingresado en el SearchField
                 var sQuery = oEvent.getParameter("newValue");
                 var oTable = this.byId("idPendientes"); // Obtener la tabla
@@ -118,10 +186,10 @@ sap.ui.define(
             
                 // Aplicar el filtro combinado
                 oBinding.filter(oCombinedFilter);
-            },
+            },*/
             
 
-            onSearchApro: function (oEvent) {
+          /*  onSearchApro: function (oEvent) {
                 // Obtener el valor ingresado en el SearchField
                 var sQuery = oEvent.getParameter("newValue");
                 var oTable = this.byId("idProductsTable"); // Obtener la tabla
@@ -145,7 +213,7 @@ sap.ui.define(
             
                 // Aplicar el filtro combinado
                 oBinding.filter(oCombinedFilter);
-            },
+            },*/
             
 
             onActivityPress: function (oEvent) {
@@ -484,11 +552,11 @@ sap.ui.define(
 
 
             _onObjectMatched: function (oEvent) {
-                console.log("Parámetros del evento:", oEvent.getParameters());
+             //   console.log("Parámetros del evento:", oEvent.getParameters());
 
                 // Obtén el ID enviado como parámetro
                 const newId = oEvent.getParameter("arguments").newId;
-                console.log("ID de nuevo:", newId);
+           //    console.log("ID de nuevo:", newId);
 
                 // Llama a la función para resaltar la fila
                 this._highlightNewRow(newId);
@@ -885,10 +953,6 @@ sap.ui.define(
 
             onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-
-                // Agrega un punto de interrupción aquí para verificar que oRouter y this estén definidos correctamente
-                console.log("Navigating to View1");
-
                 oRouter.navTo("viewNoParam");
             },
         });

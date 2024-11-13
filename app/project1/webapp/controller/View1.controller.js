@@ -158,7 +158,6 @@ sap.ui.define([
 
 
 
-
       _onObjectMatched: async function (oEvent) {
 
         var sProjectID = oEvent.getParameter("arguments").sProjectID;
@@ -220,7 +219,9 @@ sap.ui.define([
             await this.leerFacturacion(sProjectID);
             await this.leerClientFactura(sProjectID);
             await this.leerRecursos(sProjectID);
-
+            await this.leerConsumoExterno(sProjectID);
+            await this.leerRecursoExterno(sProjectID);
+            await this.leerOtrosConcepto(sProjectID);
 
             // Cambiar el texto del botón de "Enviar" a "Guardar"
             const oButton = this.byId("564433"); // Asegúrate de que el ID del botón es "submitButton"
@@ -241,6 +242,94 @@ sap.ui.define([
         this.highlightControls(); // Llama al método para resaltar los controles
 
       },
+
+      
+
+    /*_onObjectMatched: async function (oEvent) {
+
+        var sProjectID = oEvent.getParameter("arguments").sProjectID;
+
+        // Almacenar el ID en una variable de instancia del controlador para usarlo más tarde
+        this._sProjectID = sProjectID;
+
+
+        // Construye la URL con el ID correctamente escapado
+        var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos del proyecto:", oData);
+
+          // Actualiza los controles de la vista con los datos obtenidos
+          if (oData) {
+            // Ejemplos de cómo poblar los controles
+            this.byId("input0").setValue(oData.codigoProyect || "");
+            this.byId("input1").setValue(oData.nameProyect || "");
+            this.byId("int_clienteFun").setValue(oData.funcionalString || "");
+            this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
+            this.byId("idObje").setValue(oData.objetivoAlcance || "");
+            this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
+            this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
+            this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
+            this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
+            this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+            this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
+            this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
+            this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
+            this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
+            this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
+            this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
+            this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
+            this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
+            this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
+            this.byId("input0").setValue(oData.codigoProyect);
+            this.byId("input1").setValue(oData.nameProyect);
+            this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
+            this.byId("id_Cfactur").setValue(oData.clienteFacturacion);
+            this.byId("box_multiJuridica").setSelected(oData.multijuridica)
+
+            await this.fetchMilestones(sProjectID);
+            await this.leerProveedor(sProjectID);
+            await this.leerFacturacion(sProjectID);
+            await this.leerClientFactura(sProjectID);
+            await this.leerRecursos(sProjectID);
+            await this.leerFechas(sProjectID);
+
+            // Cambiar el texto del botón de "Enviar" a "Guardar"
+            const oButton = this.byId("564433"); // Asegúrate de que el ID del botón es "submitButton"
+            oButton.setText("Guardar");
+
+            // Mostrar un toast indicando que los datos se cargaron correctamente
+            sap.m.MessageToast.show("Datos cargados correctamente");
+
+            // this.byId("datePickerStart").setDateValue(new Date(oData.startDate)); // Asegúrate de que el formato sea correcto
+            //     this.byId("comboBoxStatus").setSelectedKey(oData.status || "defaultStatus");
+            // Añade más campos según los controles en tu formulario
+          }
+
+        } catch (error) {
+          console.error("Error al obtener los datos del proyecto:", error);
+          sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+        }
+        this.highlightControls(); // Llama al método para resaltar los controles
+
+      },*/
+
+
+
       //----------------------------------------------
 
 
@@ -478,68 +567,10 @@ sap.ui.define([
       },
 
 
-      //----------Leer Proveedor------------------------
-
-      /*  leerProveedor: async function (projectID) {
-          var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
-    
-          try {
-            const response = await fetch(sUrl, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              }
-            });
-    
-    
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error('Network response was not ok: ' + errorText);
-            }
-    
-            const oData = await response.json();
-            console.log("Datos de proveedor :", oData);
-    
-            // Obtener la tabla por ID
-            var oTable = this.byId("table2");
-            // Obtener todos los items (filas) de la tabla
-            var aItems = oTable.getItems();
-    
-            var aData = [];
-    
-    
-    
-         // Recorrer cada fila de la tabla
-         aItems.forEach(function(oItem) {
-          // Obtener las celdas (inputs) de la fila
-          var aCells = oItem.getCells();
-    
-          // Extraer el valor de cada celda (input) de la fila
-          var valueCondi = aCells[0].setValue(oData.valueCondi); // Input para valueCondi
-          var valueProvee = aCells[1].setValue(oData.valueProvee); // Input para valueProvee
-          var checkCondi = this.byId("box_condi").setSelected(oData.checkCondi); // Checkbox Condicionado
-          var checkProveedor = this.byId("box_prove").setSelected(oData.checkProveedor); // Checkbox Proveedores
-    
-    
-    
-        }.bind(this));
-    
-    
-    
-          } catch (error) {
-            console.error("Error al obtener los datos de proveedor:", error);
-            sap.m.MessageToast.show("Error al cargar los datos de proveedor");
-          }
-    
-          },*/
-
-
-
-
 
       leerRecursos: async function (projectID) {
         var sUrl = `/odata/v4/datos-cdo/RecursosInternos?$filter=datosProyect_ID eq ${projectID}`;
+       
         try {
           const response = await fetch(sUrl, {
             method: 'GET',
@@ -563,6 +594,9 @@ sap.ui.define([
           // Verificar si hay datos en oData.value
           if (oData.value && oData.value.length > 0) {
             var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var  recursoID  = Recurso.ID; // Obtén el ID del recurso
+            console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
 
             // Asegúrate de que la tabla tenga al menos una fila
             if (aItems.length > 0) {
@@ -575,8 +609,107 @@ sap.ui.define([
                 aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
                 aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                 aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
-                aCells[4].setText(Recurso.PMJ || ""); // Para el Input (PMJ)
-                aCells[5].setText(Recurso.total || ""); // Para el Input (Cantidad)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+           await this.leerFechas(recursoID);
+           await this.leerOtServRe(recursoID);
+           await this.leerOtrosGastoVRecu(recursoID);
+
+          } else {
+            console.log("No hay datos de SERvi Recurso  internos disponibles.");
+          }
+
+        //  await this.leerFechas(recursoID);
+         // await this.leerOtServRe(recursoID);
+          //await this.leerOtrosGastoVRecu(recursoID);
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+      leerFechas: async function (recursoID) {
+        var sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq ${recursoID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS MESAÑO TRAIDO: -----> ", oData);
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+
+
+      },
+
+
+      leerOtServRe: async function (recursoID) {
+        var sUrl = `/odata/v4/datos-cdo/otrosGastoRecu?$filter=RecursosInternos_ID eq ${recursoID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS otrosRecursosSErvi TRAIDO: -----> ", oData);
+
+          var oTable = this.byId("table0_1727879576857");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              // Asegúrate de que el índice es correcto para cada input/select
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
               }
             }
@@ -584,11 +717,582 @@ sap.ui.define([
             console.log("No hay datos de recursos internos disponibles.");
           }
 
+
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
           sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
+      
+
+      leerOtrosGastoVRecu: async function (recursoID) {
+
+        var sUrl = `/odata/v4/datos-cdo/otrosRecursos?$filter=RecursosInternos_ID eq ${recursoID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS otrosGastoRecu TRAIDO: -----> ", oData);
+
+          var oTable = this.byId("table0_1727879940116");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              // Asegúrate de que el índice es correcto para cada input/select
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+
+              }
+            }
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+
+
+      },
+
+
+
+
+      //------ LEER CONSUMO EXTERNO ---------
+      leerConsumoExterno: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ConsumoExternos?$filter=datosProyect_ID eq ${projectID}`;
+  
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS ConsumoExternos TRAIDO:", oData);
+
+          var oTable = this.byId("tablaConsuExter");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var ConsumoRecuID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerConsuOtroServi(ConsumoRecuID);
+            await this.leerGastoViajeConsu(ConsumoRecuID);
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+        //  await this.leerConsuOtroServi(recursoID);
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+      leerConsuOtroServi : async function (ConsumoRecuID) {
+        var sUrl = `/odata/v4/datos-cdo/otrosServiciosConsu?$filter=ConsumoExternos_ID eq ${ConsumoRecuID}`;
+  
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS otrosServiciosConsu TRAIDO:", oData);
+
+          var oTable = this.byId("idOtroserConsu");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+          //  var ConsumoRecuID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+              //  aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+      leerGastoViajeConsu: async function (ConsumoRecuID) {
+        var sUrl = `/odata/v4/datos-cdo/GastoViajeConsumo?$filter=ConsumoExternos_ID eq ${ConsumoRecuID}`;
+  
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS idGastoViajeConsu TRAIDO:", oData);
+
+          var oTable = this.byId("idGastoViajeConsu");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+          //  var ConsumoRecuID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+              //  aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+      //----------------------------------------------------------
+
+
+
+
+      //------------------- Leer RECURSO EXTERNO --------------------
+
+      leerRecursoExterno: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/RecursosExternos?$filter=datosProyect_ID eq ${projectID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos traidos RecursosExternos TRAIDO:", oData);
+
+          var oTable = this.byId("tablaRecExterno");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var RecursoExterID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setValue(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerOtrosServiExter(RecursoExterID);
+            await this.leerGastoViaExter(RecursoExterID);
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+      leerOtrosServiExter :  async function (RecursoExterID) {
+        var sUrl = `/odata/v4/datos-cdo/serviRecurExter?$filter=RecursosExternos_ID eq ${RecursoExterID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos traidos serviRecurExter TRAIDO:", oData);
+
+          var oTable = this.byId("idServiExterno");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var RecursoExterID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+          //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerOtrosServiExter(RecursoExterID);
+          } else {
+            console.log("No hay datos de servi Externos  disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de serviRecurExter:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
+        }
+      },
+
+      leerGastoViaExter :  async function (RecursoExterID) {
+        var sUrl = `/odata/v4/datos-cdo/GastoViajeRecExter?$filter=RecursosExternos_ID eq ${RecursoExterID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos traidos GastoViajeRecExter TRAIDO:", oData);
+
+          var oTable = this.byId("idGastoRecuExter");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var RecursoExterID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+          //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerOtrosServiExter(RecursoExterID);
+          } else {
+            console.log("No hay datos de GastoViajeRecExter  disponibles.");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de GastoViajeRecExter:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de GastoViajeRecExter");
+        }
+      },
+    //-------------------------------------------------------------
+
+
+
+    // ------------------------- Leer Otros Conceptos -----
+      leerOtrosConcepto: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/otrosConceptos?$filter=datosProyect_ID eq ${projectID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos traidos otrosConceptos TRAIDO:", oData);
+
+          var oTable = this.byId("table0_1724413700665");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var otrosConceptosID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+           //     aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+          //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[2].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[3].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[5].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerLicencias(otrosConceptosID);
+          } else {
+            console.log("No hay datos de recursos internos disponibles.");
+          }
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+
+      leerLicencias: async function (otrosConceptosID) {
+
+        var sUrl = `/odata/v4/datos-cdo/LicenciasCon?$filter=otrosConceptos_ID eq ${otrosConceptosID}`;
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos traidos LicenciasCon TRAIDO:", oData);
+
+          var oTable = this.byId("table0_1727955577124");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var otrosConceptosID  = Recurso.ID; // Obtén el ID del recurso
+         //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            if (aItems.length > 0) {
+              var oItem = aItems[0]; // Selecciona solo la primera fila
+              var aCells = oItem.getCells();
+
+              if (aCells.length > 1) {
+                aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+           //     aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+          //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                aCells[2].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
+                aCells[3].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
+                aCells[4].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[5].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[6].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[7].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[8].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[9].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
+                aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+
+              }
+            }
+            await this.leerLicencias(otrosConceptosID);
+          } else {
+            console.log("No hay datos de LicenciasCon disponibles.");
+          }
+        } catch (error) {
+          console.error("Error al obtener los datos de LicenciasCon:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de LicenciasCon");
+        }
+
+      },
+    // --------------------------------------------------------------
+
+
 
 
       //---------------------------------------------------------------------------------
@@ -1243,22 +1947,6 @@ sap.ui.define([
         };
 
 
-        /*
-        // Solo añadir Fechainicio y FechaFin si tienen un valor válido
-        if (sFechaIni) {
-          payload.Fechainicio = sFechaIni.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
-              console.log(sFechaFin);
-          //    console.log(Fechainicio);
-        
-        }
-        
-        if (sFechaFin) {
-          payload.FechaFin = sFechaFin.toISOString().split('T')[0]; // Solo la parte de la fecha (YYYY-MM-DD)
-        
-        }*/
-
-
-
         try {
           let response;
 
@@ -1290,7 +1978,6 @@ sap.ui.define([
               },
               body: JSON.stringify(payload)
             });
-
 
 
 
@@ -1514,13 +2201,19 @@ sap.ui.define([
           const oItem = aItems[i];  // Obtener la fila actual
 
           // Obtener los controles dentro de cada celda
-          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
-          const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
-          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const sVertical = oItem.getCells()[0]?.getSelectedKey() || ""; // Si es null, usa un valor por defecto
+          const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
+          const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
+          const sConcepto = oItem.getCells()[3]?.getValue() || ""; 
+          const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0"); 
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0"); 
+          const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
 
 
           // Validar si todos los datos son válidos
@@ -1534,8 +2227,14 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
-            total: sTotal,
-            totalE: stotalRe,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal.toFixed(2)),
+            totalE: Number(stotalRe.toFixed(2)),
             tipoServicio_ID: stipoServi,
             PerfilServicio_ID: sPerfil,
             datosProyect_ID: generatedId,
@@ -1557,7 +2256,6 @@ sap.ui.define([
 
               await this.insertOtrosGastos(idRecursos);
               await this.insertOtrosRecursos(idRecursos);
-          //    await this.pruebaInser(idRecursos);
              await this.mesAñoRecurInterno(oItem, idRecursos);
 
          console.log("TERMINANDO  RECURSOS------"); 
@@ -1613,7 +2311,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
     
-        console.log("Columnas obtenidas:", columns);
+      //  console.log("Columnas obtenidas:", columns);
     
         for (let j = 12; j < oItem.getCells().length; j++) {
             const cell = oItem.getCells()[j];
@@ -1716,8 +2414,14 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -1730,7 +2434,13 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
-            total: sTotal,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal.toFixed(2)),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
             RecursosInternos_ID: idRecursos
@@ -1783,8 +2493,14 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -1797,7 +2513,13 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
-            total: sTotal,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal.toFixed(2)),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
             RecursosInternos_ID: idRecursos
@@ -1854,8 +2576,14 @@ sap.ui.define([
           const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -1868,6 +2596,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -1925,6 +2659,12 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
           const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
 
@@ -1939,7 +2679,13 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
-            total: sTotal,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal.toFixed(2)),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
             ConsumoExternos_ID: idRecursos
@@ -1988,8 +2734,14 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -2002,6 +2754,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -2057,8 +2815,14 @@ sap.ui.define([
           const sPerfil = oItem.getCells()[2].getValue(); // Select de PerfilServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getValue()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -2071,6 +2835,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalR: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -2128,8 +2898,14 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -2142,6 +2918,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -2191,8 +2973,14 @@ sap.ui.define([
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -2205,6 +2993,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -2254,8 +3048,14 @@ sap.ui.define([
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
-          const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
+          const syear1 = parseInt(oItem.getCells()[4]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[10]?.getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11]?.getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -2269,6 +3069,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             datosProyect_ID: generatedId
@@ -2319,6 +3125,12 @@ sap.ui.define([
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
           const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
 
@@ -2334,6 +3146,12 @@ sap.ui.define([
             Vertical_ID: sVertical,
             ConceptoOferta: sConcepto,
             PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             otrosConceptos_ID: idOtrosConcep
@@ -2367,77 +3185,10 @@ sap.ui.define([
 
 
       },
-
-
-
-      /* insertRecursosInternos: async function (generatedId) {
-         // Obtener la tabla por su ID
-         const oTable = this.byId("table_dimicFecha");
-         
-         // Obtener todos los elementos del tipo ColumnListItem
-         const aItems = oTable.getItems();
-         
-         // Iterar sobre cada fila
-         for (let i = 0; i < aItems.length; i++) {
-             const oItem = aItems[i];  // Obtener la fila actual
-             
-             // Obtener los controles dentro de cada celda
-             const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-             const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
-             const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
-             const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-             const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-             const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-             const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
-             
-             // Validar si todos los datos son válidos
-             if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-                 sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i+1) + " correctamente.");
-                 return; // Si hay un error, no se envía la solicitud
-             }
-     
-             // Construir el payload para cada fila
-             const payload = {
-                 Vertical_ID: sVertical,
-                 ConceptoOferta: sConcepto,
-                 PMJ: sPMJ,
-                 total: sTotal,
-                 totalE: stotalRe,
-                 tipoServicio_ID: stipoServi,
-                 PerfilServicio_ID: sPerfil,
-                 datosProyect_ID: generatedId
-             };
-     
-             try {
-                 // Hacer el fetch de manera asincrónica para cada fila
-                 const response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
-                     method: "POST",
-                     headers: {
-                         "Content-Type": "application/json"
-                     },
-                     body: JSON.stringify(payload)
-                 });
-     
-                 if (response.ok) {
-                     const result = await response.json();
-                     console.log("Fila " + (i+1) + " guardada con éxito: RECUROSOS INTERNOS", result);
-                 } else {
-                     const errorMessage = await response.text();
-                     console.error("Error al guardar la fila " + (i+1) + ":", errorMessage);
-                     sap.m.MessageToast.show("Error al guardar la fila " + (i+1) + ": " + errorMessage);
-                 }
-             } catch (error) {
-                 console.error("Error en la llamada al servicio para la fila " + (i+1) + ":", error);
-                 sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i+1) + ": " + error.message);
-             }
-         }
-     },*/
-
       //----------------------------------------------------
 
 
       //--------------------METODO ACTUALIZAR  ------------------------------------
-
 
       // Función para convertir texto a entero con manejo de errores
       convertToInt: function (text) {
@@ -4239,49 +4990,46 @@ sap.ui.define([
 
         var selectedItem = this.byId("slct_inic").getSelectedItem();
         var selectNatu = this.byId("idNatu");
+        
+
 
         var selectedText = selectedItem.getText();
+
+
+        console.log("Valor seleccionado:", selectedText);
 
 
         var oTable = this.getView().byId("table0");
 
         if (selectedText === "Opex Servicios") {
           oTable.setVisible(true);
+          this.byId("input2_172475612").setValue(parseFloat("0.00%".replace("%", "")).toFixed(2));
+          this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
 
         } else {
           oTable.setVisible(false);
-        }
-
-
-        if (selectedText === "Opex Servicios") {
-          this.byId("input2_172475612").setValue(parseFloat("0.00%".replace("%", "")));
-          this.byId("text67_1728582763477").setText("Opex Servicios - El Margen debe ser establecido al 0%");
-
-        } else if (selectedText === "Proyecto/Servicio de Inversión") {
-
-          this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
-          this.byId("input2_17221205").setValue(parseFloat("0.00%".replace("%", "")));
-
-        } else {
           this.byId("input2_172475612").setValue(parseFloat("5.00%".replace("%", "")).toFixed(2));
-
         }
+       
+       
+   
 
-
-
-        if (selectedText === "Proyecto/Servicio a Cliente Externo") {
+      if (selectedText === "Proyecto/Servicio a Cliente Externo") {
           this.byId("input2_17221205").setValue(parseFloat("20.00".replace(",", ".")).toFixed(2));
           this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
 
-        } else if (selectedText === "Proyecto/Servicio Interno PdV") {
+      } else if (selectedText === "Proyecto/Servicio Interno PdV") {
           this.byId("input2_17221205").setValue(parseFloat("10.00".replace(",", ".")).toFixed(2));
           this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
 
 
-        } else {
-          this.byId("input2_17221205").setValue(" ");
-
-        }
+      }else  if (selectedText === "Proyecto/Servicio de Inversion") {
+        this.byId("input2_17221205").setValue(parseFloat("0.00".replace(",", ".")).toFixed(2));
+        this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
+      
+      } else {
+         this.byId("input2_17221205").setValue("");
+       }
 
 
       },
@@ -4398,6 +5146,8 @@ sap.ui.define([
 
 
         //Segunda tabla 
+        this.byId("text72_1731325324246").setText(sSelectValue4);
+        this.byId("text73_1731325328049").setText(sSelectValue5);
         this.byId("txt_client").setText(sClienteFuncio);
         this.byId("txt_cFactura").setText(sClienteFact);
         this.byId("txt_Codi2").setText(sCodeValue);
@@ -4408,6 +5158,7 @@ sap.ui.define([
 
 
         //Tercera tabla 
+
         this.byId("textClitFu3").setText(sClienteFuncio);
         this.byId("textCliFac3").setText(sClienteFact);
         this.byId("textCodigo3").setText(sCodeValue);
@@ -4466,217 +5217,6 @@ sap.ui.define([
         }
       },
       //-----------------------------------------
-
-
-
-
-      //----------------Funcion CheckBox -------------------------------------------
-      /*    onSelectCheckbox: function (oEvent) {
-            try {
-              var oTable = this.byId("table2");
-              if (!oTable) {
-                console.error("Tabla no encontrada.");
-                return;
-              }
-    
-              var aColumns = oTable.getColumns();
-              var aItems = oTable.getItems();
-              var bSelected = oEvent.getSource()?.getSelected();
-    
-              if (bSelected === undefined) {
-                console.error("Error al obtener el estado del checkbox.");
-                return;
-              }
-    
-              var iSelectedColumnIndex = oEvent
-                .getSource()
-                .getParent()
-                .getParent()
-                .indexOfColumn(oEvent.getSource().getParent());
-    
-              // IDs de los checkboxes
-              var sOtherCheckboxId = iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
-              var oOtherCheckbox = this.byId(sOtherCheckboxId);
-    
-              if (!oOtherCheckbox) {
-                console.error("El otro checkbox no se encontró.");
-                return;
-              }
-    
-              // Deshabilitar el otro checkbox si este está seleccionado, habilitar si está deseleccionado
-              oOtherCheckbox.setEnabled(!bSelected);
-    
-              // Recorrer cada columna y establecer el estado editable de los inputs en esa columna
-              aColumns.forEach(function (oColumn, iColumnIndex) {
-                aItems.forEach(function (oItem) {
-                  var oInput = oItem.getCells()[iColumnIndex];
-                  if (oInput && oInput.setEditable) {
-                    oInput.setEditable(iColumnIndex === iSelectedColumnIndex ? bSelected : !bSelected);
-                  }
-                });
-              });
-            } catch (error) {
-              console.error("Error en la función onSelectCheckbox:", error);
-            }
-          },*/
-      //--------------------------------------------------------------------------------
-
-
-      /*   _onObjectMatched: async function (oEvent) {
-       
-           var sProjectID = oEvent.getParameter("arguments").sProjectID;
-   
-              // Almacenar el ID en una variable de instancia del controlador para usarlo más tarde
-       this._sProjectID = sProjectID;
-   
-   
-           // Construye la URL con el ID correctamente escapado
-           var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-   
-           try {
-             const response = await fetch(sUrl, {
-               method: 'GET',
-               headers: {
-                 'Accept': 'application/json',
-                 'Content-Type': 'application/json'
-               }
-             });
-   
-             if (!response.ok) {
-               const errorText = await response.text();
-               throw new Error('Network response was not ok: ' + errorText);
-             }
-   
-             const oData = await response.json();
-             console.log("Datos del proyecto:", oData);
-   
-             // Actualiza los controles de la vista con los datos obtenidos
-             if (oData) {
-               // Ejemplos de cómo poblar los controles
-               this.byId("input0").setValue(oData.codigoProyect || "");
-               this.byId("input1").setValue(oData.nameProyect || "");
-               this.byId("int_clienteFun").setValue(oData.clienteFuncional || "");
-               this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
-               this.byId("idObje").setValue(oData.objetivoAlcance || "");
-               this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
-               this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
-               this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
-               this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
-               this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
-               this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
-               this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
-               this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
-               this.byId("date_inico").setDateValue(new Date(oData.fechaInicio || ""));
-               this.byId("date_fin").setDateValue(new Date(oData.fechaFin || ""));
-               this.byId("input0").setValue(oProjectData.codigoProyect);
-               this.byId("input1").setValue(oProjectData.nameProyect);
-               this.byId("box_pluriAnual").setSelected(oProjectData.pluriAnual);
-               this.byId("id_Cfactur").setValue(oProjectData.clienteFacturacion);
-               this.byId("box_multiJuridica").setSelected(oProjectData.multijuridica)
-   
-   
-   
-   
-               // this.byId("datePickerStart").setDateValue(new Date(oData.startDate)); // Asegúrate de que el formato sea correcto
-               //     this.byId("comboBoxStatus").setSelectedKey(oData.status || "defaultStatus");
-               // Añade más campos según los controles en tu formulario
-             }
-   
-           } catch (error) {
-             console.error("Error al obtener los datos del proyecto:", error);
-             sap.m.MessageToast.show("Error al cargar los datos del proyecto");
-           }
-         },*/
-
-
-
-      //---------------Grafico fechasvizframe para Fases  --------------------------------
-
-
-      /*   updateVizFrame1: function () {
-           var oView = this.getView();
-   
-           var oModel = oView.getModel("planning");
-   
-           var oData = oModel.getData();
-   
-           var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
-   
-             pattern: "yyyy-MM-dd",
-   
-           });
-   
-           var aChartData = oData.milestones.map(function (milestone) {
-   
-             var startDate = milestone.fechaInicio ? new Date(milestone.fechaInicio) : null;
-   
-             var endDate = milestone.fechaFin ? new Date(milestone.fechaFin) : null;
-   
-             if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
-   
-               var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
-   
-               return {
-   
-                 fase: milestone.fase,
-   
-                 fechaInicio: oDateFormat.format(startDate),
-   
-                 fechaFin: oDateFormat.format(endDate),
-   
-                 duracion: duration,
-   
-                 // Combinar la duración con las fechas para mostrar en las etiquetas
-   
-                 label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
-   
-               };
-   
-             } else {
-   
-               return null;
-   
-             }
-   
-           }).filter(Boolean);
-   
-           oModel.setProperty("/chartData", aChartData);
-   
-           console.log(aChartData);
-   
-   
-             this._aChartData = aChartData;
-   
-   
-           var oFechas = {};
-           aChartData.forEach(function (oHito) {
-             if (oHito.fase === "Construcción") {
-               oFechas.fechaInicioConstruccion = oHito.fechaInicio;
-             }
-             if (oHito.fase === "Pruebas TQ") {
-               oFechas.fechaFinPruebasTQ = oHito.fechaFin;
-             }
-           });
-   
-   
-           // Crear un modelo JSON para las fechas específicas
-           var oFechasModel = new sap.ui.model.json.JSONModel({
-             fechas: [
-               {
-                 fase: "Fechas Importantes",
-                 fechaInicioConstruccion: oFechas.fechaInicioConstruccion,
-                 fechaFinPruebasTQ: oFechas.fechaFinPruebasTQ
-               }
-             ]
-           });
-   
-           // Establecer el nuevo modelo en la vista
-           oView.setModel(oFechasModel, "fechasModel");
-   
-   
-   
-         },*/
-      //------------------------------------------------- 
 
 
 
