@@ -7,8 +7,9 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
-    "@sap/approuter": "^16.8.1",
+    "@sap/approuter": "^17.1.0",
     "@sap/cds": "^8.2.3",
+    "@sap/cds-hana": "^2.0.0",
     "@sap/xssec": "^4",
     "dotenv": "^16.4.5",
     "express": "^4",

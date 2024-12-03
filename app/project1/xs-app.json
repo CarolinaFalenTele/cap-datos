@@ -10,12 +10,6 @@
       "csrfProtection": true
     },
     {
-      "source": "^(.*)$",
-      "target": "$1",
-      "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
-    },
-    {
       "source": "^/odata/(.*)$",
       "target": "/odata/$1",
       "destination": "datosCdo-srv-api",
@@ -33,6 +27,12 @@
       "target": "/test-resources/$1",
       "authenticationType": "none",
       "destination": "ui5"
+    }, 
+    {
+      "source": "^(.*)$",
+      "target": "$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
     }
   ]
 }

@@ -4,7 +4,9 @@
     color: hsl(226, 100%, 60%); /* Cambia este valor por el color que desees */
     font-weight: bold; /* Opcional: puedes añadir otras propiedades de estilo */
 }
-
+.boldText {
+    font-weight: bold;
+}
 
 .customHeaderColor .sapMListTblHeader .sapMListTblCell  {
     background-color: black; /* Color verde */
@@ -25,7 +27,26 @@
 
 /* Define el estilo para resaltar la fila */
 .highlightRow {
-    background-color: #dff0d8; /* Cambia este color al que prefieras */
-  }
+    background-color: yellow !important; /* Puedes cambiar este color */
+}
 
+  .highlight-border {
+    border: 1px solid yellow;
+    transition: border 0.5s ease-in-out;
+  }
+  
+
+  .customIconColor {
+    color: green; /* Cambia 'red' por el color que desees */
+}
+  
+.customIconColor .sapUiIcon {
+    color: yellow; /* Cambia este valor al color que prefieras */
+}
+
+
+.miInputNoEditable .sapMInputBaseReadonly {
+    background-color: #f9f9d1; /* Color de fondo personalizado */
+    color: #333333; /* Color del texto */
+}
 

@@ -1,5 +1,6 @@
-
+console.log("HOLAAAAAAAAAAAAA")
 module.exports = cds.service.impl(async function () {
+  console.log("Servicio cargado correctamente");
 
   const { DatosProyect, ProveedoresC, RecursosExternos, LicenciasCon, otrosConceptos, ValorMensuReInter, GastoViajeRecExter, serviRecurExter, planificacion, Facturacion, ClientFactura, RecursosInternos, otrosGastoRecu, otrosRecursos, ConsumoExternos, GastoViajeConsumo, otrosServiciosConsu
 
@@ -13,11 +14,26 @@ module.exports = cds.service.impl(async function () {
     try {
 
       const result = await INSERT.into(DatosProyect).entries({
-        codigoProyect, nameProyect, spluriAnual, datosExtra, funcionalString, sClienteFac, sMultiJuri, sMultiJuri, objetivoAlcance, AsuncionesyRestricciones,
-
-        Naturaleza: { ID: Naturaleza_ID }, Iniciativa: { ID: Iniciativa_ID }, Area: { ID: Area_ID }, jefeProyectID: { ID: jefeProyectID_ID }, Seguimiento: { ID: Seguimiento_ID },
-        EjecucionVia: { ID: EjecucionVia_ID }, AmReceptor: { ID: AmReceptor_ID }, Vertical: { ID: Vertical_ID }, clienteFuncional: { ID: clienteFuncional_ID }
+        codigoProyect,
+        nameProyect,
+        spluriAnual,
+        datosExtra,
+        funcionalString,
+        sClienteFac,
+        sMultiJuri, // Este campo aparece duplicado, usa solo uno
+        objetivoAlcance,
+        AsuncionesyRestricciones,
+        Naturaleza_ID,
+        Iniciativa_ID,
+        Area_ID,
+        jefeProyectID_ID,
+        Seguimiento_ID,
+        EjecucionVia_ID,
+        AmReceptor_ID,
+        Vertical_ID,
+        clienteFuncional_ID
       });
+      
 
 
       //const datosProyect_ID = result.ID;

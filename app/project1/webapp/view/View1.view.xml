@@ -6556,16 +6556,9 @@
 
 
 
-                    </items>
-            
-         
-            
+                    </items>            
                 </IconTabBar>
-
-
             </headerContainer>
-
-
             </ObjectHeader>
         </items>
     </VBox>

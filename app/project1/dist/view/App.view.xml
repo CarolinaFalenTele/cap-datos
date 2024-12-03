@@ -1,14 +1,11 @@
-<mvc:View controllerName="project1.controller.App"
-    xmlns:html="http://www.w3.org/1999/xhtml"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
+<mvc:View xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns:suite="sap.suite.ui.commons" xmlns="sap.m" controllerName="project1.controller.App" displayBlock="true">
  <App id="app">
         <pages>
             <Page xmlns="sap.m" id="pageId" title="Page Title" floatingFooter="true" class="miClase">
                 <customHeader>
                     <Bar xmlns="sap.m" class="sapContrastPlus myCustomBar" id="bar0" busyIndicatorSize="Large" design="Header">
                         <contentLeft>
-                            <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Telef%C3%B3nica_2021_logo.svg/1200px-Telef%C3%B3nica_2021_logo.svg.png" width="120px" id="image0" />
+                            <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Telef%C3%B3nica_2021_logo.svg/1200px-Telef%C3%B3nica_2021_logo.svg.png" width="120px" id="image0"/>
                         </contentLeft>
                     </Bar>
                 </customHeader>
@@ -18,97 +15,107 @@
                         <items>
                             <ObjectHeader xmlns="sap.m" title="Fichas CDO" id="header0" responsive="true" fullScreenOptimized="true" intro="Descripcion" titleActive="true" titlePress="handleTitlePress" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header">
 
-                                <ObjectAttribute id="233" title="Empleado"  text="David Arroyo" />
-                                <ObjectAttribute id="223" title="Solicitudes" text="20" active="true" />
-                                <ObjectAttribute id="2" title="Category" text="BTP" />
-                                <ObjectAttribute id="2323" title="Weight per unit" text="" />
-                                <ObjectAttribute id="2222" title="Dimension per unit" text="" />
+                                <ObjectAttribute id="233" title="Empleado" text="David Arroyo"/>
+                                <ObjectAttribute id="223" title="Solicitudes" text="{/DatosProyect/$count}" active="true"/>
+                                <ObjectAttribute id="2" title="Departamento" text="BTP"/>
+                              <!--  <ObjectAttribute id="2323" title="Weight per unit" text="" />
+                                <ObjectAttribute id="2222" title="Dimension per unit" text="" />-->
 
                                 <statuses>
-                                    <ObjectStatus id="status0" title="Approval" text="Pending" state="Warning" />
+                                    <ObjectStatus id="status0" title="Approval" text="Pending" state="Warning"/>
                                 </statuses>
 
                                 <attributes>
-                                    <ObjectAttribute text="10 units" id="attribute0" />
+                                    <ObjectAttribute text="" id="attribute0"/>
 
                                 </attributes>
-
-
+ 
                                 <headerContainer>
-                                    <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding">
+                              
+                                    <IconTabBar id="itb1" selectedKey="key3" upperCase="true" class="sapUiResponsiveContentPadding"   select="onIconTabSelect">
                                         <items>
                                          <!--  <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
                                                 <Text id="ma2" text="Info content goes here ..." />
                                             </IconTabFilter>--> 
-                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" count="{/DatosProyect/$count}">
+                                            <IconTabFilter id="ma3" key="attachments" icon="sap-icon://attachment" tooltip="Solicitudes pendientes" count="">
                                                 <Table id="idPendientes" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="headerToolbar">
-                                                            <Title id="title" text="Pendientes a Aprobacion" level="H2" />
+                                                            <Title id="title" text="Pendientes a Aprobacion" level="H2"/>
+                                                              <SearchField id="searchField" liveChange="onSearch"  class="sapUiLargeMargin" placeholder="Buscar por Nombre de Proyecto" width="30%"/>
+
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
                                                         <Column id="colFecha" width="12em">
-                                                            <Text id="txtFecha" text="Fecha" />
+                                                            <Text id="txtFecha" text="Fecha"/>
                                                         </Column>
                                                         <Column id="colCodigo" width="12em">
-                                                            <Text id="txtCodigo" text="Codigo Proyecto" />
+                                                            <Text id="txtCodigo" text="Codigo Proyecto"/>
                                                         </Column>
                                                         <Column id="colNombreProyecto" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="txtNombreProyecto" text="Nombre Proyecto" />
+                                                            <Text id="txtNombreProyecto" text="Nombre Proyecto"/>
                                                         </Column>
                                                         <Column id="colDescripcion" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="txtDescripcion" text="Descripción" />
+                                                            <Text id="txtDescripcion" text="Descripción"/>
                                                         </Column>
                                                         <Column id="colArea" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="txtArea" text="Área" />
+                                                            <Text id="txtArea" text="Área"/>
                                                         </Column>
                                                         <Column id="colJefeProyecto">
-                                                            <Text id="txtJefeProyecto" text="Jefe de Proyecto" />
+                                                            <Text id="txtJefeProyecto" text="Jefe de Proyecto"/>
                                                         </Column>
                                                         <Column id="colEstado" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
-                                                            <Text id="txtEstado" text="Estado" />
+                                                            <Text id="txtEstado" text="Estado"/>
                                                         </Column>
                                                         <Column id="colEstado1" hAlign="End">
-                                                            <Text id="txtButtons" text="" />
+                                                            <Text id="txtButtons" text=""/>
                                                         </Column>
                                                     </columns>
                                                     <items>
                                                         <ColumnListItem id="cliItem">
                                                             <cells>
-                                                                <ObjectIdentifier id="objIdentifier" title="{ListaCdo>Name}" text="{DatosProyect>Fechainicio}" />
-                                                                <Text id="txtCellCodigo" text="{codigoProyect}" />
-                                                                 <ObjectIdentifier id="nombre34" title="{nameProyect}" />
-                                                                <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}" />
-                                                                <Text id="txtCellArea" text="{Area/NombreArea}" />
-                                                                <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}" />
+                                                        
+                                                                 <ObjectIdentifier id="txtFechai" title="{path: 'Fechainicio', formatter: '.formatDate'}"/>
+                                                                <Text id="txtCellCodigo" text="{codigoProyect}"/>
+                                                                 <ObjectIdentifier id="nombre34" title="{nameProyect}"/>
+                                                                <Text id="txtCellDescripcion" text="{ListaCdo>Descripcion}"/>
+                                                                <Text id="txtCellArea" text="{Area/NombreArea}"/>
+                                                                <Text id="txtCellJefeProyecto" text="{jefeProyectID/name}"/>
                                                     
-                                                                <ObjectStatus id="objStatus" text="Pendiente" state="Warning" />
+                                                                <ObjectStatus id="objStatus" text="{Estado}" state="Warning"/>
                                                                 
 
 
 
                                                                 <HBox id="fff">
-                                                            <Button  id="butn34"
-                                                                        icon="sap-icon://edit"
-                                                                        press="onEditPress">
+                                                            <Button id="butn34" icon="sap-icon://edit" press="onEditPress">
                                                                         <customData>
-                                                                            <core:CustomData
-                                                                            xmlns:core="sap.ui.core"
-                                                                            key="projectId"
-                                                                            value="{ID}" />
+                                                                            <core:CustomData xmlns:core="sap.ui.core" key="projectId" value="{ID}"/>
                                                                         </customData>
                                                                         </Button>                                                                
                                                                         
-                                                        <Button id="ww" icon="sap-icon://delete" press="onDeletePress" >
+                                                        <Button id="ww" icon="sap-icon://delete" press="onDeletePress">
 
                                                                 <customData>
-                                                            <core:CustomData
-                                                                xmlns:core="sap.ui.core"
-                                                                key="projectId"
-                                                                value="{ID}" />
+                                                            <core:CustomData xmlns:core="sap.ui.core" key="projectId" value="{ID}"/>
                                                         </customData>
                                                             </Button>
+
+                                                                <items>
+
+                                                                    <Button xmlns="sap.m"  icon="sap-icon://activity-2" text=""  tooltip="Proceso Solicitud" id="button0"  press="onActivityPress">
+
+                                                               <customData>
+                                                               
+                                                               
+                                                          <core:CustomData xmlns:core="sap.ui.core"  id="mivop" key="nameProyect" value="{nameProyect}"/>
+
+                                                            <core:CustomData xmlns:core="sap.ui.core" key="projectId" value="{ID}"/>
+                                                        </customData>
+                                                            </Button>
+
+                                                                </items>
 
                                                                 </HBox>
 
@@ -123,70 +130,141 @@
                                                 </Table>
 
                                             </IconTabFilter>
-                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes" count="">
+                                            <IconTabFilter id="ma55" key="notes" icon="sap-icon://notes"  tooltip="Solicitudes Aprobadas" count="">
 
-                                                <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{ListaCdo>/listaCdo}" class="sapFDynamicPageAlignContent" width="auto">
+                                                <Table id="idProductsTable" sticky="HeaderToolbar,ColumnHeaders" inset="false" items="{/DatosProyect}" class="sapFDynamicPageAlignContent aprobado" width="auto">
                                                     <headerToolbar>
                                                         <Toolbar id="d">
-                                                            <Title id="d2" text="Lista De Solicitudes" level="H2" />
+                                                            <Title id="d2" text="Lista De Solicitudes" level="H2"/>
+                                                            <SearchField id="searchField2" liveChange="onSearchApro"  class="sapUiLargeMargin" placeholder="Buscar por Nombre de Proyecto" width="30%"/>
+
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
                                                         <Column id="ud" width="12em">
-                                                            <Text id="2d" text="Fecha" />
+                                                            <Text id="2d" text="Fecha"/>
                                                         </Column>
                                                         <Column id="22d" width="12em">
-                                                            <Text id="21d" text="Codigo Proyecto" />
+                                                            <Text id="21d" text="Codigo Proyecto"/>
                                                         </Column>
                                                         <Column id="d87" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="d00" text="Nombre Proyecto" />
+                                                            <Text id="d00" text="Nombre Proyecto"/>
                                                         </Column>
                                                         <Column id="d4" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="dkh" text="Descripcion" />
+                                                            <Text id="dkh" text="Descripcion"/>
                                                         </Column>
                                                         <Column id="d34" minScreenWidth="Tablet" demandPopin="true">
-                                                            <Text id="dh" text="Area" />
+                                                            <Text id="dh" text="Area"/>
                                                         </Column>
                                                         <Column id="d34h" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
-                                                            <Text id="dhh" text="Jefe de Proyecto" />
+                                                            <Text id="dhh" text="Jefe de Proyecto"/>
                                                         </Column>
                                                         <Column id="dnn" hAlign="End">
-                                                            <Text id="dass" text="Estado" />
+                                                            <Text id="dass" text="Estado"/>
                                                         </Column>
                                                     </columns>
                                                     <items>
                                                         <ColumnListItem id="q111d">
                                                             <cells>
-                                                                <ObjectIdentifier id="1234d" title="{Name}" text="{ListaCdo>fecha}" />
-                                                                <Text id="2333d" text="{ListaCdo>Codigo}" />
-                                                                <Text id="00" text="{ListaCdo>NombreProyec}" />
-                                                                <Text id="0" text="{ListaCdo>Descripcion}" />
-                                                                <Text id="20" text="{ListaCdo>Area}" />
-                                                                <Text id="210" text="{ListaCdo>Jefe Proyecto}" />
+                                                                <ObjectIdentifier id="1234d" title="{path: 'Fechainicio', formatter: '.formatDate'}"/>
+                                                                <Text id="2333d" text="{codigoProyect}"/>
+                                                                <Text id="00" text="{nameProyect}"/>
+                                                                <Text id="0" text=""/>
+                                                                <Text id="20" text="{Area/NombreArea}"/>
+                                                                <Text id="210" text="{jefeProyectID/name}"/>
 
-                                                                <ObjectStatus id="status02" text="{ListaCdo>Estado}" state="Success" />
+                                                                <ObjectStatus id="status02" text="{Estado}" state="Success"/>
 
                                                             </cells>
                                                         </ColumnListItem>
                                                     </items>
                                                 </Table>
+
                                             </IconTabFilter>
-                                            <IconTabFilter id="ma77" key="people" icon="sap-icon://group">
-                                                <Text id="ma66" text="People content goes here ..." />
+                                            <IconTabFilter id="ma77" key="people"  tooltip="Seguimiento de Proceso" icon="sap-icon://process" >
+         <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel5887540">
+                              
+                                            <headerToolbar>
+                              
+                                                <Toolbar id="toolbar1_1728554177158">
+                              
+                                                    <Title id="idTitleProceso" text="Proceso"/>
+                              
+                                                    <ToolbarSpacer id="jdfkjsdfs"/>
+                              
+                                                    <Button id="kfsldkfjwo" icon="sap-icon://settings"/>
+                              
+                                                    </Toolbar>
+                              
+                                                
+                              
+                                            </headerToolbar>
+                              
+                                            <content>
+                              
+                                                <Text text="Proceso de Solictud" id="text1881"/>
+ 
+    <suite:ProcessFlow id="processflow1" nodePress="onNodePress">
+    <suite:nodes>
+        <!-- Nodo principal -->
+        <suite:ProcessFlowNode id="mainNode" nodeId="0" laneId="0" title="{nameProyect}" titleAbbreviation="SO 1" isTitleClickable="false" state="Positive" stateText="En Progreso" texts="" children="1"/>
+
+        <!-- Nodo secundario: "Pendiente de Aprobación" -->
+        <suite:ProcessFlowNode id="approvalNode" nodeId="1" laneId="1" title="Pendiente de Aprobación" titleAbbreviation="PA" isTitleClickable="false" state="Neutral" stateText="Esperando Aprobación" texts="" children="2"/>
+
+        <!-- Nodo secundario: "Revisión de Basis" -->
+        <suite:ProcessFlowNode id="basisNode" nodeId="2" laneId="2" title="Nota de Basis" titleAbbreviation="NB" isTitleClickable="false" state="Negative" stateText="Revisión Necesaria" texts="Nota adicional sobre Basis" children="3"/>
+
+        <!-- Nodo final: "Aprobado" -->
+        <suite:ProcessFlowNode id="approvedNode" nodeId="3" laneId="8" title="Aprobado" titleAbbreviation="APR" isTitleClickable="false" state="Positive" stateText="Aprobación Completa" texts=""/>
+    </suite:nodes>
+
+    <!-- Definir las lanes -->
+    <suite:lanes>
+        <suite:ProcessFlowLaneHeader id="lane0" laneId="0" iconSrc="sap-icon://crm-service-manager" text="Solicitud CDO" position="0"/>
+        <suite:ProcessFlowLaneHeader id="lane1" laneId="1" iconSrc="sap-icon://approvals" text="Pendiente de Aprobación" position="1"/>
+        <suite:ProcessFlowLaneHeader id="lane2" laneId="2" iconSrc="sap-icon://notes" text="Requiere Basis/ TQ/ Factoria" position="2"/>
+        <suite:ProcessFlowLaneHeader id="lane3" laneId="3" iconSrc="sap-icon://testing" text="Revision PMO" position="3"/>
+        <suite:ProcessFlowLaneHeader id="lane4" laneId="4" iconSrc="sap-icon://factory" text="Aprobado PMO" position="4"/>
+        <suite:ProcessFlowLaneHeader id="lane5" laneId="5" iconSrc="sap-icon://calendar" text="Revision Control de Gestion" position="5"/>
+        <suite:ProcessFlowLaneHeader id="lane6" laneId="6" iconSrc="sap-icon://accept" text="Aprobado de Gesion" position="6"/>
+        <suite:ProcessFlowLaneHeader id="lane8" laneId="8" iconSrc="sap-icon://message-error" text="Revision Direccion" position="7"/>
+        <suite:ProcessFlowLaneHeader id="lane9" laneId="9" iconSrc="sap-icon://payment-approval" text="Aprobación Dirección" position="8"/>
+    </suite:lanes>
+</suite:ProcessFlow>
+
+
+
+                                            </content>
+                              
+                                            </Panel>
+	 
+
+                                                
                                             </IconTabFilter>
                                         </items>
+                              
+                                    <content>
+                               
+                                       
+                              
+                                    </content>
+                              
                                     </IconTabBar>
                                 </headerContainer>
+
+                                
                             </ObjectHeader>
                         </items>
                     </VBox>
+                    
                 </content>
 
                 <footer>
                     <OverflowToolbar id="toolbar1">
-                        <ToolbarSpacer id="22" />
+                        <ToolbarSpacer id="22"/>
 
-                        <Button id="33" type="Accept" text="Accept" press="onNavToView1" />
+                        <Button id="33" type="Accept" text="Nueva Solicitud" press="onNavToView1"/>
                     </OverflowToolbar>
                 </footer>
             </Page>
