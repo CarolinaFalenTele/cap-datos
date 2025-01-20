@@ -2,3 +2,25 @@ specVersion: "2.5"
 metadata:
   name: project1
 type: application
+server:
+  customMiddleware:
+  - name: fiori-tools-proxy
+    afterMiddleware: compression
+    configuration:
+      ignoreCertError: false
+      backend: 
+      - path: odata
+      - url: https://telefonica-global-technology--s-a--test-cc-rgqm5xxg-spa7f3249af.cfapps.eu20-001.hana.ondemand.com
+      - destination: srv-api
+      
+      ui5:
+      path:
+      - /resources
+      - /test-resources
+      url: https://ui5.sap.com
+      version:
+  - name: fiori-tools-appreload
+    afterMiddleware: compression
+    configuration:
+     port: 35729
+     path: webapp

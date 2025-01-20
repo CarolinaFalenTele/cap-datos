@@ -7,9 +7,11 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
-    "@sap/approuter": "^17.1.0",
-    "@sap/cds": "^8.2.3",
+    "@sap-cloud-sdk/connectivity": "^3.24.0",
+    "@sap/approuter": "^18.0.1",
     "@sap/cds-hana": "^2.0.0",
+    "@sap/hana-client": "^2",
+    "@sap/xsenv": "^5.4.0",
     "@sap/xssec": "^4",
     "dotenv": "^16.4.5",
     "express": "^4",
@@ -18,6 +20,7 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
+    "@sap/cds": "^8.6.1",
     "@sap/cds-dk": "^8.2.3",
     "@sap/eslint-plugin-cds": "^3.0.5",
     "@sap/hdi-deploy": "^5.3.2",
@@ -27,20 +30,20 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "deploy": "cf deploy mta_archives/datosCdo_1.0.0.mtar -f --delete-services",
+    "dev": "cd app/router && node node_modules/@sap/approuter/approuter.js",
     "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy datosCdo --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive"
   },
   "cds": {
     "requires": {
+      "db": "hana-cloud",
       "auth": "xsuaa",
-      "db": "hana",
-      "[production]": {
-        "db": "hana",
-        "auth": "xsuaa"
-      },
       "html5-repo": true
+    },
+    "hana": {
+      "deploy-format": "hdbtable"
     },
     "sql": {
       "native_hana_associations": false

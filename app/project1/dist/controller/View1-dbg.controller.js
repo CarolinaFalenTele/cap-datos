@@ -169,7 +169,7 @@ sap.ui.define([
 
 
         // Construye la URL con el ID correctamente escapado
-        var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+        var sUrl = `./odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
 
         try {
           const response = await fetch(sUrl, {
@@ -1961,7 +1961,7 @@ sap.ui.define([
 
           // Si hay un ID, es una actualización (PATCH)
           if (sProjectID) {
-            response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectID})`, {
+            response = await fetch(`./odata/v4/datos-cdo/DatosProyect(${sProjectID})`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json"
@@ -1980,7 +1980,7 @@ sap.ui.define([
 
           } else {
             // Si no hay ID, es una creación (POST)
-            response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+            response = await fetch("./odata/v4/datos-cdo/DatosProyect", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"

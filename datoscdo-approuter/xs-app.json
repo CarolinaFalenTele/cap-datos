@@ -1,0 +1,19 @@
+{
+  "welcomeFile": "project1",
+  "authenticationMethod": "route",
+  "routes": [
+    {
+      "source" : "^/odata/v4/datos-cdo/(.*)$",
+      "target": "$1",
+      "destination": "srv-api",
+      "csrfProtection": true,
+      "authenticationType": "none"
+    },
+    {
+      "source" : "^(.*)$",
+      "target": "$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}

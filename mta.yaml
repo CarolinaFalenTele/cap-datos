@@ -3,178 +3,135 @@ ID: datosCdo
 description: A simple CAP project.
 version: 1.0.0
 modules:
-  - name: datosCdo-srv
-    type: nodejs
-    path: gen/srv
-    requires:
-      - name: datosCdo-db
-      - name: DatosCdo-auth
-    provides:
-      - name: srv-api
-        properties:
-          srv-url: ${default-url}
-    parameters:
-      buildpack: nodejs_buildpack
-      readiness-health-check-http-endpoint: /health
-      readiness-health-check-type: http
-    build-parameters:
-      builder: npm
-  - name: datosCdo-db-deployer
-    type: hdb
-    path: gen/db
-    requires:
-      - name: datosCdo-db
-    parameters:
-      buildpack: nodejs_buildpack
-  - name: datosCdo-destination-content
-    type: com.sap.application.content
-    requires:
-      - name: datosCdo-destination-service
-        parameters:
-          content-target: true
-      - name: datosCdo_html_repo_host
-        parameters:
-          service-key:
-            name: datosCdo_html_repo_host-key
-      - name: DatosCdo-auth
-        parameters:
-          service-key:
-            name: DatosCdo-auth-key
-    parameters:
-      content:
-        instance:
-          destinations:
-            - Name: datosCdo2_datosCdo_html_repo_host
-              ServiceInstanceName: datosCdo-html5-app-host-service
-              ServiceKeyName: datosCdo_html_repo_host-key
-              sap.cloud.service: datosCdo2
-            - Authentication: OAuth2UserTokenExchange
-              Name: datosCdo2_DatosCdo_auth
-              ServiceInstanceName: DatosCdo-auth
-              ServiceKeyName: DatosCdo-auth-key
-              sap.cloud.service: datosCdo2
-          existing_destinations_policy: ignore
-    build-parameters:
-      no-source: true
-  - name: datosCdo-app-content
-    type: com.sap.application.content
-    path: .
-    requires:
-      - name: datosCdo_html_repo_host
-        parameters:
-          content-target: true
-    build-parameters:
-      build-result: resources
-      requires:
-        - artifacts:
-            - project1.zip
-          name: project1
-          target-path: resources/
-  - name: project1
-    type: html5
-    path: app/project1
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - npm install
-        - npm run build:cf
-        - npm ci
-        - npm run build
-      supported-platforms:
-        []
+- name: datoscdo-approuter
+  type: approuter.nodejs
+  path: datoscdo-approuter
+  requires:
+  - name: datosCdo_html_repo_runtime
+  - name: uaa_datosCdo
+  - name: dest_datosCdo
+  - name: conn_datosCdo
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      timeout: 60000
+      url: ~{srv-url}
+  parameters:
+    disk-quota: 512M
+    memory: 512M
 
-  - name: datosCdo
-    type: approuter.nodejs
-    path: app/router
-    parameters:
-      keep-existing-routes: true
-      disk-quota: 256M
-      memory: 256M
-    requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api # must be used in xs-app.json as well
-          url: ~{srv-url}
-          forwardAuthToken: true
-      - name: DatosCdo-auth
-      - name: datosCdo-html5-runtime
 
-  - name: datosCdo-app-deployer
-    type: com.sap.application.content
-    path: gen
-    requires:
-      - name: datosCdo-app-deployer
-        parameters:
-          content-target: true
-      - name: datosCdo_html_repo_host
-    build-parameters:
-      build-result: app/
-      requires:
-        - name: project1
-          artifacts:
-            - project1.zip
-          target-path: app/
-resources:
+
+    
+- name: datosCdo-srv
+  type: nodejs
+  path: gen/srv
+  requires:
   - name: datosCdo-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
-  - name: DatosCdo-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      config:
-        tenant-mode: dedicated
-        xsappname: datosCdo
-      path: ./xs-security.json
-      service: xsuaa
-      service-plan: application
-  - name: datosCdo-destination-service
-    type: org.cloudfoundry.managed-service
-    parameters:
-      config:
-        HTML5Runtime_enabled: true
-        init_data:
-          instance:
-            destinations:
-              - Authentication: NoAuthentication
-                Name: ui5
-                ProxyType: Internet
-                Type: HTTP
-                URL: https://ui5.sap.com
-              - Authentication: NoAuthentication
-                HTML5.DynamicDestination: true
-                HTML5.ForwardAuthToken: true
-                Name: datosCdo-srv-api
-                ProxyType: Internet
-                Type: HTTP
-                URL: ~{srv-api/srv-url}
-            existing_destinations_policy: update
-        version: 1.0.0
-      service: destination
-      service-name: datosCdo-destination-service
-      service-plan: lite
-    requires:
-      - name: srv-api
+  - name: uaa_datosCdo
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    memory: 512M
+    readiness-health-check-http-endpoint: /health
+    readiness-health-check-type: http
+  build-parameters:
+    builder: npm
+
+- name: datosCdo-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: datosCdo-db
+  parameters:
+    buildpack: nodejs_buildpack
+
+
+- name: datosCdo_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
   - name: datosCdo_html_repo_host
-    type: org.cloudfoundry.managed-service
     parameters:
-      service: html5-apps-repo
-      service-name: datosCdo-html5-app-host-service
-      service-plan: app-host
-  - name: datosCdo-html5-runtime
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: html5-apps-repo
-      service-plan: app-runtime
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - project1.zip
+      name: project1
+      target-path: resources/
+
+
+
+- name: project1
+  type: html5
+  path: app/project1
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    - npm ci
+    - npm run build
+    supported-platforms: []
+
+
+
+resources:
+- name: datosCdo-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+
+
+
+- name: datosCdo_html_repo_runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+
+
+- name: datosCdo_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+
+
+
+- name: dest_datosCdo
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: destination
+    service-plan: lite
+
+
+
+- name: conn_datosCdo
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: connectivity
+    service-plan: lite
+
+
+
+- name: uaa_datosCdo
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: datosCdo-xsuaa-service
+    service-plan: application
+
 parameters:
   deploy_mode: html5-repo
-  enable-parallel-deployments: true
-build-parameters:
-  before-all:
-    - builder: custom
-      commands:
-        - npm ci
-        - npx cds build --production
+  

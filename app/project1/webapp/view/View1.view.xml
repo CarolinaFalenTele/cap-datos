@@ -2795,7 +2795,7 @@
 
                                                     <Text xmlns="sap.m" text="__________________" id="text66_1724756152781"/>
 
-                                                    <Input xmlns="sap.m" value="" id="totalRecuInter" description=" Gastos de Viaje" editable="false" width="auto" fieldWidth="45%"/>
+                                                    <Input xmlns="sap.m" value="" id="totalRecuInter" description="Recursos Internos" editable="false" width="auto" fieldWidth="45%"/>
 
 
                                                     
@@ -3014,8 +3014,8 @@
             <Input xmlns="sap.m" value="" id="totalSubtotal" description="Subtotal" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="5.00" id="input2_172475612" description="Coste Estructura%" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
-            <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen sobre ingresos"  change=".onColumnTotales" width="auto" fieldWidth="45%"/>
-            <Input xmlns="sap.m" value="" id="input2_1756121205" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen sobre ingresos %" change=".onColumnTotales" width="auto" fieldWidth="45%"/>
+            <Input xmlns="sap.m" value="" id="input2_1756121205" description="Margen sobre ingresos %" editable="false" width="auto" fieldWidth="45%"/>
             <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false"/>
         </items>
     </VBox>                    

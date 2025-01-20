@@ -480,5 +480,59 @@ entity ClientFactura {
 entity tableProcessFlow {
   key ID              : UUID @cds.auto;
       estado          : String;
-      datosProyect_ID : UUID;
+    datosProyect_ID : UUID;
+};
+
+entity PerfilTotal {
+    key ID              : UUID @cds.auto;
+    totalJorRI : Integer;
+    totalJorCE : Integer;
+    totalJorRE : Integer;
+      Total : Integer;
+
+};
+
+entity  RecurInterTotal {
+  key ID              : UUID @cds.auto;
+  servicios              : Integer;
+  OtrosServicios    : Integer;
+  GastosdeViaje : Integer;
+  Total : Integer;
+
+};
+
+entity ConsuExterTotal {
+  key ID : UUID @cds.auto;
+  servicios              : Integer;
+  OtrosServicios    : Integer;
+  GastosdeViaje : Integer;
+  Total : Integer;
+};
+
+
+entity  RecuExterTotal {
+  key ID              : UUID @cds.auto;
+  servicios              : Integer;
+  OtrosServicios    : Integer;
+  GastosdeViaje : Integer;
+  Total : Integer;
+
+};
+
+entity InfraestrLicencia{
+    key ID : UUID @cds.auto;
+    totalInfraestruc : Integer;
+    totalLicencia : Integer; 
+}
+
+
+entity ResumenCostesTotal{
+  key ID : UUID @cds.auto;
+    Subtotal: Integer;
+    CosteEstruPorce : Integer;
+    totalLicencias : Integer;
+    Costeestructura  : Integer;
+    Margeingresos  : Integer;
+
+
 }

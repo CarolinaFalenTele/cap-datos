@@ -1,4 +1,5 @@
-console.log("HOLAAAAAAAAAAAAA")
+console.log("HOLAAAAAAAAAAAAA");
+
 module.exports = cds.service.impl(async function () {
   console.log("Servicio cargado correctamente");
 

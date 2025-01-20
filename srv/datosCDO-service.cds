@@ -2,8 +2,15 @@ using { db.datos as datos } from '../db/schema';
 
 service DatosCDOService
 {
+
+/*@requires           : 'authenticated-user'
+@cds.redirection.target
+@odata.draft.enabled: true*/
+
     entity DatosProyect as
         projection on datos.DatosProyect;
+
+//@requires: 'Admin'
 
     entity Jefeproyect as
         projection on datos.Jefeproyect;
