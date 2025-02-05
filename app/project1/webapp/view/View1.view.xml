@@ -49,12 +49,12 @@
                                     <Text text="Rellenar" id="txt_rellena" class="miTitulo myText2"/>
                                     <FlexBox width="100%" id="flx_1">
                                         <items>
-                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1100px" headerText="Datos Proyecto">
+                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="sapUiSmallMargin onAfterShow" width="1330px" headerText="Datos Proyecto">
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1">
                                                         <cells>
-                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto asignado por la PMO"/>
-                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud"/>
+                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
+                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud" showSuggestion="true"/>
 
                                                             <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false">
                                                                 <items>
@@ -122,7 +122,7 @@
                                     </FlexBox>
                                     <FlexBox width="100%" id="box1">
                                         <items>
-                                            <Table ariaLabelledBy="__xmlview0--label4 __label10" noDataText="Drop column list items here and columns in the area above" id="table4" class="sapUiTinyMargin" width="1150px">
+                                            <Table ariaLabelledBy="__xmlview0--label4 __label10" noDataText="Drop column list items here and columns in the area above" id="table4" class="sapUiTinyMargin" width="1330px">
                                                 <items>
                                                     <ColumnListItem type="Active" id="item8">
                                                         <cells>
@@ -202,7 +202,7 @@
                                     </FlexBox>
                                     <FlexBox width="100%" id="box0">
                                         <items>
-                                            <Table ariaLabelledBy="__label1" noDataText="Drop column list items here and columns in the area above" id="table1_1714405548914" class="sapUiTinyMargin" width="1150px">
+                                            <Table ariaLabelledBy="__label1" noDataText="Drop column list items here and columns in the area above" id="table1_1714405548914" class="sapUiTinyMargin" width="1330px">
                                                 <items>
                                                     <ColumnListItem type="Active" id="item1_1714405548913">
                                                         <cells>

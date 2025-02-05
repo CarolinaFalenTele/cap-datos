@@ -3,11 +3,11 @@
   "authenticationMethod": "route",
   "routes": [
     {
-      "source" : "^/odata/v4/datos-cdo/(.*)$",
+      "source": "^/(.*)$",
       "target": "$1",
       "destination": "srv-api",
       "csrfProtection": true,
-      "authenticationType": "none"
+      "authenticationType": "xsuaa"
     },
     {
       "source" : "^(.*)$",

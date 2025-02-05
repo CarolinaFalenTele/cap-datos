@@ -1,81 +1,5 @@
 namespace db.datos;
 
-type projectVertical     : String enum {
-  Appian;
-  O365;
-  RPAS;
-  BMC;
-  CELONIS;
-  SAP;
-  SAP_G2C;
-  SSFF;
-  SFDC;
-  Otros;
-};
-
-type projectClientNuevo  : String enum {
-  Si_en_TGT;
-  Si_en_Vertical;
-  No;
-};
-
-type ProyectNaturaleza   : String enum {
-  CAPEX;
-  OPEX;
-  Proyecto_Servicio_a_Cliente_Externo;
-  Opex_Servicios;
-};
-
-
-type proyectEjecucionVia : String enum {
-  Si;
-  No;
-  Mixto;
-};
-
-type proyectAMreceptor   : String enum {
-  No_Aplica;
-  AM_TSA;
-  AM_BI;
-  COE_Salesforce;
-  RoD;
-  Telesap;
-  Vicky;
-  GlobalSAP_AM_TSA;
-  Otros;
-};
-
-type proyecTipoCompra    : String enum {
-  General;
-  Ordinaria;
-  Complementaria_compra_general;
-  Derivada_Compra_General;
-  NO_MCT;
-  Otros;
-};
-
-type proyectTipoServ     : String enum {
-  Proyecto_Implementacion;
-  Soporte_y_mantenimiento;
-  Consultoria;
-};
-
-
-type arrGastosdeViaje    : array of {
-  Vertical       : projectVertical;
-  TipoServicio   : proyectTipoServ;
-  ConceptoOferta : String;
-};
-
-type infrestructura      : array of {
-  Vertical       : projectVertical;
-  ConceptoOferta : String;
-};
-
-type licencias           : array of {
-  Vertical       : projectVertical;
-  ConceptoOferta : String;
-};
 
 entity Jefeproyect {
   key ID        : UUID @cds.auto;
@@ -301,7 +225,6 @@ entity ConsumoExternos {
       year6               : Integer;
       total               : Integer;
       totalC              : Integer;
-      GastosdeViaje       : arrGastosdeViaje;
       tipoServicio        : Association to TipoServicio;
       Vertical            : Association to Vertical;
       PerfilConsumo       : Association to PerfilConsumo;
@@ -363,7 +286,6 @@ entity RecursosExternos {
       year6              : Integer;
       total              : Integer;
       totalR             : Integer;
-      GastosdeViaje      : arrGastosdeViaje;
       tipoServicio       : Association to TipoServicio;
       Vertical           : Association to Vertical;
       PerfilServicio     : String;

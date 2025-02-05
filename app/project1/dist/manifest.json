@@ -7,9 +7,15 @@
       "bundleUrl": "i18n/i18n.properties",
       "supportedLocales": [
         "",
+        "en",
         "es"
       ]
     },
+    "fallbackLocale": "es",
+    "supportedLocales": [
+      "",
+      "es"
+    ],
     "applicationVersion": {
       "version": "0.0.1"
     },
@@ -89,6 +95,7 @@
           "bundleName": "project1.i18n.i18n",
           "supportedLocales": [
             "",
+            "en",
             "es"
           ]
         }

@@ -1,81 +1,102 @@
+const cds = require('@sap/cds');
+
 console.log("HOLAAAAAAAAAAAAA");
 
 module.exports = cds.service.impl(async function () {
   console.log("Servicio cargado correctamente");
 
-  const { DatosProyect, ProveedoresC, RecursosExternos, LicenciasCon, otrosConceptos, ValorMensuReInter, GastoViajeRecExter, serviRecurExter, planificacion, Facturacion, ClientFactura, RecursosInternos, otrosGastoRecu, otrosRecursos, ConsumoExternos, GastoViajeConsumo, otrosServiciosConsu
-
+  const {
+    DatosProyect,
+    ProveedoresC,
+    RecursosExternos,
+    LicenciasCon,
+    otrosConceptos,
+    ValorMensuReInter,
+    GastoViajeRecExter,
+    serviRecurExter,
+    planificacion,
+    Facturacion,
+    ClientFactura,
+    RecursosInternos,
+    otrosGastoRecu,
+    otrosRecursos,
+    ConsumoExternos,
+    GastoViajeConsumo,
+    otrosServiciosConsu
   } = this.entities;
 
   this.on('CREATE', 'DatosProyect', async (req) => {
+    console.log("🚀 Evento CREATE DatosProyect ejecutado.");
+    console.log("📌 Datos recibidos:", JSON.stringify(req.data, null, 2));
 
-    const { codigoProyect, nameProyect, spluriAnual, funcionalString, sClienteFac, sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, AmReceptor_ID, Vertical_ID, clienteFuncional_ID } = req.data;
+    const {
+        codigoProyect, nameProyect, spluriAnual, funcionalString, sClienteFac,
+        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID,
+        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID,
+        AmReceptor_ID, Vertical_ID, clienteFuncional_ID
+    } = req.data;
 
+    if (!codigoProyect || !nameProyect) {
+        console.log("❌ Faltan campos obligatorios");
+        return req.reject(400, "Faltan campos obligatorios: codigoProyect o nameProyect.");
+    }
 
     try {
+        console.log("✅ Insertando en la base de datos...");
 
-      const result = await INSERT.into(DatosProyect).entries({
-        codigoProyect,
-        nameProyect,
-        spluriAnual,
-        datosExtra,
-        funcionalString,
-        sClienteFac,
-        sMultiJuri, // Este campo aparece duplicado, usa solo uno
-        objetivoAlcance,
-        AsuncionesyRestricciones,
-        Naturaleza_ID,
-        Iniciativa_ID,
-        Area_ID,
-        jefeProyectID_ID,
-        Seguimiento_ID,
-        EjecucionVia_ID,
-        AmReceptor_ID,
-        Vertical_ID,
-        clienteFuncional_ID
-      });
-      
+        // Realizar la inserción
+        await INSERT.into(DatosProyect).entries({
+            codigoProyect,
+            nameProyect,
+            spluriAnual,
+            funcionalString,
+            sClienteFac,
+            sMultiJuri,
+            objetivoAlcance,
+            AsuncionesyRestricciones,
+            Naturaleza_ID,
+            Iniciativa_ID,
+            Area_ID,
+            jefeProyectID_ID,
+            Seguimiento_ID,
+            EjecucionVia_ID,
+            AmReceptor_ID,
+            Vertical_ID,
+            clienteFuncional_ID
+        });
 
+        console.log("🎉 Inserción exitosa.");
 
-      //const datosProyect_ID = result.ID;
+        // 🔥 Obtener el ID recién generado
+        const newRecord = await SELECT.one.from(DatosProyect).where({ codigoProyect });
 
+        if (!newRecord || !newRecord.ID) {
+            console.error("⚠️ No se pudo recuperar el ID después de la inserción.");
+            return req.reject(500, "No se pudo recuperar el ID después de la inserción.");
+        }
 
-      return result;
+        console.log("📌 ID generado:", newRecord.ID);
+
+        return { ID: newRecord.ID, mensaje: "Inserción exitosa" };
 
     } catch (error) {
+        console.error("❌ ERROR en CREATE DatosProyect:", error);
 
-      req.reject(400, 'Error al insertar los dato');
+        if (error.message.includes("duplicate key")) {
+            return req.reject(400, "Error: Código de proyecto duplicado.");
+        }
+        if (error.message.includes("constraint violation")) {
+            return req.reject(400, "Error: Restricción de clave foránea fallida.");
+        }
+        if (error.message.includes("table") && error.message.includes("not found")) {
+            return req.reject(500, "Error: La tabla referenciada no existe.");
+        }
 
+        return req.reject(500, `Error interno en CREATE DatosProyect: ${error.message}`);
     }
-
-  });
-
+});
 
 
-
-  this.on('planificacion', async (req) => {
-    const { chartData, projectId } = req.data;
-
-    if (!projectId) {
-      req.error(400, 'projectId is required');
-      return;
-    }
-
-
-    // Insertar cada planificación en la base de datos
-    for (let data of chartData) {
-      await INSERT.into(planificacion).entries({
-        ID: cds.utils.uuid(),
-        hito: data.hito,
-        fecha_inicio: data.fecha_inicio,
-        fecha_fin: data.fecha_fin,
-        duracion: data.duracion,
-        datosProyect_ID: projectId
-      })
-    }
-
-    return 'Planificación insertada correctamente'
-  });
 
 
   this.on('ProveedoresC', async (req) => {

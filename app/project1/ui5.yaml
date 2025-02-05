@@ -10,7 +10,7 @@ server:
       ignoreCertError: false
       backend: 
       - path: odata
-      - url: https://telefonica-global-technology--s-a--test-cc-rgqm5xxg-spa7f3249af.cfapps.eu20-001.hana.ondemand.com
+      - url: https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-7eb07e72.cfapps.eu20-001.hana.ondemand.com
       - destination: srv-api
       
       ui5:
