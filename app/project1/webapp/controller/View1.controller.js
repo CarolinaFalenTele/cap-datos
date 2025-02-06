@@ -1896,8 +1896,9 @@ sap.ui.define([
         const sDatosExtra = this.byId("area0").getValue();
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
+        const sIPC = this.byId("input_ipc").getValue();
 
-        console.log(sClienteFunc);
+        console.log(sClienteFunc ,spluriAnual , sClienteFac , sMultiJuri);
 
         // Instanciar el formateador de fechas
         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
@@ -1959,7 +1960,7 @@ sap.ui.define([
           const oIconTabFilter = this.byId("idIniu");
           oIconTabFilter.setCount(errorCount);
           return; // Detener el proceso si hay errores
-          
+
         }// Prepara el payload// Prepara el payload
         const payload = {
           codigoProyect: scodigoProyect,
@@ -1983,6 +1984,7 @@ sap.ui.define([
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
           datosExtra: sDatosExtra,
+          IPC_apli : sIPC
 
         };
 

@@ -26,14 +26,14 @@ module.exports = cds.service.impl(async function () {
   } = this.entities;
 
   this.on('CREATE', 'DatosProyect', async (req) => {
-    console.log("🚀 Evento CREATE DatosProyect ejecutado.");
-    console.log("📌 Datos recibidos:", JSON.stringify(req.data, null, 2));
+    //console.log(" Evento CREATE DatosProyect ejecutado.");
+    console.log(" Datos recibidos:", JSON.stringify(req.data, null, 2));
 
     const {
-        codigoProyect, nameProyect, spluriAnual, funcionalString, sClienteFac,
+        codigoProyect, nameProyect, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
         sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID,
-        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID,
-        AmReceptor_ID, Vertical_ID, clienteFuncional_ID
+        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra,
+        AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin
     } = req.data;
 
     if (!codigoProyect || !nameProyect) {
@@ -48,11 +48,16 @@ module.exports = cds.service.impl(async function () {
         await INSERT.into(DatosProyect).entries({
             codigoProyect,
             nameProyect,
-            spluriAnual,
+            pluriAnual,
             funcionalString,
-            sClienteFac,
+            multijuridica,
+            clienteFacturacion,
+            IPC_apli,
             sMultiJuri,
             objetivoAlcance,
+            datosExtra,
+            Fechainicio,
+            FechaFin,
             AsuncionesyRestricciones,
             Naturaleza_ID,
             Iniciativa_ID,
@@ -62,12 +67,14 @@ module.exports = cds.service.impl(async function () {
             EjecucionVia_ID,
             AmReceptor_ID,
             Vertical_ID,
-            clienteFuncional_ID
+            Estado,
+            clienteFuncional_ID,
+            costeEstructura
         });
 
         console.log("🎉 Inserción exitosa.");
 
-        // 🔥 Obtener el ID recién generado
+        //  Obtener el ID recién generado
         const newRecord = await SELECT.one.from(DatosProyect).where({ codigoProyect });
 
         if (!newRecord || !newRecord.ID) {

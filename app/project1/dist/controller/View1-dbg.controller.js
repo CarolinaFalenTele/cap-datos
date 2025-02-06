@@ -1943,9 +1943,9 @@ sap.ui.define([
         // Validar cada campo
         validateField(this.byId("input0"), scodigoProyect, "Código del Proyecto");
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
-     //   validateField(this.byId("id_Cfactur"), sClienteFac, "Cliente de Facturación");
-     //   validateField(this.byId("int_clienteFun"), sClienteFunc, "Cliente Funcional");
-      //  validateField(this.byId("idNatu"), sSelectedKey, "Naturaleza");
+        //   validateField(this.byId("id_Cfactur"), sClienteFac, "Cliente de Facturación");
+        //   validateField(this.byId("int_clienteFun"), sClienteFunc, "Cliente Funcional");
+        //  validateField(this.byId("idNatu"), sSelectedKey, "Naturaleza");
 
 
         // Si hay errores, detener el envío
@@ -1959,11 +1959,31 @@ sap.ui.define([
           const oIconTabFilter = this.byId("idIniu");
           oIconTabFilter.setCount(errorCount);
           return; // Detener el proceso si hay errores
-        }// Prepara el payload
+          
+        }// Prepara el payload// Prepara el payload
         const payload = {
           codigoProyect: scodigoProyect,
           nameProyect: snameProyect,
-      
+          pluriAnual: spluriAnual,
+          funcionalString: sClienteFunc,
+          clienteFacturacion: sClienteFac,
+          multijuridica: sMultiJuri,
+          Naturaleza_ID: sSelectedKey,
+          Area_ID: sSelecKeyA,
+          Iniciativa_ID: sSelectKeyIni,
+          jefeProyectID_ID: sSelecKeyJe,
+          objetivoAlcance: sObjetivoAlcance,
+          AsuncionesyRestricciones: sAsunyRestric,
+          Vertical_ID: sSelectKeyVerti,
+          Fechainicio: sFechaIniFormatted,
+          FechaFin: sFechaFinFormatted,
+          Seguimiento_ID: sSelectKeySegui,
+          EjecucionVia_ID: sSelectKeyEjcu,
+          AmReceptor_ID: sSelectKeyAmrep,
+          clienteFuncional_ID: sSelectKeyClienNuevo,
+          Estado: "Pendiente",
+          datosExtra: sDatosExtra,
+
         };
 
         // Validar campos antes de hacer la llamada
@@ -1987,10 +2007,11 @@ sap.ui.define([
             method = "PATCH";
           }
 
+          // Realizamos la llamada al servicio
           response = await fetch(url, {
             method: method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
 
           // Detectar problemas en la respuesta
@@ -2011,24 +2032,36 @@ sap.ui.define([
             throw new Error(`HTTP ${response.status} - ${errorText}`);
           }
 
-          // Procesar respuesta
-          const result = await response.json();
-          const generatedId = result.ID || sProjectID;
-          console.log(`${method} exitoso. ID:`, generatedId);
+          // Procesar respuesta si es exitosa
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Respuesta completa de la API:", result);
 
-          // Llamadas en paralelo para mejorar rendimiento
-          await Promise.all([
-            this.inserChart(generatedId),
-            this.insertarProveedor(generatedId),
-            this.insertFacturacion(generatedId),
-            this.insertClientFactura(generatedId),
-            this.insertRecursosInternos(generatedId),
-            this.insertCosumoExterno(generatedId),
-            this.insertRecursoExterno(generatedId),
-            this.insertarOtrosConceptos(generatedId)
-          ]);
+            // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
+            const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
+            console.log("ID generado:", generatedId);
 
-          this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+            // Si el ID se generó correctamente, ejecutamos otras operaciones
+            if (generatedId) {
+              // Llamadas en paralelo para mejorar rendimiento
+              await Promise.all([
+                this.inserChart(generatedId),
+                this.insertarProveedor(generatedId),
+                this.insertFacturacion(generatedId),
+                this.insertClientFactura(generatedId),
+                this.insertRecursosInternos(generatedId),
+                this.insertCosumoExterno(generatedId),
+                this.insertRecursoExterno(generatedId),
+                this.insertarOtrosConceptos(generatedId),
+              ]);
+
+              // Navegar a la vista 'app' con el nuevo ID
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+            } else {
+              console.error("No se generó un ID válido.");
+              sap.m.MessageToast.show("Error: No se generó un ID válido.");
+            }
+          }
 
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
