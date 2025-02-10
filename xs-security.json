@@ -24,7 +24,8 @@
       "name": "Admin",
       "description": "generated",
       "scope-references": [
-        "uaa.Admin"
+        "uaa.Admin",
+        "DatosProyect.Create"
       ]
     }
   ],

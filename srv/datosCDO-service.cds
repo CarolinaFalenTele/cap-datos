@@ -9,7 +9,9 @@ service DatosCDOService  @(path:'/odata/v4/datos-cdo')
     entity DatosProyect as
         projection on datos.DatosProyect;
 
-
+    @restrict: [
+        { grant: ['CREATE', 'READ', 'UPDATE', 'DELETE'], to: 'authenticated-user' }
+    ]
     entity Jefeproyect as
         projection on datos.Jefeproyect;
 

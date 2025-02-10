@@ -5,11 +5,13 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "fallbackLocale": "es",
-    "supportedLocales": ["", "es"],
+    "supportedLocales": [
+      "",
+      "es"
+    ],
     "applicationVersion": {
       "version": "0.0.1"
     },
-
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "resources": "resources.json",

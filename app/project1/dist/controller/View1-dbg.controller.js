@@ -97,8 +97,7 @@ sap.ui.define([
           2029: 0,
         };
 
-
-        /// this.getTocken(); 
+        this.obtenerToken();
       },
 
 
@@ -1327,7 +1326,7 @@ sap.ui.define([
         //var oData = oModel.getData();
 
         if (!oData || !oData.value) {
-          console.error("Los datos del modelo son inválidos o no contienen 'value'.", oData);
+          console.log("Los datos del modelo son inválidos o no contienen 'value'.", oData);
           return;
         }
 
@@ -1398,7 +1397,7 @@ sap.ui.define([
         var oModel = oView.getModel("planning"); // Obtén el modelo 'planning' si es necesario
 
         if (!(oFechasModel instanceof sap.ui.model.json.JSONModel) || !oFechasModel.getData) {
-          console.error("El modelo 'fechasModel' no está definido.");
+          console.log("El modelo 'fechasModel' no está definido.");
           return;
         }
 
@@ -1425,7 +1424,7 @@ sap.ui.define([
               label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
             };
           } else {
-            console.warn("Fechas no válidas para la fase:", fechas);
+            sap.m.MessageToast.show("Fechas no válidas para la fase:", fechas);
             return null; // Devuelve null si las fechas no son válidas
           }
         }).filter(Boolean); // Filtra los elementos nulos
@@ -1873,12 +1872,38 @@ sap.ui.define([
         },*/
 
 
+      obtenerToken: async function (oEvent) {
+        let csrfToken;  // Definimos csrfToken con let
+
+        try {
+          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
+            method: "GET",
+            headers: {
+              "x-csrf-token": "Fetch"
+            },
+            credentials: "include"
+          });
+
+          csrfToken = response.headers.get("x-csrf-token"); // Extrae el token
+
+          if (!csrfToken) {
+            throw new Error("No se recibió el x-csrf-token");
+          }
+
+          console.log("TOKEN---->>>  " + csrfToken);  // Mueve esto aquí, después de obtener el token
+          this.onSave(csrfToken);  // Llama a onSave con el csrfToken
+
+        } catch (error) {
+          console.error("Error obteniendo el token: ", error);
+        }
+      },
 
 
 
       //-------------------------- METODO INSERTAR ----------------------
       // Definir el modelo OData
-      onSave: async function (oEvent) {
+      onSave: async function (csrfToken) {
+
         let errorCount = 0;
 
         const incompleteFields = [];
@@ -1896,8 +1921,9 @@ sap.ui.define([
         const sDatosExtra = this.byId("area0").getValue();
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
+        const sIPC = this.byId("input_ipc").getValue();
 
-        console.log(sClienteFunc);
+        console.log(sClienteFunc, spluriAnual, sClienteFac, sMultiJuri);
 
         // Instanciar el formateador de fechas
         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
@@ -1959,7 +1985,7 @@ sap.ui.define([
           const oIconTabFilter = this.byId("idIniu");
           oIconTabFilter.setCount(errorCount);
           return; // Detener el proceso si hay errores
-          
+
         }// Prepara el payload// Prepara el payload
         const payload = {
           codigoProyect: scodigoProyect,
@@ -1983,6 +2009,7 @@ sap.ui.define([
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
           datosExtra: sDatosExtra,
+          IPC_apli: sIPC
 
         };
 
@@ -1997,20 +2024,47 @@ sap.ui.define([
         console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
         try {
+
+          let oModel = this.getView().getModel();
+          let sServiceUrl = oModel.sServiceUrl;
+
           let response;
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
+
+          console.log("OMODEL --> " , oModel  , sServiceUrl ); 
 
           if (sProjectID) {
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
+
           }
+
+          // 1️⃣ Obtener el CSRF Token
+          let oTokenResponse = await fetch(sServiceUrl, {
+            method: "GET",
+            headers: { "x-csrf-token": "Fetch" }
+          }); if (!oTokenResponse.ok) {
+            throw new Error("Error al obtener el CSRF Token");
+          }
+
+          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+          if (!sCsrfToken) {
+            throw new Error("No se recibió un CSRF Token");
+          }
+
+
+          console.log("✅ CSRF Token obtenido:", sCsrfToken);
+
 
           // Realizamos la llamada al servicio
           response = await fetch(url, {
             method: method,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+          },
             body: JSON.stringify(payload),
           });
 
