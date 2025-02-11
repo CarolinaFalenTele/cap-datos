@@ -97,7 +97,6 @@ sap.ui.define([
           2029: 0,
         };
 
-        this.obtenerToken();
       },
 
 
@@ -1424,7 +1423,7 @@ sap.ui.define([
               label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
             };
           } else {
-            sap.m.MessageToast.show("Fechas no válidas para la fase:", fechas);
+            console.log("Fechas no válidas para la fase:", fechas);
             return null; // Devuelve null si las fechas no son válidas
           }
         }).filter(Boolean); // Filtra los elementos nulos
@@ -1872,31 +1871,6 @@ sap.ui.define([
         },*/
 
 
-      obtenerToken: async function (oEvent) {
-        let csrfToken;  // Definimos csrfToken con let
-
-        try {
-          const response = await fetch("/odata/v4/datos-cdo/DatosProyect", {
-            method: "GET",
-            headers: {
-              "x-csrf-token": "Fetch"
-            },
-            credentials: "include"
-          });
-
-          csrfToken = response.headers.get("x-csrf-token"); // Extrae el token
-
-          if (!csrfToken) {
-            throw new Error("No se recibió el x-csrf-token");
-          }
-
-          console.log("TOKEN---->>>  " + csrfToken);  // Mueve esto aquí, después de obtener el token
-          this.onSave(csrfToken);  // Llama a onSave con el csrfToken
-
-        } catch (error) {
-          console.error("Error obteniendo el token: ", error);
-        }
-      },
 
 
 
@@ -2032,7 +2006,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-          console.log("OMODEL --> " , oModel  , sServiceUrl ); 
+     //     console.log("OMODEL --> " , oModel  , sServiceUrl ); 
 
           if (sProjectID) {
             // Actualización (PATCH)
@@ -5310,6 +5284,8 @@ sap.ui.define([
       //-----------------Metodo navegacion pagina APP---------
       onNavToView1: function () {
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+   
 
         // Agrega un punto de interrupción aquí para verificar que oRouter y this estén definidos correctamente
         // console.log("Navigating to View1");
