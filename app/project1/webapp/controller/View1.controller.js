@@ -2112,12 +2112,12 @@ sap.ui.define([
               await Promise.all([
                 this.inserChart(generatedId, sCsrfToken),
                 this.insertarProveedor(generatedId),
-                this.insertFacturacion(generatedId, sCsrfToken),
-                this.insertClientFactura(generatedId, sCsrfToken),
+                this.insertFacturacion(generatedId),
+                this.insertClientFactura(generatedId),
                 this.insertRecursosInternos(generatedId),
-                this.insertCosumoExterno(generatedId, sCsrfToken),
-                this.insertRecursoExterno(generatedId, sCsrfToken),
-                this.insertarOtrosConceptos(generatedId, sCsrfToken),
+                this.insertCosumoExterno(generatedId),
+                this.insertRecursoExterno(generatedId),
+                this.insertarOtrosConceptos(generatedId),
               ]);
 
               // Navegar a la vista 'app' con el nuevo ID
@@ -2364,7 +2364,11 @@ sap.ui.define([
 
 
 
-      insertFacturacion: async function (generatedId, sCsrfToken) {
+      insertFacturacion: async function (generatedId) {
+
+        const sTokenG =  this._sCsrfToken;
+
+
 
         //Tabla facturacion 
         var oTablaFac = this.byId("table0");
@@ -2423,7 +2427,7 @@ sap.ui.define([
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-csrf-token": sCsrfToken
+              "x-csrf-token": sTokenG
 
             },
             body: JSON.stringify(data)
@@ -2516,7 +2520,7 @@ sap.ui.define([
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": stoken
               },
               body: JSON.stringify(data)
             });
@@ -2599,6 +2603,8 @@ sap.ui.define([
 
       insertRecursosInternos: async function (generatedId) {
 
+      const stokenr  =  this._sCsrfToken;
+
         const sRecursoID = this._recurso_ID; // ID del proyecto
 
         console.log("ENTRANDO A RECURSO INTERNO ----->>>> " + sRecursoID)
@@ -2662,7 +2668,7 @@ sap.ui.define([
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": stokenr
 
               },
               body: JSON.stringify(payload)
@@ -2672,7 +2678,8 @@ sap.ui.define([
             response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": stokenr
               },
               body: JSON.stringify(payload)
             });
@@ -2701,6 +2708,8 @@ sap.ui.define([
 
 
       mesAñoRecurInterno: async function (oItem, idRecursos) {
+
+        const  sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
@@ -2764,7 +2773,8 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenMe
               },
               body: JSON.stringify(payload)
             });
@@ -2790,7 +2800,10 @@ sap.ui.define([
 
 
 
-      insertOtrosGastos: async function (idRecursos, sCsrfToken) {
+      insertOtrosGastos: async function (idRecursos) {
+
+        const sTokenG =  this._sCsrfToken;
+
 
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1727879576857");
@@ -2845,7 +2858,7 @@ sap.ui.define([
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": sTokenG
 
               },
               body: JSON.stringify(payload)
@@ -2872,7 +2885,8 @@ sap.ui.define([
 
 
       insertOtrosRecursos: async function (idRecursos) {
-
+        const sTokenor =  this._sCsrfToken;
+       
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1727879940116");
 
@@ -2925,7 +2939,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/otrosRecursos", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenor
+
               },
               body: JSON.stringify(payload)
             });
@@ -2954,9 +2970,14 @@ sap.ui.define([
 
 
       // --------------CONSUMO EXTERNO ------------------
-      insertCosumoExterno: async function (generatedId, sCsrfToken) {
+      insertCosumoExterno: async function (generatedId) {
+        
+        const sTokenG =  this._sCsrfToken;
+
+        
         // Obtener la tabla por su ID
         const oTable = this.byId("tablaConsuExter");
+
 
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
@@ -3010,7 +3031,7 @@ sap.ui.define([
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": sTokenG
 
               },
               body: JSON.stringify(payload)
@@ -3041,6 +3062,10 @@ sap.ui.define([
 
 
       insertServiConsu: async function (idRecursos) {
+
+        const sTokenG =  this._sCsrfToken;
+
+         
         // Obtener la tabla por su ID
         const oTable = this.byId("idOtroserConsu");
 
@@ -3093,7 +3118,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/otrosServiciosConsu", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenG
+
               },
               body: JSON.stringify(payload)
             });
@@ -3116,6 +3143,9 @@ sap.ui.define([
       },
 
       insertGastoConsu: async function (idRecursos) {
+
+        const sTokenG =  this._sCsrfToken;
+
         // Obtener la tabla por su ID
         const oTable = this.byId("idGastoViajeConsu");
 
@@ -3168,7 +3198,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/GastoViajeConsumo", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json", 
+                "x-csrf-token": sTokenG
+
               },
               body: JSON.stringify(payload)
             });
@@ -3195,7 +3227,10 @@ sap.ui.define([
 
       //------------RECURSO EXTERNO ------------------------
 
-      insertRecursoExterno: async function (generatedId, sCsrfToken) {
+      insertRecursoExterno: async function (generatedId) {
+
+        const sTokenG =  this._sCsrfToken;
+
         // Obtener la tabla por su ID
         const oTable = this.byId("tablaRecExterno");
 
@@ -3251,7 +3286,7 @@ sap.ui.define([
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": sTokenG
 
               },
               body: JSON.stringify(payload)
@@ -3282,6 +3317,9 @@ sap.ui.define([
 
 
       insertServicioRecuExter: async function (idRecursos) {
+
+        const sTokenG =  this._sCsrfToken;
+
         // Obtener la tabla por su ID
         const oTable = this.byId("idServiExterno");
 
@@ -3334,7 +3372,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/serviRecurExter", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenG
+
               },
               body: JSON.stringify(payload)
             });
@@ -3357,6 +3397,9 @@ sap.ui.define([
       },
 
       insertGastoViajeExterno: async function (idRecursos) {
+
+        const sTokenG =  this._sCsrfToken;
+
         // Obtener la tabla por su ID
         const oTable = this.byId("idGastoRecuExter");
 
@@ -3409,7 +3452,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/GastoViajeRecExter", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenG
+
               },
               body: JSON.stringify(payload)
             });
@@ -3432,7 +3477,11 @@ sap.ui.define([
       },
 
 
-      insertarOtrosConceptos: async function (generatedId, sCsrfToken) {
+      insertarOtrosConceptos: async function (generatedId) {
+        const sTokenG =  this._sCsrfToken;
+
+
+
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1724413700665");
 
@@ -3485,7 +3534,7 @@ sap.ui.define([
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
+                "x-csrf-token": sTokenG
 
               },
               body: JSON.stringify(payload)
@@ -3511,6 +3560,9 @@ sap.ui.define([
 
 
       insertarLicencia: async function (idOtrosConcep) {
+
+        const sTokenG =  this._sCsrfToken;
+
 
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1727955577124");
@@ -3563,7 +3615,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sTokenG
+
               },
               body: JSON.stringify(payload)
             });
@@ -3600,66 +3654,10 @@ sap.ui.define([
 
 
 
+      insertClientFactura: async function (generatedId) {
 
+        const sTokenG =  this._sCsrfToken;
 
-      /*insertRecursosInternos: async function (generatedId){
-
-     const sVertical = this.byId("selec0").getSelectedKey();
-     const stipoServi = this.byId("select0_17163029264").getSelectedKey();
-     const sPerfil = this.byId("selct3").getSelectedKey();
-     const sConcepto = this.byId("input0_2958934").getValue();
-     const sPMJ =  parseInt(this.byId("pmj2").getText(),10);
-     const sTotal =  parseInt( this.byId("text32").getText(),10);
-     const stotalRe = parseInt(  this.byId("text33").getText(),10);
-
-
-
-
-       const payload = {
-
-        Vertical_ID : sVertical,
-        ConceptoOferta : sConcepto,
-        PMJ: sPMJ,
-        total: sTotal,
-        totalE: stotalRe,
-        tipoServicio_ID : stipoServi,
-        PerfilServicio_ID: sPerfil,
-        datosProyect_ID : generatedId
-        }
-
-
-
-        try {
-          let response;
-
-        response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          const result2 = await response.json();
-          console.log("Recursos internos guardada con éxito:", result2);
-        } else {
-          const errorMessage = await response.text();
-          console.log("Error al guardar la Recursos internos:", errorMessage);
-          sap.m.MessageToast.show("Error al guardar la Recursos internos: " + errorMessage);
-        }
-
-
-
-      } catch (error) {
-          console.log("Error en la llamada al servicio:", error);
-          sap.m.MessageToast.show("Error en la llamada al servicio: " + error.message);
-        }
-
-
-      },*/
-
-      insertClientFactura: async function (generatedId, sCsrfToken) {
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
         var aData = [];
@@ -3710,7 +3708,7 @@ sap.ui.define([
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-csrf-token": sCsrfToken
+              "x-csrf-token": sTokenG
 
             },
             body: JSON.stringify(data)
