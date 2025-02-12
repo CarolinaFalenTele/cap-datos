@@ -97,6 +97,8 @@ sap.ui.define([
           2029: 0,
         };
 
+        this.token();
+
       },
 
 
@@ -1873,10 +1875,45 @@ sap.ui.define([
 
 
 
+      token: async function () {
+
+        try {
+
+          //  let oModel = this.getView().getModel();
+
+
+
+          // Obtener el CSRF Token
+          let oTokenResponse = await fetch("/odata/v4/datos-cdo", {
+            method: "GET",
+            headers: { "x-csrf-token": "Fetch" }
+          }); if (!oTokenResponse.ok) {
+            throw new Error("Error al obtener el CSRF Token");
+          }
+
+          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+          if (!sCsrfToken) {
+            throw new Error("No se recibió un CSRF Token");
+          }
+
+
+          console.log(" CSRF Token obtenido desde el metodo :", sCsrfToken);
+          this._sCsrfToken = sCsrfToken;
+
+        } catch (error) {
+          console.error("Error en la llamada al servicio:", error);
+          sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+        }
+
+
+
+      },
+
+
 
       //-------------------------- METODO INSERTAR ----------------------
       // Definir el modelo OData
-      onSave: async function (csrfToken) {
+      onSave: async function () {
 
         let errorCount = 0;
 
@@ -2006,7 +2043,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-     //     console.log("OMODEL --> " , oModel  , sServiceUrl ); 
+          //     console.log("OMODEL --> " , oModel  , sServiceUrl ); 
 
           if (sProjectID) {
             // Actualización (PATCH)
@@ -2038,7 +2075,7 @@ sap.ui.define([
             headers: {
               "Content-Type": "application/json",
               "x-csrf-token": sCsrfToken
-          },
+            },
             body: JSON.stringify(payload),
           });
 
@@ -2073,14 +2110,14 @@ sap.ui.define([
             if (generatedId) {
               // Llamadas en paralelo para mejorar rendimiento
               await Promise.all([
-                this.inserChart(generatedId),
+                this.inserChart(generatedId, sCsrfToken),
                 this.insertarProveedor(generatedId),
-                this.insertFacturacion(generatedId),
-                this.insertClientFactura(generatedId),
+                this.insertFacturacion(generatedId, sCsrfToken),
+                this.insertClientFactura(generatedId, sCsrfToken),
                 this.insertRecursosInternos(generatedId),
-                this.insertCosumoExterno(generatedId),
-                this.insertRecursoExterno(generatedId),
-                this.insertarOtrosConceptos(generatedId),
+                this.insertCosumoExterno(generatedId, sCsrfToken),
+                this.insertRecursoExterno(generatedId, sCsrfToken),
+                this.insertarOtrosConceptos(generatedId, sCsrfToken),
               ]);
 
               // Navegar a la vista 'app' con el nuevo ID
@@ -2286,7 +2323,7 @@ sap.ui.define([
 
 
 
-      inserChart: async function (generatedId) {
+      inserChart: async function (generatedId, sCsrfToken) {
 
         const saChartdata = this._aChartData;
 
@@ -2305,7 +2342,9 @@ sap.ui.define([
           const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+
             },
             body: JSON.stringify(payload2)
           });
@@ -2325,7 +2364,7 @@ sap.ui.define([
 
 
 
-      insertFacturacion: async function (generatedId) {
+      insertFacturacion: async function (generatedId, sCsrfToken) {
 
         //Tabla facturacion 
         var oTablaFac = this.byId("table0");
@@ -2382,7 +2421,11 @@ sap.ui.define([
           data.datosProyect_ID = generatedId;
           const response4 = await fetch("/odata/v4/datos-cdo/Facturacion", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+
+            },
             body: JSON.stringify(data)
           });
 
@@ -2401,19 +2444,16 @@ sap.ui.define([
       },
 
 
-
-
       insertarProveedor: async function (generatedId, sProjectID) {
+       
+        const stoken = this._sCsrfToken ;   
+        console.log("TOKEN RECIBIDO EN PROVEEDOR:", stoken);
 
-        const sProveedorID = this._proveeID; // ID del proyecto
 
-        console.log("ID ---> PROVEEDOR : ", sProveedorID);
-        // Obtener la tabla por ID
+
         var oTable = this.byId("table2");
         var aItems = oTable.getItems();
         var aData = [];
-
-
 
         // Recorrer cada fila de la tabla
         aItems.forEach(function (oItem) {
@@ -2439,31 +2479,121 @@ sap.ui.define([
         let response;
 
 
-        // 6. Guardar ProveedoresC (POST)
+        // 6. Guardar ProveedoresC (POST o PATCH)
         for (let data of aData) {
-
-
-
           if (sProjectID) {
-            // Si el ID existe, hacemos PATCH para actualizar
-            response = await fetch(`/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${sProjectID}`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(data)
-            });
+            // Verificar si el ID ya existe en la base de datos
+            let checkResponse = await fetch(`/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq '${sProjectID}'`);
+            let checkData = await checkResponse.json();
+
+            if (checkData.value && checkData.value.length > 0) {
+              // Si el ID ya existe, hacemos PATCH
+              let existingID = checkData.value[0].ID; // Suponiendo que hay un campo ID único
+              response = await fetch(`/odata/v4/datos-cdo/ProveedoresC(${existingID})`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": stoken
+                },
+                body: JSON.stringify(data)
+              });
+            } else {
+              // Si no existe, hacemos POST
+              data.datosProyect_ID = generatedId;
+              response = await fetch("/odata/v4/datos-cdo/ProveedoresC", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": stoken
+                },
+                body: JSON.stringify(data)
+              });
+            }
           } else {
+            // Si no hay sProjectID, hacer POST directamente
             data.datosProyect_ID = generatedId;
             response = await fetch("/odata/v4/datos-cdo/ProveedoresC", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+              },
               body: JSON.stringify(data)
             });
           }
+
+          let result = await response.json();
+          console.log("Resultado:", result);
         }
       },
 
+
+      /*  insertarProveedor: async function (generatedId, sProjectID, sCsrfToken) {
+          
+          console.log("TOKEN RECIBIDO EN PROVEEEDOR    ---   "     + sCsrfToken);
+          const sProveedorID = this._proveeID; // ID del proyecto
+          const stoken = this._sCsrfToken ;   
+  
+          console.log("ID ---> PROVEEDOR : ", sProveedorID);
+          // Obtener la tabla por ID
+          var oTable = this.byId("table2");
+          var aItems = oTable.getItems();
+          var aData = [];
+  
+  
+  
+          // Recorrer cada fila de la tabla
+          aItems.forEach(function (oItem) {
+            // Obtener las celdas (inputs) de la fila
+            var aCells = oItem.getCells();
+  
+            // Extraer el valor de cada celda (input) de la fila
+            var valueCondi = aCells[0].getValue(); // Input para valueCondi
+            var valueProvee = aCells[1].getValue(); // Input para valueProvee
+            var checkCondi = this.byId("box_condi").getSelected(); // Checkbox Condicionado
+            var checkProveedor = this.byId("box_prove").getSelected(); // Checkbox Proveedores
+  
+            // Agregar los valores al arreglo de datos, asegurándonos de que coincidan con los campos en la entidad ProveedoresC
+            aData.push({
+              checkCondi: checkCondi,
+              checkProveedor: checkProveedor,
+              valueCondi: valueCondi,
+              valueProvee: valueProvee,
+              datosProyect_ID: generatedId // clave foránea
+            });
+          }.bind(this));
+  
+          let response;
+  
+  
+          // 6. Guardar ProveedoresC (POST)
+          for (let data of aData) {
+  
+  
+  
+            if (sProjectID) {
+              // Si el ID existe, hacemos PATCH para actualizar
+              response = await fetch(`/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq '${sProjectID}'`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": stoken
+                },
+                body: JSON.stringify(data)
+              });
+            } else {
+              data.datosProyect_ID = generatedId;
+              response = await fetch("/odata/v4/datos-cdo/ProveedoresC", {
+                method: "POST",
+                headers: { "Content-Type": "application/json",
+                  "x-csrf-token": stoken
+  
+                 },
+                body: JSON.stringify(data)
+              });
+            }
+          }
+        },*/
 
       //--- INSERTAR RECURSOS INTERNOS -----
 
@@ -2531,7 +2661,9 @@ sap.ui.define([
             response = await fetch(`/odata/v4/datos-cdo/RecursosInternos(${sRecursoID})`, {
               method: "PATCH",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+
               },
               body: JSON.stringify(payload)
             });
@@ -2565,123 +2697,6 @@ sap.ui.define([
         }
       },
 
-      /*insertRecursosInternos: async function (generatedId) {
-
-         console.log("ENTRANDO A RECURSOS------"); 
-        // Obtener la tabla por su ID
-        const oTable = this.byId("table_dimicFecha");
-
-        // Obtener todos los elementos del tipo ColumnListItem
-        const aItems = oTable.getItems();
-
-        // Iterar sobre cada fila
-        for (let i = 0; i < aItems.length; i++) {
-          const oItem = aItems[i];  // Obtener la fila actual
-
-          // Obtener los controles dentro de cada celda
-          const sVertical = oItem.getCells()[0]?.getSelectedKey() || ""; // Si es null, usa un valor por defecto
-          const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
-          const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
-          const sConcepto = oItem.getCells()[3]?.getValue() || ""; 
-          const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0"); 
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0"); 
-          const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
-
-
-          // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
-          }
-
-          // Construir el payload para cada fila
-          const payload = {
-            Vertical_ID: sVertical,
-            ConceptoOferta: sConcepto,
-            PMJ: sPMJ,
-            year1: Number(syear1.toFixed(2)),
-            year2: Number(syear2.toFixed(2)),
-            year3: Number(syear3.toFixed(2)),
-            year4: Number(syear4.toFixed(2)),
-            year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
-            total: Number(sTotal.toFixed(2)),
-            totalE: Number(stotalRe.toFixed(2)),
-            tipoServicio_ID: stipoServi,
-            PerfilServicio_ID: sPerfil,
-            datosProyect_ID: generatedId,
-          };
-
-          try {
-            // Hacer el fetch de manera asincrónica para cada fila
-            const response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-              const result = await response.json();
-              const idRecursos = result.ID; // Obtener el ID generado
-
-              await this.insertOtrosGastos(idRecursos);
-              await this.insertOtrosRecursos(idRecursos);
-             await this.mesAñoRecurInterno(oItem, idRecursos);
-
-         console.log("TERMINANDO  RECURSOS------"); 
-      
-              console.log("Fila " + (i + 1) + " guardada con éxito: RECUROSOS INTERNOS", result);
-            } else {
-              const errorMessage = await response.text();
-              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
-            }
-          } catch (error) {
-            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
-          }
-        }
-      },*
-
-
-     /* pruebaInser : async function(idRecursos) {
-        // Aquí puedes ajustar el valor de `mes` dinámicamente si es necesario
-        const mes = 'IdNov'; // Valor de ejemplo; puedes cambiarlo a uno dinámico si lo necesitas
-        const payload = {
-            RecursosInternos_ID: idRecursos,
-            mesAno: `2024-${mes}`, // Construimos el valor dinámico de `mesAño`
-            valor: 2034
-        };
-    
-        console.log("Payload preparado para enviar:", payload);
-    
-        try {
-            const response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-    
-            if (!response.ok) {
-                const errorDetails = await response.text();
-                throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
-            } else {
-                console.log("Datos enviados con éxito para el mes:", payload.mesAño);
-            }
-        } catch (error) {
-            console.error("Error al enviar los datos:", error);
-        }
-    },*/
 
 
 
@@ -2775,7 +2790,7 @@ sap.ui.define([
 
 
 
-      insertOtrosGastos: async function (idRecursos) {
+      insertOtrosGastos: async function (idRecursos, sCsrfToken) {
 
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1727879576857");
@@ -2829,7 +2844,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/otrosGastoRecu", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+
               },
               body: JSON.stringify(payload)
             });
@@ -2937,7 +2954,7 @@ sap.ui.define([
 
 
       // --------------CONSUMO EXTERNO ------------------
-      insertCosumoExterno: async function (generatedId) {
+      insertCosumoExterno: async function (generatedId, sCsrfToken) {
         // Obtener la tabla por su ID
         const oTable = this.byId("tablaConsuExter");
 
@@ -2992,7 +3009,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/ConsumoExternos", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+
               },
               body: JSON.stringify(payload)
             });
@@ -3176,7 +3195,7 @@ sap.ui.define([
 
       //------------RECURSO EXTERNO ------------------------
 
-      insertRecursoExterno: async function (generatedId) {
+      insertRecursoExterno: async function (generatedId, sCsrfToken) {
         // Obtener la tabla por su ID
         const oTable = this.byId("tablaRecExterno");
 
@@ -3231,7 +3250,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/RecursosExternos", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+
               },
               body: JSON.stringify(payload)
             });
@@ -3411,7 +3432,7 @@ sap.ui.define([
       },
 
 
-      insertarOtrosConceptos: async function (generatedId) {
+      insertarOtrosConceptos: async function (generatedId, sCsrfToken) {
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1724413700665");
 
@@ -3463,7 +3484,9 @@ sap.ui.define([
             const response = await fetch("/odata/v4/datos-cdo/otrosConceptos", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+
               },
               body: JSON.stringify(payload)
             });
@@ -3636,7 +3659,7 @@ sap.ui.define([
 
       },*/
 
-      insertClientFactura: async function (generatedId) {
+      insertClientFactura: async function (generatedId, sCsrfToken) {
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
         var aData = [];
@@ -3685,7 +3708,11 @@ sap.ui.define([
         for (let data of aData) {
           const insert4 = await fetch("/odata/v4/datos-cdo/ClientFactura", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+
+            },
             body: JSON.stringify(data)
           });
 
@@ -5285,7 +5312,7 @@ sap.ui.define([
       onNavToView1: function () {
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
-   
+
 
         // Agrega un punto de interrupción aquí para verificar que oRouter y this estén definidos correctamente
         // console.log("Navigating to View1");
