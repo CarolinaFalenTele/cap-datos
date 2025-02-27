@@ -8,6 +8,13 @@
     font-weight: bold;
 }
 
+.highlight-border {
+    border: 2px solid red !important;
+    background-color: #ffcccc !important;
+}
+
+
+
 .customHeaderColor .sapMListTblHeader .sapMListTblCell  {
     background-color: black; /* Color verde */
     color: #FFFFFF !important; /* Color blanco puro */

@@ -387,6 +387,70 @@ sap.ui.define(
 
 
             _onObjectMatched: function (oEvent) {
+                // Obtener el ID recibido como parámetro de la URL
+                const newId = oEvent.getParameter("arguments").newId;
+                console.log("ID recibido en _onObjectMatched:", newId);
+            
+                // Verifica si el ID es válido
+                if (!newId) {
+                    console.error("No se recibió un ID válido");
+                    return;
+                }
+            
+                // Llamar a la función para resaltar la fila
+                this._highlightNewRow(newId);
+            },
+            
+            _highlightNewRow: function (newId) {
+                const oTable = this.byId("idPendientes");
+            
+                // Si la tabla ya tiene datos, procesar inmediatamente
+                if (oTable.getItems().length > 0) {
+                    this._processTableRows(oTable, newId);
+                } else {
+                    // Esperar a que se actualicen los datos
+                    oTable.attachEventOnce("updateFinished", () => {
+                        this._processTableRows(oTable, newId);
+                    });
+                }
+            },
+            
+            _processTableRows: function (oTable, newId) {
+                const oItems = oTable.getItems();
+                let found = false;
+            
+                oItems.forEach(item => {
+                    // Buscar el botón dentro de cada fila
+                    const oButton = item.getCells().find(cell => cell.getId().endsWith("butn34"));
+                    if (oButton) {
+                        // Buscar el CustomData con la clave 'projectId'
+                        const oCustomData = oButton.getCustomData().find(data => data.getKey() === "projectId");
+                        if (oCustomData) {
+                            // Obtener el valor de projectId y compararlo con newId
+                            const itemId = oCustomData.getValue();
+                            console.log("Comparando IDs:", itemId, newId);
+            
+                            // Si los IDs coinciden, resaltar la fila
+                            if (itemId === newId) {
+                                console.log("Resaltando fila con ID:", itemId);
+                                item.addStyleClass("highlight-border");
+                                found = true;
+                            }
+                        }
+                    }
+                });
+            
+                // Si no se encontró ninguna fila con el ID, muestra un mensaje
+                if (!found) {
+                    console.log("No se encontró una fila con el ID:", newId);
+                }
+            
+                // Forzar el renderizado de la tabla para reflejar los cambios visuales
+                oTable.rerender();
+            },
+            
+
+          /*  _onObjectMatched: function (oEvent) {
                 //   console.log("Parámetros del evento:", oEvent.getParameters());
 
                 // Obtén el ID enviado como parámetro
@@ -445,7 +509,7 @@ sap.ui.define(
                     // Forzar el renderizado de la tabla para reflejar los cambios visuales
                     oTable.rerender();
                 });
-            },
+            },*/
 
 
             // Función para formatear la fecha
@@ -472,12 +536,41 @@ sap.ui.define(
 
 
 
-
-
-
-
-
             onEditPress: function (oEvent) {
+                // Obtener el botón que fue presionado
+                var oButton = oEvent.getSource();
+            
+                // Obtener el valor de CustomData (ID del proyecto)
+                var sProjectID = oButton.getCustomData().find(function (oData) {
+                    return oData.getKey() === "projectId";  
+                }).getValue();
+            
+                // Verifica que sProjectID tiene un valor válido
+                if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                } else {
+                    console.log("ID Correcto", sProjectID);
+                }
+            
+                // Obtener el modelo del formulario y limpiarlo antes de editar
+                var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
+                if (oModel) {
+                    oModel.setData({});  // Limpia los datos previos
+                    oModel.refresh(true); // Fuerza la actualización del modelo
+                }
+            
+                // Navegar a la vista del formulario con el ID del proyecto
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                oRouter.navTo("view", {
+                    sProjectID: sProjectID
+                }, true /* Replace history to avoid back navigation issue */);
+            },
+            
+
+
+
+            /*onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado
                 var oButton = oEvent.getSource();
 
@@ -499,7 +592,7 @@ sap.ui.define(
                 oRouter.navTo("view", {
                     sProjectID: sProjectID  // Asegúrate de que "sProjectID" coincida con lo que tienes en manifest.json
                 });
-            },
+            },*/
 
 onDeletePress: async function (oEvent) {
     let oModel = this.getView().getModel();

@@ -4,7 +4,7 @@ service DatosCDOService  @(path:'/odata/v4/datos-cdo')
 {
   //  @odata.draft.enabled
 
-//@requires           : 'authenticated-user'
+@requires           : 'authenticated-user'
 
     entity DatosProyect as
         projection on datos.DatosProyect;
