@@ -442,7 +442,7 @@ sap.ui.define(
             
                 // Si no se encontró ninguna fila con el ID, muestra un mensaje
                 if (!found) {
-                    console.log("No se encontró una fila con el ID:", newId);
+                 //No hay datos de servi Externos  disponibles.   console.log("No se encontró una fila con el ID:", newId);
                 }
             
                 // Forzar el renderizado de la tabla para reflejar los cambios visuales
@@ -668,7 +668,7 @@ onDeletePress: async function (oEvent) {
 
                                     if (Array.isArray(hijosData.value) && hijosData.value.length > 0) {
                                         for (let hijo of hijosData.value) {
-                                            console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
+                                        //    console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
                                             let deleteResponse = await fetch(
                                                 `/odata/v4/datos-cdo/${path}(${hijo.ID})`,
                                                 {
@@ -687,7 +687,7 @@ onDeletePress: async function (oEvent) {
                                             }
                                         }
                                     } else if (hijosData.ID) {
-                                        console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
+                                  //      console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
                                         let deleteResponse = await fetch(
                                             `/odata/v4/datos-cdo/${path}(${hijosData.ID})`,
                                             {

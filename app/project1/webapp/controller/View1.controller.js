@@ -646,7 +646,7 @@ sap.ui.define([
             //        await this.insertRecursosInternos(recursoID);
             this._recurso_ID = recursoID
           } else {
-            console.log("No hay datos de SERvi Recurso  internos disponibles.");
+         //   console.log("No hay datos de SERvi Recurso  internos disponibles.");
           }
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
@@ -1091,6 +1091,8 @@ sap.ui.define([
 
 
       leerOtrosServiExter: async function (RecursoExterID) {
+
+        var idExterno;
         var sUrl = `/odata/v4/datos-cdo/serviRecurExter?$filter=RecursosExternos_ID eq ${RecursoExterID}`;
         try {
           const response = await fetch(sUrl, {
@@ -1114,7 +1116,7 @@ sap.ui.define([
 
           if (oData.value && oData.value.length > 0) {
             var Recurso = oData.value[0]; // Toma solo el primer recurso
-            var RecursoExID = Recurso.ID; // Obtén el ID del recurso
+             idExterno = Recurso.ID; // Obtén el ID del recurso
             //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
 
 
@@ -1140,21 +1142,23 @@ sap.ui.define([
               }
             }
 
-            this._RecSeX = RecursoExID;
-            await this.leerOtrosServiExter(RecursoExterID);
-          } else {
-            console.log("No hay datos de servi Externos  disponibles.");
-          }
+            
+       //&     console.log("RecursoExterID enviado:", RecursoExterID);
 
+
+        //    await this.leerOtrosServiExter(RecursoExterID);
+          } else {
+
+            console.log("No hay datos de servi Externos  disponibles.");
+
+          }
+          this._RecSeX = idExterno;
 
         } catch (error) {
           console.error("Error al obtener los datos de serviRecurExter:", error);
           sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
         }
       },
-
-
-
 
 
 
@@ -1183,7 +1187,7 @@ sap.ui.define([
           if (oData.value && oData.value.length > 0) {
             var Recurso = oData.value[0]; // Toma solo el primer recurso
             var Recurs= Recurso.ID; // Obtén el ID del recurso
-var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of the resource
+        // Use optional chaining to safely obtain the ID of the resource
             //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
 
 
@@ -1209,9 +1213,9 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
               }
             }
 
-              this._idReExGas= RecuGasEx ; 
+              this._idReExGas= Recurs ; 
 
-            await this.leerOtrosServiExter(RecursoExterID);
+          //  await this.leerOtrosServiExter(RecursoExterID);
           } else {
             console.log("No hay datos de GastoViajeRecExter  disponibles.");
           }
@@ -1307,7 +1311,7 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
           }
 
           const oData = await response.json();
-          console.log("Datos traidos LicenciasCon TRAIDO:", oData);
+        //  console.log("Datos traidos LicenciasCon TRAIDO:", oData);
 
           var oTable = this.byId("table0_1727955577124");
           var aItems = oTable.getItems();
@@ -1341,7 +1345,7 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
             }
 
             this._idLinc = LincenciaiD; 
-            await this.leerLicencias(otrosConceptosID);
+           // await this.leerLicencias(otrosConceptosID);
           } else {
             console.log("No hay datos de LicenciasCon disponibles.");
           }
@@ -1352,10 +1356,6 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
 
       },
       // --------------------------------------------------------------
-
-
-
-
 
 
 
@@ -3598,6 +3598,8 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
 
       insertRecursoExterno: async function (generatedId) {
 
+
+        console.log("ENTRANDO A RECURSOS EXTERNOS ");
         const sTokenG =  this._sCsrfToken;
         const sidReEx = this._idRecEx; 
         // Obtener la tabla por su ID
@@ -3610,52 +3612,52 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
         for (let i = 0; i < aItems.length; i++) {
           const oItem = aItems[i];  // Obtener la fila actual
 
-          // Obtener los controles dentro de cada celda
-          const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
-          const sPerfil = oItem.getCells()[2].getValue(); // Select de PerfilServicio
-          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[4].getValue()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sVertical = oItem.getCells()[0].getSelectedKey() || "";
+const stipoServi = oItem.getCells()[1].getSelectedKey() || "";
+const sPerfil = oItem.getCells()[2].getValue()?.trim() || "";
+const sConcepto = oItem.getCells()[3].getValue()?.trim() || "";
+const sPMJ = this.convertToInt(oItem.getCells()[4].getValue()) || 0;
+const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+const sTotal = this.convertToInt(oItem.getCells()[11].getText()) || 0;
+const stotalRe = this.convertToInt(oItem.getCells()[12].getText()) || 0;
 
-          // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
-          }
+// Evitar insertar filas vacías
+if (!sVertical && !stipoServi && !sPerfil && !sConcepto && sPMJ === 0 && sTotal === 0 && stotalRe === 0) {
+    console.warn("Fila", i + 1, "está vacía, se omite.");
+    continue;
+}
 
-          // Construir el payload para cada fila
-          const payload = {
-            Vertical_ID: sVertical,
-            ConceptoOferta: sConcepto,
-            PMJ: sPMJ,
-            year1: Number(syear1.toFixed(2)),
-            year2: Number(syear2.toFixed(2)),
-            year3: Number(syear3.toFixed(2)),
-            year4: Number(syear4.toFixed(2)),
-            year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
-            total: sTotal,
-            totalR: stotalRe,
-            tipoServicio_ID: stipoServi,
-            PerfilServicio: sPerfil,
-            datosProyect_ID: generatedId
-          };
+// Construcción del payload
+const payload = {
+    Vertical_ID: sVertical,
+    ConceptoOferta: sConcepto,
+    PMJ: sPMJ,
+    year1: Number(syear1.toFixed(2)),
+    year2: Number(syear2.toFixed(2)),
+    year3: Number(syear3.toFixed(2)),
+    year4: Number(syear4.toFixed(2)),
+    year5: Number(syear5.toFixed(2)),
+    year6: Number(syear6.toFixed(2)),
+    total: sTotal,
+    totalR: stotalRe,
+    tipoServicio_ID: stipoServi,
+    PerfilServicio: sPerfil,
+    datosProyect_ID: generatedId
+};
 
+console.log("Payload enviado:", JSON.stringify(payload, null, 2));
+
+
+          console.log("DATOS RECU EXTRA  " + JSON.stringify(payload, null, 2));
 
           let response;   
 
-
-          try {
-
-            
+          try {            
 
             if(sidReEx){
 
@@ -3677,7 +3679,10 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
                  "x-csrf-token": sTokenG
                },
                body: JSON.stringify(payload)
-             });
+          
+          
+          
+              });
  
            }
 
@@ -3713,8 +3718,12 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
 
       insertServicioRecuExter: async function (idRecursos) {
 
+
+        console.log("he entrado a SERVICIO EXT "); 
         const sTokenG =  this._sCsrfToken;
         const sidServiRE = this._RecSeX;
+
+        console.log("<<<<< ID  SERVICIO EXT >>>>> "   + sidServiRE );
         // Obtener la tabla por su ID
         const oTable = this.byId("idServiExterno");
 
@@ -3765,12 +3774,10 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
 
           let response; 
 
-          try {
-
         
             // Hacer el fetch de manera asincrónica para cada fila
            if (sidServiRE) {
-                response = await fetch(`/odata/v4/datos-cdo/serviRecurExter(${sidReEx})`, {
+                response = await fetch(`/odata/v4/datos-cdo/serviRecurExter(${sidServiRE})`, {
                     method: 'PATCH',
                     headers: {
                         "Content-Type": "application/json",
@@ -3799,17 +3806,23 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
               sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
-          } catch (error) {
-            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
-          }
+        
         }
       },
 
+
+    
+    
+
+
       insertGastoViajeExterno: async function (idRecursos) {
+
+        console.log("he entrado  GASTO VIAJE EX************"  );
 
         const sTokenG =  this._sCsrfToken;
         const sIdGastoEx=  this._idReExGas; 
+
+        console.log(" ide de GSTO EXT   "+ sIdGastoEx);
 
         // Obtener la tabla por su ID
         const oTable = this.byId("idGastoRecuExter");
@@ -3858,13 +3871,14 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
             RecursosExternos_ID: idRecursos
           };
 
-            let response;  
+            console.log("Payload de Gasto Externo:", payload);
 
+        console.log("PAYLOAD DE GASTO EXTERNO " + JSON.stringify(payload, null, 2));
 
-          try {
-          
+          let response;  
+       
             if (sIdGastoEx) {
-                response = await fetch(`/odata/v4/datos-cdo/GastoViajeRecExter(${sidReEx})`, {
+                response = await fetch(`/odata/v4/datos-cdo/GastoViajeRecExter(${sIdGastoEx})`, {
                     method: 'PATCH',
                     headers: {
                         "Content-Type": "application/json",
@@ -3893,17 +3907,14 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
               sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
-          } catch (error) {
-            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
-          }
-        }
+          } 
       },
+
 
 
       insertarOtrosConceptos: async function (generatedId) {
         const sTokenG =  this._sCsrfToken;
-        const idOtroC = this._otrC
+        const idOtroC = this._otrC;
 
 
         // Obtener la tabla por su ID
@@ -4002,7 +4013,7 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
       insertarLicencia: async function (idOtrosConcep) {
 
         const sTokenG =  this._sCsrfToken;
-        const sidLinc = this._idLinc
+        const sidLinc = this._idLinc;
 
         // Obtener la tabla por su ID
         const oTable = this.byId("table0_1727955577124");
@@ -4051,11 +4062,13 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
           };
 
           let response;
+
+
           try {
             // Hacer el fetch de manera asincrónica para cada fila
-            if (idConst) {
+            if (sidLinc) {
             
-              response = await fetch(`/odata/v4/datos-cdo/LicenciasCon(${idConst})`, {
+              response = await fetch(`/odata/v4/datos-cdo/LicenciasCon(${sidLinc})`, {
                   method: 'PATCH',
                   headers: {
                       "Content-Type": "application/json",
@@ -4076,8 +4089,6 @@ var Recurs = Recurso?.ID; // Use optional chaining to safely obtain the ID of th
 
             if (response.ok) {
               const result = await response.json();
-
-
               console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
             } else {
               const errorMessage = await response.text();
