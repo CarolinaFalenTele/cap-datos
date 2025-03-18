@@ -178,7 +178,7 @@
                                                     </Column>
                                                     <Column id="column14" hAlign="Center">
                                                         <header>
-                                                            <Label text="Naturaleza3" id="label14"/>
+                                                            <Label text="Naturaleza" id="label14"/>
                                                         </header>
                                                     </Column>
                                                     <Column id="column9" hAlign="Center">
@@ -982,7 +982,7 @@
 
                                                                         <Input xmlns="sap.m" value="" id="input0_17235423780"/>
                                                                         <Text xmlns="sap.m" id="pmj1" text="" class="boldText"/>
-                                                                        <Text xmlns="sap.m" text="" id="text25_172354240710"/>
+                                                                        <Text xmlns="sap.m" text="servicio" id="text25_172354240710"/>
                                                                         <Text xmlns="sap.m" text="" id="text26_1723542467727"/>
                                                                         <Text xmlns="sap.m" text="" id="text2767"/>
                                                                         <Text xmlns="sap.m" text="" id="text2558"/>
@@ -1085,7 +1085,7 @@
                                                                          <Input xmlns="sap.m" id="input0552587" tooltip="Codigo Proyecto"/>
                                                                         <Text xmlns="sap.m" text="" id="pmj6" class="boldText"/>
                                                                         <Text xmlns="sap.m" text="" id="text30_1235430075"/>
-                                                                        <Text xmlns="sap.m" text="" id="text31_172354536874"/>
+                                                                        <Text xmlns="sap.m" text="Gasto viaje" id="text31_172354536874"/>
                                                                         <Text xmlns="sap.m" text="" id="text32_172545344700"/>
                                                                         <Text xmlns="sap.m" text="" id="text33_17354532636"/>
                                                                         <Text xmlns="sap.m" text="" id="text084"/>
