@@ -1,4 +1,7 @@
 const cds = require('@sap/cds');
+const fetch = require('node-fetch');
+const axios = require("axios");
+
 
 console.log("HOLAAAAAAAAAAAAA");
 
@@ -28,6 +31,50 @@ module.exports = cds.service.impl(async function () {
     otrosServiciosConsu
   } = this.entities;
 
+
+  this.on("StartProcess", async (req) => {
+
+      try {
+          const apiKey = "JE-cxZgt1L-EAGvD1glruZi9OKcxc-R_"; 
+
+          const requestBody = {
+              definitionId: "eu10.ia-test-l358blr2.datoscdoprocess.aprobacionCDO",
+              context: {
+                  solicitudid: req.data.solicitudid,
+                  nombreproyecto: req.data.nombreproyecto,
+                  descripcion: req.data.descripcion,
+                  codigoProyecto: req.data.codigoProyecto,
+                  solicitudurl: req.data.solicitudurl
+              }
+          };
+
+          const response = await fetch("https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `ApiKey ${apiKey}`
+              },
+              body: JSON.stringify(requestBody)
+          });
+
+          if (!response.ok) {
+              return req.error(response.status, "Error en la API de Workflow");
+          }
+
+          const data = await response.json();
+          return data;
+
+      } catch (error) {
+          console.error("❌ Error en startWorkflow:", error);
+          return req.error(500, "Error en el servidor");
+      }
+});
+
+
+  
+
+
+  
   this.on('getUserInfo', async (req) => {
     console.log("⚡ HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
     

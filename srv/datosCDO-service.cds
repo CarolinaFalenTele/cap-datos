@@ -62,11 +62,19 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
     entity RecuExterTotal            as projection on datos.RecuExterTotal;
     entity InfraestrLicencia         as projection on datos.InfraestrLicencia;
     entity ResumenCostesTotal        as projection on datos.ResumenCostesTotal;
-    
-   
+
   
 
     function Action1() returns String;
+
+
+  action StartProcess(
+        scodigoProyect: Integer,
+        snameProyect: String,
+        generatedId: String
+    ) returns String;
+
+
 
     action startWorkflow(payload: LargeString) returns String;
  
