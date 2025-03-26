@@ -99,7 +99,7 @@ sap.ui.define([
 
         this.token();
         this.getUserInfo();
-
+     
       },
 
 
@@ -6112,10 +6112,173 @@ sap.ui.define([
 
 
 
-
-
-
       CaseAno: function (tableId) {
+        console.log("TABLA RECIBIDA  : " + tableId);
+    
+        var oDatePickerInicio = this.getView().byId("date_inico");
+        var oDatePickerFin = this.getView().byId("date_fin");
+    
+        var sFechaInicio = oDatePickerInicio.getDateValue();
+        var sFechaFin = oDatePickerFin.getDateValue();
+    
+        if (sFechaInicio && sFechaFin) {
+            var anioInicio = sFechaInicio.getFullYear();
+            var anioFin = sFechaFin.getFullYear();
+    
+            if (anioInicio > anioFin) {
+                sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
+                return;
+            }
+    
+            var aniosEnRango = [];
+            for (var i = anioInicio; i <= anioFin; i++) {
+                aniosEnRango.push(i);
+            }
+    
+            console.log("FECHAS SEPARADAS ", aniosEnRango);
+    
+            var valoresDistribuidos = this.calcularDistribucionInput(); // Obtener los valores calculados
+    
+            // Validar que el objeto tenga datos
+            if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
+                sap.m.MessageToast.show("No se pudo calcular la distribución.");
+                return;
+            }
+    
+            console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
+            console.log("🔍 Claves en valoresDistribuidos:", Object.keys(valoresDistribuidos));
+    
+            var that = this;
+    
+            aniosEnRango.forEach(function (anio) {
+                switch (anio) {
+                    case 2025:
+                        console.log("Condiciones específicas para el año 2025.");
+                        if (tableId === "table_dimicFecha"  ||  tableId === "tablaConsuExter" ) {
+                            let valor2025 = valoresDistribuidos[tableId] || 0;
+                            console.log("📌 Valor asignado para 2025:", valor2025);
+                            that.getView().byId("tipoS2025").setText(valor2025.toFixed(2));
+                        } else {
+                            console.warn(`⚠️ No se encontró ${tableId} en valoresDistribuidos`);
+                        }
+                        break;
+                    case 2026:
+                      if (tableId === "table_dimicFecha") {
+                        let valor2025 = valoresDistribuidos[tableId] || 0;
+                        console.log("📌 Valor asignado para 2025:", valor2025);
+                        that.getView().byId("tipoS2025").setText(valor2025.toFixed(2));
+                    } else {
+                        console.warn(`⚠️ No se encontró ${tableId} en valoresDistribuidos`);
+                    }
+                        break;
+                    case 2027:
+                        console.log("Condiciones específicas para el año 2027.");
+                        break;
+                    case 2028:
+                        console.log("Condiciones específicas para el año 2028.");
+                        break;
+                    case 2029:
+                        console.log("Condiciones específicas para el año 2029.");
+                        break;
+                    case 2030:
+                        console.log("Condiciones específicas para el año 2030.");
+                        break;
+                    default:
+                        console.log("El año " + anio + " está fuera del rango esperado.");
+                }
+            });
+        } else {
+            sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+        }
+    },
+    
+    
+
+   /*   CaseAno: function (tableId) {
+        console.log("TABLA RECIBIDA  : " + tableId);
+    
+        var oDatePickerInicio = this.getView().byId("date_inico");
+        var oDatePickerFin = this.getView().byId("date_fin");
+    
+        var sFechaInicio = oDatePickerInicio.getDateValue();
+        var sFechaFin = oDatePickerFin.getDateValue();
+    
+        if (sFechaInicio && sFechaFin) {
+            var anioInicio = sFechaInicio.getFullYear();
+            var anioFin = sFechaFin.getFullYear();
+    
+            if (anioInicio > anioFin) {
+                sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
+                return;
+            }
+    
+            var aniosEnRango = [];
+            for (var i = anioInicio; i <= anioFin; i++) {
+                aniosEnRango.push(i);
+            }
+    
+            console.log("FECHAS SEPARADAS " + aniosEnRango);
+    
+            var that = this;
+            var distribucion = this.calcularDistribucionInput(); // Obtener distribución
+
+            console.log("Distribucion de fechas para las tablas " + JSON.stringify(distribucion, null)); 
+
+
+            aniosEnRango.forEach(function (anio) {
+                switch (anio) {
+                    case 2025:
+                        console.log("Condiciones específicas para el año 2025.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2025").setText(distribucion[2025] || "0");
+                        }
+                        break;
+                    case 2026:
+                        console.log("Condiciones específicas para el año 2026.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2026").setText(distribucion[2026] || "0");
+                        }
+                        break;
+                    case 2027:
+                        console.log("Condiciones específicas para el año 2027.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2027").setText(distribucion[2027] || "0");
+                        }
+                        break;
+                    case 2028:
+                        console.log("Condiciones específicas para el año 2028.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2028").setText(distribucion[2028] || "0");
+                        }
+                        break;
+                    case 2029:
+                        console.log("Condiciones específicas para el año 2029.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2029").setText(distribucion[2029] || "0");
+                        }
+                        break;
+                    case 2030:
+                        console.log("Condiciones específicas para el año 2030.");
+                        if (tableId === "table_dimicFecha") {
+                            that.getView().byId("tipoS2030").setText(distribucion[2030] || "0");
+                        }
+                        break;
+                    default:
+                        console.log("El año " + anio + " está fuera del rango esperado.");
+                }
+            });
+    
+       //     this.agregarColumnasDinamicas(aniosEnRango);
+        } else {
+            sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+        }
+    },*/
+    
+
+
+
+
+    /*  CaseAno: function (tableId) {
         console.log("TABLA RECIBIDA  : " + tableId);
 
         var oDatePickerInicio = this.getView().byId("date_inico");
@@ -6175,7 +6338,7 @@ sap.ui.define([
         } else {
           sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
         }
-      },
+      },*/
 
 
 
@@ -6616,98 +6779,66 @@ sap.ui.define([
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
         console.log(`1. Nuevo valor ingresado en la tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: ${newValue}`);
-
-        // Detectar si el usuario ha cambiado de tabla
+    
         if (this.currentTable !== tableId) {
-          console.log(`Cambio de tabla detectado. Reiniciando acumulación para la tabla ${tableId}.`);
-          this.resetTableAccumulations(tableId);  // Reiniciar los acumulados de la tabla actual
-          this.currentTable = tableId;  // Actualiza la tabla actual
+            console.log(`Cambio de tabla detectado. Reiniciando acumulación para la tabla ${tableId}.`);
+            this.resetTableAccumulations(tableId);
+            this.currentTable = tableId;
         }
-
-        // Inicializa _tableValues si no existe
-        if (!this._tableValues) {
-          this._tableValues = {};
-        }
-
-        if (!this._tableValues[tableId]) {
-          this._tableValues[tableId] = {};
-        }
-
-        if (!this._tableValues[tableId][rowIndex]) {
-          this._tableValues[tableId][rowIndex] = {};
-        }
-
-        // Guarda el nuevo valor
+    
+        if (!this._tableValues) this._tableValues = {};
+        if (!this._tableValues[tableId]) this._tableValues[tableId] = {};
+        if (!this._tableValues[tableId][rowIndex]) this._tableValues[tableId][rowIndex] = {};
+    
+        // Obtener el valor anterior
+        var oldValue = this._tableValues[tableId][rowIndex][columnIndex] || 0;
+    
+        // Guarda el nuevo valor en _tableValues
         this._tableValues[tableId][rowIndex][columnIndex] = newValue;
-
-        // Mantiene un registro de las filas editadas
-        if (!this._editedRows) {
-          this._editedRows = {};
-        }
-
-        if (!this._editedRows[tableId]) {
-          this._editedRows[tableId] = new Set();
-        }
+    
+        if (!this._editedRows) this._editedRows = {};
+        if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
         this._editedRows[tableId].add(rowIndex);
-
-        // Indica que ha habido un cambio en la tabla
+    
         this._tableChanged = true;
-
+    
         console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
-
-        // Asegúrate de que _yearlySums tiene los datos de la fila y el año
-        if (!this._yearlySums[rowIndex]) {
-          this._yearlySums[rowIndex] = {};
-        }
-
-        // Si ya existe un valor acumulado, sumamos el nuevo valor
+    
+        if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
+        
+        // Restar el valor anterior antes de sumar el nuevo
         if (this._yearlySums[rowIndex][year] !== undefined) {
-          this._yearlySums[rowIndex][year] += newValue;
-        } else {
-          // Si no existe el valor para ese año, asignamos el nuevo valor
-          this._yearlySums[rowIndex][year] = newValue;
+            this._yearlySums[rowIndex][year] -= oldValue;
         }
-
+    
+        this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
+    
         console.log(`Valor actualizado en _yearlySums[${rowIndex}][${year}]:`, this._yearlySums[rowIndex][year]);
-
-        // Verifica y asegura que las estructuras de acumulación por tabla y fila estén correctas
-        if (!this._yearlySums[tableId]) {
-          this._yearlySums[tableId] = {};
-        }
-
-        if (!this._yearlySums[tableId][rowIndex]) {
-          this._yearlySums[tableId][rowIndex] = {};
-        }
-
-        // Acumula correctamente el valor para el año
-        if (!this._yearlySums[tableId][rowIndex][year]) {
-          this._yearlySums[tableId][rowIndex][year] = 0;
-        }
+    
+        if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
+        if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
+        if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
+    
+        this._yearlySums[tableId][rowIndex][year] -= oldValue;
         this._yearlySums[tableId][rowIndex][year] += newValue;
-
+    
         console.log(`Suma acumulada para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
-
-        // Actualiza el campo de total de la tabla
+    
         this.updateTotalField(tableId, rowIndex, newValue);
         this.CaseAno(tableId);
-
+    
         console.log(`Suma total para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
-
-        // **Registrar la inserción en la tabla**
-        if (!this._insercionesPorTabla) {
-          this._insercionesPorTabla = {};
-        }
-
-        if (!this._insercionesPorTabla[tableId]) {
-          this._insercionesPorTabla[tableId] = 0;
-        }
-
-        // Incrementar el número de inserciones en esta tabla
+    
+        if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
+        if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
+        
         this._insercionesPorTabla[tableId]++;
-
-        // Llamamos al método que calcula los porcentajes
+    
         this.calcularPorcentajeInserciones();
-      },
+        
+    this.CaseAno();
+    },
+    
 
 
 
@@ -6814,38 +6945,48 @@ sap.ui.define([
 
         // Llamamos al cálculo de distribución del input
         this.calcularDistribucionInput();
+     //   this.CaseAno();
       },
 
 
 
+
+    
+    
       calcularDistribucionInput: function () {
         let oInput = this.byId("input0_1725625161348");
-
+    
         if (!oInput) {
-          console.error("❌ Error: No se encontró el input con ID 'input0_1725625161348'");
-          return;
+            console.error("❌ Error: No se encontró el input con ID 'input0_1725625161348'");
+            return null;
         }
-
+    
         let totalInputValue = parseFloat(oInput.getValue()) || 0;
-
+    
         console.log(`🟢 Total del input: ${totalInputValue}`);
-
+    
         if (totalInputValue === 0) {
-          console.log("⚠️ El valor del input es 0, no se puede distribuir.");
-          return;
+            console.log("⚠️ El valor del input es 0, no se puede distribuir.");
+            return null;
         }
-
+    
         console.log("📢 **Distribución del input según los porcentajes**");
-
+    
+        let valoresDistribuidos = {};  // Objeto para almacenar los valores calculados por tabla
+    
         for (let table in this._porcentajesPorTabla) {
-          let porcentaje = this._porcentajesPorTabla[table];
-          let valorDistribuido = (totalInputValue * porcentaje) / 100;
-
-          console.log(`🔹 Tabla ${table} ➝ ${porcentaje.toFixed(2)}% del input ➝ ${valorDistribuido.toFixed(2)}`);
+            let porcentaje = this._porcentajesPorTabla[table];
+            let valorDistribuido = (totalInputValue * porcentaje) / 100;
+            valoresDistribuidos[table] = valorDistribuido;
+    
+            console.log(`🔹 Tabla metodo2 ${table} ➝ ${porcentaje.toFixed(2)}% del input ➝ ${valorDistribuido.toFixed(2)}`);
         }
-
+    
         console.log("------------------------------------------------");
-      },
+
+
+        return valoresDistribuidos;
+    },
 
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
