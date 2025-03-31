@@ -129,7 +129,7 @@ module.exports = cds.service.impl(async function () {
     console.log(" Datos recibidos:", JSON.stringify(req.data, null, 2));
 
     const {
-        codigoProyect, nameProyect, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
+        codigoProyect, nameProyect, Total,descripcion, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
         sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID,
         Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra,
         AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin
@@ -150,7 +150,9 @@ module.exports = cds.service.impl(async function () {
         await INSERT.into(DatosProyect).entries({
             codigoProyect,
             nameProyect,
+            descripcion,
             pluriAnual,
+            Total,
             funcionalString,
             multijuridica,
             clienteFacturacion,

@@ -71,7 +71,7 @@
 }
 
 .errorCount {
-    color: red;
+    color: rgb(255, 212, 72);
     font-weight: bold;
 }
 
@@ -118,11 +118,12 @@
     font-weight: bold;
 }
 
+
 .miHeader {
-    background-color: #004b99 !important; /* Azul Telefónica */
-    color: white !important;
- 
+    background-color: hsl(226, 100%, 60%)!important;
+    color: hsl(226, 100%, 60%) !important;
 }
+
 
 
 

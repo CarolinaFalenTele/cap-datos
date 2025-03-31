@@ -8,17 +8,65 @@
     font-weight: bold;
 }
 
-.highlight-border {
-    border: 2px solid red !important;
-    background-color: #ffcccc !important;
+.customTableHeader {
+    background-color: #4CAF50 !important;  /* Fondo verde */
+};
+
+.customHeader .sapUiTableHdr {
+    background-color: #ff5722 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.color{
+
+    color: hsl(226, 100%, 60%);
+    font-weight: bold;
+}
+
+.colorTexto{
+
+    color: #f4f8fc ;
+    font-weight: bold;
+}
+
+.colorCora{
+    
+    background-color: #1d1b1b; /* El color que desees */
+    width: 100%; /* Ocupa todo el espacio disponible */
+    height: px;
+}
+
+.highlight-border2  .sapMLabel{
+    border: 1px solid hsl(226, 100%, 60%) !important;
+    background-color: hsl(226, 100%, 60%) !important;
+    color: #FFFFFF !important; 
+
+}
+
+.customHeaderColor .sapMListTblHeader .sapMLabel {
+    color: #FFFFFF !important; 
+    font-weight: bold;
 }
 
 
-
 .customHeaderColor .sapMListTblHeader .sapMListTblCell  {
-    background-color: black; /* Color verde */
-    color: #FFFFFF !important; /* Color blanco puro */
+    background-color: hsl(226, 100%, 60%); 
+    color: #FFFFFF !important; 
    font-weight: bold; /* Texto en negrita */
+
+}
+
+.customHeaderColor2 .sapMListTblHeader .sapMLabel {
+    color: hsl(226, 100%, 60%)!important; 
+    font-weight: bold;
+}
+
+
+.customHeaderColor2 .sapMListTblHeader .sapMListTblCell  {
+    background-color: #f4f8fc ; 
+    color:  hsl(226, 100%, 60%) !important; 
+   font-weight: bold; 
 
 }
 
@@ -28,13 +76,13 @@
 }
 
 .customIconTabBar .sapMITBText {
-    color: red; /* Cambia el color del texto del count */
-    font-weight: bold; /* Opcional: Cambia el peso de la fuente */
+    color: red; 
+    font-weight: bold; 
 }
 
 /* Define el estilo para resaltar la fila */
 .highlightRow {
-    background-color: yellow !important; /* Puedes cambiar este color */
+    background-color: yellow !important; 
 }
 
   .highlight-border {
@@ -44,16 +92,49 @@
   
 
   .customIconColor {
-    color: green; /* Cambia 'red' por el color que desees */
+    color: green; 
 }
   
 .customIconColor .sapUiIcon {
-    color: yellow; /* Cambia este valor al color que prefieras */
+    color: yellow; 
+
 }
 
 
 .miInputNoEditable .sapMInputBaseReadonly {
-    background-color: #f9f9d1; /* Color de fondo personalizado */
-    color: #333333; /* Color del texto */
+    background-color: #f9f9d1; 
+    color: #333333; 
 }
 
+
+.customInputDescription .sapMInputDescription {
+    color: #f4f8fc !important; /* Cambia 'red' por el color que desees */
+    font-weight: bold; /* Opcional: Hace el texto más visible */
+}
+
+.customColumnListItem .sapMListTblCell {
+     background-color: #f8fcfe ; 
+    color:  hsl(226, 100%, 60%) !important; 
+    font-weight: bold;
+}
+
+
+.miHeader {
+    background-color: hsl(226, 100%, 60%)!important;
+    color: hsl(226, 100%, 60%) !important;
+}
+
+
+
+
+.bar{
+    background-color: hsl(226, 100%, 60%); 
+    color: #FFFFFF !important; 
+   font-weight: bold; /* Texto en negrita */
+
+}
+
+#23437 .sapMObjStatusText {
+    color: red !important;
+    font-weight: bold;
+}

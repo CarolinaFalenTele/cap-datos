@@ -53,7 +53,7 @@
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item1">
                                                                         <cells>
-                                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
+                                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" editable="false" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud" showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" value="" id="idDescripcion"/>
 
@@ -215,8 +215,8 @@
                                                                             <CheckBox xmlns="sap.m" text="" selected="false" id="box_pluriAnual"/>
                                                                             <Input xmlns="sap.m" value="" id="input_ipc" placeholder="2,5%"/>
 
-                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
-                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -2288,7 +2288,10 @@
                                                             </Table>
                                                         </items>
                                                     </FlexBox>
-
+			<FlexBox
+				height="100px"
+				alignItems="Start"
+				justifyContent="End">
                                                     <HBox id="cambio344" justifyContent="End">
                                                         <Table noDataText="Drop column list items here and columns in the area above" id="table1_1725623729321" width="900px" class="sapUiLargeMarginTop">
                                                             <items>
@@ -2320,7 +2323,10 @@
                                                             </columns>
                                                         </Table>
                                                     </HBox>
+                                                    </FlexBox>
                                                 </content>
+
+                                           
                                             </Panel>
                                         </IconTabFilter>
 

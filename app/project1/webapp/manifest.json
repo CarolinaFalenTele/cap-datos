@@ -136,6 +136,11 @@
           "name": "viewNoParam",
           "pattern": "view",
           "target": "view"
+        },
+        {
+          "name": "DialogNoparam",
+          "pattern": "Dialog",
+          "target": "Dialog"
         }
       ],
       "targets": {
@@ -152,6 +157,14 @@
           "clearControlAggregation": false,
           "viewId": "view",
           "viewName": "View1",
+          "viewLevel": 1
+        },
+        "Dialog": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Dialog",
+          "viewName": "Dialog1",
           "viewLevel": 1
         }
       }

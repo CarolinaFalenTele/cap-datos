@@ -27,6 +27,7 @@ entity DatosProyect {
       Estado                   : String;
       fechaCreacion            : DateTime @Core.Computed;
       descripcion              : String;
+      Total                    : Integer64;
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
       clienteFuncional         : Association to clienteFuncional;
@@ -58,7 +59,7 @@ entity DatosProyect {
                                    on ConsumoExternos.datosProyect_ID = ID;
       otrosServiciosConsu      : Association to many otrosServiciosConsu
                                    on otrosServiciosConsu.datosProyect_ID = ID;
-
+    
 
       GastoViajeConsumo        : Association to many GastoViajeConsumo
                                    on GastoViajeConsumo.datosProyect_ID = ID;

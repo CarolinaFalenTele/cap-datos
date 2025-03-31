@@ -1,0 +1,99 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        title="Ficha CDO"
+        afterClose="onDialogClose"
+   class="color" >
+        <content>
+            <VBox>
+                <f:SimpleForm
+                    id="SimpleFormChangeColumn_twoGroups234"
+                    editable="true"
+                    layout="ColumnLayout"
+                    title="Solicitud Informacion"
+                    columnsM="2"
+                    columnsL="2"
+                    columnsXL="2"
+             
+                >
+                    <f:content>
+                        <core:Title text="Information General"         />
+                        <Label text="Fecha Creacion del Proyecto" />
+                        <Text text="12/05/09"/>
+                            <Label text="PEP" />
+                        <Text text="PK-23344-AA" >
+       <layoutData>
+                                <f:ColumnElementData
+                                    cellsSmall="2"
+                                    cellsLarge="2"
+                                />
+                            </layoutData>
+                        </Text>
+                        <Label text="Nombre Proyecto: " />
+                        <Text text="" id="idNombreProyecto" />
+
+                           <Label text="Descripción" />
+                        <Text text="Proyecto prueba" id="idDescripcion1" />
+                        <Label text="Fecha Inicio" />
+
+                        <Label text="Fecha Inicio del Proyecto " />
+                        <Text text="" id="fechainitProyect">
+                            <layoutData>
+                                <f:ColumnElementData
+                                    cellsSmall="2"
+                                    cellsLarge="2"
+                                />
+                            </layoutData>
+                        </Text>
+
+                        <Label text="Fecha Fin del Proyecto " />
+                        <Text text=""  id="idFechaFinProyect">
+                            <layoutData>
+                                <f:ColumnElementData
+                                    cellsSmall="2"
+                                    cellsLarge="2"
+                                />
+                            </layoutData>
+                        </Text>
+
+                        <Label text="Area" />
+
+                        <Text text="" id="idArea" />
+
+                        <Label text="Jefe Proyecto " />
+
+                        <Text text="" id="idJefeProyect">
+                            <layoutData>
+                                <f:ColumnElementData
+                                    cellsSmall="2"
+                                    cellsLarge="2"
+                                />
+                            </layoutData>
+                        </Text>
+
+                        <Label text="Total Resumen vs Costes" />
+                               <Text text=""  id="idtotal" />
+
+                       <Label text="Estado" />
+                               <Text text=""  id="idEstadoProyect" class="errorCount" />
+                    </f:content>
+                </f:SimpleForm>
+            </VBox>
+        </content>
+        	<footer>
+			<Toolbar>
+				<content>
+
+					<ToolbarSpacer />
+					<Button type="Accept"
+							text="Aceptar"
+							press="._closeDialog" />
+				</content>
+			</Toolbar>
+		</footer>
+    </Dialog>
+</core:FragmentDefinition>

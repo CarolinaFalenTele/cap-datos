@@ -25,10 +25,40 @@ sap.ui.define(
                 this.loadFilteredDataPend();
 
 
-                console.log("Vista de appp " + this.getView());
+           //     console.log("Vista de appp " + this.getView());
+
+          // this.DialogInfo();
             },
 
 
+
+            getUserInfo: function () {
+                fetch('/odata/v4/datos-cdo/getUserInfo')
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error("No se pudo obtener la información del usuario.");
+                  }
+                  return response.json();
+                })
+                .then(data => {
+            //      console.log("Datos del usuario:", data);
+        
+                  // Asegúrate de acceder correctamente a los valores dentro de "value"
+                  const userInfo = data.value;
+        
+                  if (userInfo) {
+                    // Aquí puedes acceder y setear los valores en los controles
+                    this.byId("233").setText(userInfo.name); 
+                //    this.byId("userEmailInput").setValue(userInfo.email);
+                  } else {
+                    console.error("No se encontró la información del usuario.");
+                  }
+                })
+                .catch(error => {
+                  console.error("❌ Error obteniendo datos del usuario:", error);
+                });
+        
+              },
 
 
             loadFilteredData: function () {
@@ -590,11 +620,95 @@ sap.ui.define(
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 oRouter.navTo("view", {
                     sProjectID: sProjectID
-                }, true /* Replace history to avoid back navigation issue */);
+                }, true );
             },
             
 
 
+            onView: function(oEvent){
+     
+                    if (!this.Dialog) {
+                        this.Dialog = this.loadFragment({
+                            name: "project1.view.Dialog"
+                        });
+                    }
+                    this.Dialog.then(function(oDialog) {
+                        this.oDialog = oDialog;
+                        this.oDialog.open();
+                    }.bind(this));
+                
+                
+
+            },
+
+
+
+            _closeDialog: function () {
+                this.oDialog.close();
+            },
+
+
+
+            // Método asíncrono que maneja la información del diálogo
+            DialogInfo: async function (oEvent) {
+                this.onView();
+
+               // Obtener el botón que fue presionado
+               var oButton = oEvent.getSource();
+            
+               // Obtener el valor de CustomData (ID del proyecto)
+               var sProjectID = oButton.getCustomData().find(function (oData) {
+                   return oData.getKey() === "projectId";  
+               }).getValue();
+           
+                console.log("Metodo project "  + sProjectID);
+               
+                const Token = this._sCsrfToken;
+                var oModel = this.getView().getModel("mainService");
+                if (oModel) {
+                  oModel.setData({});  // Limpia los datos al cargar la vista
+                  oModel.refresh(true);
+                }
+        
+    
+            
+                // Construye la URL con el ID correctamente escapado
+                var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+        
+                try {
+                  const response = await fetch(sUrl, {
+                    method: 'GET',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'x-csrf-token': Token
+                    }
+                  });
+        
+                  if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Network response was not ok: ' + errorText);
+                  }
+        
+                  const oData = await response.json();
+                
+                console.log(JSON.stringify(oData));
+
+
+                this.byId("idNombreProyecto").setText(oData.nameProyect);
+               this.byId("idDescripcion1").setText(oData.descripcion);
+               this.byId("fechainitProyect").setText(oData.Fechainicio);
+               this.byId("idFechaFinProyect").setText(oData.FechaFin);
+               this.byId("idEstadoProyect").setText(oData.estado);
+               this.byId("idArea").setText(oData.Area_ID.NombreArea);
+              // this.byId("idArea").setText(oData.Area_ID.NombreArea);
+
+            } catch (error) {
+              console.error("Error al obtener los datos del proyecto:", error);
+              sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+            }
+              },
+        
 
             /*onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado
@@ -674,7 +788,7 @@ sap.ui.define(
                                         "LicenciasCon"
                                     ];
             
-                                    // 2️⃣ Obtener y eliminar registros relacionados
+                                    // 2️ Obtener y eliminar registros relacionados
                                     let deletePromises = paths.map(async (path) => {
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
                                             method: "GET",
