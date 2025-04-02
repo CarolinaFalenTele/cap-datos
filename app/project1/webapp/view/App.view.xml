@@ -113,7 +113,7 @@
                                                 >
                                                     <headerToolbar>
                                                         <Toolbar
-                                                            id="headerToolbar"
+                                                            id="headerToolbar" 
                                                         >
                                                             <Title
                                                                 id="title"

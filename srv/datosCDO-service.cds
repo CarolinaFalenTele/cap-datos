@@ -71,7 +71,29 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   action StartProcess(
         scodigoProyect: Integer,
         snameProyect: String,
-        generatedId: String
+        generatedId: String,
+        descripcion: String,
+        area:  String,
+        jefeProyecto : String,
+        clienteFuncional : String, 
+        clinteFacturacion : String, 
+        fechaInicio : Date, 
+        fechaFin : Date, 
+        jornadasTotales: Integer,
+        RecursosInterno: Integer,
+        ConsumoExterno: Integer,
+        RecursoExterno: Integer,
+        Infraestructura: Integer,
+        Licencia: Integer,
+        Subtotal: Integer,
+        CosteEstru: Integer,
+        CosteEstructura: Integer,
+        MargenIn : Integer, 
+        MargenSobreIngreso : Integer, 
+        Total: Integer, 
+
+
+
     ) returns String;
 
 

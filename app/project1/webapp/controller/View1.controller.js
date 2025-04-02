@@ -2900,7 +2900,7 @@ sap.ui.define([
         const saChartdata = this._aChartData;
         const idPlan = this._idPlani; // Asegúrate de que esta variable está correctamente asignada
 
-        //   console.log("ID  = " +  idPlan); 
+        console.log("ID  = " + idPlan);
         // ----------------Inserción de planificación
         const payload2Array = saChartdata.map(chart => ({
           hito: chart.fase,
@@ -6087,6 +6087,8 @@ sap.ui.define([
         this.CaseAno();
       },
 
+
+
       CaseAno: function (tableId) {
         console.log("TABLA RECIBIDA  : " + tableId);
     
@@ -6119,48 +6121,76 @@ sap.ui.define([
             console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
     
             var that = this;
-            
-            // Inicializar variables antes del bucle para evitar `NaN`
-            var vValor2025 = 0, vValor2026 = 0, vValor2027 = 0, vValor2028 = 0, vValor2029 = 0;
+            var Totalporcentaje = 0;
+            var valoresPorAno = {};
+            var valoresPorAnoPorInput = {};
+            var totalesPorInput = {};
     
-            aniosEnRango.forEach(function (anio) {
-                if (valoresDistribuidos[tableId] && valoresDistribuidos[tableId][anio]) {
-                    console.log("📌 Año encontrado: ", anio);
+            aniosEnRango.forEach(anio => {
+                valoresPorAno[anio] = 0;
+                valoresPorAnoPorInput[anio] = {};
+            });
     
-                    var vValor = parseFloat(valoresDistribuidos[tableId][anio].valor) || 0;
+            Object.keys(valoresDistribuidos).forEach(function (table) {
+                aniosEnRango.forEach(function (anio) {
+                    if (valoresDistribuidos[table] && valoresDistribuidos[table][anio]) {
+                        valoresDistribuidos[table][anio].forEach(distribucion => {
+                            var inputName = distribucion.input;
+                            var vValor = parseFloat(distribucion.valor) || 0;
     
-                    switch (anio) {
-                        case 2025:
-                            vValor2025 = vValor;
-                            that.getView().byId("tipoS2025").setText(vValor2025.toFixed(2));
-                            break;
-                        case 2026:
-                            vValor2026 = vValor;
-                            that.getView().byId("tipoS2026").setText(vValor2026.toFixed(2));
-                            break;
-                        case 2027:
-                            vValor2027 = vValor;
-                            that.getView().byId("tipoS2027").setText(vValor2027.toFixed(2));
-                            break;
-                        case 2028:
-                            vValor2028 = vValor;
-                            that.getView().byId("tipoS2028").setText(vValor2028.toFixed(2)); // Corregido
-                            break;
-                        case 2029:
-                            vValor2029 = vValor;
-                            that.getView().byId("tipoS2029").setText(vValor2029.toFixed(2)); // Corregido
-                            break;
-                        default:
-                            console.log("Condiciones específicas para el año " + anio);
+                            valoresPorAno[anio] += vValor;
+                            Totalporcentaje += vValor;
+    
+                            if (!valoresPorAnoPorInput[anio][inputName]) {
+                                valoresPorAnoPorInput[anio][inputName] = 0;
+                            }
+                            valoresPorAnoPorInput[anio][inputName] += vValor;
+    
+                            // Acumular total general por input
+                            if (!totalesPorInput[inputName]) {
+                                totalesPorInput[inputName] = 0;
+                            }
+                            totalesPorInput[inputName] += vValor;
+                        });
                     }
-                } else {
-                    console.warn(`⚠️ No se encontró la entrada para ${tableId} en valoresDistribuidos para el año ${anio}`);
+                });
+            });
+    
+            aniosEnRango.forEach(anio => {
+                switch (anio) {
+                    case 2025:
+                        that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+
+                        that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("TSCosteD2025").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
+                        that.getView().byId("costes_indirectos2025").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+                        break;
+                    case 2026:
+                        that.getView().byId("tipoS2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("TRecurso2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                         that.getView().byId("TSCosteT2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("cellCostesTotales_1_2").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+
+                        that.getView().byId("TSCosteD2026").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
+                        that.getView().byId("costes_indirectos2026").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+                        break;
+                    case 2027:
+                        that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                        break;
                 }
             });
     
-            // Calcular total después del `forEach`
-            var Totalporcentaje = vValor2025 + vValor2026 + vValor2027 + vValor2028 + vValor2029;
-            that.getView().byId("tipoSTotal").setText(Totalporcentaje.toFixed(2));
+            // Mostrar los totales generales
+            that.getView().byId("tipoSTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+            that.getView().byId("TRecursoTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+            that.getView().byId("TSCosteTotalD").setText((totalesPorInput["Input2"] || 0).toFixed(2) + "€");
+            that.getView().byId("TSCosteTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+            that.getView().byId("cellCostesTotales_1_7").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+
+            that.getView().byId("costes_indirectosTotal").setText((totalesPorInput["Input3"] || 0).toFixed(2) + "€");
     
             console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
         } else {
@@ -6168,7 +6198,200 @@ sap.ui.define([
         }
     },
     
- 
+
+
+
+
+
+      /*   CaseAno: function (tableId) {
+           console.log("TABLA RECIBIDA  : " + tableId);
+       
+           var oDatePickerInicio = this.getView().byId("date_inico");
+           var oDatePickerFin = this.getView().byId("date_fin");
+       
+           var sFechaInicio = oDatePickerInicio.getDateValue();
+           var sFechaFin = oDatePickerFin.getDateValue();
+       
+           if (sFechaInicio && sFechaFin) {
+               var anioInicio = sFechaInicio.getFullYear();
+               var anioFin = sFechaFin.getFullYear();
+       
+               if (anioInicio > anioFin) {
+                   sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
+                   return;
+               }
+       
+               var aniosEnRango = [];
+               for (var i = anioInicio; i <= anioFin; i++) {
+                   aniosEnRango.push(i);
+               }
+       
+               var valoresDistribuidos = this.calcularDistribucionInput();
+               if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
+                   sap.m.MessageToast.show("No se pudo calcular la distribución.");
+                   return;
+               }
+       
+               console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
+       
+               var that = this;
+       
+               // Reiniciar valores antes de sumar
+               var Totalporcentaje = 0;
+               var valoresPorAno = {};
+       
+               // Inicializar todos los años en el rango con 0
+               aniosEnRango.forEach(anio => {
+                   valoresPorAno[anio] = 0;
+               });
+       
+               // Iterar sobre cada tabla en valoresDistribuidos
+               Object.keys(valoresDistribuidos).forEach(function (table) {
+                   aniosEnRango.forEach(function (anio) {
+                       if (valoresDistribuidos[table] && valoresDistribuidos[table][anio]) {
+                           console.log("📌 Año encontrado: ", anio);
+       
+                           var vValor = parseFloat(valoresDistribuidos[table][anio].valor) || 0;
+       
+                           valoresPorAno[anio] += vValor; // Sumar el valor al año correspondiente
+                           Totalporcentaje += vValor; // Sumar al total general
+       
+                           // **Asignar valores con switch**
+                           switch (anio) {
+                               case 2025:
+                                 that.getView().byId("tipoS2025").rerender(); 
+                                   that.getView().byId("tipoS2025").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   that.getView().byId("TRecurso2025").setText(valoresPorAno[anio].toFixed(2) + "€");
+   
+                                   break;
+                               case 2026:
+                                 
+                               that.getView().byId("tipoS2025").rerender(); 
+   
+                                   that.getView().byId("tipoS2026").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   that.getView().byId("TRecurso2026").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   break;
+                               case 2027:
+                                   that.getView().byId("tipoS2027").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   that.getView().byId("TRecurso2027").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   break;
+                               case 2028:
+                                   that.getView().byId("tipoS2028").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   that.getView().byId("TRecurso2028").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   break;
+                               case 2029:
+                                   that.getView().byId("tipoS2029").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   that.getView().byId("TRecurso2029").setText(valoresPorAno[anio].toFixed(2) + "€");
+                                   break;
+                           }
+                       }
+                   });
+               });
+       
+               // **Aquí puedes añadir más condiciones antes de actualizar la vista**
+               // Ejemplo: Si un año tiene un valor mayor a X, hacer algo
+               Object.keys(valoresPorAno).forEach(anio => {
+                   if (valoresPorAno[anio] > 1000) {
+                       console.log(`⚠ El año ${anio} tiene un valor alto: ${valoresPorAno[anio].toFixed(2)}€`);
+                   }
+               });
+       
+               // **Actualizar el total**
+               that.getView().byId("tipoSTotal").setText(Totalporcentaje.toFixed(2) + "€");
+               that.getView().byId("TRecursoTotal").setText(Totalporcentaje.toFixed(2) + "€");
+   
+   
+               console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
+           } else {
+               sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+           }
+       },*/
+
+
+
+
+
+      /**CaseAno: function (tableId) {
+          console.log("TABLA RECIBIDA  : " + tableId);
+      
+          var oDatePickerInicio = this.getView().byId("date_inico");
+          var oDatePickerFin = this.getView().byId("date_fin");
+      
+          var sFechaInicio = oDatePickerInicio.getDateValue();
+          var sFechaFin = oDatePickerFin.getDateValue();
+      
+          if (sFechaInicio && sFechaFin) {
+              var anioInicio = sFechaInicio.getFullYear();
+              var anioFin = sFechaFin.getFullYear();
+      
+              if (anioInicio > anioFin) {
+                  sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
+                  return;
+              }
+      
+              var aniosEnRango = [];
+              for (var i = anioInicio; i <= anioFin; i++) {
+                  aniosEnRango.push(i);
+              }
+      
+              var valoresDistribuidos = this.calcularDistribucionInput();
+              if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
+                  sap.m.MessageToast.show("No se pudo calcular la distribución.");
+                  return;
+              }
+      
+              console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
+      
+              var that = this;
+      
+              // **Inicializar la suma total antes del bucle**
+              var Totalporcentaje = 0;
+      
+              aniosEnRango.forEach(function (anio) {
+                  if (valoresDistribuidos[tableId] && valoresDistribuidos[tableId][anio]) {
+                      console.log("📌 Año encontrado: ", anio);
+      
+                      var vValor = parseFloat(valoresDistribuidos[tableId][anio].valor) || 0;
+      
+                      // Asignar valores por año y actualizar la suma total
+                      switch (anio) {
+                          case 2025:
+                              that.getView().byId("tipoS2025").setText(vValor.toFixed(2) + "€");
+                              break;
+                          case 2026:
+                              that.getView().byId("tipoS2026").setText(vValor.toFixed(2) + "€");
+                              break;
+                          case 2027:
+                              that.getView().byId("tipoS2027").setText(vValor.toFixed(2) + "€");
+                              break;
+                          case 2028:
+                              that.getView().byId("tipoS2028").setText(vValor.toFixed(2) + "€");
+                              break;
+                          case 2029:
+                              that.getView().byId("tipoS2029").setText(vValor.toFixed(2) + "€");
+                              break;
+                          default:
+                              console.log("Condiciones específicas para el año " + anio);
+                      }
+      
+                      // **Sumar el valor al total correctamente**
+                      Totalporcentaje += vValor;
+                  } else {
+                      console.warn(`⚠️ No se encontró la entrada para ${tableId} en valoresDistribuidos para el año ${anio}`);
+                  }
+              });
+      
+              // **Actualizar el total correctamente después del bucle**
+              that.getView().byId("tipoSTotal").setText(Totalporcentaje.toFixed(2) + "€");
+      
+              console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
+          } else {
+              sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+          }
+      },*/
+
+
+
       /*  CaseAno: function (tableId) {
           console.log("TABLA RECIBIDA  : " + tableId);
       
@@ -6773,85 +6996,154 @@ sap.ui.define([
             }
           }
         }
-
-        //  this.CaseAno();
-
       },
 
+
+
+
       calcularDistribucionInput: function () {
+        //let inputIds = ["input0_1725625161348", "totalSubtotal", "input2_1724756105"]; // IDs de los inputs
 
 
-        let oInput = this.byId("input0_1725625161348");
 
-        if (!oInput) {
-          console.error("Error: No se encontró el input con ID 'input0_1725625161348'");
-          return null;
-        }
+        let inputs = [
+          { id: "input0_1725625161348", nombre: "Input1" },
+          { id: "totalSubtotal", nombre: "Input2" },
+          { id: "input2_1724756105", nombre: "Input3" }
+          //      { id: "input3_1725625161351", nombre: "Input4" }
+        ];
 
-        let totalInputValue = parseFloat(oInput.getValue()) || 0;
-        console.log(`Total del input: ${totalInputValue}`);
 
-        if (totalInputValue === 0) {
-          console.log("⚠ El valor del input es 0, no se puede distribuir.");
-          return null;
-        }
 
-        console.log("**Distribución del input según los porcentajes**");
+        let valoresDistribuidos = {};
 
-        let valoresDistribuidos = {}; // Objeto para almacenar los valores calculados por tabla y año
-
-        for (let table in this._porcentajesPorTabla) {
-          let porcentaje = this._porcentajesPorTabla[table];
-          let valorDistribuido = (totalInputValue * porcentaje) / 100;
-
-          console.log(`🔹 Tabla metodo2 ${table} ➝ ${porcentaje.toFixed(2)}% del input ➝ ${valorDistribuido.toFixed(2)}`);
-
-          // Asegurar que valoresDistribuidos[table] sea un objeto
-          if (!valoresDistribuidos[table]) {
-            valoresDistribuidos[table] = {};
+        inputs.forEach(input => {
+          let oInput = this.byId(input.id);
+          if (!oInput) {
+            console.error(`Error: No se encontró el input con ID '${input.id}'`);
+            return;
           }
 
-          // Iterar sobre años
-          for (let year in this._insercionesPorAnoYTabla) {
-            if (!this._insercionesPorAnoYTabla[year][table]) {
-              console.warn(`No hay inserciones para la tabla ${table} en el año ${year}.`);
-              continue;
-            }
+          let totalInputValue = parseFloat(oInput.getValue()) || 0;
+          if (totalInputValue === 0) {
+            console.log(`⚠ El valor del input ${input.nombre} es 0, no se puede distribuir.`);
+            return;
+          }
 
-            let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
+          for (let table in this._porcentajesPorTabla) {
+            let porcentaje = this._porcentajesPorTabla[table];
+            let valorDistribuido = (totalInputValue * porcentaje) / 100;
 
-            console.log(`INSERCIONES DE AÑO TRAIDAS (${year}): ${insercionesEnAno}`);
-
-            if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
-              console.log(`No hay inserciones registradas en la tabla ${table}.`);
-              continue;
-            }
-
-            let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
-            let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
-
-            // Asegurar que la estructura existe antes de asignar valores
             if (!valoresDistribuidos[table]) {
               valoresDistribuidos[table] = {};
             }
 
-            // Asignar valor por año
-            valoresDistribuidos[table][year] = {
-              porcentaje: porcentajePorAno.toFixed(2),
-              valor: valorDistribuidoPorAno.toFixed(2)
-            };
+            for (let year in this._insercionesPorAnoYTabla) {
+              if (!this._insercionesPorAnoYTabla[year][table]) {
+                continue;
+              }
 
-            console.log(`RESULTADO FINAL -->>> Año ${year}: ${insercionesEnAno} inserciones ➝ ${porcentajePorAno.toFixed(2)}% ➝ ${valorDistribuidoPorAno.toFixed(2)}`);
+              let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
+
+              if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
+                continue;
+              }
+
+              let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
+              let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
+
+              if (!valoresDistribuidos[table][year]) {
+                valoresDistribuidos[table][year] = [];
+              }
+
+              valoresDistribuidos[table][year].push({
+                input: input.nombre,
+                porcentaje: porcentajePorAno.toFixed(2),
+                valor: valorDistribuidoPorAno.toFixed(2)
+              });
+            }
           }
-        }
-
-
-        // this.CaseAno();
+        });
 
         console.log("Distribución final de valores:", valoresDistribuidos);
-
         return valoresDistribuidos;
       },
+
+
+      /*   calcularDistribucionInput: function () {
+   
+   
+           let oInput = this.byId("input0_1725625161348");
+   
+           if (!oInput) {
+             console.error("Error: No se encontró el input con ID 'input0_1725625161348'");
+             return null;
+           }
+   
+           let totalInputValue = parseFloat(oInput.getValue()) || 0;
+           console.log(`Total del input: ${totalInputValue}`);
+   
+           if (totalInputValue === 0) {
+             console.log("⚠ El valor del input es 0, no se puede distribuir.");
+             return null;
+           }
+   
+           console.log("**Distribución del input según los porcentajes**");
+   
+           let valoresDistribuidos = {}; // Objeto para almacenar los valores calculados por tabla y año
+   
+           for (let table in this._porcentajesPorTabla) {
+             let porcentaje = this._porcentajesPorTabla[table];
+             let valorDistribuido = (totalInputValue * porcentaje) / 100;
+   
+             console.log(`🔹 Tabla metodo2 ${table} ➝ ${porcentaje.toFixed(2)}% del input ➝ ${valorDistribuido.toFixed(2)}`);
+   
+             // Asegurar que valoresDistribuidos[table] sea un objeto
+             if (!valoresDistribuidos[table]) {
+               valoresDistribuidos[table] = {};
+             }
+   
+             // Iterar sobre años
+             for (let year in this._insercionesPorAnoYTabla) {
+               if (!this._insercionesPorAnoYTabla[year][table]) {
+                 console.warn(`No hay inserciones para la tabla ${table} en el año ${year}.`);
+                 continue;
+               }
+   
+               let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
+   
+               console.log(`INSERCIONES DE AÑO TRAIDAS (${year}): ${insercionesEnAno}`);
+   
+               if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
+                 console.log(`No hay inserciones registradas en la tabla ${table}.`);
+                 continue;
+               }
+   
+               let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
+               let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
+   
+               // Asegurar que la estructura existe antes de asignar valores
+               if (!valoresDistribuidos[table]) {
+                 valoresDistribuidos[table] = {};
+               }
+   
+               // Asignar valor por año
+               valoresDistribuidos[table][year] = {
+                 porcentaje: porcentajePorAno.toFixed(2),
+                 valor: valorDistribuidoPorAno.toFixed(2)
+               };
+   
+               console.log(`RESULTADO FINAL -->>> Año ${year}: ${insercionesEnAno} inserciones ➝ ${porcentajePorAno.toFixed(2)}% ➝ ${valorDistribuidoPorAno.toFixed(2)}`);
+             }
+           }
+   
+   
+           // this.CaseAno();
+   
+           console.log("Distribución final de valores:", valoresDistribuidos);
+   
+           return valoresDistribuidos;
+         },*/
 
 
 
@@ -7615,6 +7907,12 @@ sap.ui.define([
         this.byId("input0_1725625161348").setValue(formattedTotalWithEuro);
 
 
+        this.calcularDistribucionInput();
+        this.CaseAno();
+        // Call CaseAno only if necessary
+        if (this._insercionesPorAnoYTabla) {
+          this.CaseAno();
+        }
 
         // Establecer el valor formateado en el input
 

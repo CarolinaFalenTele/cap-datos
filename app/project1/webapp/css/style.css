@@ -138,3 +138,22 @@
     color: red !important;
     font-weight: bold;
 }
+
+.miTabla .sapMListTbl {
+    border: 1px solid hsl(226, 100%, 60%) !important; ; /* Borde general */
+}
+
+
+.miTabla .sapMListTblRow {
+    border-bottom: 1px solid gray; /* Bordes entre filas */
+}
+
+
+.toolbar-con-borde {
+    border: 1px solid hsl(226, 100%, 60%); 
+    border-radius: 5px; 
+    
+}
+
+
+
