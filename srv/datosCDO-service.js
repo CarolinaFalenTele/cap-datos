@@ -75,27 +75,30 @@ module.exports = cds.service.impl(async function () {
 
 
   
-  this.on('getUserInfo', async (req) => {
-    console.log("⚡ HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
-    
-    // Verificar si el usuario está autenticado
-    if (!req.user || !req.user.id) {
-      console.log("⚠️ No se encontró usuario autenticado.");
-      return {}; // Devuelve un objeto vacío si no se encuentra al usuario
-    }
+this.on('getUserInfo', async (req) => {
+  console.log("⚡ HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
 
-    // Obtener los datos básicos del usuario desde req.user
-    const userInfo = {
-      id: req.user.id, // Usamos req.user.id, el cual debería ser el identificador único del usuario
-      email: req.user.email || "No disponible", // Usamos el correo si está disponible
-      name: req.user.attr?.given_name || req.user.id, // Usamos el nombre si está disponible, o el id si no lo está
-      fullName: req.user.attr?.name || "No disponible", // Intenta obtener el nombre completo (fullName)
-      phoneNumber: req.user.attr?.phone_number || "No disponible" // Intenta obtener el número de teléfono
-    };
+  if (!req.user || !req.user.id) {
+    console.log("⚠️ No se encontró usuario autenticado.");
+    return {};
+  }
 
-    console.log("✅ Datos del usuario:", userInfo);
-    return userInfo; // Devolvemos el objeto con los datos del usuario
-  });
+  console.log("🧾 req.user completo:", req.user);
+
+  const attr = req.user.attr || {};
+
+  const userInfo = {
+    id: req.user.id,
+    email: attr.email || "No disponible",
+    name: attr.givenName || "No disponible",
+    familyName: attr.familyName || "No disponible",
+    fullName: `${attr.givenName || ''} ${attr.familyName || ''}`.trim() || "No disponible",
+    phoneNumber: attr.phoneNumber || "No disponible"
+  };
+
+  console.log("✅ Datos del usuario:", userInfo);
+  return userInfo;
+});
 
 
   module.exports = cds.service.impl(async function() {
@@ -130,18 +133,13 @@ module.exports = cds.service.impl(async function () {
 
     const {
         codigoProyect, nameProyect, Total,descripcion, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
-        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID,
-        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra,
+        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado,
+        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion,
         AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin
     } = req.data;
 
-    req.data.fechaCreacion = new Date().toISOString();
+   // req.data.fechaCreacion = new Date().toISOString();
 
-
-    if (!codigoProyect || !nameProyect) {
-        console.log("❌ Faltan campos obligatorios");
-        return req.reject(400, "Faltan campos obligatorios: codigoProyect o nameProyect.");
-    }
 
     try {
         console.log("✅ Insertando en la base de datos...");
@@ -150,6 +148,10 @@ module.exports = cds.service.impl(async function () {
         await INSERT.into(DatosProyect).entries({
             codigoProyect,
             nameProyect,
+            Email,
+            Empleado,
+            fechaCreacion,
+            FechaModificacion,
             descripcion,
             pluriAnual,
             Total,
@@ -179,7 +181,7 @@ module.exports = cds.service.impl(async function () {
         console.log("🎉 Inserción exitosa.");
 
         //  Obtener el ID recién generado
-        const newRecord = await SELECT.one.from(DatosProyect).where({ codigoProyect });
+        const newRecord = await SELECT.one.from(DatosProyect).where({ nameProyect });
 
         if (!newRecord || !newRecord.ID) {
             console.error("⚠️ No se pudo recuperar el ID después de la inserción.");

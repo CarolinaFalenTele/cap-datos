@@ -52,7 +52,8 @@
                                 <ObjectAttribute
                                     id="233"
                                     title="Empleado"
-                                    text="David Arroyo"
+                                    text=""
+                                    active="true"
                                 />
                                 <ObjectAttribute
                                     id="223"
@@ -64,6 +65,7 @@
                                     id="2"
                                     title="Departamento"
                                     text="BTP"
+                                    
                                 />
                                 <!--  <ObjectAttribute id="2323" title="Weight per unit" text="" />
                                 <ObjectAttribute id="2222" title="Dimension per unit" text="" />-->
@@ -113,7 +115,7 @@
                                                 >
                                                     <headerToolbar>
                                                         <Toolbar
-                                                            id="headerToolbar"
+                                                            id="headerToolbar" 
                                                         >
                                                             <Title
                                                                 id="title"
@@ -139,7 +141,7 @@
                                                         >
                                                             <Label
                                                                 id="txtFecha"
-                                                                text="Fecha"
+                                                                text="Fecha Creacion"
                                                             />
                                                         </Column>
                                                         <Column
@@ -217,7 +219,7 @@
                                                             <cells>
                                                                 <ObjectIdentifier
                                                                     id="txtFechai"
-                                                                    title="{path: 'Fechainicio', formatter: '.formatDate'}"
+                                                                    title="{path: 'fechaCreacion', formatter: '.formatDate'}"
                                                                 />
                                                                 <Text
                                                                     id="txtCellCodigo"
@@ -229,7 +231,7 @@
                                                                 />
                                                                 <Text
                                                                     id="txtCellDescripcion"
-                                                                    text="{ListaCdo>Descripcion}"
+                                                                    text="{descripcion}"  class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="txtCellArea"
@@ -246,11 +248,12 @@
                                                                     state="Warning"
                                                                 />
 
-                                                                <HBox id="fff">
+                                                                <HBox id="fff" >
                                                                     <Button
                                                                         press="DialogInfo"
                                                                         icon="sap-icon://message-information"
                                                                         ariaHasPopup="Dialog"
+                                                                        
                                                                     >
                                                                         <customData
                                                                         >
@@ -260,7 +263,10 @@
                                                                                 value="{ID}"
                                                                             />
                                                                         </customData>
+
+                                                             
                                                                     </Button>
+
                                                                     <Button
                                                                         id="butn34"
                                                                         icon="sap-icon://edit"
@@ -268,6 +274,12 @@
                                                                     >
                                                                         <customData
                                                                         >
+                                                                             <core:CustomData
+                                                                                    xmlns:core="sap.ui.core"
+                                                                                    id="mivrf5op"
+                                                                                    key="nameProyect"
+                                                                                    value="{nameProyect}"
+                                                                                />
                                                                             <core:CustomData
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"

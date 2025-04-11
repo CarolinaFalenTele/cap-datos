@@ -25,11 +25,14 @@ entity DatosProyect {
       datosExtra               : LargeString;
       CambioEuRUSD             : Integer;
       Estado                   : String;
-      fechaCreacion            : DateTime @Core.Computed;
+      Email                    : String;
+      Empleado                 : String; 
+      fechaCreacion            : DateTime;
       descripcion              : String;
       Total                    : Integer64;
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
+      FechaModificacion        : Date;
       clienteFuncional         : Association to clienteFuncional;
       TipoServicio             : Association to TipoServicio;
       Vertical                 : Association to Vertical;

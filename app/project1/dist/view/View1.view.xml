@@ -15,8 +15,17 @@
                 <VBox id="vbox1230">
                     <items>
                         <ObjectHeader id="oh1" responsive="true" fullScreenOptimized="true" intro="Comite de oportunidades" title="Ficha Solicitud Aprobación Proyecto - Comité de Oportunidades" numberUnit="" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header  miHeader">
-                            <ObjectAttribute id="dddtg" title="Email address" text="" active="true"/>
-                            <ObjectAttribute id="nolmd" title="Office Phone" text="+33 6 453 564"/>
+                          
+                          
+                             <ObjectAttribute
+                                    id="23d3"
+                                    title="Empleado"
+                                    text=""
+                                />
+                          
+                            <ObjectAttribute id="dddtg" title="Email" text=""      tooltip="" active="true"  press=".onEmailPress"/>
+
+                        
                             <ObjectAttribute id="unam" title="Area" text="Development"/>
                             <statuses>
                                 <ObjectStatus id="23437" title="Approval" text="Pending" state="Warning"/>
@@ -40,7 +49,7 @@
                                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel1">
                                                 <headerToolbar>
                                                     <Toolbar id="toolbar3341">
-                                                        <Title text="Solicitud de proyecto" id="titulo1" class="miTitulo"/>
+                                                        <Title text="Solicitud de proyecto" id="titulo1" class="miTitulo "/>
                                                         <ToolbarSpacer id="333d"/>
                                                         <Button icon="sap-icon://hint" id="btn_1" width="10px" press=".pruebaCambioDIner"/>
                                                     </Toolbar>
@@ -53,7 +62,7 @@
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item1">
                                                                         <cells>
-                                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
+                                                                            <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" editable="false" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud" showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" value="" id="idDescripcion"/>
 
@@ -173,7 +182,8 @@
                                                                     </Column>
                                                                     <Column id="column0_1724664686677">
                                                                         <header>
-                                                                            <Text text="Cliente Funcional" id="text66_1724664686677"/>
+                                                                            <!-- This Text element displays the label for 'Cliente Funcional' -->
+                                                                            <Label text="Cliente Funcional" id="text66_1724664686677"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column13" hAlign="Center">
@@ -215,8 +225,8 @@
                                                                             <CheckBox xmlns="sap.m" text="" selected="false" id="box_pluriAnual"/>
                                                                             <Input xmlns="sap.m" value="" id="input_ipc" placeholder="2,5%"/>
 
-                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
-                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -267,7 +277,7 @@
                                                         <items>
                                                             <Table ariaLabelledBy="__label7" id="table3_1714468867118" class="table1  customHeaderColor" items="{planning>/milestones}" width="500px">
                                                                 <headerToolbar>
-                                                                    <Toolbar id="dhyff">
+                                                                    <Toolbar id="dhyff" >
                                                                         <Title id="2ff" text="Fechas planificacion" level="H2" class="myText2"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
@@ -294,9 +304,9 @@
                                                                     <ColumnListItem type="Active" id="colum4">
                                                                         <cells>
                                                                            <Label id="texty" text="{planning>fase}"/>
-                                                                            <DatePicker id="Fechainicio" value="{planning>fechaInicio}" change="onFechaChange" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker id="Fechainicio" value="{planning>fechaInicio}" change="onFechaChange" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd"/>
 
-                                                                            <DatePicker id="fecha_fin1" value="{planning>fechaFin}" change="onFechaChange" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker id="fecha_fin1" value="{planning>fechaFin}" change="onFechaChange" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -353,7 +363,7 @@
                                                         <items>
                                                             <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="sapUiSmallMargin  customHeaderColor2 customHeaderColor1" items="{fechasModel>/fechas}" width="400px">
                                                                 <headerToolbar>
-                                                                    <Toolbar id="plsn">
+                                                                    <Toolbar id="plsn" class="toolbar-con-borde" >
                                                                         <Title id="tuilo45" text="Plan de servicio" level="H2"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
@@ -470,24 +480,41 @@
                                                     </Toolbar>
                                                 </headerToolbar>
                                                 <content>
-                                                    <FlexBox width="100%" id="box0_1714476532308">
+                                                    <FlexBox width="100%" id="box0_1714476532308" justifyContent="Center">
+
+                                                    
                                                         <items>
-                                                            <Text xmlns="sap.m" text="Objectivo y Alcance" id="text9_1714476556932" class="sapUiSmallMargin"/>
+
+                                                            <VBox id="cambfgiggy"    class="sapUiSmallMargin">
+
+
+                                                              <Toolbar id="d5gc5c">
+                                                                        <Title id="text9_1714476556932c" text="Objectivo y Alcance" level="H2"   class="color"/>
+                                                                    </Toolbar>
                                                             <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idObje" rows="4" cols="60"/>
+                                                                                                                    </VBox> 
+
                                                         </items>
 
                                                         <items>
-                                                            <Text xmlns="sap.m" text="Asunciones y Restricciones" id="s" class="sapUiSmallMargin"/>
+                                                            <VBox id="cambio34gg4" justifyContent="End"   class="sapUiSmallMargin">
+                                                            
+                                                                    <Toolbar id="d5g5c">
+                                                                        <Title id="ds2654" text="Asunciones y Restricciones" level="H2"   class="color"/>
+                                                                    </Toolbar>
+                                                            
                                                             <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idAsunyRestri" rows="4" cols="60"/>
+
+                                                        </VBox> 
                                                         </items>
                                                     </FlexBox>
 
                                                     <FlexBox width="100%" id="box0_1714486261986">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin" visible="false" width="600px">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin customHeaderColor" visible="false" width="600px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="d55">
-                                                                        <Title id="d2654" text="Cliente facturacion" level="H2"/>
+                                                                        <Title id="d2654" text="Cliente facturacion" level="H2"   class="color"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -535,7 +562,7 @@
                                                                         <cells>
                                                                             <Title xmlns="sap.m" text="Total " id="titl4498465562859635552"/>
 
-                                                                            <Text id="text73_172746565340567" text=""/>
+                                                                            <Text id="text73_172746565340567" text=""  textAlign="Right"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -555,10 +582,10 @@
                                                                 </columns>
                                                             </Table>
 
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0" class="sapUiSmallMargin" width="600px" visible="false">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0" class="sapUiSmallMargin  customHeaderColor" width="600px" visible="false">
                                                                 <headerToolbar>
                                                                     <Toolbar id="dfff">
-                                                                        <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"/>
+                                                                        <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"  class="color"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -616,9 +643,9 @@
                                                                         <cells>
                                                                             <Title xmlns="sap.m" text="Total " id="titl4498465552"/>
 
-                                                                            <Text xmlns="sap.m" id="text66_1728298016626"/>
+                                                                            <Text xmlns="sap.m" id="text66_1728298016626" />
 
-                                                                            <Text id="text73_172746565340569997" text="" textAlign="Right"/>
+                                                                            <Text id="text73_172746565340569997" text=""  class="metodoSumarFac" textAlign="Right"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -916,7 +943,7 @@
                                                     <FlexBox width="2000px" id="box0_1727879568594">
                                                         <items>
                                                             <ScrollContainer id="scroll_container23" width="100%" height="auto">
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="auto"  class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="auto"  class="customHeaderColor2 ">
                                                                     <items>
                                                                         <ColumnListItem id="item3_1723544157941">
                                                                             <cells>
@@ -1120,8 +1147,8 @@
                                                                                 <Text xmlns="sap.m" text="" id="text552"/>
                                                                                 <Text xmlns="sap.m" text="" id="text536"/>
                                                                                 <Text xmlns="sap.m" text="" id="text547"/>
-                                                                                <Text xmlns="sap.m" text="" id="text558" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="" id="text560" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="bt" id="text558" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="hf" id="text560" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                         <ColumnListItem id="item0_1723561579633">
@@ -2311,7 +2338,7 @@
                                                                                 <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen  sobre ingresos %" change=".onColumnTotales" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_1756121205" description="Margen sobre ingresos" editable="false" width="auto" fieldWidth="45%"/>
-                                                                                <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false"/>
+                                                                                <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false" change=".calcularDistribucionInput"/>
                                                                             </items>
                                                                         </VBox>
                                                                     </cells>
@@ -2323,7 +2350,7 @@
                                                             </columns>
                                                         </Table>
                                                     </HBox>
-                                                     </FlexBox>
+                                                    </FlexBox>
                                                 </content>
 
                                            
@@ -2425,9 +2452,9 @@
                                                     <FlexBox width="3500px" id="box0_1728586490864"  justifyContent="Center">
                                                         <items>
                                                             <HBox width="3500px" id="hbox0" class="sapUiMediumMargin">
-                                                                <Title text="Tipo Servicios " id="tipoSeviTabla" level="H1" class="sapUiLargeMarginTop sapUiSmallMargin customTextColor"/>
+                                                                <Title text="Tipo Servicios " id="tipoSeviTabla" level="H1" class="sapUiLargeMarginTop sapUiSmallMargin customTextColor "/>
 
-                                                                <Table ariaLabelledBy="__xmlview0--label017257878978979865736747" noDataText="Drop column list items here and columns in the area above" id="table0_1729085670197"  class="customHeaderColor">
+                                                                <Table ariaLabelledBy="__xmlview0--label017257878978979865736747" noDataText="Drop column list items here and columns in the area above" id="table0_1729085670197"  class="customHeaderColor miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="hijo567">
                                                                             <Title id="Gtof5d91211087" text="" level="H2" class="myText2"/>
@@ -2458,7 +2485,7 @@
                                                                         </Column>
                                                                     </columns>
                                                                 </Table>
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725865736748"  class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725865736748"  class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="dhyffespew">
                                                                             <Title id="2ffrito" text="" level="H2" class="myText2"/>
@@ -2521,9 +2548,9 @@
                                                                     <columns/>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tablno2369118996" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tablno2369118996" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
-                                                                        <Toolbar id="Nosrtr90534">
+                                                                        <Toolbar id="Nosrtr90534" >
                                                                             <Title id="Cada345d" text="Costes Directos" level="H2" class="myText2"/>
                                                                         </Toolbar>
                                                                     </headerToolbar>
@@ -2585,7 +2612,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_indirectos_001" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_indirectos_001" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar_costes_indirectos_001">
                                                                             <Title id="title_costes_indirectos_001" text="Costes Indirectos" level="H2" class="myText2"/>
@@ -2637,7 +2664,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_totales_001" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_totales_001" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar_costes_totales_001">
                                                                             <Title id="title_costes_totales_001" text="Costes Totales" level="H2" class="myText2"/>
@@ -2690,7 +2717,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_beneficio_001" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_beneficio_001" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar_beneficio_001">
                                                                             <Title id="title_beneficio_001" text="Beneficio" level="H2" class="myText2"/>
@@ -2749,10 +2776,10 @@
 
                                                     <FlexBox width="3500px" id="box0_1724693">
                                                         <items>
-                                                            <HBox width="3500px" id="hbox12" class="sapUiMediumMargin">
+                                                            <HBox width="3500px" id="hbox12" class="sapUiMediumMargin" >
                                                                 <Title text="Concepto Oferta" id="fser5d" level="H1" class="sapUiLargeMarginTop sapUiSmallMargin  customTextColor"/>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729086577084" class="customHeaderColor">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729086577084" class="customHeaderColor  miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosr3119">
                                                                             <Title id="Cad5d98714" text="" level="H2" class="myText2"/>
@@ -2782,7 +2809,7 @@
                                                                         </Column>
                                                                     </columns>
                                                                 </Table>
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table26748" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table26748" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Tdew">
                                                                             <Title id="terro" text="Ingresos" level="H2" class="myText2"/>
@@ -2843,7 +2870,7 @@
                                                                     <columns/>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725869118996" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725869118996" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosrtr34">
                                                                             <Title id="Cada34345d" text="Costes Directos" level="H2" class="myText2"/>
@@ -2906,7 +2933,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table5" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table5" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosrtr349">
                                                                             <Title id="Cada345099" text="Costes Indirectos" level="H2" class="myText2"/>
@@ -2968,7 +2995,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725872132591" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725872132591" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosrtr390849">
                                                                             <Title id="Cada399" text="Costes Totales" level="H2" class="myText2"/>
@@ -3032,7 +3059,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725872637623" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1725872637623" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosrtr342333">
                                                                             <Title id="Cada345d3223233" text="Beneficio" level="H2" class="myText2"/>
@@ -3103,9 +3130,9 @@
 
                                                     <FlexBox width="3500px" id="box0_1728589342943">
                                                         <items>
-                                                            <HBox width="100%" id="hbox0_1728589351058" class="sapUiMediumMargin">
-                                                                <Title text="Tipo Recursos  " id="title_concepto_oferta_002" level="H1" class="sapUiLargeMarginTop sapUiSmallMargin customTextColor" />
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table1_1729086584619"  class="customHeaderColor">
+                                                            <HBox width="100%" id="hbox0_1728589351058" class="sapUiMediumMargin"> 
+                                                                <Title text="Tipo Recursos  " id="title_concepto_oferta_002" level="H1" class="sapUiLargeMarginTop sapUiSmallMargin customTextColor " />
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table1_1729086584619"  class="customHeaderColor miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="No1sr311489">
                                                                             <Title id="Ca111d5d987" text="" level="H2" class="myText2"/>
@@ -3122,17 +3149,17 @@
                                                                     <columns>
                                                                         <Column id="column3_1729086584618">
                                                                             <header>
-                                                                                <Label text="Vertical" id="label3_1729086584618"/>
+                                                                                <Label text="Tipo de Recursos" id="label3_1729086584618"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column4_1729086584619">
                                                                             <header>
-                                                                                <Label text="Tipo Recurso" id="label4_1729086584619"/>
+                                                                                <Label text="Vertical" id="label4_1729086584619"/>
                                                                             </header>
                                                                         </Column>
                                                                     </columns>
                                                                 </Table>
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_ingresos_002" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_ingresos_002" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar_ingresos_002">
                                                                             <Title id="title_ingresos_002" text="Ingresos" level="H2" class="myText2"/>
@@ -3141,12 +3168,12 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item_ingresos_002">
                                                                             <cells>
-                                                                                <Text text="0€" id="TRecurso2025"/>
-                                                                                <Text text="0€" id="TRecurso2026"/>
-                                                                                <Text text="0€" id="TRecurso2027"/>
-                                                                                <Text text="0" id="TRecurso2028"/>
-                                                                                <Text text="0" id="TRecurso2029"/>
-                                                                                <Text text="0" id="TRecursoTotal"/>
+                                                                                <Text text="0€" id="TRecurso2025" class="boldText"/>
+                                                                                <Text text="0€" id="TRecurso2026" class="boldText"/>
+                                                                                <Text text="0€" id="TRecurso2027" class="boldText"/>
+                                                                                <Text text="0" id="TRecurso2028" class="boldText"/>
+                                                                                <Text text="0" id="TRecurso2029" class="boldText"/>
+                                                                                <Text text="0" id="TRecursoTotal" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3185,7 +3212,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_directos_002"  class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table_costes_directos_002"  class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar_costes_directos_002">
                                                                             <Title id="title_costes_directos_002" text="Costes Directos" level="H2" class="myText2"/>
@@ -3194,13 +3221,13 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item_costes_directos_002">
                                                                             <cells>
-                                                                                <Text text="0€" id="text_costes_1_002"/>
-                                                                                <Text text="0€" id="text_costes_2_002"/>
-                                                                                <Text text="0" id="text_costes_3_002"/>
-                                                                                <Text xmlns="sap.m" text="0" id="text_costes_4_002"/>
-                                                                                <Text xmlns="sap.m" text="0" id="text_costes_5_002"/>
-                                                                                <Text xmlns="sap.m" text="0" id="text_costes_6_002"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text_costes_7_002"/>
+                                                                                <Text text="0€" id="text_costes_1_002" class="boldText" />
+                                                                                <Text text="0€" id="text_costes_2_002" class="boldText" />
+                                                                                <Text text="0" id="text_costes_3_002" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0" id="text_costes_4_002" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0" id="text_costes_5_002" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0" id="text_costes_6_002" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0€" id="text_costes_7_002" class="boldText" />
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3230,11 +3257,7 @@
                                                                                  <Label text="2029" id="text_2028_costes_002"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column_2029_costes_002">
-                                                                            <header>
-                                                                                 <Label text="2030" id="text_2029_costes_002"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                    
                                                                         <Column id="column_total_costes_002">
                                                                             <header>
                                                                                  <Label text="Total" id="text_total_costes_002"/>
@@ -3242,7 +3265,7 @@
                                                                         </Column>
                                                                     </columns>
                                                                 </Table>
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableCostesIndirectos" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableCostesIndirectos" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbarCostesIndirectos">
                                                                             <Title id="titleCostesIndirectos" text="Costes Indirectos" level="H2" class="myText2"/>
@@ -3251,13 +3274,13 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="itemCostesIndirectos_1">
                                                                             <cells>
-                                                                                <Text text="0" id="cell2024_1"/>
-                                                                                <Text text="0" id="cell2025_1"/>
-                                                                                <Text text="0" id="cell2026_1"/>
-                                                                                <Text xmlns="sap.m" text="0" id="cell2027_1"/>
-                                                                                <Text xmlns="sap.m" text="0" id="cell2028_1"/>
-                                                                                <Text xmlns="sap.m" text="0" id="cell2029_1"/>
-                                                                                <Text xmlns="sap.m" text="0" id="cellTotal_1"/>
+                                                                                <Text text="0" id="cell2024_1" class="boldText"/>
+                                                                                <Text text="0" id="cell2025_1" class="boldText"/>
+                                                                                <Text text="0" id="cell2026_1" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0" id="cell2027_1" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0" id="cell2028_1" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0" id="cell2029_1" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0" id="cellTotal_1" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3287,11 +3310,7 @@
                                                                                  <Label text="2029" id="label2028"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column2029">
-                                                                            <header>
-                                                                                 <Label text="2030" id="label2029"/>
-                                                                            </header>
-                                                                        </Column>
+                                                             
                                                                         <Column id="columnTotal">
                                                                             <header>
                                                                                  <Label text="Total" id="labelTotal"/>
@@ -3299,7 +3318,7 @@
                                                                         </Column>
                                                                     </columns>
                                                                 </Table>
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableCostesTotales" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableCostesTotales" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbarCostesTotales">
                                                                             <Title id="titleCostesTotales" text="Costes Totales" level="H2" class="myText2"/>
@@ -3308,13 +3327,13 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="itemCostesTotales_1">
                                                                             <cells>
-                                                                                <Text text="0€" id="cellCostesTotales_1_1"/>
-                                                                                <Text text="0€" id="cellCostesTotales_1_2"/>
-                                                                                <Text text="0€" id="cellCostesTotales_1_3"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_4"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_5"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_6"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_7"/>
+                                                                                <Text text="0€" id="cellCostesTotales_1_1" class="boldText"/>
+                                                                                <Text text="0€" id="cellCostesTotales_1_2" class="boldText"/>
+                                                                                <Text text="0€" id="cellCostesTotales_1_3" class="boldText" />
+                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_4" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_5" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_6" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="4€" id="cellCostesTotales_1_7" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3344,11 +3363,7 @@
                                                                                  <Label text="2029" id="headerCostesTotales_5"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="columnCostesTotales_6">
-                                                                            <header>
-                                                                                 <Label text="2030" id="headerCostesTotales_6"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                  
                                                                         <Column id="columnCostesTotales_7">
                                                                             <header>
                                                                                  <Label text="Total" id="headerCostesTotales_7"/>
@@ -3357,7 +3372,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableBeneficio" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableBeneficio" class="customHeaderColor2 miTabla" >
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbarBeneficio">
                                                                             <Title id="titleBeneficio" text="Beneficio" level="H2" class="myText2"/>
@@ -3366,13 +3381,13 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="itemBeneficio_1">
                                                                             <cells>
-                                                                                <Text text="0€" id="cellBeneficio_1_1"/>
-                                                                                <Text text="0€" id="mygret"/>
-                                                                                <Text text="0€" id="cellBeneficio_1_3"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_4"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_5"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_6"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_7"/>
+                                                                                <Text text="0€" id="cellBeneficio_1_1" class="boldText"/>
+                                                                                <Text text="0€" id="mygret" class="boldText"/>
+                                                                                <Text text="0€" id="cellBeneficio_1_3" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_4" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_5" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_6" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="cellBeneficio_1_7" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3402,11 +3417,7 @@
                                                                                  <Label text="2029" id="headerBeneficio_5"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="columnBeneficio_6">
-                                                                            <header>
-                                                                                 <Label text="2030" id="headerBeneficio_6"/>
-                                                                            </header>
-                                                                        </Column>
+                                                       
                                                                         <Column id="columnBeneficio_7">
                                                                             <header>
                                                                                  <Label text="Total" id="headerBeneficio_7"/>
@@ -3425,7 +3436,7 @@
                                                             <HBox width="100%" id="hbox056" class="sapUiMediumMargin">
                                                                 <Title text="Tipo Recursos " id="IdTable234" level="H1" class="sapUiLargeMarginTop customTextColor sapUiSmallMargin  "/>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table1_1729073599724"   class="customHeaderColor" >
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table1_1729073599724"   class="customHeaderColor miTabla"  >
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbar45895">
                                                                             <Title id="iDfied15" text="" level="H2" class="myText2"/>
@@ -3489,7 +3500,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table4_1729073623135"  class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table4_1729073623135"  class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="tootble23">
                                                                             <Title id="IdIgre" text="Ingresos" level="H2" class="myText2"/>
@@ -3639,7 +3650,8 @@
 
                                                                         <Column id="column2_1729074839765">
                                                                             <header>
-                                                                                <Text text="2027" id="text68_1729074839764"/>
+                                                                              <!-- Label for the year 2027 -->
+                                                                              <Label text="2027" id="text68_1729074839764"/>
                                                                             </header>
                                                                         </Column>
 
@@ -3655,11 +3667,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column5_1729074931826">
-                                                                            <header>
-                                                                                <Label text="2030" id="text71_1729074931826"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column0_1729074833782">
                                                                             <header>
@@ -3669,7 +3676,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table3" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table3" class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosr34">
                                                                             <Title id="Cad5d" text="Costes Directos" level="H2" class="myText2"/>
@@ -3818,11 +3825,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column0_1729074992732">
-                                                                            <header>
-                                                                                <Label text="2030" id="text66_1729074992731"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column0_17290749900002732">
                                                                             <header>
@@ -3832,7 +3834,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729074461791"   class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729074461791"   class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosr34111">
                                                                             <Title id="Cad5d111" text="Costes Indirectos" level="H2" class="myText2"/>
@@ -3940,7 +3942,7 @@
 
                                                                         <Column id="column4_1729075007390">
                                                                             <header>
-                                                                                <Text text="2026" id="text70_1729075007390"/>
+                                                                                <Label text="2026" id="text70_1729075007390"/>
                                                                             </header>
                                                                         </Column>
 
@@ -3962,11 +3964,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column8_1729075021357">
-                                                                            <header>
-                                                                                <Label text="2030" id="text74_1729075021356"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column7_1729075017235">
                                                                             <header>
@@ -3976,7 +3973,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table ariaLabelledBy="__label5" noDataText="Drop column list items here and columns in the area above" id="table2_1729073605332"  class="customHeaderColor2">
+                                                                <Table ariaLabelledBy="__label5" noDataText="Drop column list items here and columns in the area above" id="table2_1729073605332"  class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosr3489">
                                                                             <Title id="Cad5d987" text="Costes Totales" level="H2" class="myText2"/>
@@ -4099,11 +4096,7 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column11_1729075031991">
-                                                                            <header>
-                                                                                <Label text="2030" id="text77_1729075031990"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                
 
                                                                         <Column id="column8_1729073605331">
                                                                             <header>
@@ -4113,7 +4106,7 @@
                                                                     </columns>
                                                                 </Table>
 
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729073521933"  class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1729073521933"  class="customHeaderColor2 miTabla">
                                                                     <headerToolbar>
                                                                         <Toolbar id="Nosr77773489">
                                                                             <Title id="Cad5d9777787" text="Beneficios" level="H2" class="myText2"/>
@@ -4237,11 +4230,7 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column18_1729075055855">
-                                                                            <header>
-                                                                               <Label text="2030" id="text84_1729075055852"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                  
 
                                                                         <Column id="column17_1729075052988">
                                                                             <header>

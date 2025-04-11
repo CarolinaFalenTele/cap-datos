@@ -28,38 +28,40 @@ sap.ui.define(
            //     console.log("Vista de appp " + this.getView());
 
           // this.DialogInfo();
+          this.getUserInfo();
             },
 
 
 
             getUserInfo: function () {
                 fetch('/odata/v4/datos-cdo/getUserInfo')
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error("No se pudo obtener la información del usuario.");
-                  }
-                  return response.json();
-                })
-                .then(data => {
-            //      console.log("Datos del usuario:", data);
-        
-                  // Asegúrate de acceder correctamente a los valores dentro de "value"
-                  const userInfo = data.value;
-        
-                  if (userInfo) {
-                    // Aquí puedes acceder y setear los valores en los controles
-                    this.byId("233").setText(userInfo.name); 
-                //    this.byId("userEmailInput").setValue(userInfo.email);
-                  } else {
-                    console.error("No se encontró la información del usuario.");
-                  }
-                })
-                .catch(error => {
-                  console.error("❌ Error obteniendo datos del usuario:", error);
-                });
-        
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error("No se pudo obtener la información del usuario.");
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    const userInfo = data.value;
+              
+                    if (userInfo) {
+                      // Asignar datos a los controles en la vista
+                      //this.byId("dddtg")?.setText(userInfo.name);
+                      this.byId("dddtg")?.setText(userInfo.email);
+                      this.byId("233")?.setText(userInfo.fullName);
+                      //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
+                      //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
+              
+                      console.log("📌 Datos seteados en la vista:", userInfo);
+                    } else {
+                      console.error("No se encontró la información del usuario.");
+                    }
+                  })
+                  .catch(error => {
+                    console.error("❌ Error obteniendo datos del usuario:", error);
+                  });
               },
-
+              
 
             loadFilteredData: function () {
                 var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
@@ -592,7 +594,67 @@ sap.ui.define(
 
 
 
+
             onEditPress: function (oEvent) {
+                var oButton = oEvent.getSource();
+                var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
+
+                var sProjectID = oButton.getCustomData().find(function (oData) {
+                    return oData.getKey() === "projectId";
+                }).getValue();
+            
+                if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                }
+            
+                var that = this;
+           //     var oModel = this.getView().getModel("mainService"); // OData V4 Model
+            
+    
+            
+              
+           var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
+           if (oModel) {
+               oModel.setData({});  // Limpia los datos previos
+               oModel.refresh(true); // Fuerza la actualización del modelo
+           }
+            
+                    var oDialog = new sap.m.Dialog({
+                        title: "Confirmar Edición",
+                        type: "Message",
+                        state: "Warning",
+                        content: new sap.m.Text({
+                            text: "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                        }),
+                        beginButton: new sap.m.Button({
+                            text: "Confirmar",
+                            press: function () {
+                                oDialog.close();
+            
+                         
+                            
+                                var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                                oRouter.navTo("view", {
+                                    sProjectID: sProjectID
+                                }, true);
+                            }
+                        }),
+                        endButton: new sap.m.Button({
+                            text: "Cancelar",
+                            press: function () {
+                                oDialog.close();
+                            }
+                        })
+                    });
+            
+                    oDialog.open();
+            
+              
+            },
+            
+            
+        /*    onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado
                 var oButton = oEvent.getSource();
             
@@ -621,7 +683,7 @@ sap.ui.define(
                 oRouter.navTo("view", {
                     sProjectID: sProjectID
                 }, true );
-            },
+            },*/
             
 
 
@@ -697,8 +759,19 @@ sap.ui.define(
 
                 this.byId("idNombreProyecto").setText(oData.nameProyect);
                this.byId("idDescripcion1").setText(oData.descripcion);
+               this.byId("idCreador").setText(oData.Empleado);
+                this.byId("idModifi").setText(oData.FechaModificacion);
                this.byId("fechainitProyect").setText(oData.Fechainicio);
 
+               const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+                style: "medium" // Puedes usar "short", "medium", "long", o "full"
+              });
+              
+              const date = new Date(oData.fechaCreacion);
+              const formattedDate = oDateFormat.format(date);
+              
+              this.byId("idCreacion").setText(formattedDate);
+              
 
                var fecha = oData.FechaFin.split("T")[0]; // obtenemos solo la fecha 2025-03-27
                var partes = fecha.split("-"); // separamos ["2025","03","27"]

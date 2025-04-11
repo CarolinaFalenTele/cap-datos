@@ -29,13 +29,33 @@
       ]
     }
   ],
-
+"attributes": [
+  {
+    "name": "email",
+    "description": "Correo del usuario",
+    "valueType": "string"
+  },
+  {
+    "name": "given_name",
+    "description": "Nombre del usuario",
+    "valueType": "string"
+  },
+  {
+    "name": "family_name",
+    "description": "Apellido del usuario",
+    "valueType": "string"
+  },
+  {
+    "name": "phone_number",
+    "description": "Teléfono del usuario",
+    "valueType": "string"
+  }
+],
 
   "oauth2-configuration": {
     "redirect-uris": [
       "https://*.hana.ondemand.com/**",
       "https://*.applicationstudio.cloud.sap/**"
     ]
-  },
-  "attributes": []
+  }
 }

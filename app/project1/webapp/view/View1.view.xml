@@ -15,8 +15,17 @@
                 <VBox id="vbox1230">
                     <items>
                         <ObjectHeader id="oh1" responsive="true" fullScreenOptimized="true" intro="Comite de oportunidades" title="Ficha Solicitud Aprobación Proyecto - Comité de Oportunidades" numberUnit="" numberState="Success" backgroundDesign="Translucent" class="sapUiResponsivePadding--header  miHeader">
-                            <ObjectAttribute id="dddtg" title="Email address" text="" active="true"/>
-                            <ObjectAttribute id="nolmd" title="Office Phone" text="+33 6 453 564"/>
+                          
+                          
+                             <ObjectAttribute
+                                    id="23d3"
+                                    title="Empleado"
+                                    text=""
+                                />
+                          
+                            <ObjectAttribute id="dddtg" title="Email" text=""      tooltip="" active="true"  press=".onEmailPress"/>
+
+                        
                             <ObjectAttribute id="unam" title="Area" text="Development"/>
                             <statuses>
                                 <ObjectStatus id="23437" title="Approval" text="Pending" state="Warning"/>
@@ -173,7 +182,8 @@
                                                                     </Column>
                                                                     <Column id="column0_1724664686677">
                                                                         <header>
-                                                                            <Text text="Cliente Funcional" id="text66_1724664686677"/>
+                                                                            <!-- This Text element displays the label for 'Cliente Funcional' -->
+                                                                            <Label text="Cliente Funcional" id="text66_1724664686677"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column13" hAlign="Center">
@@ -294,9 +304,9 @@
                                                                     <ColumnListItem type="Active" id="colum4">
                                                                         <cells>
                                                                            <Label id="texty" text="{planning>fase}"/>
-                                                                            <DatePicker id="Fechainicio" value="{planning>fechaInicio}" change="onFechaChange" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker id="Fechainicio" value="{planning>fechaInicio}" change="onFechaChange" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd"/>
 
-                                                                            <DatePicker id="fecha_fin1" value="{planning>fechaFin}" change="onFechaChange" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd"/>
+                                                                            <DatePicker id="fecha_fin1" value="{planning>fechaFin}" change="onFechaChange" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -470,24 +480,41 @@
                                                     </Toolbar>
                                                 </headerToolbar>
                                                 <content>
-                                                    <FlexBox width="100%" id="box0_1714476532308">
+                                                    <FlexBox width="100%" id="box0_1714476532308" justifyContent="Center">
+
+                                                    
                                                         <items>
-                                                            <Text xmlns="sap.m" text="Objectivo y Alcance" id="text9_1714476556932" class="sapUiSmallMargin"/>
+
+                                                            <VBox id="cambfgiggy"    class="sapUiSmallMargin">
+
+
+                                                              <Toolbar id="d5gc5c">
+                                                                        <Title id="text9_1714476556932c" text="Objectivo y Alcance" level="H2"   class="color"/>
+                                                                    </Toolbar>
                                                             <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idObje" rows="4" cols="60"/>
+                                                                                                                    </VBox> 
+
                                                         </items>
 
                                                         <items>
-                                                            <Text xmlns="sap.m" text="Asunciones y Restricciones" id="s" class="sapUiSmallMargin"/>
+                                                            <VBox id="cambio34gg4" justifyContent="End"   class="sapUiSmallMargin">
+                                                            
+                                                                    <Toolbar id="d5g5c">
+                                                                        <Title id="ds2654" text="Asunciones y Restricciones" level="H2"   class="color"/>
+                                                                    </Toolbar>
+                                                            
                                                             <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idAsunyRestri" rows="4" cols="60"/>
+
+                                                        </VBox> 
                                                         </items>
                                                     </FlexBox>
 
                                                     <FlexBox width="100%" id="box0_1714486261986">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin" visible="false" width="600px">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin customHeaderColor" visible="false" width="600px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="d55">
-                                                                        <Title id="d2654" text="Cliente facturacion" level="H2"/>
+                                                                        <Title id="d2654" text="Cliente facturacion" level="H2"   class="color"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -535,7 +562,7 @@
                                                                         <cells>
                                                                             <Title xmlns="sap.m" text="Total " id="titl4498465562859635552"/>
 
-                                                                            <Text id="text73_172746565340567" text=""/>
+                                                                            <Text id="text73_172746565340567" text=""  textAlign="Right"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -555,10 +582,10 @@
                                                                 </columns>
                                                             </Table>
 
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0" class="sapUiSmallMargin" width="600px" visible="false">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0" class="sapUiSmallMargin  customHeaderColor" width="600px" visible="false">
                                                                 <headerToolbar>
                                                                     <Toolbar id="dfff">
-                                                                        <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"/>
+                                                                        <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"  class="color"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -616,9 +643,9 @@
                                                                         <cells>
                                                                             <Title xmlns="sap.m" text="Total " id="titl4498465552"/>
 
-                                                                            <Text xmlns="sap.m" id="text66_1728298016626"/>
+                                                                            <Text xmlns="sap.m" id="text66_1728298016626" />
 
-                                                                            <Text id="text73_172746565340569997" text="" textAlign="Right"/>
+                                                                            <Text id="text73_172746565340569997" text=""  class="metodoSumarFac" textAlign="Right"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -1120,8 +1147,8 @@
                                                                                 <Text xmlns="sap.m" text="" id="text552"/>
                                                                                 <Text xmlns="sap.m" text="" id="text536"/>
                                                                                 <Text xmlns="sap.m" text="" id="text547"/>
-                                                                                <Text xmlns="sap.m" text="" id="text558" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="" id="text560" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="bt" id="text558" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="hf" id="text560" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                         <ColumnListItem id="item0_1723561579633">
@@ -3230,11 +3257,7 @@
                                                                                  <Label text="2029" id="text_2028_costes_002"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column_2029_costes_002">
-                                                                            <header>
-                                                                                 <Label text="2030" id="text_2029_costes_002"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                    
                                                                         <Column id="column_total_costes_002">
                                                                             <header>
                                                                                  <Label text="Total" id="text_total_costes_002"/>
@@ -3287,11 +3310,7 @@
                                                                                  <Label text="2029" id="label2028"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column2029">
-                                                                            <header>
-                                                                                 <Label text="2030" id="label2029"/>
-                                                                            </header>
-                                                                        </Column>
+                                                             
                                                                         <Column id="columnTotal">
                                                                             <header>
                                                                                  <Label text="Total" id="labelTotal"/>
@@ -3314,7 +3333,7 @@
                                                                                 <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_4" class="boldText"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_5" class="boldText"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_6" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="cellCostesTotales_1_7" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="4€" id="cellCostesTotales_1_7" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -3344,11 +3363,7 @@
                                                                                  <Label text="2029" id="headerCostesTotales_5"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="columnCostesTotales_6">
-                                                                            <header>
-                                                                                 <Label text="2030" id="headerCostesTotales_6"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                  
                                                                         <Column id="columnCostesTotales_7">
                                                                             <header>
                                                                                  <Label text="Total" id="headerCostesTotales_7"/>
@@ -3402,11 +3417,7 @@
                                                                                  <Label text="2029" id="headerBeneficio_5"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="columnBeneficio_6">
-                                                                            <header>
-                                                                                 <Label text="2030" id="headerBeneficio_6"/>
-                                                                            </header>
-                                                                        </Column>
+                                                       
                                                                         <Column id="columnBeneficio_7">
                                                                             <header>
                                                                                  <Label text="Total" id="headerBeneficio_7"/>
@@ -3656,11 +3667,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column5_1729074931826">
-                                                                            <header>
-                                                                                <Label text="2030" id="text71_1729074931826"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column0_1729074833782">
                                                                             <header>
@@ -3819,11 +3825,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column0_1729074992732">
-                                                                            <header>
-                                                                                <Label text="2030" id="text66_1729074992731"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column0_17290749900002732">
                                                                             <header>
@@ -3963,11 +3964,6 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column8_1729075021357">
-                                                                            <header>
-                                                                                <Label text="2030" id="text74_1729075021356"/>
-                                                                            </header>
-                                                                        </Column>
 
                                                                         <Column id="column7_1729075017235">
                                                                             <header>
@@ -4100,11 +4096,7 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column11_1729075031991">
-                                                                            <header>
-                                                                                <Label text="2030" id="text77_1729075031990"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                
 
                                                                         <Column id="column8_1729073605331">
                                                                             <header>
@@ -4238,11 +4230,7 @@
                                                                             </header>
                                                                         </Column>
 
-                                                                        <Column id="column18_1729075055855">
-                                                                            <header>
-                                                                               <Label text="2030" id="text84_1729075055852"/>
-                                                                            </header>
-                                                                        </Column>
+                                                                  
 
                                                                         <Column id="column17_1729075052988">
                                                                             <header>

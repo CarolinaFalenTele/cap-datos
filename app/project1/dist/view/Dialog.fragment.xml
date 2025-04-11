@@ -7,7 +7,8 @@
     <Dialog
         title="Ficha CDO"
         afterClose="onDialogClose"
-   class="color" >
+        class="color"
+    >
         <content>
             <VBox>
                 <f:SimpleForm
@@ -18,15 +19,28 @@
                     columnsM="2"
                     columnsL="2"
                     columnsXL="2"
-             
                 >
                     <f:content>
-                        <core:Title text="Information General"         />
+                        <core:Title text="Information General" />
+
+
+                             <Label text="Creado por" />
+                        <Text
+                            text=""
+                            id="idCreador"
+                        />
+ 
                         <Label text="Fecha Creacion del Proyecto" />
-                        <Text text="12/05/09"/>
-                            <Label text="PEP" />
-                        <Text text="PK-23344-AA" >
-       <layoutData>
+                        <Text
+                            id="idCreacion"
+                            text=""
+                        />
+
+                        
+                   
+                        <Label text="PEP" />
+                        <Text text="PK-23344-AA">
+                            <layoutData>
                                 <f:ColumnElementData
                                     cellsSmall="2"
                                     cellsLarge="2"
@@ -34,14 +48,23 @@
                             </layoutData>
                         </Text>
                         <Label text="Nombre Proyecto: " />
-                        <Text text="" id="idNombreProyecto" />
+                        <Text
+                            text=""
+                            id="idNombreProyecto"
+                        />
 
-                           <Label text="Descripción" />
-                        <Text text="Proyecto prueba" id="idDescripcion1" />
+                        <Label text="Descripción" />
+                        <Text
+                            text="Proyecto prueba"
+                            id="idDescripcion1"
+                        />
                         <Label text="Fecha Inicio" />
 
                         <Label text="Fecha Inicio del Proyecto " />
-                        <Text text="" id="fechainitProyect">
+                        <Text
+                            text=""
+                            id="fechainitProyect"
+                        >
                             <layoutData>
                                 <f:ColumnElementData
                                     cellsSmall="2"
@@ -51,7 +74,10 @@
                         </Text>
 
                         <Label text="Fecha Fin del Proyecto " />
-                        <Text text=""  id="idFechaFinProyect">
+                        <Text
+                            text=""
+                            id="idFechaFinProyect"
+                        >
                             <layoutData>
                                 <f:ColumnElementData
                                     cellsSmall="2"
@@ -62,11 +88,17 @@
 
                         <Label text="Area" />
 
-                        <Text text="" id="idArea" />
+                        <Text
+                            text=""
+                            id="idArea"
+                        />
 
                         <Label text="Jefe Proyecto " />
 
-                        <Text text="" id="idJefeProyect">
+                        <Text
+                            text=""
+                            id="idJefeProyect"
+                        >
                             <layoutData>
                                 <f:ColumnElementData
                                     cellsSmall="2"
@@ -76,24 +108,32 @@
                         </Text>
 
                         <Label text="Total Resumen vs Costes" />
-                               <Text text="349.8894€" />
+                        <Text
+                            text=""
+                            id="idtotal"
+                        />
 
-                       <Label text="Estado" />
-                               <Text text=""  id="idEstadoProyect" />
+                        <Label text="Estado" />
+                        <Text
+                            text=""
+                            id="idEstadoProyect"
+                            class="errorCount"
+                        />
                     </f:content>
                 </f:SimpleForm>
             </VBox>
         </content>
-        	<footer>
-			<Toolbar>
-				<content>
-
-					<ToolbarSpacer />
-					<Button type="Accept"
-							text="Aceptar"
-							press="._closeDialog" />
-				</content>
-			</Toolbar>
-		</footer>
+        <footer>
+            <Toolbar>
+                <content>
+                    <ToolbarSpacer />
+                    <Button
+                        type="Accept"
+                        text="Aceptar"
+                        press="._closeDialog"
+                    />
+                </content>
+            </Toolbar>
+        </footer>
     </Dialog>
 </core:FragmentDefinition>
