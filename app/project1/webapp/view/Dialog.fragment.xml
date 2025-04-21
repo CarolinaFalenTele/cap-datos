@@ -36,6 +36,12 @@
                             text=""
                         />
 
+                               <Label text="Email" />
+                        <Text
+                            text=""
+                            id="idEMail" class="onEmailPress2"
+                        />
+
                         
                    
                         <Label text="PEP" />
@@ -125,6 +131,8 @@
                             text=""
                             id="idModifi"
                         />
+
+                        
                     </f:content>
                 </f:SimpleForm>
             </VBox>

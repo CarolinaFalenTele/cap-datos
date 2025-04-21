@@ -33,6 +33,7 @@ sap.ui.define(
 
 
 
+            // Método para obtener información del usuario
             getUserInfo: function () {
                 fetch('/odata/v4/datos-cdo/getUserInfo')
                   .then(response => {
@@ -48,6 +49,8 @@ sap.ui.define(
                       // Asignar datos a los controles en la vista
                       //this.byId("dddtg")?.setText(userInfo.name);
                       this.byId("dddtg")?.setText(userInfo.email);
+
+                      
                       this.byId("233")?.setText(userInfo.fullName);
                       //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
                       //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
@@ -760,6 +763,7 @@ sap.ui.define(
                 this.byId("idNombreProyecto").setText(oData.nameProyect);
                this.byId("idDescripcion1").setText(oData.descripcion);
                this.byId("idCreador").setText(oData.Empleado);
+               this.byId("idEMail").setText(oData.Email);
                 this.byId("idModifi").setText(oData.FechaModificacion);
                this.byId("fechainitProyect").setText(oData.Fechainicio);
 
@@ -796,6 +800,12 @@ sap.ui.define(
             }
               },
         
+
+              onEmailPress2: function (oEvent) {
+                const sEmail = oEvent.getSource().getText();
+                window.location.href = "mailto:" + sEmail;
+            },
+            
 
             /*onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado

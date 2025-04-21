@@ -47,10 +47,10 @@ sap.ui.define([
           "idGastoViajeConsu": {},
           "idServiExterno": {},
           "idGastoRecuExter": {},
-          "table0_1724413700665": {},
-          "table0_1727955577124": {},
-          "table0_1727879576857": {},
-          "table0_1727879940116": {},
+          "tablaInfrestuctura": {},
+          "tablaLicencia": {},
+          "tableServicioInterno": {},
+          "tablGastoViajeInterno": {},
         };
 
         this._editedRows = this._editedRows || {};
@@ -181,7 +181,7 @@ sap.ui.define([
               //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
               //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
       
-              console.log("📌 Datos seteados en la vista:", userInfo);
+              //console.log("📌 Datos seteados en la vista:", userInfo);
             } else {
               console.error("No se encontró la información del usuario.");
             }
@@ -1436,7 +1436,7 @@ sap.ui.define([
           const oData = await response.json();
           console.log("Datos de DATOS GASTO VIAJE INTERNO TRAIDO: -----> ", oData);
 
-          var oTable = this.byId("table0_1727879940116");
+          var oTable = this.byId("tablGastoViajeInterno");
           var aItems = oTable.getItems();
 
           if (oData.value && oData.value.length > 0) {
@@ -1506,7 +1506,7 @@ sap.ui.define([
           const oData = await response.json();
           console.log("Datos de DATOS Servicio interno : -----> ", oData);
 
-          var oTable = this.byId("table0_1727879576857");
+          var oTable = this.byId("tableServicioInterno");
           var aItems = oTable.getItems();
 
           if (oData.value && oData.value.length > 0) {
@@ -2021,7 +2021,7 @@ sap.ui.define([
           const oData = await response.json();
           console.log("Datos traidos otrosConceptos TRAIDO:", oData);
 
-          var oTable = this.byId("table0_1724413700665");
+          var oTable = this.byId("tablaInfrestuctura");
           var aItems = oTable.getItems();
 
           if (oData.value && oData.value.length > 0) {
@@ -2174,7 +2174,7 @@ sap.ui.define([
           const oData = await response.json();
           //  console.log("Datos traidos LicenciasCon TRAIDO:", oData);
 
-          var oTable = this.byId("table0_1727955577124");
+          var oTable = this.byId("tablaLicencia");
           var aItems = oTable.getItems();
 
           if (oData.value && oData.value.length > 0) {
@@ -2889,108 +2889,168 @@ sap.ui.define([
       // Definir el modelo OData
       /* onSave: async function () {
          let errorCount = 0;
-         const incompleteFields = [];
- 
-         const sProjectID = this._sProjectID; // ID del proyecto
-         const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
-         const snameProyect = this.byId("input1").getValue();
-         const sTotal = parseInt(this.byId("text67_1728582763477").getText(), 10)
-         const spluriAnual = this.byId("box_pluriAnual").getSelected();
-         const sClienteFac = this.byId("id_Cfactur").getValue();
-         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-         const sClienteFunc = this.byId("int_clienteFun").getValue();
-         const sObjetivoAlcance = this.byId("idObje").getValue();
-         const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-         const sDatosExtra = this.byId("area0").getValue();
-         const sFechaIni = this.byId("date_inico").getDateValue();
-         const sFechaFin = this.byId("date_fin").getDateValue();
-         const sIPC = this.byId("input_ipc").getValue();
- 
-         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
- 
-         const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
-         const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
- 
-         const sSelectedKey = this.byId("idNatu").getSelectedKey();
-         const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-         const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
-         const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
-         const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
-         const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
-         const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
-         const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
-         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
- 
-         const validateField = (control, value, fieldName) => {
-           if (!value || (typeof value === 'string' && value.trim() === "")) {
-             control.setValueState("Error");
-             control.setValueStateText("Este campo es obligatorio");
-             errorCount++;
-             if (!incompleteFields.includes(fieldName)) {
-               incompleteFields.push(fieldName);
-             }
-           } else {
-             control.setValueState("None");
-           }
-         };
- 
-         validateField(this.byId("input0"), scodigoProyect, "Código del Proyecto");
-         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
- 
-         if (errorCount > 0) {
-           sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
-           return;
-         }
- 
-         const payload = {
-           codigoProyect: scodigoProyect,
-           nameProyect: snameProyect,
-           pluriAnual: spluriAnual,
-           Total: sTotal,
-           funcionalString: sClienteFunc,
-           clienteFacturacion: sClienteFac,
-           multijuridica: sMultiJuri,
-           Naturaleza_ID: sSelectedKey,
-           Area_ID: sSelecKeyA,
-           Iniciativa_ID: sSelectKeyIni,
-           jefeProyectID_ID: sSelecKeyJe,
-           objetivoAlcance: sObjetivoAlcance,
-           AsuncionesyRestricciones: sAsunyRestric,
-           Vertical_ID: sSelectKeyVerti,
-           Fechainicio: sFechaIniFormatted,
-           FechaFin: sFechaFinFormatted,
-           Seguimiento_ID: sSelectKeySegui,
-           EjecucionVia_ID: sSelectKeyEjcu,
-           AmReceptor_ID: sSelectKeyAmrep,
-           clienteFuncional_ID: sSelectKeyClienNuevo,
-           Estado: "Pendiente",
-           datosExtra: sDatosExtra,
-           IPC_apli: sIPC
-         };
- 
-         try {
-           let oModel = this.getView().getModel();
-           let sServiceUrl = oModel.sServiceUrl;
-           let url = "/odata/v4/datos-cdo/DatosProyect";
-           let method = "POST";
- 
-           if (sProjectID) {
-             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-             method = "PATCH";
-           }
- 
-           let oTokenResponse = await fetch(sServiceUrl, { method: "GET", headers: { "x-csrf-token": "Fetch" } });
-           if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
- 
-           let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-           if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
- 
-           let response = await fetch(url, {
-             method: method,
-             headers: { "Content-Type": "application/json", "x-csrf-token": sCsrfToken },
-             body: JSON.stringify(payload)
-           });
- 
+        const incompleteFields = [];
+      
+        const sProjectID = this._sProjectID; // ID del proyecto
+        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
+        const sEmail = this.byId("dddtg").getText();
+        const sEmpleado = this.byId("23d3").getText();
+        const snameProyect = this.byId("input1").getValue();
+        const sdescripcion = this.byId("idDescripcion").getValue();
+        const sTotal = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+        const spluriAnual = this.byId("box_pluriAnual").getSelected();
+        const sClienteFac = this.byId("id_Cfactur").getValue();
+        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+        const sClienteFunc = this.byId("int_clienteFun").getValue();
+        const sObjetivoAlcance = this.byId("idObje").getValue();
+        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+        const sDatosExtra = this.byId("area0").getValue();
+        const sFechaIni = this.byId("date_inico").getDateValue();
+        const sFechaFin = this.byId("date_fin").getDateValue();
+        const sIPC = this.byId("input_ipc").getValue();
+      
+        var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
+      
+        const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
+        const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
+      
+        const sSelectedKey = this.byId("idNatu").getSelectedKey();
+        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
+        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
+        const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
+        const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
+        const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
+        const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
+        const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
+        const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
+      
+        const validateField = (control, value, fieldName) => {
+          if (!value || (typeof value === 'string' && value.trim() === "")) {
+            control.setValueState("Error");
+            control.setValueStateText("Este campo es obligatorio");
+            errorCount++;
+            if (!incompleteFields.includes(fieldName)) {
+              incompleteFields.push(fieldName);
+            }
+          } else {
+            control.setValueState("None");
+          }
+        };
+      
+        // Validar campos antes de hacer la llamada
+        validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
+        validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
+      
+        if (errorCount > 0) {
+          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
+          return;
+        }
+      
+        const now = new Date();
+        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      
+        // Aquí agregas la nueva variable 'fechamodificacion' a tu payload
+        const payload = {
+          codigoProyect: "1",
+          nameProyect: snameProyect,
+          Email: sEmail,
+          Empleado: sEmpleado,
+          fechaCreacion: localDate,
+          pluriAnual: spluriAnual,
+          Total: sTotal,
+          descripcion: sdescripcion,
+          funcionalString: sClienteFunc,
+          clienteFacturacion: sClienteFac,
+          multijuridica: sMultiJuri,
+          Naturaleza_ID: sSelectedKey,
+          Area_ID: sSelecKeyA,
+          Iniciativa_ID: sSelectKeyIni,
+          jefeProyectID_ID: sSelecKeyJe,
+          objetivoAlcance: sObjetivoAlcance,
+          AsuncionesyRestricciones: sAsunyRestric,
+          Vertical_ID: sSelectKeyVerti,
+          Fechainicio: sFechaIniFormatted,
+          FechaFin: sFechaFinFormatted,
+          Seguimiento_ID: sSelectKeySegui,
+          EjecucionVia_ID: sSelectKeyEjcu,
+          AmReceptor_ID: sSelectKeyAmrep,
+          clienteFuncional_ID: sSelectKeyClienNuevo,
+          Estado: "Pendiente",
+          datosExtra: sDatosExtra,
+          IPC_apli: sIPC
+        };
+
+
+
+        // Crear la fecha de modificación (solo la fecha, sin hora ni zona horaria)
+        let oDateFormat1; // Declaramos fuera de cualquier bloque de función o condicional
+
+        if (!oDateFormat1) { // Solo lo creamos si no ha sido declarado aún
+          oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
+                pattern: "yyyy-MM-dd"
+            });
+        }
+
+        // Luego podemos usar oDateFormat como se desee
+        const fechaModificacion = new Date();
+        const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
+
+        // Si ya existe un sProjectID, agregamos 'FechaModificacion' en el payload para el PATCH
+        if (sProjectID) {
+          payload.FechaModificacion = formattedFechaModificacion; // Solo agregamos la fecha en formato 'yyyy-MM-dd'
+        }
+           
+       // Validar campos antes de hacer la llamada
+       if (!payload.descripcion || !payload.nameProyect) {
+         sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
+         console.error("Validación fallida: Falta código o nombre del proyecto", payload);
+         return;
+       }
+
+       // Log del payload antes de enviarlo
+       console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+
+
+        try {
+          let oModel = this.getView().getModel();
+          let sServiceUrl = oModel.sServiceUrl;
+      
+          let response;
+          let url = "/odata/v4/datos-cdo/DatosProyect";
+          let method = "POST";
+      
+          if (sProjectID) {
+            // Actualización (PATCH)
+            url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+            method = "PATCH";
+          }
+      
+          //  Obtener el CSRF Token
+          let oTokenResponse = await fetch(sServiceUrl, {
+            method: "GET",
+            headers: { "x-csrf-token": "Fetch" }
+          });
+          if (!oTokenResponse.ok) {
+            throw new Error("Error al obtener el CSRF Token");
+          }
+      
+          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+          if (!sCsrfToken) {
+            throw new Error("No se recibió un CSRF Token");
+          }
+      
+          console.log("CSRF Token obtenido:", sCsrfToken);
+      
+          // Realizamos la llamada al servicio
+          response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+            },
+            body: JSON.stringify(payload),
+          });
+      
            if (!response.ok) throw new Error("Error al procesar la solicitud OData");
  
            const result = await response.json();
@@ -5290,7 +5350,7 @@ if (sProjectID) {
         const idOtrGRI = this._idlSErvi;
 
         // Obtener la tabla por su ID
-        const oTable = this.byId("table0_1727879576857");
+        const oTable = this.byId("tableServicioInterno");
 
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
@@ -5395,7 +5455,7 @@ if (sProjectID) {
 
 
         // Obtener la tabla por su ID
-        const oTable = this.byId("table0_1727879940116");
+        const oTable = this.byId("tablGastoViajeInterno");
 
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
@@ -6260,7 +6320,7 @@ if (sProjectID) {
 
 
         // Obtener la tabla por su ID
-        const oTable = this.byId("table0_1724413700665");
+        const oTable = this.byId("tablaInfrestuctura");
 
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
@@ -6371,7 +6431,7 @@ if (sProjectID) {
         const sidLinc = this._idLinc;
 
         // Obtener la tabla por su ID
-        const oTable = this.byId("table0_1727955577124");
+        const oTable = this.byId("tablaLicencia");
 
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
@@ -6821,11 +6881,13 @@ if (sProjectID) {
 
 
 
-      CaseAno: function (tableId) {
+     CaseAno : function (tableId) {
         //  console.log("TABLA RECIBIDA  : " + tableId);
 
         var oDatePickerInicio = this.getView().byId("date_inico");
         var oDatePickerFin = this.getView().byId("date_fin");
+
+
 
         var sFechaInicio = oDatePickerInicio.getDateValue();
         var sFechaFin = oDatePickerFin.getDateValue();
@@ -6844,7 +6906,13 @@ if (sProjectID) {
             aniosEnRango.push(i);
           }
 
-          var valoresDistribuidos = this.calcularDistribucionInput();
+
+          let resultado = this.calcularDistribucionInput();
+          if (!resultado || !resultado.valoresDistribuidos) return;
+          
+          let valoresDistribuidos = resultado.valoresDistribuidos;
+          let acumulado = resultado.acumuladoTextPorTablaYAnio;
+          
           if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
             //         sap.m.MessageToast.show("No se pudo calcular la distribución.");
             return;
@@ -6894,37 +6962,96 @@ if (sProjectID) {
                 that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-
                 that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteD2025").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
                 that.getView().byId("costes_indirectos2025").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+
+
+
+                this.getView().byId("text129CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€"); // Coste directo 2025 
+                this.getView().byId("text130CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€"); 
+                this.getView().byId("text210").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text400").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text133").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                this.getView().byId("text200").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+
+
+       
                 break;
+
+
               case 2026:
                 that.getView().byId("tipoS2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TRecurso2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteT2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("cellCostesTotales_1_2").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-
                 that.getView().byId("TSCosteD2026").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
                 that.getView().byId("costes_indirectos2026").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+
+
+
+
+                that.getView().byId("text128CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                that.getView().byId("text134CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                this.getView().byId("text211").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text401").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text1341").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                this.getView().byId("text201").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+
+
+
+
+             //   that.getView().byId("text128CosteDi").setText((acumulado[anio]["table_dimicFecha"] || 0).toFixed(2) + "€"); //coste directo 2026 
+
+             
                 break;
+
+
               case 2027:
                 that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteT2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteD2027").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
                 that.getView().byId("costes_indirectos2027").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+
+                that.getView().byId("text135").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                that.getView().byId("text140CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                this.getView().byId("text212").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text402").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text1352").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                this.getView().byId("text202").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+
                 break;
 
               case 2028:
-                that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                that.getView().byId("tipoS2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                that.getView().byId("TSCosteT2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+
+
+                that.getView().byId("text141CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                that.getView().byId("text136").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                this.getView().byId("text213").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text403").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text1363").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                this.getView().byId("text203").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+
+
                 break;
 
               case 2029:
-                that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                that.getView().byId("tipoS2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                that.getView().byId("TSCosteT2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+
+
+                that.getView().byId("text143CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                this.getView().byId("text214").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text138").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                this.getView().byId("text404").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                this.getView().byId("text1374").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                this.getView().byId("text204").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+
                 break;
             }
           });
@@ -6937,6 +7064,10 @@ if (sProjectID) {
           that.getView().byId("cellCostesTotales_1_7").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
 
           that.getView().byId("costes_indirectosTotal").setText((totalesPorInput["Input3"] || 0).toFixed(2) + "€");
+
+
+          that.getView().byId("text70_1729079344938").setText((totalesPorInput["Text1"] || 0).toFixed(2) + "€"); // 2025 
+          that.getView().byId("text137").setText((totalesPorInput["Text4"] || 0).toFixed(2) + "€");
 
           //  console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
         } else {
@@ -7115,7 +7246,7 @@ if (sProjectID) {
       onAddRowPress4: function (sTableId) {
         console.log(sTableId);
 
-        var oTable = this.byId("table0_1724413700665");
+        var oTable = this.byId("tablaInfrestuctura");
         if (oTable) {
 
 
@@ -7265,10 +7396,10 @@ if (sProjectID) {
           "idGastoViajeConsu",
           "idServiExterno",
           "idGastoRecuExter",
-          "table0_1724413700665",
-          "table0_1727955577124",
-          "table0_1727879576857",
-          "table0_1727879940116"
+          "tablaInfrestuctura",
+          "tablaLicencia",
+          "tableServicioInterno",
+          "tablGastoViajeInterno"
         ];
 
         tableIds.forEach((tableId) => {
@@ -7487,89 +7618,153 @@ if (sProjectID) {
           { id: "input0_1725625161348", nombre: "Input1", tipo: "input" },
           { id: "totalSubtotal", nombre: "Input2", tipo: "input" },
           { id: "input2_1724756105", nombre: "Input3", tipo: "input" },
+      
           { id: "text33", nombre: "Text1", tipo: "text", tabla: "table_dimicFecha" },
           { id: "text32_1723542481599", nombre: "Text2", tipo: "text", tabla: "table_dimicFecha" },
-          { id: "text560", nombre: "Text3", tipo: "text", tabla: "tablaConsuExter" }
+          { id: "text32_172341599", nombre: "Text3", tipo: "text", tabla: "table_dimicFecha" },
+      
+          { id: "text560", nombre: "Text4", tipo: "text", tabla: "tablaConsuExter" },
+          { id: "text56", nombre: "Text5", tipo: "text", tabla: "tablaConsuExter" },
+          { id: "text50006", nombre: "Text6", tipo: "text", tabla: "tablaConsuExter" },
+      
+          { id: "text32_172354299", nombre: "Text7", tipo: "text", tabla: "tableServicioInterno" },
+      
+          { id: "text3888", nombre: "Text8", tipo: "text", tabla: "tablGastoViajeInterno" },
+          { id: "text32_172354299", nombre: "text40", tipo: "text", tabla: "tablGastoViajeInterno" },
+
+
+          { id: "text56000", nombre: "Text8", tipo: "text", tabla: "tablaRecExterno" },
+          { id: "text5644", nombre: "text9", tipo: "text", tabla: "tablaRecExterno" },
+          { id: "text500406", nombre: "text10", tipo: "text", tabla: "tablaRecExterno" },
+
+          { id: "text90_1729173466313", nombre: "text11", tipo: "text", tabla: "tablaLicencia" },
+          { id: "text75_1729177384465", nombre: "text12", tipo: "text", tabla: "tablaLicencia" },
+
+
+
+          { id: "text78_1729173199360", nombre: "t ext13", tipo: "text", tabla: "tablaInfrestuctura" },
+          { id: "text32_171145299", nombre: "text14", tipo: "text", tabla: "tablaInfrestuctura" },
+
+
         ];
-
+      
         let valoresDistribuidos = {};
-
+        let acumuladoTextPorTablaYAnio = {};
+      
         elementos.forEach(elemento => {
           let oElemento = this.byId(elemento.id);
           if (!oElemento) {
-            console.error(`Error: No se encontró el elemento con ID '${elemento.id}'`);
+            console.error(`❌ No se encontró el elemento con ID '${elemento.id}'`);
             return;
           }
-
+      
           let valor = elemento.tipo === "input" ? parseFloat(oElemento.getValue()) || 0 : parseFloat(oElemento.getText()) || 0;
           if (valor === 0) {
-            //  console.log(`⚠ El valor del elemento ${elemento.nombre} es 0, no se puede distribuir.`);
             return;
           }
-
+      
           for (let table in this._porcentajesPorTabla) {
             if (elemento.tipo === "text" && table !== elemento.tabla) {
               continue; // Solo distribuir "text" en su tabla específica
             }
-
+      
             let porcentaje = this._porcentajesPorTabla[table];
-            let valorDistribuido = (valor * porcentaje) / 100;
-
+            let valorDistribuido = elemento.tipo === "text" ? valor : (valor * porcentaje) / 100;
+      
             if (!valoresDistribuidos[table]) {
               valoresDistribuidos[table] = {};
             }
-
-            for (let year in this._insercionesPorAnoYTabla) {
-              if (!this._insercionesPorAnoYTabla[year][table]) {
-                continue;
-              }
-
+      
+            // Obtener los años válidos para esa tabla
+            let aniosParaTabla = Object.entries(this._insercionesPorAnoYTabla)
+              .filter(([anio, tablas]) => tablas[table])
+              .map(([anio]) => anio);
+      
+            aniosParaTabla.forEach(year => {
               let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
-
               if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
-                continue;
+                return;
               }
-
+      
               if (!valoresDistribuidos[table][year]) {
                 valoresDistribuidos[table][year] = [];
               }
-
-              if (elemento.tipo === "text") {
-                let numInserciones = this._insercionesPorAnoYTabla[year][table] || 1;
-                let valorPorInsercion = valorDistribuido / numInserciones;
-                let porcentajePorInsercion = (100 / numInserciones);
-                let sumaValores = 0;
-                let valoresTemporales = [];
-
-                for (let i = 0; i < numInserciones; i++) {
-                  let valorTemp = (i === numInserciones - 1) ? (valorDistribuido - sumaValores) : valorPorInsercion;
-                  sumaValores += valorTemp;
-                  valoresTemporales.push({
-                    elemento: elemento.nombre,
-                    porcentaje: porcentajePorInsercion.toFixed(2),
-                    valor: valorTemp.toFixed(2)
-                  });
-                }
-
-                valoresDistribuidos[table][year].push(...valoresTemporales);
-              } else {
-                let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
-                let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
-
-                valoresDistribuidos[table][year].push({
-                  elemento: elemento.nombre,
-                  porcentaje: porcentajePorAno.toFixed(2),
-                  valor: valorDistribuidoPorAno.toFixed(2)
-                });
+      
+              if (!acumuladoTextPorTablaYAnio[year]) {
+                acumuladoTextPorTablaYAnio[year] = {};
               }
-            }
-          }
-        });
+              if (!acumuladoTextPorTablaYAnio[year][table]) {
+                acumuladoTextPorTablaYAnio[year][table] = 0;
+              }
+      
+              if (elemento.tipo === "text") {
+                let numAnios = aniosParaTabla.length;
+      
+                if (numAnios > 1) {
+                  // Distribuir el valor equitativamente
+                  let porcentajePorAno = 100 / numAnios;
+                  let valorPorAno = (valor * porcentajePorAno) / 100;
+      
+                  valoresDistribuidos[table][year].push({
+                    elemento: elemento.nombre,
+                    porcentaje: porcentajePorAno.toFixed(2),
+                    valor: valorPorAno.toFixed(2)
+                  });
+      
+                  acumuladoTextPorTablaYAnio[year][table] += parseFloat(valorPorAno.toFixed(2));
+                } else {
 
-        console.log("Distribución final de valores:", valoresDistribuidos);
-        return valoresDistribuidos;
+                // Solo un año, se va todo ahí
+                                 // Solo un año, se va todo ahí
+                                 valoresDistribuidos[table][year].push({
+                                  elemento: elemento.nombre,
+                                  porcentaje: 100,
+                                  valor: valor.toFixed(2)
+                                });
+              
+                                acumuladoTextPorTablaYAnio[year][table] += parseFloat(valor.toFixed(2));
+                              }
+                            } else {
+                              // Distribuir inputs proporcionales al porcentaje de inserciones en ese año
+                              let porcentajeEnAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
+                              let valorAno = (valor * porcentajeEnAno) / 100;
+              
+                              valoresDistribuidos[table][year].push({
+                                elemento: elemento.nombre,
+                                porcentaje: porcentajeEnAno.toFixed(2),
+                                valor: valorAno.toFixed(2)
+                              });
+                            }
+                          });
+                        }
+                      });
+              
+                      // Para fines de prueba puedes imprimir los resultados
+                      console.log("📊 Valores distribuidos por tabla y año:");
+                      console.log(JSON.stringify(valoresDistribuidos, null, 2));
+              
+                      console.log("🔢 Acumulado de textos distribuidos por tabla y año:");
+                      console.log(JSON.stringify(acumuladoTextPorTablaYAnio, null, 2));
+                    
+              
+        return {
+          valoresDistribuidos,
+          acumuladoTextPorTablaYAnio
+        };
       },
-
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    
+    
+    
+    
 
       /*   calcularDistribucionInput: function () {
            let elementos = [
@@ -8068,12 +8263,12 @@ if (sProjectID) {
           });
           this.onSumarColumna(tableId);
 
-        } else if (tableId === "table0_1724413700665") {
+        } else if (tableId === "tablaInfrestuctura") {
           // Obtener la tabla "table_dimicFecha"
-          var oTable = this.byId("table0_1724413700665");
+          var oTable = this.byId("tablaInfrestuctura");
 
           if (!oTable) {
-            console.error("La tabla 'table0_1724413700665' no fue encontrada.");
+            console.error("La tabla 'tablaInfrestuctura' no fue encontrada.");
             return;
           }
 
@@ -8102,12 +8297,12 @@ if (sProjectID) {
           });
           this.onSumarColumna(tableId);
 
-        } else if (tableId === "table0_1727955577124") {
+        } else if (tableId === "tablaLicencia") {
           // Obtener la tabla "table_dimicFecha"
-          var oTable = this.byId("table0_1727955577124");
+          var oTable = this.byId("tablaLicencia");
 
           if (!oTable) {
-            console.error("La tabla 'table0_1727955577124' no fue encontrada.");
+            console.error("La tabla 'tablaLicencia' no fue encontrada.");
             return;
           }
 
@@ -8136,12 +8331,12 @@ if (sProjectID) {
           });
 
           this.onSumarColumna(tableId);
-        } else if (tableId === "table0_1727879576857") {
+        } else if (tableId === "tableServicioInterno") {
           // Obtener la tabla "table_dimicFecha"
-          var oTable = this.byId("table0_1727879576857");
+          var oTable = this.byId("tableServicioInterno");
 
           if (!oTable) {
-            console.error("La tabla 'table0_1727879576857' no fue encontrada.");
+            console.error("La tabla 'tableServicioInterno' no fue encontrada.");
             return;
           }
 
@@ -8170,12 +8365,12 @@ if (sProjectID) {
           });
           this.onSumarColumna(tableId);
 
-        } else if (tableId === "table0_1727879940116") {
+        } else if (tableId === "tablGastoViajeInterno") {
           // Obtener la tabla "table_dimicFecha"
-          var oTable = this.byId("table0_1727879940116");
+          var oTable = this.byId("tablGastoViajeInterno");
 
           if (!oTable) {
-            console.error("La tabla 'table0_1727879940116' no fue encontrada.");
+            console.error("La tabla 'tablGastoViajeInterno' no fue encontrada.");
             return;
           }
 
@@ -8338,13 +8533,13 @@ if (sProjectID) {
           this.byId("inputReInter").setValue(suma.toFixed(2));
           this.byId("inputServi1").setValue(Total1.toFixed(2) + "€");
 
-        } else if (tableId === "table0_1727879576857") {
+        } else if (tableId === "tableServicioInterno") {
           this.byId("inputOtrosServi1").setValue(totalSer.toFixed(2) + "€");
 
-        } else if (tableId === "table0_1727879940116") {
+        } else if (tableId === "tablGastoViajeInterno") {
           this.byId("inputGastoVia1").setValue(totaOtrose.toFixed(2) + "€");
 
-        } else if (tableId === "table0_1727955577124") {  //if para Licencia 
+        } else if (tableId === "tablaLicencia") {  //if para Licencia 
           this.byId("input0_1724758359").setValue(totalSer.toFixed(2) + "€");
 
         }
@@ -8377,7 +8572,7 @@ if (sProjectID) {
 
         }
 
-        else if (tableId === "table0_1724413700665") {
+        else if (tableId === "tablaInfrestuctura") {
           this.byId("totalInfraestruc").setValue(suma.toFixed(2) + "€");
 
         }
@@ -8597,10 +8792,10 @@ if (sProjectID) {
             "idGastoViajeConsu",
             "idServiExterno",
             "idGastoRecuExter",
-            "table0_1724413700665",
-            "table0_1727955577124",
-            "table0_1727879576857",
-            "table0_1727879940116"
+            "tablaInfrestuctura",
+            "tablaLicencia",
+            "tableServicioInterno",
+            "tablGastoViajeInterno"
           ];
   
           // Iterar sobre cada tabla
@@ -8721,7 +8916,7 @@ if (sProjectID) {
              var diffMonths = this.getMonthsDifference(startDate, endDate);
    
              // Definir las IDs de las tablas
-             var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno", "idOtroserConsu" , "idGastoViajeConsu" , "idServiExterno" , "idGastoRecuExter" , "table0_1724413700665" , "table0_1727955577124"];
+             var tableIds = ["tablaConsuExter", "table_dimicFecha", "tablaRecExterno", "idOtroserConsu" , "idGastoViajeConsu" , "idServiExterno" , "idGastoRecuExter" , "tablaInfrestuctura" , "tablaLicencia"];
    
              // Iterar sobre cada tabla
              tableIds.forEach(function (tableId) {
