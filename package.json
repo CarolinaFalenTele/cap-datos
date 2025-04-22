@@ -13,7 +13,7 @@
     "@sap/cds-dk": "^8.7.0",
     "@sap/cds-hana": "^2.0.0",
     "@sap/hana-client": "^2",
-    "@sap/xsenv": "^5.4.0",
+    "@sap/xsenv": "^5.5.0",
     "@sap/xssec": "^4.4.0",
     "@ui5/logger": "^4.0.1",
     "dotenv": "^16.4.5",

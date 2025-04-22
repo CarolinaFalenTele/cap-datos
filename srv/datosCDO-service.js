@@ -1,6 +1,9 @@
 const cds = require('@sap/cds');
 const fetch = require('node-fetch');
 const axios = require("axios");
+const xssec = require('@sap/xssec');
+const xsenv = require('@sap/xsenv');
+
 
 
 console.log("HOLAAAAAAAAAAAAA");
@@ -9,6 +12,7 @@ console.log("HOLAAAAAAAAAAAAA");
 
 
 module.exports = cds.service.impl(async function () {
+  
   console.log("Servicio cargado correctamente");
 
   const {
@@ -31,48 +35,39 @@ module.exports = cds.service.impl(async function () {
     otrosServiciosConsu
   } = this.entities;
 
+  const { WorkflowService } = this.entities;
 
-  this.on("StartProcess", async (req) => {
+this.on('startWorkflow', async (req) => {
+  const input = req.data;
 
-      try {
-          const apiKey = "JE-cxZgt1L-EAGvD1glruZi9OKcxc-R_"; 
+  const workflowPayload = {
+    definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
+    context: input
+  };
 
-          const requestBody = {
-              definitionId: "eu10.ia-test-l358blr2.datoscdoprocess.aprobacionCDO",
-              context: {
-                  solicitudid: req.data.solicitudid,
-                  nombreproyecto: req.data.nombreproyecto,
-                  descripcion: req.data.descripcion,
-                  codigoProyecto: req.data.codigoProyecto,
-                  solicitudurl: req.data.solicitudurl
-              }
-          };
+  try {
+    const token = await getWorkflowToken(); // asegúrate que esta función esté implementada correctamente
 
-          const response = await fetch("https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `ApiKey ${apiKey}`
-              },
-              body: JSON.stringify(requestBody)
-          });
-
-          if (!response.ok) {
-              return req.error(response.status, "Error en la API de Workflow");
-          }
-
-          const data = await response.json();
-          return data;
-
-      } catch (error) {
-          console.error("❌ Error en startWorkflow:", error);
-          return req.error(500, "Error en el servidor");
+    const response = await axios.post(
+      'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
+      workflowPayload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       }
+    );
+
+    return "Workflow iniciado correctamente";
+
+  } catch (err) {
+    console.error("Error en backend:", err.response?.data || err.message);
+    req.reject(500, `Error al iniciar workflow: ${err.message}`);
+  }
 });
 
-
   
-
 
   
 this.on('getUserInfo', async (req) => {
@@ -103,7 +98,7 @@ this.on('getUserInfo', async (req) => {
 
   module.exports = cds.service.impl(async function() {
     
-    this.on('startWorkflow', async (req) => {
+    this.on('elenacarolina.falensoriano@telefonica.com', async (req) => {
         const payload = req.data.payload;
   
         // Simulación de llamada a SAP Build Process Automation
@@ -577,5 +572,25 @@ this.on('getUserInfo', async (req) => {
 
 
 
-
+  async function getWorkflowToken() {
+    const clientid = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";
+    const clientsecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";
+    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token"; // Ej: https://your-subdomain.authentication.eu10.hana.ondemand.com
+  
+    const response = await axios({
+      method: "post",
+      url: `${url}/oauth/token`,
+      auth: {
+        username: clientid,
+        password: clientsecret
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      data: "grant_type=client_credentials"
+    });
+  
+    return response.data.access_token;
+  }
+  
 });

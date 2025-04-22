@@ -98,7 +98,9 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 
 
 
-    action startWorkflow(payload: LargeString) returns String;
+
+
+   action startWorkflow(payload: LargeString) returns String;
  
  function getUserInfo() returns String;  
 }
