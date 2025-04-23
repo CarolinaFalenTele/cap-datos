@@ -101,74 +101,19 @@ sap.ui.define([
         this.getUserInfo();
 
 
-      //  const token = await this.obtenerJWT(); // <-- ✅ Llamar desde "this"
+      //  const token = await this.obtenerJWT(); // <--  Llamar desde "this"
 
 
 
       },
 
-
-   /*   onStartWorkflow: async function () {
-        const oModel = this.getView().getModel(); // modelo OData V4
       
-        const oContextData = {
-          codigoproyect: 123,
-          nameproyect: "Proyecto X",
-          generatedid: "ID001",
-          urlapp: "https://miapp.com",
-          descripcion: "Descripción del proyecto",
-          area: "IT",
-          jefeProyecto: "Juan Pérez",
-          clienteFuncional: "Cliente 1",
-          clienteFacturacion: "Cliente 2",
-          fechaInicio: "2025-04-22",
-          fechaFin: "2025-05-30",
-          jornadasTotales: 30,
-          recursoInterno: 10,
-          consumoExterno: 5,
-          recursoExterno: 15,
-          infraestructuras: 1000,
-          licencia: 200,
-          subtotal: 1500,
-          costeestruc: 200,
-          costeEstructura: 200,
-          margeningre: 10,
-          margenSobreIngreso: 10,
-          total: 1700
-        };
+  /*  onStartWorkflow: async function () {
+        const oModel = this.getView().getModel(); 
       
-        const oPayload = {
-          workflowRequest: {
-            definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
-            context: oContextData
-          }
-        };
+        const oContext = oModel.bindContext("/startWorkflow(...)"); 
       
-        try {
-          await oModel.request({
-            method: "POST",
-            path: "/startWorkflow",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            data: oPayload
-          });
-      
-          sap.m.MessageToast.show("🚀 Workflow iniciado correctamente");
-        } catch (error) {
-          console.error("❌ Error al iniciar workflow:", error);
-          sap.m.MessageBox.error("❌ Error al iniciar el workflow");
-        }
-      },*/
-      
-      
-      
-      onStartWorkflow: async function () {
-        const oModel = this.getView().getModel(); // Asegúrate de que este es un modelo OData V4
-      
-        const oContext = oModel.bindContext("/startWorkflow(...)"); // acción sin parámetros en la URL
-      
-        oContext.setParameter("input", {
+        oContext.setParameter("payload", JSON.stringify({
           codigoproyect: 0,
           nameproyect: "Proyecto Prueba",
           generatedid: "24",
@@ -192,7 +137,8 @@ sap.ui.define([
           margeningre: 0,
           margenSobreIngreso: 451,
           total: 23000
-        });
+        }));
+        
       
         try {
           const result = await oContext.execute();
@@ -201,7 +147,7 @@ sap.ui.define([
           sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
         }
       },
-      
+      */
 
 
 
@@ -283,13 +229,13 @@ sap.ui.define([
               //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
               //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
 
-              //console.log("📌 Datos seteados en la vista:", userInfo);
+              //console.log(" Datos seteados en la vista:", userInfo);
             } else {
               console.error("No se encontró la información del usuario.");
             }
           })
           .catch(error => {
-            console.error("❌ Error obteniendo datos del usuario:", error);
+            console.error(" Error obteniendo datos del usuario:", error);
           });
       },
 
@@ -3467,7 +3413,7 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
             method = "PATCH";
           }
 
-          // 1️⃣ Obtener el CSRF Token
+          // 1️ Obtener el CSRF Token
           let oTokenResponse = await fetch(sServiceUrl, {
             method: "GET",
             headers: { "x-csrf-token": "Fetch" }
@@ -3481,7 +3427,7 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
             throw new Error("No se recibió un CSRF Token");
           }
 
-          console.log("✅ CSRF Token obtenido:", sCsrfToken);
+          console.log(" CSRF Token obtenido:", sCsrfToken);
 
           // Realizamos la llamada al servicio
           response = await fetch(url, {
@@ -3545,64 +3491,50 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
 
 
 
-              // 1️⃣ Payload para iniciar workflow de aprobación
+              // 1 Payload para iniciar workflow de aprobación
 
-              const urlapp = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/" + generatedId;
-
-          const workflowPayload = {
-            definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
-            context: {
-              codigoproyect: scodigoProyect,
-              nameproyect: snameProyect,
-              generatedid: generatedId,
-              urlapp: urlapp,
-              descripcion: sdescripcion,
-              area: sSelecKeyA,
-              jefeProyecto: sSelecKeyJe,
-              clienteFuncional: sClienteFunc,
-              clienteFacturacion: sClienteFac,
-              fechaInicio: sFechaIniFormatted,
-              fechaFin: sFechaFinFormatted,
-              jornadasTotales: 0, // Ajusta si tienes este dato
-              recursoInterno: 0,
-              consumoExterno: 0,
-              recursoExterno: 0,
-              infraestructuras: 0,
-              licencia: 0,
-              subtotal: 0,
-              costeestruc: 0,
-              costeEstructura: 0,
-              margeningre: 0,
-              margenSobreIngreso: 0,
-              total: sTotal
-            }
-          };
-
-          try {
-            const token = await this.obtenerJWT();
-            const workflowResponse = await fetch("https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-csrf-token": sCsrfToken
-              },
-              body: JSON.stringify(workflowPayload)
-            });
-
-            if (!workflowResponse.ok) {
-              const wfError = await workflowResponse.text();
-              console.error("Error iniciando workflow:", wfError);
-              sap.m.MessageToast.show("No se pudo iniciar el workflow.");
-            } else {
-              console.log("✅ Workflow iniciado correctamente.");
-              sap.m.MessageToast.show("Proyecto guardado y workflow iniciado.");
-            }
-
-          } catch (workflowError) {
-            console.error("🚨 Error en el fetch del workflow:", workflowError);
-            sap.m.MessageToast.show("Error al enviar al flujo de aprobación.");
-          }
-  
+              const  urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"  + generatedId;
+              const oModel = this.getView().getModel(); 
+      
+              const oContext = oModel.bindContext("/startWorkflow(...)"); 
+            
+              oContext.setParameter("payload", JSON.stringify({
+                codigoproyect: 0,
+                nameproyect: snameProyect,
+                generatedid: "24",
+                urlapp: urlAPP,
+                descripcion: sdescripcion,
+                area: sSelecKeyA,
+                jefeProyecto: "Carolina Falen",
+                clienteFuncional: "CLiente Fun",
+                clienteFacturacion: "Cliente Fact",
+                fechaInicio: "2025-02-12",
+                fechaFin: "2026-04-17",
+                jornadasTotales: 20,
+                recursoInterno: 20.000,
+                consumoExterno: 12.00,
+                recursoExterno: 15.00,
+                infraestructuras: 141,
+                licencia: 500,
+                subtotal: 2300,
+                costeestruc: 3.5,
+                costeEstructura: 2000,
+                margeningre: 0,
+                margenSobreIngreso: 451,
+                total: 23000,
+                aprobado: "Aprobado",
+                rechazado: "Rechazado",
+                fechacreacion: "c",
+                usuario: "c"
+              }));
+              
+            
+              try {
+                const result = await oContext.execute();
+                sap.m.MessageToast.show("Workflow iniciado correctamente");
+              } catch (err) {
+                sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
+              } 
               // Navegar a la vista 'app' con el nuevo ID
               this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
@@ -3616,9 +3548,9 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
         }
       },
 
-      obtenerJWT: async function () {
-        const clientId = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";         // Reemplaza con tu real
-        const clientSecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";     // Reemplaza con tu real
+      /*obtenerJWT: async function () {
+        const clientId = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";         
+        const clientSecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";     
         const tokenUrl = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token";
       
         const formData = new URLSearchParams();
@@ -3636,18 +3568,18 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
       
           if (!response.ok) {
             const errorText = await response.text();
-            console.error("❌ Error al obtener el JWT:", errorText);
+            console.error(" Error al obtener el JWT:", errorText);
             throw new Error("No se pudo obtener el token JWT");
           }
       
           const data = await response.json();
-          console.log("✅ Token JWT obtenido");
+          console.log(" Token JWT obtenido");
           return data.access_token;
         } catch (err) {
-          console.error("🚨 Excepción al obtener JWT:", err);
+          console.error(" Excepción al obtener JWT:", err);
           throw err;
         }
-      },
+      },*/  
       
       
 

@@ -37,44 +37,44 @@ module.exports = cds.service.impl(async function () {
 
   const { WorkflowService } = this.entities;
 
-this.on('startWorkflow', async (req) => {
-  const input = req.data;
-
-  const workflowPayload = {
-    definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
-    context: input
-  };
-
-  try {
-    const token = await getWorkflowToken(); // asegúrate que esta función esté implementada correctamente
-
-    const response = await axios.post(
-      'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
-      workflowPayload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+  this.on('startWorkflow', async (req) => {
+    const input = JSON.parse(req.data.payload);
+  
+    const workflowPayload = {
+      definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
+      context: input
+    };
+  
+    try {
+      const token = await getWorkflowToken(); 
+  
+      const response = await axios.post(
+        'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
+        workflowPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
-
-    return "Workflow iniciado correctamente";
-
-  } catch (err) {
-    console.error("Error en backend:", err.response?.data || err.message);
-    req.reject(500, `Error al iniciar workflow: ${err.message}`);
-  }
-});
+      );
+  
+      return "Workflow iniciado correctamente";
+    } catch (err) {
+      console.error("Error en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al iniciar workflow: ${err.message}`);
+    }
+  });
+  
 
   
 
   
 this.on('getUserInfo', async (req) => {
-  console.log("⚡ HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
+  console.log(" HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
 
   if (!req.user || !req.user.id) {
-    console.log("⚠️ No se encontró usuario autenticado.");
+    console.log(" No se encontró usuario autenticado.");
     return {};
   }
 
@@ -91,7 +91,7 @@ this.on('getUserInfo', async (req) => {
     phoneNumber: attr.phoneNumber || "No disponible"
   };
 
-  console.log("✅ Datos del usuario:", userInfo);
+  console.log(" Datos del usuario:", userInfo);
   return userInfo;
 });
 
@@ -137,7 +137,7 @@ this.on('getUserInfo', async (req) => {
 
 
     try {
-        console.log("✅ Insertando en la base de datos...");
+        console.log(" Insertando en la base de datos...");
 
         // Realizar la inserción
         await INSERT.into(DatosProyect).entries({
@@ -173,22 +173,22 @@ this.on('getUserInfo', async (req) => {
             costeEstructura
         });
 
-        console.log("🎉 Inserción exitosa.");
+        console.log(" Inserción exitosa.");
 
         //  Obtener el ID recién generado
         const newRecord = await SELECT.one.from(DatosProyect).where({ nameProyect });
 
         if (!newRecord || !newRecord.ID) {
-            console.error("⚠️ No se pudo recuperar el ID después de la inserción.");
+            console.error(" No se pudo recuperar el ID después de la inserción.");
             return req.reject(500, "No se pudo recuperar el ID después de la inserción.");
         }
 
-        console.log("📌 ID generado:", newRecord.ID);
+        console.log(" ID generado:", newRecord.ID);
 
         return { ID: newRecord.ID, mensaje: "Inserción exitosa" };
 
     } catch (error) {
-        console.error("❌ ERROR en CREATE DatosProyect:", error);
+        console.error(" ERROR en CREATE DatosProyect:", error);
 
         if (error.message.includes("duplicate key")) {
             return req.reject(400, "Error: Código de proyecto duplicado.");
@@ -575,7 +575,7 @@ this.on('getUserInfo', async (req) => {
   async function getWorkflowToken() {
     const clientid = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";
     const clientsecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";
-    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token"; // Ej: https://your-subdomain.authentication.eu10.hana.ondemand.com
+    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token"; 
   
     const response = await axios({
       method: "post",
