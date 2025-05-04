@@ -4272,8 +4272,8 @@
                 <OverflowToolbar id="toolba1">
                     <ToolbarSpacer id="25432"/>
 
-                    <Button id="564433" type="Accept" text="Enviar" press="onSave"/>
-                    <Button id="15254574" type="Reject" text="Borrar" press="onClearFields"/>
+                    <Button id="btnAceptar" type="Accept" text="Enviar" press="onSave" />
+                    <Button id="btnBorrar" type="Reject" text="Borrar" press="onClearFields"/>
                 </OverflowToolbar>
             </footer>
         </Page>

@@ -573,8 +573,35 @@ sap.ui.define(
             },*/
 
 
+
+
+            formatDate: function (dateValue) {
+                if (!dateValue) {
+                    return "";
+                }
+            
+                // Si es tipo Raw (OData V4), puede llegar como un objeto con función getTime
+                if (typeof dateValue === "object" && typeof dateValue.getTime === "function") {
+                    dateValue = dateValue;
+                } else {
+                    dateValue = new Date(dateValue);
+                }
+            
+                if (isNaN(dateValue.getTime())) {
+                    return ""; // no válido
+                }
+            
+                var oDateFormat = DateFormat.getInstance({
+                    pattern: "dd MMM yyyy",
+                    UTC: true
+                });
+            
+                return oDateFormat.format(dateValue);
+            },
+            
+
             // Función para formatear la fecha
-            formatDate: function (dateString) {
+           /* formatDate: function (dateString) {
                 if (!dateString) {
                     return "";
                 }
@@ -593,7 +620,7 @@ sap.ui.define(
                 });
 
                 return oDateFormat.format(date);
-            },
+            },*/
 
 
 
@@ -767,7 +794,7 @@ sap.ui.define(
                 this.byId("idModifi").setText(oData.FechaModificacion);
                this.byId("fechainitProyect").setText(oData.Fechainicio);
 
-               const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+              const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
                 style: "medium" // Puedes usar "short", "medium", "long", o "full"
               });
               

@@ -219,7 +219,7 @@
                                                             <cells>
                                                                 <ObjectIdentifier
                                                                     id="txtFechai"
-                                                                    title="{path: 'fechaCreacion', formatter: '.formatDate'}"
+                                                                    title="{fechaCreacion}"
                                                                 />
                                                                 <Text
                                                                     id="txtCellCodigo"
@@ -443,7 +443,7 @@
                                                             <cells>
                                                                 <ObjectIdentifier
                                                                     id="1234d"
-                                                                    title="{path: 'Fechainicio', formatter: '.formatDate'}"
+                                                                    title="{Fechainicio}"
                                                                 />
                                                                 <Text
                                                                     id="2333d"

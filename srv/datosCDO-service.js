@@ -5,7 +5,6 @@ const xssec = require('@sap/xssec');
 const xsenv = require('@sap/xsenv');
 
 
-
 console.log("HOLAAAAAAAAAAAAA");
 
 
@@ -35,7 +34,87 @@ module.exports = cds.service.impl(async function () {
     otrosServiciosConsu
   } = this.entities;
 
+
+
+
   const { WorkflowService } = this.entities;
+
+this.on('startWorkflow', async (req) => {
+  const input = JSON.parse(req.data.payload);
+
+  const workflowPayload = {
+    definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
+    context: input
+  };
+
+  try {
+    const token = await getWorkflowToken();
+
+    const response = await axios.post(
+      'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
+      workflowPayload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+   
+  // Aquí, asegúrate de que la respuesta tiene el ID del flujo de trabajo
+  const workflowInstanceId = response.data.id; // Verifica si 'id' es el campo correcto
+  console.log("ID del Workflow:", workflowInstanceId);
+    // Opcional: lo puedes guardar en tu tabla para hacer seguimiento
+    // await INSERT.into("DatosProyect").entries({ generatedid: input.generatedid, workflowInstanceId });
+
+    return {
+      message: "Workflow iniciado correctamente",
+      workflowInstanceId: workflowInstanceId // Devuelto al frontend o quien lo consuma
+    };
+
+  } catch (err) {
+    console.error("Error en backend:", err.response?.data || err.message);
+    req.reject(500, `Error al iniciar workflow: ${err.message}`);
+  }
+});
+
+
+
+this.on('getUserTask', async (req) => {
+  const { workflowInstanceId } = req.data;
+
+  try {
+    const token = await getWorkflowToken(); // Usa la misma función que ya tienes para obtener token
+
+    const response = await axios.get(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}&status=READY`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const tasks = response.data;
+
+    if (tasks.length > 0) {
+      return {
+        taskId: tasks[0].id,
+        subject: tasks[0].subject
+      };
+    } else {
+      return { message: "No hay tareas pendientes para esta instancia." };
+    }
+
+  } catch (err) {
+    console.error("Error obteniendo tareas:", err.response?.data || err.message);
+    req.reject(500, `Error al obtener la tarea: ${err.message}`);
+  }
+});
+
+  /*const { WorkflowService } = this.entities;
 
   this.on('startWorkflow', async (req) => {
     const input = JSON.parse(req.data.payload);
@@ -64,7 +143,7 @@ module.exports = cds.service.impl(async function () {
       console.error("Error en backend:", err.response?.data || err.message);
       req.reject(500, `Error al iniciar workflow: ${err.message}`);
     }
-  });
+  });**/
   
 
   

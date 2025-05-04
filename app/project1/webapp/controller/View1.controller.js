@@ -103,10 +103,40 @@ sap.ui.define([
 
       //  const token = await this.obtenerJWT(); // <--  Llamar desde "this"
 
-
+   //   const oRouter = this.getOwnerComponent().getRouter();
+   //   oRouter.getRoute("view").attachPatternMatched(this._onRouteMatched, this);
 
       },
 
+      onAprobar: function () {
+        this._enviarRespuesta("aprobado");
+      },
+      
+      onRechazar: function () {
+        this._enviarRespuesta("rechazado");
+      },
+      
+      _enviarRespuesta: async function (accion) {
+        const oModel = this.getView().getModel();
+        const oContext = oModel.bindContext("/completarTarea(...)");
+      
+        const payload = {
+          generatedid: this.generatedId,
+          accion: accion
+        };
+      
+        oContext.setParameter("payload", JSON.stringify(payload));
+      
+        try {
+          await oContext.execute();
+          const result = oContext.getBoundContext().getObject();
+          sap.m.MessageToast.show("Workflow actualizado con acción: " + accion);
+        } catch (error) {
+          sap.m.MessageBox.error("Error al enviar respuesta: " + error.message);
+        }
+      },
+      
+      
       
   /*  onStartWorkflow: async function () {
         const oModel = this.getView().getModel(); 
@@ -246,7 +276,7 @@ sap.ui.define([
       },
 
 
-      _onObjectMatched: async function (oEvent) {
+    /*  _onObjectMatched: async function (oEvent) {
         const Token = this._sCsrfToken;
         var oModel = this.getView().getModel("mainService");
 
@@ -348,7 +378,7 @@ sap.ui.define([
             this.highlightControls();
 
             // Cambiar el texto del botón de "Enviar" a "Guardar"
-            const oButton = this.byId("564433");
+            const oButton = this.byId("btnAceptar");
             oButton.setText("Guardar");
 
             // Mostrar un toast indicando que los datos se cargaron correctamente
@@ -371,11 +401,182 @@ sap.ui.define([
             oDialog.open();
           }
 
+          
+
+        } catch (error) {
+          console.error("Error al obtener los datos del proyecto:", error);
+          sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+        }
+      },*/
+
+
+      _onObjectMatched: async function (oEvent) {
+        const Token = this._sCsrfToken;
+        const oModel = this.getView().getModel("mainService");
+      
+        if (oModel) {
+          oModel.setData({});
+          oModel.refresh(true);
+        }
+
+        let fullParam = oEvent.getParameter("arguments").sProjectID;
+        
+        // Separamos por ";" para detectar si viene con modo aprobación
+        const [sProjectID, extra] = fullParam.split(";");
+
+        // Verificamos si es modo aprobación
+        const aprobacionFlag = extra === "aprobacion=true";
+        this._isAprobacion = aprobacionFlag;
+
+        // Activamos botones si es aprobación
+        if (aprobacionFlag) {
+          const btnAprobar = this.byId("btnAceptar");
+          const btnRechazar = this.byId("btnBorrar");
+      
+          if (btnAprobar && btnRechazar) {
+
+
+            // Cambiar texto
+            btnAprobar.setText("Aprobar");
+            btnRechazar.setText("Rechazar");
+      
+            // Guardar valor en el botón (por ejemplo, usando customData o setData)
+            btnAprobar.data("valor", "aprobado");
+            btnRechazar.data("valor", "rechazado");
+          }
+        }
+
+              // Guardamos ID del proyecto
+              this._sProjectID = sProjectID;
+      
+        // Y aquí sigue tu lógica para cargar el proyecto
+        const sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+      
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'x-csrf-token': Token
+            }
+          });
+      
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+      
+          const oData = await response.json();
+      
+          //  console.log("Datos del proyecto:", oData);
+
+          // Actualiza los controles de la vista con los datos obtenidos
+          if (oData) {
+            // Ejemplos de cómo poblar los controles
+            this.byId("input0").setValue(oData.codigoProyect || "");
+            this.byId("input1").setValue(oData.nameProyect || "");
+            this.byId("23d3").setText(oData.Empleado || "");
+            this.byId("dddtg").setText(oData.Email || "");
+            this.byId("int_clienteFun").setValue(oData.funcionalString || "");
+            this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
+            this.byId("idObje").setValue(oData.objetivoAlcance || "");
+            this.byId("idDescripcion").setValue(oData.descripcion || "");
+            this.byId("text67_1728582763477").setText(oData.Total || "");
+            this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
+            this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
+            this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
+            this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
+            this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+            this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
+            this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
+
+            // Mostrar u ocultar la tabla según el valor de Iniciativa_ID
+            if (oData.Iniciativa_ID === "423e4567-e89b-12d3-a456-426614174003") {
+              this.byId("table0").setVisible(true);
+            } else {
+              this.byId("table0").setVisible(false);
+            }
+
+            this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
+            this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
+            this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
+            this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
+            this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
+            this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
+            this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
+            this.byId("input0").setValue(oData.codigoProyect);
+            this.byId("input1").setValue(oData.nameProyect);
+            this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
+            this.byId("id_Cfactur").setValue(oData.clienteFacturacion);
+            this.byId("box_multiJuridica").setSelected(oData.multijuridica)
+
+            // Primero, obtenemos todos los datos
+            await Promise.all([
+              this.fetchMilestones(sProjectID),
+              this.leerProveedor(sProjectID),
+              this.leerFacturacion(sProjectID),
+              this.leerClientFactura(sProjectID),
+              this.leerRecursos(sProjectID),
+              this.leerConsumoExterno(sProjectID),
+              this.leerGastoViajeConsu(sProjectID),
+              this.leerRecursoExterno(sProjectID),
+              this.leerOtrosServiExter(sProjectID),
+              this.leerOtrosConcepto(sProjectID),
+              this.leerSerivioInterno(sProjectID),
+              this.leerGastoviajeInterno(sProjectID),
+              this.leerConsuOtroServi(sProjectID),
+              this.leerGastoViaExter(sProjectID),
+              this.leerLicencias(sProjectID),
+              this.leerPerfilJornadas(sProjectID),
+              this.leerTotalRecursoInterno(sProjectID),
+              this.leerTotalConsumoExter(sProjectID),
+
+            ]);
+
+            // Ahora puedes llamar a highlightControls después de que todos los datos hayan sido obtenidos
+            this.highlightControls();
+
+            // Cambiar el texto del botón de "Enviar" a "Guardar"
+            const oButton = this.byId("btnAceptar");
+            if (!this._isAprobacion && oButton) {
+              oButton.setText("Guardar");
+            }
+
+            // Mostrar un toast indicando que los datos se cargaron correctamente
+            var oDialog = new sap.m.Dialog({
+              title: "Información",
+              type: "Message",
+              state: "Success",
+              content: new sap.m.Text({ text: "Datos cargados correctamente" }),
+              beginButton: new sap.m.Button({
+                text: "OK",
+                press: function () {
+                  oDialog.close();
+                }
+              }),
+              afterClose: function () {
+                oDialog.destroy();
+              }
+            });
+
+            oDialog.open();
+          }   
+
         } catch (error) {
           console.error("Error al obtener los datos del proyecto:", error);
           sap.m.MessageToast.show("Error al cargar los datos del proyecto");
         }
       },
+
+
+
+
+
+
+
+
+
 
       /*  _onObjectMatched: async function (oEvent) {
   
@@ -479,7 +680,7 @@ sap.ui.define([
               this.highlightControls(); 
   
               // Cambiar el texto del botón de "Enviar" a "Guardar"
-              const oButton = this.byId("564433"); 
+              const oButton = this.byId("btnAceptar"); 
               oButton.setText("Guardar");
   
               // Mostrar un toast indicando que los datos se cargaron correctamente
@@ -3329,6 +3530,7 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
+        console.log(localDate);
         // Aquí agregas la nueva variable 'fechamodificacion' a tu payload
         const payload = {
           codigoProyect: "1",
@@ -3493,7 +3695,11 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
 
               // 1 Payload para iniciar workflow de aprobación
 
-              const  urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"  + generatedId;
+              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/" 
+              + generatedId 
+              + ";aprobacion=true";
+
+              
               const oModel = this.getView().getModel(); 
       
               const oContext = oModel.bindContext("/startWorkflow(...)"); 
@@ -3504,34 +3710,31 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
                 generatedid: "24",
                 urlapp: urlAPP,
                 descripcion: sdescripcion,
-                area: sSelecKeyA,
+      
                 jefeProyecto: "Carolina Falen",
                 clienteFuncional: "CLiente Fun",
                 clienteFacturacion: "Cliente Fact",
-                fechaInicio: "2025-02-12",
-                fechaFin: "2026-04-17",
-                jornadasTotales: 20,
-                recursoInterno: 20.000,
-                consumoExterno: 12.00,
-                recursoExterno: 15.00,
-                infraestructuras: 141,
-                licencia: 500,
-                subtotal: 2300,
-                costeestruc: 3.5,
-                costeEstructura: 2000,
-                margeningre: 0,
-                margenSobreIngreso: 451,
-                total: 23000,
-                aprobado: "Aprobado",
-                rechazado: "Rechazado",
-                fechacreacion: "c",
-                usuario: "c"
+                
+                usuario: "Carolina Falen"
               }));
               
             
               try {
-                const result = await oContext.execute();
-                sap.m.MessageToast.show("Workflow iniciado correctamente");
+
+                await oContext.execute();
+                const result = oContext.getBoundContext().getObject();
+                this.workflowInstanceId = result.workflowInstanceId; // Guardamos esto
+
+                console.log("Resultado del flujo de trabajo:", result);
+                
+                if (result && result.workflowInstanceId) {
+                  const workflowInstanceId = result.workflowInstanceId;
+                  console.log("ID del Workflow recibido:", workflowInstanceId);
+                  sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                } else {
+                  sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
+                }
+                
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
               } 
@@ -3547,6 +3750,69 @@ leerFechasRecursoExterno: async function (RecursoExterID) {
           sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },
+
+
+
+      onSav2e: function() {
+        const generatedId = this._generateId();  // Método para generar el ID dinámico
+        const snameProyect = "Proyecto Demo"; // Nombre del proyecto
+        const sdescripcion = "Descripción del proyecto"; // Descripción del proyecto
+      
+        // URL de redirección
+        const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
+          + "FFDDFDFDF" + ";aprobacion=true";
+      
+        // Obtener el modelo OData v4
+        const oModel = this.getView().getModel();
+      
+        if (oModel && oModel.createEntry) {
+          // Crear una nueva entrada en el modelo
+          const payload = {
+            codigoproyect: 0,
+            nameproyect: snameProyect,
+            generatedid: "24",  // Este ID puede venir dinámicamente
+            urlapp: urlAPP,
+            descripcion: sdescripcion,
+            jefeProyecto: "Carolina Falen",
+            clienteFuncional: "Cliente Fun",
+            clienteFacturacion: "Cliente Fact",
+            usuario: "Carolina Falen"
+          };
+      
+          // Crear la entrada en el modelo
+          const oContext = oModel.createEntry("/startWorkflow", { 
+            properties: payload 
+          });
+      
+          // Enviar los cambios al backend
+          oModel.submitChanges({
+            success: function(result) {
+              console.log("Resultado del flujo de trabajo:", JSON.stringify(result));
+      
+              if (result && result.workflowInstanceId) {
+                const workflowInstanceId = result.workflowInstanceId;
+                console.log("ID del Workflow recibido:", workflowInstanceId);
+      
+                // Muestra un mensaje de éxito con el ID del flujo de trabajo
+                sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+      
+                // Redirigir a la vista de la aplicación con el ID generado
+                this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+              } else {
+                console.error("No se recibió el ID del flujo de trabajo");
+                sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
+              }
+            },
+            error: function(err) {
+              console.error("Error al iniciar el workflow:", err);
+              sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
+            }
+          });
+        } else {
+          console.error("El modelo no está configurado correctamente o no es un ODataModel v4.");
+        }
+      },
+      
 
       /*obtenerJWT: async function () {
         const clientId = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";         
