@@ -909,7 +909,8 @@ sap.ui.define(
                                         "GastoViajeConsumo",
                                         "serviRecurExter",
                                         "GastoViajeRecExter",
-                                        "LicenciasCon"
+                                        "LicenciasCon",
+                                        "WorkflowInstancias"
                                     ];
             
                                     // 2️ Obtener y eliminar registros relacionados

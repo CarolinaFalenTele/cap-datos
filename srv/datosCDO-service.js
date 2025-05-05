@@ -79,51 +79,47 @@ this.on('startWorkflow', async (req) => {
   }
 });
 
+
 this.on('completeWorkflow', async (req) => {
-  const { workflowInstanceId, decision, usuario } = req.data;
+  const { workflowInstanceId, decision } = req.data;
+
+
+  console.log("ID del Workflow:" +   workflowInstanceId); 
+  console.log("Iniciando actualización del workflow...");
+  const token = await getWorkflowToken();
+  //console.log("Token obtenido:", token);
 
   try {
-    const token = await getWorkflowToken();
+    console.log("Realizando PATCH al contexto del workflow...");
 
-    const taskResponse = await axios.get(
-      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}&status=READY`,
+    const patchResponse = await axios.patch(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/context`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    const task = taskResponse.data?.tasks?.[0];
-    if (!task) {
-      req.reject(404, "No se encontró una tarea READY para este workflow.");
-      return;
-    }
-
-    await axios.post(
-      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${task.id}`,
-      {
-        status: "COMPLETED",
-        context: {
-          decision: decision,
-          usuario: usuario
+        custom: {
+          aprobado: decision,
+          readytocontinue : true
         }
       },
       {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       }
     );
 
-    return `Workflow completado con decisión: ${decision}`;
+    console.log("✅ Contexto actualizado exitosamente");
+   // console.log("📄 Respuesta:", patchResponse.data);
+
+    return `Workflow actualizado con decisión: ${decision}`;
 
   } catch (err) {
-    console.error("Error al completar workflow:", err.response?.data || err.message);
-    req.reject(500, `Error al completar workflow: ${err.message}`);
+    console.error("❌ Error al actualizar workflow:", err.response?.data || err.message);
+    req.reject(500, `Error al actualizar workflow: ${err.message}`);
   }
 });
+
+
 
 this.on('getUserTask', async (req) => {
   const { workflowInstanceId } = req.data;
