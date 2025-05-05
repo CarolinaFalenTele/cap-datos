@@ -21,6 +21,7 @@
                                     id="23d3"
                                     title="Empleado"
                                     text=""
+                                    active="true" 
                                 />
                           
                             <ObjectAttribute id="dddtg" title="Email" text=""      tooltip="" active="true"  press=".onEmailPress"/>
@@ -943,7 +944,7 @@
                                                     <FlexBox width="2000px" id="box0_1727879568594">
                                                         <items>
                                                             <ScrollContainer id="scroll_container23" width="100%" height="auto">
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879576857" width="auto"  class="customHeaderColor2 ">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tableServicioInterno" width="auto"  class="customHeaderColor2 ">
                                                                     <items>
                                                                         <ColumnListItem id="item3_1723544157941">
                                                                             <cells>
@@ -1015,7 +1016,7 @@
                                                     <FlexBox width="2000px" id="box0_1727879817594">
                                                         <items>
                                                             <ScrollContainer id="scroll_container2983" width="100%" height="auto">
-                                                                <Table noDataText="Drop column list items here and columns in the area above" id="table0_1727879940116" width="auto" class="customHeaderColor2">
+                                                                <Table noDataText="Drop column list items here and columns in the area above" id="tablGastoViajeInterno" width="auto" class="customHeaderColor2">
                                                                     <items>
                                                                         <ColumnListItem id="item0_172354393445">
                                                                             <cells>
@@ -1086,7 +1087,7 @@
                                                                     <columns>
                                                                         <Column id="column0_1727879940115">
                                                                             <header>
-                                                                                <Title xmlns="sap.m" text="Otros Recursos " id="title44" class="color"/>
+                                                                                <Title xmlns="sap.m" text="Gastos de Viaje" id="title44" class="color"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column1_1727879940115"/>
@@ -1546,7 +1547,7 @@
                                                                             <Text xmlns="sap.m" text="" id="text5442"/>
                                                                             <Text xmlns="sap.m" text="" id="text5344"/>
                                                                             <Text xmlns="sap.m" text="" id="text5544" class="boldText"/>
-                                                                            <Text xmlns="sap.m" text="" id="text5644" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="5454" id="text5644" class="boldText"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                     <ColumnListItem id="item1_17235616033">
@@ -1877,7 +1878,7 @@
                                                         <ScrollContainer id="scroll_containe4" width="100%" height="auto">
                                                             <Button id="d4549527462485855ynh" text="Añadir Fila" press="onAddRowPress4" class="sapUiLargeMarginTop"  />
 
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0_1724413700665" class="customHeaderColor" width="auto">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="tablaInfrestuctura" class="customHeaderColor" width="auto">
                                                                 <headerToolbar>
                                                                     <Toolbar id="toolbr6">
                                                                         <Title text="Otros conceptos" id="tituo6" class="customTextColor borderedTable" width="2000px"/>
@@ -2020,7 +2021,7 @@
 
                                                     <FlexBox width="2000px" id="box0_1727955568380">
                                                         <items>
-                                                            <Table xmlns="sap.m" noDataText="Drop column list items here and columns in the area above" id="table0_1727955577124" width="auto" class="customHeaderColor2">
+                                                            <Table xmlns="sap.m" noDataText="Drop column list items here and columns in the area above" id="tablaLicencia" width="auto" class="customHeaderColor2">
                                                                 <columns>
                                                                     <Column id="column0_1727955577123">
                                                                         <header>
@@ -2187,7 +2188,7 @@
                                                                             </VBox>
 
                                                                             <VBox id="vbox205" width="auto">
-                                                                                <Input xmlns="sap.m" value="" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
+                                                                                <Input xmlns="sap.m" value="sdsdf" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
 
                                                                                 <Input xmlns="sap.m" value="" id="inputOtrosServi1" description="Otros Servicios"   editable="false" width="auto" fieldWidth="45%"/>
 
@@ -3686,15 +3687,15 @@
                                                                     <items>
                                                                         <ColumnListItem id="item7_1729074305217">
                                                                             <cells>
-                                                                                <Text xmlns="sap.m" text="0€" id="text129"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text129CosteDi"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text128"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text128CosteDi"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text140"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text140CosteDi"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text141"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text141CosteDi"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text143"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text143CosteDi"/>
 
                                                                                 <Text xmlns="sap.m" text="0€" id="text70_1729079344938"/>
                                                                             </cells>
@@ -3702,9 +3703,9 @@
 
                                                                         <ColumnListItem id="item11_1729074320189">
                                                                             <cells>
-                                                                                <Text xmlns="sap.m" text="0€" id="text130"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text130CosteDi"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text134"/>
+                                                                                <Text xmlns="sap.m" text="0€" id="text134CosteDi"/>
 
                                                                                 <Text xmlns="sap.m" text="0€" id="text135"/>
 
@@ -3714,7 +3715,6 @@
 
                                                                                 <Text xmlns="sap.m" text="0€" id="text137"/>
 
-                                                                                <Text xmlns="sap.m" text="0€" id="text139"/>
                                                                             </cells>
                                                                         </ColumnListItem>
 
@@ -3726,10 +3726,7 @@
                                                                                 <Text xmlns="sap.m" text="0€" id="text403"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text404"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text405"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text406"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text407"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text408"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text409"/>
+                                                                            
                                                                             </cells>
                                                                         </ColumnListItem>
 
@@ -3741,10 +3738,7 @@
                                                                                 <Text xmlns="sap.m" text="0€" id="text1363"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text1374"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text1385"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text1396"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text1407"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text1418"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text1492"/>
+
                                                                             </cells>
                                                                         </ColumnListItem>
 
@@ -3756,10 +3750,7 @@
                                                                                 <Text xmlns="sap.m" text="0€" id="text203"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text204"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text205"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text206"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text207"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text208"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text209"/>
+
                                                                             </cells>
                                                                         </ColumnListItem>
 
@@ -3771,10 +3762,7 @@
                                                                                 <Text xmlns="sap.m" text="0€" id="text213"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text214"/>
                                                                                 <Text xmlns="sap.m" text="0€" id="text215"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text216"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text217"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text218"/>
-                                                                                <Text xmlns="sap.m" text="0€" id="text219"/>
+                                                                            
                                                                             </cells>
                                                                         </ColumnListItem>
 
@@ -4284,8 +4272,8 @@
                 <OverflowToolbar id="toolba1">
                     <ToolbarSpacer id="25432"/>
 
-                    <Button id="564433" type="Accept" text="Enviar" press="onSave"/>
-                    <Button id="15254574" type="Reject" text="Borrar" press="onClearFields"/>
+                    <Button id="btnAceptar" type="Accept" text="Enviar" press="onSave" />
+                    <Button id="btnBorrar" type="Reject" text="Borrar" press="onClearFields"/>
                 </OverflowToolbar>
             </footer>
         </Page>

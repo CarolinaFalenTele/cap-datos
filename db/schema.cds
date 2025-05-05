@@ -11,7 +11,7 @@ entity Jefeproyect {
 
 
 entity DatosProyect {
-  key ID                       : UUID     @cds.auto;
+  key ID                       : UUID @cds.auto;
       codigoProyect            : Integer;
       nameProyect              : String;
       pluriAnual               : Boolean;
@@ -26,7 +26,7 @@ entity DatosProyect {
       CambioEuRUSD             : Integer;
       Estado                   : String;
       Email                    : String;
-      Empleado                 : String; 
+      Empleado                 : String;
       fechaCreacion            : DateTime;
       descripcion              : String;
       Total                    : Integer64;
@@ -62,7 +62,7 @@ entity DatosProyect {
                                    on ConsumoExternos.datosProyect_ID = ID;
       otrosServiciosConsu      : Association to many otrosServiciosConsu
                                    on otrosServiciosConsu.datosProyect_ID = ID;
-    
+
 
       GastoViajeConsumo        : Association to many GastoViajeConsumo
                                    on GastoViajeConsumo.datosProyect_ID = ID;
@@ -79,8 +79,8 @@ entity DatosProyect {
 
       LicenciasCon             : Association to many LicenciasCon
                                    on LicenciasCon.datosProyect_ID = ID;
-      tableProcessFlow         : Association to many tableProcessFlow
-                                   on tableProcessFlow.datosProyect_ID = ID;
+      WorkflowInstancias       : Association to many WorkflowInstancias
+                                   on WorkflowInstancias.datosProyect_ID = ID;
       PerfilTotal              : Association to many PerfilTotal
                                    on PerfilTotal.datosProyect_ID = ID;
       RecurInterTotal          : Association to RecurInterTotal
@@ -539,9 +539,13 @@ entity ClientFactura {
 };
 
 
-entity tableProcessFlow {
+entity WorkflowInstancias {
   key ID              : UUID @cds.auto;
+      workflowId      : String;
       estado          : String;
+      creadoEn        : Timestamp;
+      actualizadoEn   : Timestamp;
+      creadoPor       : String;
       datosProyect_ID : UUID;
 };
 

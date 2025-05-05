@@ -153,6 +153,11 @@
           "name": "DialogNoparam",
           "pattern": "Dialog",
           "target": "Dialog"
+        },
+        {
+          "pattern": "viewWithAprobacion/{sProjectID}({aprobacion})",
+          "name": "viewWithAprobacion",
+          "target": "view"
         }
       ],
       "targets": {

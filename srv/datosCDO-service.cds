@@ -43,7 +43,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
     entity otrosRecursos             as projection on datos.otrosRecursos;
     entity otrosServiciosConsu       as projection on datos.otrosServiciosConsu;
     entity GastoViajeConsumo         as projection on datos.GastoViajeConsumo;
-    entity tableProcessFlow          as projection on datos.tableProcessFlow;
+    entity WorkflowInstancias          as projection on datos.WorkflowInstancias;
     entity PerfilConsumo             as projection on datos.PerfilConsumo;
     entity ValorMensuReInter         as projection on datos.ValorMensuReInter;
     entity ValorMensuGastoViaConsuEx as projection on datos.ValorMensuGastoViaConsuEx;
@@ -103,6 +103,9 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   action startWorkflow(payload: LargeString) returns {
     workflowInstanceId: String
   };
+
+  function completeWorkflow(workflowInstanceId: String, decision: String, usuario: String)returns String;
+
 
  function getUserInfo() returns String;  
 }

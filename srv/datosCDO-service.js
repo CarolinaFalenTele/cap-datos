@@ -79,7 +79,51 @@ this.on('startWorkflow', async (req) => {
   }
 });
 
+this.on('completeWorkflow', async (req) => {
+  const { workflowInstanceId, decision, usuario } = req.data;
 
+  try {
+    const token = await getWorkflowToken();
+
+    const taskResponse = await axios.get(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}&status=READY`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const task = taskResponse.data?.tasks?.[0];
+    if (!task) {
+      req.reject(404, "No se encontró una tarea READY para este workflow.");
+      return;
+    }
+
+    await axios.post(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${task.id}`,
+      {
+        status: "COMPLETED",
+        context: {
+          decision: decision,
+          usuario: usuario
+        }
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return `Workflow completado con decisión: ${decision}`;
+
+  } catch (err) {
+    console.error("Error al completar workflow:", err.response?.data || err.message);
+    req.reject(500, `Error al completar workflow: ${err.message}`);
+  }
+});
 
 this.on('getUserTask', async (req) => {
   const { workflowInstanceId } = req.data;

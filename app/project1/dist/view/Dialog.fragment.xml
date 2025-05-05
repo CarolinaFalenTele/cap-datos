@@ -36,6 +36,12 @@
                             text=""
                         />
 
+                               <Label text="Email" />
+                        <Text
+                            text=""
+                            id="idEMail" class="onEmailPress2"
+                        />
+
                         
                    
                         <Label text="PEP" />
@@ -119,6 +125,14 @@
                             id="idEstadoProyect"
                             class="errorCount"
                         />
+
+                            <Label text="Fecha Modificacion" />
+                        <Text
+                            text=""
+                            id="idModifi"
+                        />
+
+                        
                     </f:content>
                 </f:SimpleForm>
             </VBox>
