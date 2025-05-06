@@ -29,7 +29,60 @@ sap.ui.define(
 
           // this.DialogInfo();
           this.getUserInfo();
+          this.filterEstado();
+
+          
             },
+
+
+           /// getProyect: ()
+
+
+
+           filterEstado: async function(){
+            try {
+                // Obtener los proyectos
+                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                const result = await response.json();
+
+//                    console.log("RESUELTO " + JSON.stringify(result));
+                const aProjects = result.value;
+        
+                // Obtener el estado más reciente de cada proyecto
+                const aProyectosConEstado = await Promise.all(
+                    aProjects.map(async (proyecto) => {
+                        var projectId = proyecto.ID;
+
+                        console.log("IDD PROYECTO " + projectId);
+        
+                        // Obtener la última instancia de workflow
+                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                        const wfData = await wfResponse.json();
+                  //      console.log("RESUELTO " + JSON.stringify(wfData));
+
+                        // Agregar el estado al proyecto
+                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+
+                        
+
+                        console.log(" proyectos " + JSON.stringify(proyecto.Estado));
+                        
+                        return proyecto;
+                    })
+                );
+
+
+                // Crear y asignar el modelo JSON
+                const oJsonModel = new sap.ui.model.json.JSONModel({ DatosProyect: aProyectosConEstado });
+                this.getView().setModel(oJsonModel);
+        
+            } catch (error) {
+                console.error("Error al cargar los proyectos con estado:", error);
+            }
+        },
+
+
+
 
 
 
@@ -96,11 +149,36 @@ sap.ui.define(
             },
 
 
-
             loadFilteredDataPend: function () {
+                var oTable = this.byId("idPendientes");
+                var oBinding = oTable.getBinding("items");
+            
+                if (oBinding) {
+                    var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+                    oBinding.filter([oFilter]);
+                    var aFilteredContexts = oBinding.getContexts();
+                    var aFilteredData = aFilteredContexts.map(ctx => ctx.getObject());
+                    console.log("Datos filtrados (Pendientes):", aFilteredData);
+                    this.updateIconTabFilterCountPen(oBinding);
+                } else {
+                    oTable.attachEventOnce("updateFinished", function () {
+                        var oBinding = oTable.getBinding("items");
+                        var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+                        oBinding.filter([oFilter]);
+                        var aFilteredContexts = oBinding.getContexts();
+                        var aFilteredData = aFilteredContexts.map(ctx => ctx.getObject());
+                        console.log("Datos filtrados (Pendientes):", aFilteredData);
+
+                        this.updateIconTabFilterCountPen(oBinding);
+                    }.bind(this));
+                }
+            },
+            
+          /*  loadFilteredDataPend: function () {
                 // Crea el filtro para obtener solo los registros con estado "Aprobado"
                 var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
 
+        
                 // Obtén la referencia a la tabla en la vista
                 var oTable = this.byId("idPendientes");
 
@@ -116,7 +194,7 @@ sap.ui.define(
                         this.updateIconTabFilterCountPen(oBinding);
                     }.bind(this));
                 }
-            },
+            },*/
 
 
             updateIconTabFilterCountPen: function (oBinding) {
@@ -638,6 +716,9 @@ sap.ui.define(
                     return;
                 }
             
+
+
+                
                 var that = this;
            //     var oModel = this.getView().getModel("mainService"); // OData V4 Model
             
@@ -683,7 +764,8 @@ sap.ui.define(
               
             },
             
-            
+
+
         /*    onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado
                 var oButton = oEvent.getSource();

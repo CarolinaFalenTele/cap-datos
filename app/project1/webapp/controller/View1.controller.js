@@ -366,6 +366,7 @@ sap.ui.define([
               this.leerPerfilJornadas(sProjectID),
               this.leerTotalRecursoInterno(sProjectID),
               this.leerTotalConsumoExter(sProjectID),
+              // Call the function to read workflow instances associated with the given project ID
               this.leerWorkflowInstancias(sProjectID)
 
             ]);
