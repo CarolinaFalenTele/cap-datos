@@ -38,8 +38,90 @@ sap.ui.define(
            /// getProyect: ()
 
 
+           filterEstado: async function () {
+            try {
+                // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
+                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                const data = await response.json();
+                const aProjects = data.value;
+        
+                console.log("Proyectos desde fetch:", aProjects);
+        
+                // 2. Enriquecer con el estado
+                const aProyectosConEstado = await Promise.all(
+                    aProjects.map(async (proyecto) => {
+                        const projectId = proyecto.ID;
+        
+                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                        const wfData = await wfResponse.json();
+        
+                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
 
-           filterEstado: async function(){
+
+
+
+
+                        
+                        return proyecto;
+                    })
+                );
+        
+                // 3. Crear un modelo JSON auxiliar con los datos y el contador
+                const oJsonModel = new sap.ui.model.json.JSONModel({
+                    DatosProyect: aProyectosConEstado,
+                    Count: aProyectosConEstado.length
+                });
+        
+                // 4. Asignarlo con nombre para no romper el modelo OData
+                this.getView().setModel(oJsonModel, "estadoModel");
+
+
+             
+
+        
+            } catch (error) {
+                console.error("Error al cargar los proyectos con estado:", error);
+            }
+        },
+        
+
+          /* filterEstado: async function () {
+            try {
+                // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
+                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                const data = await response.json();
+                const aProjects = data.value;
+        
+                console.log("Proyectos desde fetch:", aProjects);
+        
+                // 2. Enriquecer con el estado
+                const aProyectosConEstado = await Promise.all(
+                    aProjects.map(async (proyecto) => {
+                        const projectId = proyecto.ID;
+        
+                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                        const wfData = await wfResponse.json();
+        
+                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+                        return proyecto;
+                    })
+                );
+        
+                // 3. Crear un modelo JSON auxiliar con esos datos
+                const oJsonModel = new sap.ui.model.json.JSONModel({ DatosProyect: aProyectosConEstado });
+        
+                // 4. Asignarlo con nombre para no romper el modelo OData
+                this.getView().setModel(oJsonModel, "estadoModel");
+        
+            } catch (error) {
+                console.error("Error al cargar los proyectos con estado:", error);
+            }
+        },
+        */
+        
+        
+        
+          /* filterEstado: async function(){
             try {
                 // Obtener los proyectos
                 const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
@@ -72,14 +154,12 @@ sap.ui.define(
                 );
 
 
-                // Crear y asignar el modelo JSON
-                const oJsonModel = new sap.ui.model.json.JSONModel({ DatosProyect: aProyectosConEstado });
-                this.getView().setModel(oJsonModel);
-        
+                this.byId("status02").setText(aProyectosConEstado);
+
             } catch (error) {
                 console.error("Error al cargar los proyectos con estado:", error);
             }
-        },
+        },*/
 
 
 
@@ -108,7 +188,7 @@ sap.ui.define(
                       //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
                       //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
               
-                      console.log("📌 Datos seteados en la vista:", userInfo);
+                     // console.log("📌 Datos seteados en la vista:", userInfo);
                     } else {
                       console.error("No se encontró la información del usuario.");
                     }
