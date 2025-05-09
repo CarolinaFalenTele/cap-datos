@@ -1,4 +1,5 @@
-<mvc:View xmlns:layout="sap.ui.layout"
+<mvc:View
+    xmlns:layout="sap.ui.layout"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:suite="sap.suite.ui.commons"
@@ -58,15 +59,13 @@
                                 <ObjectAttribute
                                     id="223"
                                     title="Solicitudes"
-                            text="{estadoModel>/Count}"
-
+                                    text="{estadoModel>/Count}"
                                     active="true"
                                 />
                                 <ObjectAttribute
                                     id="2"
                                     title="Departamento"
                                     text="BTP"
-                                    
                                 />
                                 <!--  <ObjectAttribute id="2323" title="Weight per unit" text="" />
                                 <ObjectAttribute id="2222" title="Dimension per unit" text="" />-->
@@ -110,13 +109,13 @@
                                                     id="idPendientes"
                                                     sticky="HeaderToolbar,ColumnHeaders"
                                                     inset="false"
-                                                    items="{estadoModel>/DatosProyect}"
+                                                    items="{modelPendientes>/DatosProyect}"
                                                     class="sapFDynamicPageAlignContent customHeaderColor2"
                                                     width="auto"
                                                 >
                                                     <headerToolbar>
                                                         <Toolbar
-                                                            id="headerToolbar" 
+                                                            id="headerToolbar"
                                                         >
                                                             <Title
                                                                 id="title"
@@ -136,76 +135,112 @@
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
+                                                        <!-- Columna Fecha -->
                                                         <Column
                                                             id="colFecha"
                                                             width="12em"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtFecha"
                                                                 text="Fecha Creacion"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Código Proyecto -->
                                                         <Column
                                                             id="colCodigo"
                                                             width="12em"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtCodigo"
                                                                 text="Codigo Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Nombre Proyecto -->
                                                         <Column
                                                             id="colNombreProyecto"
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtNombreProyecto"
                                                                 text="Nombre Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Descripción -->
                                                         <Column
                                                             id="colDescripcion"
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtDescripcion"
                                                                 text="Descripción"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Área -->
                                                         <Column
                                                             id="colArea"
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtArea"
                                                                 text="Área"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Jefe Proyecto -->
                                                         <Column
                                                             id="colJefeProyecto"
+                                                            width="12em"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtJefeProyecto"
                                                                 text="Jefe de Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Fecha Modificación -->
+                                                        <Column
+                                                            id="idFechModi"
+                                                            minScreenWidth="Tablet"
+                                                            demandPopin="true"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="txtFechModi"
+                                                                text="Fecha Modificacion"
+                                                            />
+                                                        </Column>
+
+                                                        <!-- Columna Estado -->
                                                         <Column
                                                             id="colEstado"
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
-                                                            hAlign="End"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="txtEstado"
                                                                 text="Estado"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna Botones -->
                                                         <Column
                                                             id="colEstado1"
-                                                            hAlign="End"
+                                                            hAlign="Center"
+                                                            width="10em"
                                                         >
                                                             <Label
                                                                 id="txtButtons"
@@ -213,6 +248,7 @@
                                                             />
                                                         </Column>
                                                     </columns>
+
                                                     <items>
                                                         <ColumnListItem
                                                             id="cliItem"
@@ -220,41 +256,44 @@
                                                             <cells>
                                                                 <ObjectIdentifier
                                                                     id="txtFechai"
-                                                                    title="{estadoModel>fechaCreacion}"
+                                                                    title="{modelPendientes>FechaCreacionFormateada}"
                                                                 />
                                                                 <Text
                                                                     id="txtCellCodigo"
-                                                                    text="{estadoModel>codigoProyect}"
+                                                                    text="{modelPendientes>codigoProyect}"
                                                                 />
                                                                 <ObjectIdentifier
                                                                     id="nombre34"
-                                                                    title="{estadoModel>nameProyect}"
+                                                                    title="{modelPendientes>nameProyect}"
                                                                 />
                                                                 <Text
                                                                     id="txtCellDescripcion"
-                                                                    text="{estadoModel>descripcion}"  class="boldText"
+                                                                    text="{modelPendientes>descripcion}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="txtCellArea"
-                                                                    text="{estadoModel>Area/NombreArea}"
+                                                                    text="{modelPendientes>Area/NombreArea}"
                                                                 />
                                                                 <Text
                                                                     id="txtCellJefeProyecto"
-                                                                    text="{estadoModel>jefeProyectID/name}"
+                                                                    text="{modelPendientes>jefeProyectID/name}"
                                                                 />
-
+                                                                <ObjectIdentifier
+                                                                    id="txtfechamodificacion"
+                                                                    title="{modelPendientes>FechaModificacionFormateada}"
+                                                                />
                                                                 <ObjectStatus
                                                                     id="objStatus"
-                                                                    text="{estadoModel>Estado}"
+                                                                    text="{modelPendientes>Estado}"
                                                                     state="Warning"
                                                                 />
 
-                                                                <HBox id="fff" >
+                                                                <HBox id="fff">
                                                                     <Button
                                                                         press="DialogInfo"
                                                                         icon="sap-icon://message-information"
                                                                         ariaHasPopup="Dialog"
-                                                                        
                                                                     >
                                                                         <customData
                                                                         >
@@ -264,8 +303,6 @@
                                                                                 value="{ID}"
                                                                             />
                                                                         </customData>
-
-                                                             
                                                                     </Button>
 
                                                                     <Button
@@ -275,12 +312,12 @@
                                                                     >
                                                                         <customData
                                                                         >
-                                                                             <core:CustomData
-                                                                                    xmlns:core="sap.ui.core"
-                                                                                    id="mivrf5op"
-                                                                                    key="nameProyect"
-                                                                                    value="{nameProyect}"
-                                                                                />
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                id="mivrf5op"
+                                                                                key="nameProyect"
+                                                                                value="{nameProyect}"
+                                                                            />
                                                                             <core:CustomData
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"
@@ -311,7 +348,7 @@
                                                                             text=""
                                                                             tooltip="Proceso Solicitud"
                                                                             id="button0"
-                                                                            press="onActivityPress"
+                                                                            press="onVerHistorial"
                                                                         >
                                                                             <customData
                                                                             >
@@ -347,7 +384,7 @@
                                                     id="idProductsTable"
                                                     sticky="HeaderToolbar,ColumnHeaders"
                                                     inset="false"
-                                                    items="{estadoModel>/DatosProyect}"
+                                                    items="{modelAprobados>/DatosProyect}"
                                                     class="sapFDynamicPageAlignContent customHeaderColor2"
                                                     width="auto"
                                                 >
@@ -360,8 +397,7 @@
                                                                 class="color"
                                                             />
 
-                                                                         <ToolbarSpacer />  
-
+                                                            <ToolbarSpacer />
 
                                                             <SearchField
                                                                 id="searchField2"
@@ -386,7 +422,7 @@
                                                             id="22d"
                                                             width="12em"
                                                         >
-                                                           <Label
+                                                            <Label
                                                                 id="21d"
                                                                 text="Codigo Proyecto"
                                                             />
@@ -396,7 +432,7 @@
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
                                                         >
-                                                             <Label
+                                                            <Label
                                                                 id="d00"
                                                                 text="Nombre Proyecto"
                                                             />
@@ -406,7 +442,7 @@
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
                                                         >
-                                                          <Label
+                                                            <Label
                                                                 id="dkh"
                                                                 text="Descripcion"
                                                             />
@@ -416,7 +452,7 @@
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
                                                         >
-                                                         <Label
+                                                            <Label
                                                                 id="dh"
                                                                 text="Area"
                                                             />
@@ -436,7 +472,7 @@
                                                             id="dnn"
                                                             hAlign="End"
                                                         >
-                                                          <Label
+                                                            <Label
                                                                 id="dass"
                                                                 text="Estado"
                                                             />
@@ -449,34 +485,39 @@
                                                             <cells>
                                                                 <ObjectIdentifier
                                                                     id="1234d"
-                                                                    title="{estadoModel>fechaCreacion}"   class="boldText"
+                                                                    title="{modelAprobados>FechaCreacionFormateada}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="2333d"
-                                                                    text="{estadoModel>codigoProyect}"  class="boldText"
+                                                                    text="{modelAprobados>codigoProyect}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="00"
-                                                                    text="{estadoModel>nameProyect}"  class="boldText"
+                                                                    text="{modelAprobados>nameProyect}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="0"
-                                                                    text="{estadoModel>descripcion}"  class="boldText"
+                                                                    text="{modelAprobados>descripcion}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="20"
-                                                                    text="{estadoModel>Area/NombreArea}"  class="boldText"
+                                                                    text="{modelAprobados>Area/NombreArea}"
+                                                                    class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="210"
-                                                                    text="{estadoModel>jefeProyectID/name}"  class="boldText"
+                                                                    text="{modelAprobados>jefeProyectID/name}"
+                                                                    class="boldText"
                                                                 />
 
                                                                 <ObjectStatus
                                                                     id="status02"
-                                                                    text="{estadoModel>Estado}"
+                                                                    text="{modelAprobados>Estado}"
                                                                     state="Success"
-                                                                    
                                                                 />
                                                             </cells>
                                                         </ColumnListItem>
@@ -503,11 +544,10 @@
                                                             <Title
                                                                 id="idTitleProceso"
                                                                 text="Proceso"
+                                                                
                                                             />
 
-                                                            <ToolbarSpacer
-                                                                id="jdfkjsdfs"
-                                                            />
+                                                            <ToolbarSpacer/>
 
                                                             <Button
                                                                 id="kfsldkfjwo"
@@ -521,6 +561,7 @@
                                                             text="Proceso de Solictud"
                                                             id="text1881"
                                                         />
+                                                        
 
                                                         <suite:ProcessFlow
                                                             id="processflow1"

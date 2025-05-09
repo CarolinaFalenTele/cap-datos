@@ -107,5 +107,14 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 action completeWorkflow(workflowInstanceId: String, decision: String) returns String;
 
 
+action getWorkflowTimeline(ID: String) returns array of {
+  step: String;
+  status: String;
+  timestamp: String;
+  performer: String;
+};
+
+
+
  function getUserInfo() returns String;  
 }

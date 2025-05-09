@@ -3362,13 +3362,13 @@ sap.ui.define([
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
         console.log(localDate);
-        // Aquí agregas la nueva variable 'fechamodificacion' a tu payload
+
+
         const payload = {
           codigoProyect: "1",
           nameProyect: snameProyect,
           Email: sEmail,
           Empleado: sEmpleado,
-          fechaCreacion: localDate,
           pluriAnual: spluriAnual,
           Total: sTotal,
           descripcion: sdescripcion,
@@ -3392,45 +3392,35 @@ sap.ui.define([
           datosExtra: sDatosExtra,
           IPC_apli: sIPC
         };
-
-
-
-        // Crear la fecha de modificación (solo la fecha, sin hora ni zona horaria)
-        let oDateFormat1; // Declaramos fuera de cualquier bloque de función o condicional
-
-        if (!oDateFormat1) { // Solo lo creamos si no ha sido declarado aún
-          oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
-            pattern: "yyyy-MM-dd"
-          });
+        
+        // Agregar fechaCreacion solo si es nuevo (POST)
+        if (!sProjectID) {
+          payload.fechaCreacion = localDate;
         }
-
-        // Luego podemos usar oDateFormat como se desee
+        
+        // Crear la fecha de modificación (formato yyyy-MM-dd)
+        let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
+          pattern: "yyyy-MM-dd"
+        });
         const fechaModificacion = new Date();
         const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
-
-        // Si ya existe un sProjectID, agregamos 'FechaModificacion' en el payload para el PATCH
+        
+        // Agregar FechaModificacion solo si es PATCH
         if (sProjectID) {
-          payload.FechaModificacion = formattedFechaModificacion; // Solo agregamos la fecha en formato 'yyyy-MM-dd'
+          payload.FechaModificacion = formattedFechaModificacion;
         }
+        
         // Validar campos antes de hacer la llamada
         if (!payload.descripcion || !payload.nameProyect) {
           sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
           console.error("Validación fallida: Falta código o nombre del proyecto", payload);
           return;
         }
-
+        
         // Log del payload antes de enviarlo
         console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
-        // Validar campos antes de hacer la llamada
-        if (!payload.descripcion || !payload.nameProyect) {
-          sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
-          console.error("Validación fallida: Falta código o nombre del proyecto", payload);
-          return;
-        }
 
-        // Log del payload antes de enviarlo
-        console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
         try {
           let oModel = this.getView().getModel();
@@ -3540,7 +3530,7 @@ sap.ui.define([
               oContext.setParameter("payload", JSON.stringify({
                 codigoproyect: 0,
                 nameproyect: snameProyect,
-                generatedid: "24",
+                generatedid: generatedId,
                 urlapp: urlAPP,
                 descripcion: sdescripcion,
                 jefeProyecto: "Carolina Falen",

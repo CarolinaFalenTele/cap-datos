@@ -43,7 +43,7 @@ this.on('startWorkflow', async (req) => {
   const input = JSON.parse(req.data.payload);
 
   const workflowPayload = {
-    definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
+    definitionId: "eu10.p051dvk8.datoscdoprocesoflujo.aprobacionCDO",
     context: input
   };
 
@@ -63,7 +63,7 @@ this.on('startWorkflow', async (req) => {
 
    
   // Aquí, asegúrate de que la respuesta tiene el ID del flujo de trabajo
-  const workflowInstanceId = response.data.id; // Verifica si 'id' es el campo correcto
+  const workflowInstanceId = response.data.id; 
   console.log("ID del Workflow:", workflowInstanceId);
     // Opcional: lo puedes guardar en tu tabla para hacer seguimiento
     // await INSERT.into("DatosProyect").entries({ generatedid: input.generatedid, workflowInstanceId });
@@ -118,6 +118,89 @@ this.on('completeWorkflow', async (req) => {
     req.reject(500, `Error al actualizar workflow: ${err.message}`);
   }
 });
+
+
+
+this.on("getWorkflowTimeline", async (req) => {
+  const { ID } = req.data;
+  console.log("📥 ID recibido:", ID);
+
+  try {
+    const workflowInstanceId = ID;
+    const token = await getWorkflowToken(); // función que obtiene el token
+    console.log("🔑 Token obtenido (truncado):", token.substring(0, 30) + "...");
+
+    const response = await fetch(`https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/2fe7fd97-2cb9-11f0-8bac-eeee0a975038/execution-logs`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`No se pudo obtener el timeline. Código de estado: ${response.status}`);
+    }
+
+    const timeline = await response.json();
+
+    let events = [];
+
+    // 🔍 Detectamos si es array directo o envuelto
+    if (Array.isArray(timeline)) {
+      events = timeline;
+    } else if (Array.isArray(timeline.events)) {
+      events = timeline.events;
+    } else if (Array.isArray(timeline.logs)) {
+      events = timeline.logs;
+    } else if (Array.isArray(timeline.items)) {
+      events = timeline.items;
+    }
+
+    if (events.length === 0) {
+      console.warn("⚠️ No hay eventos disponibles para esta instancia:", ID);
+      req.reject(204, `No hay historial disponible para la instancia con ID: ${ID}`);
+      return;
+    }
+
+    // (Opcional) Traducir tipos de eventos a algo más legible
+    const tipoEventoLegible = {
+      WORKFLOW_STARTED: "Inicio del workflow",
+      WORKFLOW_COMPLETED: "Finalización del workflow",
+      WORKFLOW_CANCELED: "Cancelación del workflow",
+      WORKFLOW_SUSPENDED: "Workflow suspendido",
+      WORKFLOW_RESUMED: "Reanudación del workflow",
+      USER_TASK_COMPLETED: "Tarea completada",
+      USER_TASK_CREATED: "Tarea creada"
+      // Agrega más si lo necesitas
+    };
+
+    const eventosTransformados = events.map(ev => {
+      const descripcion = tipoEventoLegible[ev.type] || ev.type;
+      const paso = ev.subject || ev.subjectId || ev.activityId || "Paso desconocido";
+    
+      console.log(`➡️ ${ev.type} → ${descripcion}, Paso: ${paso}`);
+    
+      return {
+        id: ev.id,
+        tipo: ev.type,
+        descripcion,
+        timestamp: ev.timestamp,
+        usuario: ev.userId,
+        instancia: ev.referenceInstanceId,
+        paso
+      };
+    });
+    
+  } catch (error) {
+    console.error("❌ Error al obtener el timeline del workflow:", error.message);
+    req.reject(500, "Error al consultar el historial del workflow");
+  }
+});
+
+
+
+
 
 
 

@@ -2,10 +2,12 @@ sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "sap/ui/core/CustomData",
-        "sap/ui/core/format/DateFormat" 
+        "sap/ui/core/format/DateFormat",
+        "sap/m/MessageBox",     // Importar MessageBox
+
 
     ],
-    function (BaseController, CustomData, DateFormat) {
+    function (BaseController, CustomData,MessageBox, DateFormat) {
         "use strict";
 
         return BaseController.extend("project1.controller.App", {
@@ -13,6 +15,8 @@ sap.ui.define(
 
 
 
+             
+             
                 var oProcessFlow = this.byId("processflow1");
                 oProcessFlow.attachNodePress(this.onNodePress, this);
 
@@ -25,141 +29,317 @@ sap.ui.define(
                 this.loadFilteredDataPend();
 
 
-           //     console.log("Vista de appp " + this.getView());
+                //     console.log("Vista de appp " + this.getView());
 
-          // this.DialogInfo();
-          this.getUserInfo();
-          this.filterEstado();
+                // this.DialogInfo();
+                this.getUserInfo();
+                this.filterEstado();
 
-          
+
             },
 
 
-           /// getProyect: ()
+            /// getProyect: ()
 
 
-           filterEstado: async function () {
-            try {
-                // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
-                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                const data = await response.json();
-                const aProjects = data.value;
-        
-                console.log("Proyectos desde fetch:", aProjects);
-        
-                // 2. Enriquecer con el estado
-                const aProyectosConEstado = await Promise.all(
-                    aProjects.map(async (proyecto) => {
-                        const projectId = proyecto.ID;
-        
-                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
-                        const wfData = await wfResponse.json();
-        
-                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+            filterEstado: async function () {
+                try {
+                    // 1. Obtener los proyectos desde OData
+                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                    const data = await response.json();
+                    const aProjects = data.value;
+
+                    console.log("Proyectos desde fetch:", aProjects);
+
+                    // 2. Enriquecer con el estado y formatear la fecha
+                    const aProyectosConEstado = await Promise.all(
+                        aProjects.map(async (proyecto) => {
+                            const projectId = proyecto.ID;
+
+                            // 2.1 Obtener estado desde WorkflowInstancias
+                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId`);
+                            const wfData = await wfResponse.json();
+
+                            proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+                            proyecto.workflowId = wfData.value[0]?.workflowId || null;
+
+                            console.log("id " + proyecto.workflowId);
+
+                            // 2.2 Formatear la fecha (ajusta el nombre del campo si es distinto)
+                            if (proyecto.fechaCreacion) {
+                                const fecha = new Date(proyecto.fechaCreacion);
+                                const dia = String(fecha.getDate()).padStart(2, '0');
+                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                const anio = fecha.getFullYear();
+                                proyecto.FechaCreacionFormateada = `${dia}-${mes}-${anio}`;
+                            }
+
+
+                            if (proyecto.FechaModificacion) {
+                                const fecha = new Date(proyecto.FechaModificacion);
+                                const dia = String(fecha.getDate()).padStart(2, '0');
+                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                const anio = fecha.getFullYear();
+                                proyecto.FechaModificacionFormateada = `${dia}-${mes}-${anio}`;
+                            }
+                            return proyecto;
+                        })
+                    );
+
+                    // 3. Filtrar los proyectos según su estado
+                    const aProyectosAprobados = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Aprobado");
+                    const aProyectosPendientes = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Pendiente");
+
+                    console.log("Proyectos Aprobados:", aProyectosAprobados);
+                    console.log("Proyectos Pendientes:", aProyectosPendientes);
+
+                    // 4. Crear modelos JSON para cada tabla
+                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobados,
+                        Count: aProyectosAprobados.length
+                    });
+                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosPendientes,
+                        Count: aProyectosPendientes.length
+                    });
+
+                    // 5. Asignar los modelos a las tablas correspondientes
+                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+
+                } catch (error) {
+                    console.error("Error al cargar los proyectos con estado:", error);
+                }
+            },
+
+            onVerHistorial: async function (oEvent) {
+                try {
+                    const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
+                    const workflowId = oItem.workflowId;
+            
+                    if (!workflowId) {
+                        sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                        return;
+                    }
+            
+                    const oModel = this.getOwnerComponent().getModel();
+                    const oContext = oModel.bindContext("/getWorkflowTimeline(...)");
+            
+                    oContext.setParameter("ID", workflowId);
+            
+                    await oContext.execute();
+            
+                    const result = oContext.getBoundContext().getObject();
+                    console.log("✅ Historial del workflow:", result);
+            
+                    sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                } catch (error) {
+                    console.error("❌ Error al obtener el historial del workflow:", error);
+                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                }
+            },
+            
+
+
+          /*  onVerHistorial: async function (oEvent) {
+                try {
+                    const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
+                    const workflowId = oItem.workflowId;
+            
+                    if (!workflowId) {
+                        sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                        return;
+                    }
+            
+                    const oModel = this.getView().getModel();
+            
+                    const oActionContext = oModel.bindContext("/getWorkflowTimeline()", null, {
+                        parameters: {
+                            ID: workflowId
+                        }
+                    });
+            
+                    await oActionContext.execute();
+            
+                    // ✅ Aquí usamos correctamente el contexto ejecutado
+                    const result = oActionContext.getBoundContext().getObject();
+            
+                    console.log("✅ Historial del workflow:", result);
+            
+                    // Mostrar resultado (puedes mejorarlo con un diálogo personalizado si es muy largo)
+                    sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+            
+                } catch (error) {
+                    console.error("❌ Error al obtener el historial del workflow:", error);
+                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                }
+            }*/
+            
+            
+
+      /*      onVerHistorial: async function (oEvent) {
+                try {
+                    // 1. Obtener el proyecto seleccionado desde el evento (por ejemplo, botón en la tabla)
+                    const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
+                    const workflowId = oItem.WorkflowInstanceId;
+
+                    console.log("ID WORK DE LA TABLA " + workflowId);
+
+                    if (!workflowId) {
+                        MessageToast.show("Este proyecto no tiene un Workflow asociado.");
+                        return;
+                    }
+
+                    
+                    const oModel = this.getView().getModel();
+
+
+
+                    const oContext = oModel.bindContext(`/getWorkflowTimeline(ID='${workflowId}')`);
+
+
+                    // 2. Llamar al action OData getWorkflowTimeline
+                    // Ejecutar la operación
+                    await oContext.execute();
+
+                    // Obtener el resultado (línea de tiempo) si es necesario
+                    const result = oContext.getBoundContext().getObject();
+
+                    // Aquí, puedes hacer algo con el resultado, como mostrarlo en un `MessageToast`
+                    sap.m.MessageToast.show("Workflow Timeline: " + JSON.stringify(result));
+
+                } catch (error) {
+                    console.error("❌ Error al obtener el historial del workflow:", error);
+                    console.error("No se pudo obtener el historial del workflow.");
+                }
+            },*/
+
+
+
+            /*  filterEstado: async function () {
+               try {
+                   // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
+                   const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                   const data = await response.json();
+                   const aProjects = data.value;
+           
+                   console.log("Proyectos desde fetch:", aProjects);
+           
+                   // 2. Enriquecer con el estado y formatear la fecha
+                   const aProyectosConEstado = await Promise.all(
+                       aProjects.map(async (proyecto) => {
+                           const projectId = proyecto.ID;
+           
+                           // 2.1 Obtener estado desde WorkflowInstancias
+                           const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                           const wfData = await wfResponse.json();
+           
+                           proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+           
+                           // 2.2 Formatear la fecha (ajusta el nombre del campo si es distinto)
+                           if (proyecto.fechaCreacion) {
+                               const fecha = new Date(proyecto.fechaCreacion);
+                               const dia = String(fecha.getDate()).padStart(2, '0');
+                               const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                               const anio = fecha.getFullYear();
+                               proyecto.FechaCreacionFormateada = `${dia}-${mes}-${anio}`;
+                           }
+           
+                           return proyecto;
+                       })
+                   );
+           
+                   // 3. Crear un modelo JSON auxiliar con los datos y el contador
+                   const oJsonModel = new sap.ui.model.json.JSONModel({
+                       DatosProyect: aProyectosConEstado,
+                       Count: aProyectosConEstado.length
+                   });
+           
+                   // 4. Asignarlo con nombre para no romper el modelo OData
+                   this.getView().setModel(oJsonModel, "estadoModel");
+           
+               } catch (error) {
+                   console.error("Error al cargar los proyectos con estado:", error);
+               }
+           },*/
+
+
+
+            /*     filterEstado: async function () {
+                  try {
+                      // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
+                      const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                      const data = await response.json();
+                      const aProjects = data.value;
+              
+                      console.log("Proyectos desde fetch:", aProjects);
+              
+                      // 2. Enriquecer con el estado
+                      const aProyectosConEstado = await Promise.all(
+                          aProjects.map(async (proyecto) => {
+                              const projectId = proyecto.ID;
+              
+                              const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                              const wfData = await wfResponse.json();
+              
+                              proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+                              return proyecto;
+                          })
+                      );
+              
+                      // 3. Crear un modelo JSON auxiliar con esos datos
+                      const oJsonModel = new sap.ui.model.json.JSONModel({ DatosProyect: aProyectosConEstado });
+              
+                      // 4. Asignarlo con nombre para no romper el modelo OData
+                      this.getView().setModel(oJsonModel, "estadoModel");
+              
+                  } catch (error) {
+                      console.error("Error al cargar los proyectos con estado:", error);
+                  }
+              },*/
 
 
 
 
-
-                        
-                        return proyecto;
-                    })
-                );
-        
-                // 3. Crear un modelo JSON auxiliar con los datos y el contador
-                const oJsonModel = new sap.ui.model.json.JSONModel({
-                    DatosProyect: aProyectosConEstado,
-                    Count: aProyectosConEstado.length
-                });
-        
-                // 4. Asignarlo con nombre para no romper el modelo OData
-                this.getView().setModel(oJsonModel, "estadoModel");
-
-
-             
-
-        
-            } catch (error) {
-                console.error("Error al cargar los proyectos con estado:", error);
-            }
-        },
-        
-
-          /* filterEstado: async function () {
-            try {
-                // 1. Obtener los proyectos desde OData (manualmente, ya que ODataModel V4 no permite getProperty)
-                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                const data = await response.json();
-                const aProjects = data.value;
-        
-                console.log("Proyectos desde fetch:", aProjects);
-        
-                // 2. Enriquecer con el estado
-                const aProyectosConEstado = await Promise.all(
-                    aProjects.map(async (proyecto) => {
-                        const projectId = proyecto.ID;
-        
-                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
-                        const wfData = await wfResponse.json();
-        
-                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
-                        return proyecto;
-                    })
-                );
-        
-                // 3. Crear un modelo JSON auxiliar con esos datos
-                const oJsonModel = new sap.ui.model.json.JSONModel({ DatosProyect: aProyectosConEstado });
-        
-                // 4. Asignarlo con nombre para no romper el modelo OData
-                this.getView().setModel(oJsonModel, "estadoModel");
-        
-            } catch (error) {
-                console.error("Error al cargar los proyectos con estado:", error);
-            }
-        },
-        */
-        
-        
-        
-          /* filterEstado: async function(){
-            try {
-                // Obtener los proyectos
-                const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                const result = await response.json();
-
-//                    console.log("RESUELTO " + JSON.stringify(result));
-                const aProjects = result.value;
-        
-                // Obtener el estado más reciente de cada proyecto
-                const aProyectosConEstado = await Promise.all(
-                    aProjects.map(async (proyecto) => {
-                        var projectId = proyecto.ID;
-
-                        console.log("IDD PROYECTO " + projectId);
-        
-                        // Obtener la última instancia de workflow
-                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
-                        const wfData = await wfResponse.json();
-                  //      console.log("RESUELTO " + JSON.stringify(wfData));
-
-                        // Agregar el estado al proyecto
-                        proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
-
-                        
-
-                        console.log(" proyectos " + JSON.stringify(proyecto.Estado));
-                        
-                        return proyecto;
-                    })
-                );
-
-
-                this.byId("status02").setText(aProyectosConEstado);
-
-            } catch (error) {
-                console.error("Error al cargar los proyectos con estado:", error);
-            }
-        },*/
+            /* filterEstado: async function(){
+              try {
+                  // Obtener los proyectos
+                  const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                  const result = await response.json();
+  
+  //                    console.log("RESUELTO " + JSON.stringify(result));
+                  const aProjects = result.value;
+          
+                  // Obtener el estado más reciente de cada proyecto
+                  const aProyectosConEstado = await Promise.all(
+                      aProjects.map(async (proyecto) => {
+                          var projectId = proyecto.ID;
+  
+                          console.log("IDD PROYECTO " + projectId);
+          
+                          // Obtener la última instancia de workflow
+                          const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado`);
+                          const wfData = await wfResponse.json();
+                    //      console.log("RESUELTO " + JSON.stringify(wfData));
+  
+                          // Agregar el estado al proyecto
+                          proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+  
+                          
+  
+                          console.log(" proyectos " + JSON.stringify(proyecto.Estado));
+                          
+                          return proyecto;
+                      })
+                  );
+  
+  
+                  this.byId("status02").setText(aProyectosConEstado);
+  
+              } catch (error) {
+                  console.error("Error al cargar los proyectos con estado:", error);
+              }
+          },*/
 
 
 
@@ -169,35 +349,35 @@ sap.ui.define(
             // Método para obtener información del usuario
             getUserInfo: function () {
                 fetch('/odata/v4/datos-cdo/getUserInfo')
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error("No se pudo obtener la información del usuario.");
-                    }
-                    return response.json();
-                  })
-                  .then(data => {
-                    const userInfo = data.value;
-              
-                    if (userInfo) {
-                      // Asignar datos a los controles en la vista
-                      //this.byId("dddtg")?.setText(userInfo.name);
-                      this.byId("dddtg")?.setText(userInfo.email);
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("No se pudo obtener la información del usuario.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const userInfo = data.value;
 
-                      
-                      this.byId("233")?.setText(userInfo.fullName);
-                      //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
-                      //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
-              
-                     // console.log("📌 Datos seteados en la vista:", userInfo);
-                    } else {
-                      console.error("No se encontró la información del usuario.");
-                    }
-                  })
-                  .catch(error => {
-                    console.error("❌ Error obteniendo datos del usuario:", error);
-                  });
-              },
-              
+                        if (userInfo) {
+                            // Asignar datos a los controles en la vista
+                            //this.byId("dddtg")?.setText(userInfo.name);
+                            this.byId("dddtg")?.setText(userInfo.email);
+
+
+                            this.byId("233")?.setText(userInfo.fullName);
+                            //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
+                            //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
+
+                            // console.log("📌 Datos seteados en la vista:", userInfo);
+                        } else {
+                            console.error("No se encontró la información del usuario.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("❌ Error obteniendo datos del usuario:", error);
+                    });
+            },
+
 
             loadFilteredData: function () {
                 var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
@@ -221,7 +401,7 @@ sap.ui.define(
                 oBinding.attachEventOnce("dataReceived", function () {
                     // Aquí debería estar el conteo correcto de los elementos
                     var iCount = oBinding.getLength();
-                  //console.log("TOTAL COUNT --> ", iCount);
+                    //console.log("TOTAL COUNT --> ", iCount);
 
                     // Actualiza el valor de "count" en el IconTabFilter
                     this.byId("ma55").setCount(iCount.toString());
@@ -232,7 +412,7 @@ sap.ui.define(
             loadFilteredDataPend: function () {
                 var oTable = this.byId("idPendientes");
                 var oBinding = oTable.getBinding("items");
-            
+
                 if (oBinding) {
                     var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
                     oBinding.filter([oFilter]);
@@ -253,28 +433,28 @@ sap.ui.define(
                     }.bind(this));
                 }
             },
-            
-          /*  loadFilteredDataPend: function () {
-                // Crea el filtro para obtener solo los registros con estado "Aprobado"
-                var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
 
-        
-                // Obtén la referencia a la tabla en la vista
-                var oTable = this.byId("idPendientes");
-
-                // Verifica si el binding está disponible y aplica el filtro
-                var oBinding = oTable.getBinding("items");
-                if (oBinding) {
-                    oBinding.filter([oFilter]);
-                    this.updateIconTabFilterCountPen(oBinding); // Llama a la función para actualizar el coun
-                } else {
-                    oTable.attachEventOnce("updateFinished", function () {
-                        var oBinding = oTable.getBinding("items");
-                        oBinding.filter([oFilter]);
-                        this.updateIconTabFilterCountPen(oBinding);
-                    }.bind(this));
-                }
-            },*/
+            /*  loadFilteredDataPend: function () {
+                  // Crea el filtro para obtener solo los registros con estado "Aprobado"
+                  var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+  
+          
+                  // Obtén la referencia a la tabla en la vista
+                  var oTable = this.byId("idPendientes");
+  
+                  // Verifica si el binding está disponible y aplica el filtro
+                  var oBinding = oTable.getBinding("items");
+                  if (oBinding) {
+                      oBinding.filter([oFilter]);
+                      this.updateIconTabFilterCountPen(oBinding); // Llama a la función para actualizar el coun
+                  } else {
+                      oTable.attachEventOnce("updateFinished", function () {
+                          var oBinding = oTable.getBinding("items");
+                          oBinding.filter([oFilter]);
+                          this.updateIconTabFilterCountPen(oBinding);
+                      }.bind(this));
+                  }
+              },*/
 
 
             updateIconTabFilterCountPen: function (oBinding) {
@@ -582,20 +762,20 @@ sap.ui.define(
             _onObjectMatched: function (oEvent) {
                 // Obtener el ID recibido como parámetro de la URL
                 const newId = oEvent.getParameter("arguments").newId;
-            
+
                 // Verifica si el ID es válido
                 if (!newId) {
                     console.error("No se recibió un ID válido");
                     return;
                 }
-            
+
                 // Llamar a la función para resaltar la fila
                 this._highlightNewRow(newId);
             },
-            
+
             _highlightNewRow: function (newId) {
                 const oTable = this.byId("idPendientes");
-            
+
                 // Si la tabla ya tiene datos, procesar inmediatamente
                 if (oTable.getItems().length > 0) {
                     this._processTableRows(oTable, newId);
@@ -608,7 +788,7 @@ sap.ui.define(
                 this._refreshTableData(oTable);
 
             },
-            
+
 
             _processTableRows: function (oTable, newId) {
                 // Procesar cada fila de la tabla
@@ -621,114 +801,114 @@ sap.ui.define(
                 });
             },
 
-          /*  _processTableRows: function (oTable, newId) {
-                const oItems = oTable.getItems();
-                let found = false;
-            
-                oItems.forEach(item => {
-                    // Buscar el botón dentro de cada fila
-                    const oButton = item.getCells().find(cell => cell.getId().endsWith("butn34"));
-                    if (oButton) {
-                        // Buscar el CustomData con la clave 'projectId'
-                        const oCustomData = oButton.getCustomData().find(data => data.getKey() === "projectId");
-                        if (oCustomData) {
-                            // Obtener el valor de projectId y compararlo con newId
-                            const itemId = oCustomData.getValue();
-                            console.log("Comparando IDs:", itemId, newId);
-            
-                            // Si los IDs coinciden, resaltar la fila
-                            if (itemId === newId) {
-                                console.log("Resaltando fila con ID:", itemId);
-                                item.addStyleClass("highlight-border");
-                                found = true;
-                            }
-                        }
-                    }
-                });
-            
-                // Si no se encontró ninguna fila con el ID, muestra un mensaje
-                if (!found) {
-                 //No hay datos de servi Externos  disponibles.   console.log("No se encontró una fila con el ID:", newId);
-                }
-            
-                // Forzar el renderizado de la tabla para reflejar los cambios visuales
-                oTable.rerender();
-            },*/
-            
+            /*  _processTableRows: function (oTable, newId) {
+                  const oItems = oTable.getItems();
+                  let found = false;
+              
+                  oItems.forEach(item => {
+                      // Buscar el botón dentro de cada fila
+                      const oButton = item.getCells().find(cell => cell.getId().endsWith("butn34"));
+                      if (oButton) {
+                          // Buscar el CustomData con la clave 'projectId'
+                          const oCustomData = oButton.getCustomData().find(data => data.getKey() === "projectId");
+                          if (oCustomData) {
+                              // Obtener el valor de projectId y compararlo con newId
+                              const itemId = oCustomData.getValue();
+                              console.log("Comparando IDs:", itemId, newId);
+              
+                              // Si los IDs coinciden, resaltar la fila
+                              if (itemId === newId) {
+                                  console.log("Resaltando fila con ID:", itemId);
+                                  item.addStyleClass("highlight-border");
+                                  found = true;
+                              }
+                          }
+                      }
+                  });
+              
+                  // Si no se encontró ninguna fila con el ID, muestra un mensaje
+                  if (!found) {
+                   //No hay datos de servi Externos  disponibles.   console.log("No se encontró una fila con el ID:", newId);
+                  }
+              
+                  // Forzar el renderizado de la tabla para reflejar los cambios visuales
+                  oTable.rerender();
+              },*/
+
 
             _refreshTableData: function () {
                 const oTable = this.byId("idPendientes");  // Obtener la referencia a la tabla
-            
+
                 // Verificar si la tabla existe
                 if (oTable) {
                     // Refrescar el binding de los elementos de la tabla
                     oTable.getBinding("items")?.refresh();
                 }
-            
+
 
             },
-            
 
-          /*  _onObjectMatched: function (oEvent) {
-                //   console.log("Parámetros del evento:", oEvent.getParameters());
 
-                // Obtén el ID enviado como parámetro
-                const newId = oEvent.getParameter("arguments").newId;
-                //    console.log("ID de nuevo:", newId);
-
-                // Llama a la función para resaltar la fila
-                this._highlightNewRow(newId);
-            },
-
-            _highlightNewRow: function (newId) {
-                const oTable = this.byId("idPendientes");
-
-                // Asegúrate de que la tabla esté completamente cargada antes de continuar
-                oTable.attachEventOnce("updateFinished", () => {
-                    const oItems = oTable.getItems();
-                    console.log("Número de ítems en la tabla:", oItems.length);
-
-                    // Verifica si hay elementos en la tabla
-                    if (oItems.length === 0) {
-                        console.log("No hay ítems en la tabla.");
-                        return;
-                    }
-
-                    let found = false;
-
-                    oItems.forEach(item => {
-                        // Encuentra el botón en la fila actual
-                        const oButton = item.getCells().find(cell => cell.getId().endsWith("butn34"));
-                        console.log("Botón encontrado:", oButton);
-
-                        if (oButton) {
-                            // Encuentra el CustomData con la clave 'projectId'
-                            const oCustomData = oButton.getCustomData().find(data => data.getKey() === "projectId");
-                            console.log("CustomData encontrado:", oCustomData ? oCustomData.getValue() : "No encontrado");
-
-                            if (oCustomData) {
-                                // Obtén el valor del projectId y compáralo con newId
-                                const itemId = oCustomData.getValue();
-                                console.log("Comparando IDs:", itemId, newId);
-
-                                if (itemId === newId) {
-                                    // Si los IDs coinciden, resalta la fila
-                                    console.log("Resaltando fila con ID:", itemId);
-                                    item.addStyleClass("highlight-border");
-                                    found = true; // Marca que se ha encontrado y resaltado la fila
-                                }
-                            }
-                        }
-                    });
-
-                    if (!found) {
-                        console.log("No se encontró una fila con el ID:", newId);
-                    }
-
-                    // Forzar el renderizado de la tabla para reflejar los cambios visuales
-                    oTable.rerender();
-                });
-            },*/
+            /*  _onObjectMatched: function (oEvent) {
+                  //   console.log("Parámetros del evento:", oEvent.getParameters());
+  
+                  // Obtén el ID enviado como parámetro
+                  const newId = oEvent.getParameter("arguments").newId;
+                  //    console.log("ID de nuevo:", newId);
+  
+                  // Llama a la función para resaltar la fila
+                  this._highlightNewRow(newId);
+              },
+  
+              _highlightNewRow: function (newId) {
+                  const oTable = this.byId("idPendientes");
+  
+                  // Asegúrate de que la tabla esté completamente cargada antes de continuar
+                  oTable.attachEventOnce("updateFinished", () => {
+                      const oItems = oTable.getItems();
+                      console.log("Número de ítems en la tabla:", oItems.length);
+  
+                      // Verifica si hay elementos en la tabla
+                      if (oItems.length === 0) {
+                          console.log("No hay ítems en la tabla.");
+                          return;
+                      }
+  
+                      let found = false;
+  
+                      oItems.forEach(item => {
+                          // Encuentra el botón en la fila actual
+                          const oButton = item.getCells().find(cell => cell.getId().endsWith("butn34"));
+                          console.log("Botón encontrado:", oButton);
+  
+                          if (oButton) {
+                              // Encuentra el CustomData con la clave 'projectId'
+                              const oCustomData = oButton.getCustomData().find(data => data.getKey() === "projectId");
+                              console.log("CustomData encontrado:", oCustomData ? oCustomData.getValue() : "No encontrado");
+  
+                              if (oCustomData) {
+                                  // Obtén el valor del projectId y compáralo con newId
+                                  const itemId = oCustomData.getValue();
+                                  console.log("Comparando IDs:", itemId, newId);
+  
+                                  if (itemId === newId) {
+                                      // Si los IDs coinciden, resalta la fila
+                                      console.log("Resaltando fila con ID:", itemId);
+                                      item.addStyleClass("highlight-border");
+                                      found = true; // Marca que se ha encontrado y resaltado la fila
+                                  }
+                              }
+                          }
+                      });
+  
+                      if (!found) {
+                          console.log("No se encontró una fila con el ID:", newId);
+                      }
+  
+                      // Forzar el renderizado de la tabla para reflejar los cambios visuales
+                      oTable.rerender();
+                  });
+              },*/
 
 
 
@@ -737,55 +917,120 @@ sap.ui.define(
                 if (!dateValue) {
                     return "";
                 }
-            
+
                 // Si es tipo Raw (OData V4), puede llegar como un objeto con función getTime
                 if (typeof dateValue === "object" && typeof dateValue.getTime === "function") {
                     dateValue = dateValue;
                 } else {
                     dateValue = new Date(dateValue);
                 }
-            
+
                 if (isNaN(dateValue.getTime())) {
                     return ""; // no válido
                 }
-            
+
                 var oDateFormat = DateFormat.getInstance({
                     pattern: "dd MMM yyyy",
                     UTC: true
                 });
-            
+
                 return oDateFormat.format(dateValue);
             },
-            
+
 
             // Función para formatear la fecha
-           /* formatDate: function (dateString) {
-                if (!dateString) {
-                    return "";
-                }
-
-                // Convertimos el string en un objeto Date
-                var date = new Date(dateString);
-                // Verificamos si es una fecha válida
-                if (isNaN(date.getTime())) {
-                    return dateString; // Devolvemos el string original si no es válida
-                }
-
-                // Usamos DateFormat para formatear la fecha
-                var oDateFormat = DateFormat.getInstance({
-                    pattern: "dd MMM yyyy", // Formato deseado
-                    UTC: true // Para asegurarnos de que se considere la zona horaria UTC
-                });
-
-                return oDateFormat.format(date);
-            },*/
+            /* formatDate: function (dateString) {
+                 if (!dateString) {
+                     return "";
+                 }
+ 
+                 // Convertimos el string en un objeto Date
+                 var date = new Date(dateString);
+                 // Verificamos si es una fecha válida
+                 if (isNaN(date.getTime())) {
+                     return dateString; // Devolvemos el string original si no es válida
+                 }
+ 
+                 // Usamos DateFormat para formatear la fecha
+                 var oDateFormat = DateFormat.getInstance({
+                     pattern: "dd MMM yyyy", // Formato deseado
+                     UTC: true // Para asegurarnos de que se considere la zona horaria UTC
+                 });
+ 
+                 return oDateFormat.format(date);
+             },*/
 
 
 
 
             onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
+
+                // Obtener el contexto del ítem en la tabla
+                var oContext = oButton.getBindingContext("modelPendientes");  // Usa el nombre del modelo correcto
+
+                if (!oContext) {
+                    console.error("No se pudo obtener el contexto del ítem.");
+                    return;
+                }
+
+                // Obtener el valor de "sProjectID" directamente desde el contexto del modelo
+                var sProjectID = oContext.getProperty("ID");  // "ID" debe ser el nombre correcto del campo en los datos
+
+                if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                }
+
+                console.log("edit id " + sProjectID);
+
+                var sNameProyect = oContext.getProperty("nameProyect"); // Obtén también el nombre del proyecto
+
+                var that = this;
+
+                // Limpia los datos previos del modelo
+                var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
+                if (oModel) {
+                    oModel.setData({});  // Limpia los datos previos
+                    oModel.refresh(true); // Fuerza la actualización del modelo
+                }
+
+                var oDialog = new sap.m.Dialog({
+                    title: "Confirmar Edición",
+                    type: "Message",
+                    state: "Warning",
+                    content: new sap.m.Text({
+                        text: "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                    }),
+                    beginButton: new sap.m.Button({
+                        text: "Confirmar",
+                        press: function () {
+                            oDialog.close();
+
+                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                            oRouter.navTo("view", {
+                                sProjectID: sProjectID
+                            }, true);
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "Cancelar",
+                        press: function () {
+                            oDialog.close();
+                        }
+                    })
+                });
+
+                oDialog.open();
+            },
+
+
+
+            /*onEditPress: function (oEvent) {
+                var oButton = oEvent.getSource();
                 var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
+
+               
 
                 var sProjectID = oButton.getCustomData().find(function (oData) {
                     return oData.getKey() === "projectId";
@@ -795,6 +1040,9 @@ sap.ui.define(
                     console.error("El ID del proyecto es nulo o indefinido");
                     return;
                 }
+
+
+                console.log("edit id "  + sProjectID);
             
 
 
@@ -842,56 +1090,56 @@ sap.ui.define(
                     oDialog.open();
             
               
-            },
-            
-
-
-        /*    onEditPress: function (oEvent) {
-                // Obtener el botón que fue presionado
-                var oButton = oEvent.getSource();
-            
-                // Obtener el valor de CustomData (ID del proyecto)
-                var sProjectID = oButton.getCustomData().find(function (oData) {
-                    return oData.getKey() === "projectId";  
-                }).getValue();
-            
-                // Verifica que sProjectID tiene un valor válido
-                if (!sProjectID) {
-                    console.error("El ID del proyecto es nulo o indefinido");
-                    return;
-                } else {
-                    console.log("ID Correcto", sProjectID);
-                }
-            
-                // Obtener el modelo del formulario y limpiarlo antes de editar
-                var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
-                if (oModel) {
-                    oModel.setData({});  // Limpia los datos previos
-                    oModel.refresh(true); // Fuerza la actualización del modelo
-                }
-            
-                // Navegar a la vista del formulario con el ID del proyecto
-                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                oRouter.navTo("view", {
-                    sProjectID: sProjectID
-                }, true );
             },*/
-            
 
 
-            onView: function(oEvent){
-     
-                    if (!this.Dialog) {
-                        this.Dialog = this.loadFragment({
-                            name: "project1.view.Dialog"
-                        });
+
+            /*    onEditPress: function (oEvent) {
+                    // Obtener el botón que fue presionado
+                    var oButton = oEvent.getSource();
+                
+                    // Obtener el valor de CustomData (ID del proyecto)
+                    var sProjectID = oButton.getCustomData().find(function (oData) {
+                        return oData.getKey() === "projectId";  
+                    }).getValue();
+                
+                    // Verifica que sProjectID tiene un valor válido
+                    if (!sProjectID) {
+                        console.error("El ID del proyecto es nulo o indefinido");
+                        return;
+                    } else {
+                        console.log("ID Correcto", sProjectID);
                     }
-                    this.Dialog.then(function(oDialog) {
-                        this.oDialog = oDialog;
-                        this.oDialog.open();
-                    }.bind(this));
                 
+                    // Obtener el modelo del formulario y limpiarlo antes de editar
+                    var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
+                    if (oModel) {
+                        oModel.setData({});  // Limpia los datos previos
+                        oModel.refresh(true); // Fuerza la actualización del modelo
+                    }
                 
+                    // Navegar a la vista del formulario con el ID del proyecto
+                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                    oRouter.navTo("view", {
+                        sProjectID: sProjectID
+                    }, true );
+                },*/
+
+
+
+            onView: function (oEvent) {
+
+                if (!this.Dialog) {
+                    this.Dialog = this.loadFragment({
+                        name: "project1.view.Dialog"
+                    });
+                }
+                this.Dialog.then(function (oDialog) {
+                    this.oDialog = oDialog;
+                    this.oDialog.open();
+                }.bind(this));
+
+
 
             },
 
@@ -907,94 +1155,94 @@ sap.ui.define(
             DialogInfo: async function (oEvent) {
                 this.onView();
 
-               // Obtener el botón que fue presionado
-               var oButton = oEvent.getSource();
-            
-               // Obtener el valor de CustomData (ID del proyecto)
-               var sProjectID = oButton.getCustomData().find(function (oData) {
-                   return oData.getKey() === "projectId";  
-               }).getValue();
-           
-                console.log("Metodo project "  + sProjectID);
-               
+                // Obtener el botón que fue presionado
+                var oButton = oEvent.getSource();
+
+                // Obtener el valor de CustomData (ID del proyecto)
+                var sProjectID = oButton.getCustomData().find(function (oData) {
+                    return oData.getKey() === "projectId";
+                }).getValue();
+
+                console.log("Metodo project " + sProjectID);
+
                 const Token = this._sCsrfToken;
                 var oModel = this.getView().getModel("mainService");
                 if (oModel) {
-                  oModel.setData({});  // Limpia los datos al cargar la vista
-                  oModel.refresh(true);
+                    oModel.setData({});  // Limpia los datos al cargar la vista
+                    oModel.refresh(true);
                 }
-        
-    
-            
+
+
+
                 // Construye la URL con el ID correctamente escapado
                 var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-        
+
                 try {
-                  const response = await fetch(sUrl, {
-                    method: 'GET',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                      'x-csrf-token': Token
+                    const response = await fetch(sUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'x-csrf-token': Token
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error('Network response was not ok: ' + errorText);
                     }
-                  });
-        
-                  if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error('Network response was not ok: ' + errorText);
-                  }
-        
-                  const oData = await response.json();
-                
-                console.log(JSON.stringify(oData));
+
+                    const oData = await response.json();
+
+                    console.log(JSON.stringify(oData));
 
 
-                this.byId("idNombreProyecto").setText(oData.nameProyect);
-               this.byId("idDescripcion1").setText(oData.descripcion);
-               this.byId("idCreador").setText(oData.Empleado);
-               this.byId("idEMail").setText(oData.Email);
-                this.byId("idModifi").setText(oData.FechaModificacion);
-               this.byId("fechainitProyect").setText(oData.Fechainicio);
+                    this.byId("idNombreProyecto").setText(oData.nameProyect);
+                    this.byId("idDescripcion1").setText(oData.descripcion);
+                    this.byId("idCreador").setText(oData.Empleado);
+                    this.byId("idEMail").setText(oData.Email);
+                    this.byId("idModifi").setText(oData.FechaModificacion);
+                    this.byId("fechainitProyect").setText(oData.Fechainicio);
 
-              const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
-                style: "medium" // Puedes usar "short", "medium", "long", o "full"
-              });
-              
-              const date = new Date(oData.fechaCreacion);
-              const formattedDate = oDateFormat.format(date);
-              
-              this.byId("idCreacion").setText(formattedDate);
-              
+                    const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
+                        style: "medium" // Puedes usar "short", "medium", "long", o "full"
+                    });
 
-               var fecha = oData.FechaFin.split("T")[0]; // obtenemos solo la fecha 2025-03-27
-               var partes = fecha.split("-"); // separamos ["2025","03","27"]
-               var fechaFormateada = partes[2] + "-" + partes[1] + "-" + partes[0]; // armamos 27/03/2025
-               this.byId("idFechaFinProyect").setText(fechaFormateada);
-               
-         //      this.byId("idFechaFinProyect").setText(oData.FechaFin);
-               this.byId("idEstadoProyect").setText(oData.Estado);
-               this.byId("idArea").setText(oData.Area_ID.NombreArea);
-               var formattedTotal = new Intl.NumberFormat('es-ES', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              }).format(oData.Total);
-      
-              // Agregar el símbolo de euro al final
-              var formattedTotalWithEuro = formattedTotal + ' €';
-               this.byId("idtotal").setText(formattedTotalWithEuro);
+                    const date = new Date(oData.fechaCreacion);
+                    const formattedDate = oDateFormat.format(date);
 
-            } catch (error) {
-              console.error("Error al obtener los datos del proyecto:", error);
-              sap.m.MessageToast.show("Error al cargar los datos del proyecto");
-            }
-              },
-        
+                    this.byId("idCreacion").setText(formattedDate);
 
-              onEmailPress2: function (oEvent) {
+
+                    var fecha = oData.FechaFin.split("T")[0]; // obtenemos solo la fecha 2025-03-27
+                    var partes = fecha.split("-"); // separamos ["2025","03","27"]
+                    var fechaFormateada = partes[2] + "-" + partes[1] + "-" + partes[0]; // armamos 27/03/2025
+                    this.byId("idFechaFinProyect").setText(fechaFormateada);
+
+                    //      this.byId("idFechaFinProyect").setText(oData.FechaFin);
+                    this.byId("idEstadoProyect").setText(oData.Estado);
+                    this.byId("idArea").setText(oData.Area_ID.NombreArea);
+                    var formattedTotal = new Intl.NumberFormat('es-ES', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(oData.Total);
+
+                    // Agregar el símbolo de euro al final
+                    var formattedTotalWithEuro = formattedTotal + ' €';
+                    this.byId("idtotal").setText(formattedTotalWithEuro);
+
+                } catch (error) {
+                    console.error("Error al obtener los datos del proyecto:", error);
+                    sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+                }
+            },
+
+
+            onEmailPress2: function (oEvent) {
                 const sEmail = oEvent.getSource().getText();
                 window.location.href = "mailto:" + sEmail;
             },
-            
+
 
             /*onEditPress: function (oEvent) {
                 // Obtener el botón que fue presionado
@@ -1021,40 +1269,48 @@ sap.ui.define(
             },*/
 
             onDeletePress: async function (oEvent) {
-                let oModel = this.getView().getModel();
+                let oModel = this.getView().getModel("modelPendientes");
+
+
+                
+             //   var oButton = oEvent.getSource();
+
+                // Obtener el contexto del ítem en la tabla
+               // var oContext = oButton.getBindingContext("modelPendientes");  // Usa el nombre del modelo correcto
+
                 let sServiceUrl = oModel.sServiceUrl;
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
-            
+
                 if (!sProjectId) {
                     console.error("No se encontró un ID válido para eliminar.");
                     sap.m.MessageToast.show("Error: No se encontró un ID válido.");
                     return;
                 }
-            
+
                 console.log("🔴 Eliminando Proyecto con ID:", sProjectId);
-            
+
                 try {
                     // 1️⃣ Obtener el CSRF Token
                     let oTokenResponse = await fetch(sServiceUrl, {
                         method: "GET",
                         headers: { "x-csrf-token": "Fetch" }
                     });
-            
+
                     if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
-            
+
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
-            
+
                     console.log("✅ CSRF Token obtenido:", sCsrfToken);
-            
+
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
                         {
                             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                             onClose: async (oAction) => {
                                 if (oAction !== sap.m.MessageBox.Action.YES) return;
-            
+
                                 try {
                                     const paths = [
                                         "planificacion",
@@ -1074,7 +1330,7 @@ sap.ui.define(
                                         "LicenciasCon",
                                         "WorkflowInstancias"
                                     ];
-            
+
                                     // 2️ Obtener y eliminar registros relacionados
                                     let deletePromises = paths.map(async (path) => {
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
@@ -1084,16 +1340,16 @@ sap.ui.define(
                                                 "x-csrf-token": sCsrfToken
                                             },
                                         });
-            
+
                                         if (!res.ok) {
                                             console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
                                             return;
                                         }
-            
+
                                         let contentType = res.headers.get("Content-Type");
                                         let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
                                         let records = Array.isArray(data.value) ? data.value : [data];
-            
+
                                         if (records.length > 0) {
                                             return Promise.all(
                                                 records.map(async (hijo) => {
@@ -1104,7 +1360,7 @@ sap.ui.define(
                                                             "x-csrf-token": sCsrfToken
                                                         }
                                                     });
-            
+
                                                     if (!deleteResponse.ok) {
                                                         console.error(`❌ Error eliminando ${path} con ID ${hijo.ID}`);
                                                     } else {
@@ -1114,10 +1370,10 @@ sap.ui.define(
                                             );
                                         }
                                     });
-            
+
                                     await Promise.all(deletePromises);
                                     console.log("✅ Registros relacionados eliminados.");
-            
+
                                     // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                         method: "DELETE",
@@ -1126,7 +1382,7 @@ sap.ui.define(
                                             "x-csrf-token": sCsrfToken
                                         },
                                     });
-            
+
                                     if (projectResponse.ok) {
                                         console.log("✅ Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
@@ -1141,8 +1397,8 @@ sap.ui.define(
                                                 oModel.refresh();
                                             }.bind(this)  // Asegura que "this" siga apuntando al controlador
                                         });
-                                        
-                                       
+
+
                                     } else {
                                         throw new Error("Error al eliminar el proyecto principal");
                                     }
@@ -1158,130 +1414,130 @@ sap.ui.define(
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
             },
-            
-            
 
-        
 
-         /* onDeletePress: async function (oEvent) {
-                var oButton = oEvent.getSource();
-                var sProjectId = oButton.getCustomData()[0].getValue();
-                console.log("ID del Proyecto a eliminar:", sProjectId);
 
-                // Confirmación de eliminación
-                await new Promise(resolve => setTimeout(resolve, 50));
 
-                sap.m.MessageBox.confirm("¿Estás seguro de que deseas eliminar este proyecto y todos sus registros relacionados?", {
-                    actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-                    onClose: async function (oAction) {
-                        if (oAction === sap.m.MessageBox.Action.YES) {
-                            try {
-                                const paths = [
-                                    `planificacion`,
-                                    `Facturacion`,
-                                    `ClientFactura`,
-                                    `ProveedoresC`,
-                                    `RecursosInternos`,
-                                    `ConsumoExternos`,
-                                    `RecursosExternos`,
-                                    `otrosConceptos`
-                                ];
 
-                                for (let path of paths) {
-                                    console.log(`Procesando entidad: ${path}`);
-
-                                    // Solicitar registros hijos
-                                    let hijosResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
-                                        method: "GET",
-                                        headers: {
-                                            "Accept": "application/json",
-                                            "Content-Type": "application/json"
-                                        }
-                                    });
-
-                                    if (!hijosResponse.ok) {
-                                        console.error(`Error al obtener los registros de ${path}`);
-                                        continue;
-                                    }
-
-                                    const contentType = hijosResponse.headers.get("Content-Type");
-                                    if (contentType && contentType.includes("application/json")) {
-                                        const hijosData = await hijosResponse.json();
-                                        console.log(`Datos recibidos de ${path}:`, hijosData);
-
-                                        // Verificar si es una lista o un objeto individual
-                                        if (Array.isArray(hijosData.value) && hijosData.value.length > 0) {
-                                            // Si es una lista, iterar y eliminar cada elemento
-                                            for (let hijo of hijosData.value) {
-                                                console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
-                                                let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                                    method: "DELETE",
-                                                    headers: {
-                                                        "Content-Type": "application/json"
-                                                    }
-                                                });
-
-                                                if (!deleteResponse.ok) {
-                                                    console.error(`Error al eliminar el hijo en ${path}: ${hijo.ID}`);
-                                                } else {
-                                                    console.log(`Hijo eliminado exitosamente en ${path}: ${hijo.ID}`);
-                                                }
-                                            }
-                                        } else if (hijosData.ID) {
-                                            // Si es un objeto individual, eliminar directamente
-                                            console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
-                                            let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijosData.ID})`, {
-                                                method: "DELETE",
-                                                headers: {
-                                                    "Content-Type": "application/json"
-                                                }
-                                            });
-
-                                            if (!deleteResponse.ok) {
-                                                console.error(`Error al eliminar el hijo en ${path}: ${hijosData.ID}`);
-                                            } else {
-                                                console.log(`Hijo eliminado exitosamente en ${path}: ${hijosData.ID}`);
-                                            }
-                                        } else {
-                                            console.warn(`No se encontró ningún ID en la respuesta de ${path}`);
-                                        }
-                                    } else {
-                                        console.warn(`La respuesta de ${path} no es JSON o está vacía. Continuando con el siguiente...`);
-                                        continue;
-                                    }
-                                }
-
-                                // Eliminar el proyecto principal
-                                console.log("Eliminando el proyecto principal con ID:", sProjectId);
-                                let response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
-                                    method: "DELETE",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    }
-                                });
-
-                                if (response.ok) {
-                                    console.log("Proyecto eliminado exitosamente.");
-                                    sap.m.MessageToast.show("Proyecto y sus hijos eliminados exitosamente");
-
-                                    const oTable = this.byId("idPendientes");
-                                    const oBinding = oTable.getBinding("items");
-                                    oBinding.refresh();
-
-                                    var oModel = this.getView().getModel();
-                                    oModel.refresh();
-                                } else {
-                                    console.error("Error al eliminar el proyecto principal.");
-                                    sap.m.MessageToast.show("Error al eliminar el proyecto");
-                                }
-                            } catch (error) {
-                                console.error("Error eliminando el proyecto o sus hijos:", error);
-                                sap.m.MessageToast.show("Error al eliminar el proyecto o sus hijos");
-                            }
-                        }
-                    }.bind(this)
-                });
-            },*/
+            /* onDeletePress: async function (oEvent) {
+                   var oButton = oEvent.getSource();
+                   var sProjectId = oButton.getCustomData()[0].getValue();
+                   console.log("ID del Proyecto a eliminar:", sProjectId);
+   
+                   // Confirmación de eliminación
+                   await new Promise(resolve => setTimeout(resolve, 50));
+   
+                   sap.m.MessageBox.confirm("¿Estás seguro de que deseas eliminar este proyecto y todos sus registros relacionados?", {
+                       actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                       onClose: async function (oAction) {
+                           if (oAction === sap.m.MessageBox.Action.YES) {
+                               try {
+                                   const paths = [
+                                       `planificacion`,
+                                       `Facturacion`,
+                                       `ClientFactura`,
+                                       `ProveedoresC`,
+                                       `RecursosInternos`,
+                                       `ConsumoExternos`,
+                                       `RecursosExternos`,
+                                       `otrosConceptos`
+                                   ];
+   
+                                   for (let path of paths) {
+                                       console.log(`Procesando entidad: ${path}`);
+   
+                                       // Solicitar registros hijos
+                                       let hijosResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
+                                           method: "GET",
+                                           headers: {
+                                               "Accept": "application/json",
+                                               "Content-Type": "application/json"
+                                           }
+                                       });
+   
+                                       if (!hijosResponse.ok) {
+                                           console.error(`Error al obtener los registros de ${path}`);
+                                           continue;
+                                       }
+   
+                                       const contentType = hijosResponse.headers.get("Content-Type");
+                                       if (contentType && contentType.includes("application/json")) {
+                                           const hijosData = await hijosResponse.json();
+                                           console.log(`Datos recibidos de ${path}:`, hijosData);
+   
+                                           // Verificar si es una lista o un objeto individual
+                                           if (Array.isArray(hijosData.value) && hijosData.value.length > 0) {
+                                               // Si es una lista, iterar y eliminar cada elemento
+                                               for (let hijo of hijosData.value) {
+                                                   console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
+                                                   let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                       method: "DELETE",
+                                                       headers: {
+                                                           "Content-Type": "application/json"
+                                                       }
+                                                   });
+   
+                                                   if (!deleteResponse.ok) {
+                                                       console.error(`Error al eliminar el hijo en ${path}: ${hijo.ID}`);
+                                                   } else {
+                                                       console.log(`Hijo eliminado exitosamente en ${path}: ${hijo.ID}`);
+                                                   }
+                                               }
+                                           } else if (hijosData.ID) {
+                                               // Si es un objeto individual, eliminar directamente
+                                               console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
+                                               let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijosData.ID})`, {
+                                                   method: "DELETE",
+                                                   headers: {
+                                                       "Content-Type": "application/json"
+                                                   }
+                                               });
+   
+                                               if (!deleteResponse.ok) {
+                                                   console.error(`Error al eliminar el hijo en ${path}: ${hijosData.ID}`);
+                                               } else {
+                                                   console.log(`Hijo eliminado exitosamente en ${path}: ${hijosData.ID}`);
+                                               }
+                                           } else {
+                                               console.warn(`No se encontró ningún ID en la respuesta de ${path}`);
+                                           }
+                                       } else {
+                                           console.warn(`La respuesta de ${path} no es JSON o está vacía. Continuando con el siguiente...`);
+                                           continue;
+                                       }
+                                   }
+   
+                                   // Eliminar el proyecto principal
+                                   console.log("Eliminando el proyecto principal con ID:", sProjectId);
+                                   let response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
+                                       method: "DELETE",
+                                       headers: {
+                                           "Content-Type": "application/json"
+                                       }
+                                   });
+   
+                                   if (response.ok) {
+                                       console.log("Proyecto eliminado exitosamente.");
+                                       sap.m.MessageToast.show("Proyecto y sus hijos eliminados exitosamente");
+   
+                                       const oTable = this.byId("idPendientes");
+                                       const oBinding = oTable.getBinding("items");
+                                       oBinding.refresh();
+   
+                                       var oModel = this.getView().getModel();
+                                       oModel.refresh();
+                                   } else {
+                                       console.error("Error al eliminar el proyecto principal.");
+                                       sap.m.MessageToast.show("Error al eliminar el proyecto");
+                                   }
+                               } catch (error) {
+                                   console.error("Error eliminando el proyecto o sus hijos:", error);
+                                   sap.m.MessageToast.show("Error al eliminar el proyecto o sus hijos");
+                               }
+                           }
+                       }.bind(this)
+                   });
+               },*/
 
 
 
