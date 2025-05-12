@@ -3591,7 +3591,7 @@ sap.ui.define([
 
             if (generatedId) {
               // Llamadas en paralelo para mejorar rendimiento
-              await Promise.all([
+              const insertAllResults =   await Promise.all([
                 this.insertFacturacion(generatedId),
                 this.inserChart(generatedId, sCsrfToken),
                 this.insertarProveedor(generatedId),
@@ -3662,7 +3662,7 @@ sap.ui.define([
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
               }*/
               // Navegar a la vista 'app' con el nuevo ID
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+            this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
               sap.m.MessageToast.show("Error: No se generó un ID válido.");
@@ -4496,6 +4496,138 @@ sap.ui.define([
       //--- INSERTAR RECURSOS INTERNOS -----
 
       insertRecursosInternos: async function (generatedId) {
+        const stokenr = this._sCsrfToken;
+        const sRecursoID = this._recurso_ID; // ID del proyecto
+    
+        console.log("ENTRANDO A RECURSO INTERNO ----->>>> " + sRecursoID)
+        
+        // Obtener la tabla por su ID
+        const oTable = this.byId("table_dimicFecha");
+    
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+    
+        // Definir una variable para almacenar los campos incompletos
+        let incompleteFields = [];
+        let errorCount = 0;
+    
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+            const oItem = aItems[i];  // Obtener la fila actual
+    
+            // Obtener los controles dentro de cada celda
+            const sVertical = oItem.getCells()[0]?.getSelectedKey() || "";
+            const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
+            const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
+            const sConcepto = oItem.getCells()[3]?.getValue() || "";
+            const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0");
+            const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+            const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+            const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+            const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+            const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+            const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+            const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0");
+            const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
+    
+            // Función para validar los campos
+            const validateField = (control, value, fieldName) => {
+                if (!value || (typeof value === 'string' && value.trim() === "")) {
+                    control.setValueState("Error");
+                    control.setValueStateText("Este campo es obligatorio");
+                    errorCount++;
+                    if (!incompleteFields.includes(fieldName)) {
+                        incompleteFields.push(fieldName);
+                    }
+                } else {
+                    control.setValueState("None");
+                }
+            };
+    
+            // Validar todos los campos
+            validateField(oItem.getCells()[0], sVertical, "Vertical");
+            validateField(oItem.getCells()[1], stipoServi, "Tipo de Servicio");
+            validateField(oItem.getCells()[2], sPerfil, "Perfil");
+            validateField(oItem.getCells()[3], sConcepto, "Concepto");
+    
+            // Si hay errores, mostrar mensaje y detener el proceso
+            if (errorCount > 0) {
+                sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
+                return;
+            }
+    
+            // Construir el payload para cada fila
+            const payload = {
+                Vertical_ID: sVertical,
+                ConceptoOferta: sConcepto,
+                PMJ: sPMJ,
+                year1: Number(syear1.toFixed(2)),
+                year2: Number(syear2.toFixed(2)),
+                year3: Number(syear3.toFixed(2)),
+                year4: Number(syear4.toFixed(2)),
+                year5: Number(syear5.toFixed(2)),
+                year6: Number(syear6.toFixed(2)),
+                total: Number(sTotal.toFixed(2)),
+                totalE: Number(stotalRe.toFixed(2)),
+                tipoServicio_ID: stipoServi,
+                PerfilServicio_ID: sPerfil,
+                datosProyect_ID: generatedId,
+            };
+    
+            // Verificar si existe el ID de recurso para hacer actualización o inserción
+            let response;
+            if (sRecursoID) {
+                // Si el ID existe, hacemos PATCH para actualizar
+                response = await fetch(`/odata/v4/datos-cdo/RecursosInternos(${sRecursoID})`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-csrf-token": stokenr
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                // Si no existe el ID, hacemos POST para insertar
+                response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-csrf-token": stokenr
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+    
+            // Manejo de la respuesta
+            if (response.ok) {
+                const result = await response.json();
+                console.log("📌 Respuesta completa de la API:", result);
+    
+                const idRecursos = result.ID; // Verificar si `ID` realmente existe en la respuesta
+                console.log("📌 ID de Recurso obtenido:", idRecursos);
+    
+                if (!idRecursos) {
+                    console.error("⚠️ La API no devolvió un ID válido.");
+                    return;
+                }
+    
+                this._RecursoInt = idRecursos;
+                await this.InsertMesAñoRecurInterno(oItem, idRecursos);
+    
+                console.log("TERMINANDO  RECURSOS------");
+                console.log("Fila " + (i + 1) + " guardada con éxito: RECURSOS INTERNOS", result);
+            } else {
+                const errorMessage = await response.text();
+                console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+                sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+        }
+    },
+    
+    
+
+
+    /*  insertRecursosInternos: async function (generatedId) {
 
         const stokenr = this._sCsrfToken;
 
@@ -4532,6 +4664,7 @@ sap.ui.define([
             sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
+          
 
           // Construir el payload para cada fila
           const payload = {
@@ -4608,7 +4741,7 @@ sap.ui.define([
             sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
           }
         }
-      },
+      },*/
 
 
 
@@ -7079,9 +7212,103 @@ sap.ui.define([
         return isNaN(parsed) ? null : parsed;
       },
 
-
-
       insertClientFactura: async function (generatedId) {
+        const sTokenG = this._sCsrfToken;
+        var oTablaFac = this.byId("table_clienteFac");
+        var aItems = oTablaFac.getItems();
+        var aData = [];
+        var totalOferta = 0;
+    
+        aItems.forEach(function (oItem) {
+            var aCells = oItem.getCells();
+            var valueJudi = aCells[0] ? (aCells[0].getMetadata().getName() === "sap.m.Input" ? aCells[0].getValue() : aCells[0].getText()) : "";
+            var valueOferta = aCells[1] ? (aCells[1].getMetadata().getName() === "sap.m.Input" ? aCells[1].getValue() : aCells[1].getText()) : "";
+    
+            // Saltar fila de Total
+            if (valueJudi.trim() === "Total") {
+                return;
+            }
+    
+            var totalOfer = this.byId("text73_172746565340567").getText();
+            var totalOfer = parseFloat(totalOfer.replace('%','').replace(',','.')) || 0;
+    
+            if (valueJudi === "" && valueOferta === "") {
+                return; // Omitir filas vacías
+            }
+    
+            aData.push({
+                juridica: valueJudi,
+                oferta: valueOferta,
+                total: totalOfer,
+                datosProyect_ID: generatedId
+            });
+    
+            totalOferta += parseFloat(valueOferta) || 0;
+    
+        }.bind(this));
+    
+        try {
+            const checkResponse = await fetch(`/odata/v4/datos-cdo/ClientFactura?$filter=datosProyect_ID eq '${generatedId}'`, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "x-csrf-token": sTokenG
+                }
+            });
+    
+            if (!checkResponse.ok) throw new Error("Error al verificar existencia de las Facturas");
+    
+            const existingData = await checkResponse.json();
+            const existingRecords = existingData.value || [];
+    
+            for (let data of aData) {
+                let recordToUpdate = existingRecords.find(record => record.juridica === data.juridica);
+    
+                if (recordToUpdate) {
+                    const updateResponse = await fetch(`/odata/v4/datos-cdo/ClientFactura(${recordToUpdate.ID})`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-csrf-token": sTokenG
+                        },
+                        body: JSON.stringify(data)
+                    });
+    
+                    if (updateResponse.ok) {
+                        console.log(`Factura actualizada:`, await updateResponse.json());
+                    } else {
+                        console.log("Error al actualizar Factura:", await updateResponse.text());
+                        sap.m.MessageToast.show("Error al actualizar Factura.");
+                    }
+                } else {
+                    const insertResponse = await fetch("/odata/v4/datos-cdo/ClientFactura", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-csrf-token": sTokenG
+                        },
+                        body: JSON.stringify(data)
+                    });
+    
+                    if (insertResponse.ok) {
+                        console.log("Factura insertada:", await insertResponse.json());
+                    } else {
+                        console.log("Error al insertar Factura:", await insertResponse.text());
+                        sap.m.MessageToast.show("Error al insertar Factura.");
+                    }
+                }
+            }
+    
+        } catch (error) {
+            console.error("Error en la operación:", error);
+            sap.m.MessageToast.show("Ocurrió un error en la operación.");
+        }
+    
+        sap.m.MessageToast.show("Total de oferta: " + totalOferta);
+    },
+    
+      
+     /* insertClientFactura: async function (generatedId) {
         const sTokenG = this._sCsrfToken;
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
@@ -7126,7 +7353,7 @@ sap.ui.define([
           }
 
           const existingData = await checkResponse.json();
-          const existingRecords = existingData.value || []; // Lista de facturas existentes
+          const existingRecords = existingData.value || []; 
 
           // --- 2. Procesar cada entrada en aData ---
           for (let data of aData) {
@@ -7175,7 +7402,7 @@ sap.ui.define([
 
         // --- Mostrar el total acumulado ---
         sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
-      },
+      },*/
 
 
 

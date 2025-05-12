@@ -9,7 +9,7 @@ sap.ui.define(
 
 
     ],
-    function (BaseController, CustomData,MessageBox, DateFormat) {
+    function (BaseController, CustomData, MessageBox, DateFormat) {
         "use strict";
 
         return BaseController.extend("project1.controller.App", {
@@ -17,9 +17,9 @@ sap.ui.define(
 
 
 
-             
-             
-             //   var oProcessFlow = this.byId("processflow1");
+
+
+                //   var oProcessFlow = this.byId("processflow1");
                 //oProcessFlow.attachNodePress(this.onNodePress, this);
 
                 this._loadProjectData();
@@ -49,143 +49,58 @@ sap.ui.define(
                     const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
                     const data = await response.json();
                     const aProjects = data.value;
-            
+
                     const aProyectosConEstado = await Promise.all(
                         aProjects.map(async (proyecto) => {
                             const projectId = proyecto.ID;
-            
+
                             // Buscar última instancia de workflow relacionada
                             const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
                             const wfData = await wfResponse.json();
                             const wfItem = wfData.value[0];
-            
+
                             // Si no hay workflow, lo marcamos como "Pendiente"
                             proyecto.Estado = wfItem?.estado || "Pendiente";
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-            
+
                             // Formateo de fechas
                             if (proyecto.fechaCreacion) {
                                 const fecha = new Date(proyecto.fechaCreacion);
                                 proyecto.FechaCreacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
                             }
-            
+
                             if (proyecto.FechaModificacion) {
                                 const fecha = new Date(proyecto.FechaModificacion);
                                 proyecto.FechaModificacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
                             }
-            
+
                             if (proyecto.actualizadoEn) {
                                 const fecha = new Date(proyecto.actualizadoEn);
                                 proyecto.actualizadoEnFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
                             } else {
                                 proyecto.actualizadoEnFormateada = "Fecha no disponible";
                             }
-            
+
                             return proyecto;
                         })
                     );
-            
+
                     // Clasificación por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
-            
+
                     // Crear modelos
                     const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobados,
                         Count: aProyectosAprobados.length
                     });
-            
-                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosPendientes,
-                        Count: aProyectosPendientes.length
-                    });
-            
-                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-            
-                } catch (error) {
-                    console.error("Error al cargar los proyectos con estado:", error);
-                }
-            },
-            
-            
-          /*  filterEstado: async function () {
-                try {
-                    // 1. Obtener los proyectos desde OData
-                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                    const data = await response.json();
-                    const aProjects = data.value;
 
-                    console.log("Proyectos desde fetch:", aProjects);
-
-                    // 2. Enriquecer con el estado y formatear la fecha
-                    const aProyectosConEstado = await Promise.all(
-                        aProjects.map(async (proyecto) => {
-                            const projectId = proyecto.ID;
-
-                            // 2.1 Obtener estado desde WorkflowInstancias
-                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                            const wfData = await wfResponse.json();
-
-
-
-                            proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
-                            proyecto.workflowId = wfData.value[0]?.workflowId || null;
-                            proyecto.actualizadoEn = wfData.value[0]?.actualizadoEn || null; 
-
-
-                            // 2.2 Formatear la fecha (ajusta el nombre del campo si es distinto)
-                            if (proyecto.fechaCreacion) {
-                                const fecha = new Date(proyecto.fechaCreacion);
-                                const dia = String(fecha.getDate()).padStart(2, '0');
-                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                const anio = fecha.getFullYear();
-                                proyecto.FechaCreacionFormateada = `${dia}-${mes}-${anio}`;
-                            }
-
-
-                            if (proyecto.FechaModificacion) {
-                                const fecha = new Date(proyecto.FechaModificacion);
-                                const dia = String(fecha.getDate()).padStart(2, '0');
-                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                const anio = fecha.getFullYear();
-                                proyecto.FechaModificacionFormateada = `${dia}-${mes}-${anio}`;
-                            }
-
-
-                            if (proyecto.actualizadoEn) {
-                                const fecha = new Date(proyecto.actualizadoEn);
-                                const dia = String(fecha.getDate()).padStart(2, '0');
-                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                const anio = fecha.getFullYear();
-                                proyecto.actualizadoEnFormateada = `${dia}-${mes}-${anio}`;
-                            } else {
-                                proyecto.actualizadoEnFormateada = "Fecha no disponible"; // Puedes poner un valor predeterminado si no existe
-                            }
-
-                            return proyecto;
-                        })
-                    );
-
-                    // 3. Filtrar los proyectos según su estado
-                    const aProyectosAprobados = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Aprobado");
-                    const aProyectosPendientes = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Pendiente");
-
-                    console.log("Proyectos Aprobados:", aProyectosAprobados);
-                    console.log("Proyectos Pendientes:", aProyectosPendientes);
-
-                    // 4. Crear modelos JSON para cada tabla
-                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    });
                     const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosPendientes,
                         Count: aProyectosPendientes.length
                     });
 
-                    // 5. Asignar los modelos a las tablas correspondientes
                     this.getView().setModel(oJsonModelAprobados, "modelAprobados");
                     this.getView().setModel(oJsonModelPendientes, "modelPendientes");
 
@@ -193,101 +108,186 @@ sap.ui.define(
                     console.error("Error al cargar los proyectos con estado:", error);
                 }
             },
-*/
 
 
-        onPressWORklow: async function (oEvent){
-            await    this.onVerHistorial(oEvent);
-        //    await this.onActivityPress(oEvent);
+            /*  filterEstado: async function () {
+                  try {
+                      // 1. Obtener los proyectos desde OData
+                      const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                      const data = await response.json();
+                      const aProjects = data.value;
+  
+                      console.log("Proyectos desde fetch:", aProjects);
+  
+                      // 2. Enriquecer con el estado y formatear la fecha
+                      const aProyectosConEstado = await Promise.all(
+                          aProjects.map(async (proyecto) => {
+                              const projectId = proyecto.ID;
+  
+                              // 2.1 Obtener estado desde WorkflowInstancias
+                              const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+                              const wfData = await wfResponse.json();
+  
+  
+  
+                              proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
+                              proyecto.workflowId = wfData.value[0]?.workflowId || null;
+                              proyecto.actualizadoEn = wfData.value[0]?.actualizadoEn || null; 
+  
+  
+                              // 2.2 Formatear la fecha (ajusta el nombre del campo si es distinto)
+                              if (proyecto.fechaCreacion) {
+                                  const fecha = new Date(proyecto.fechaCreacion);
+                                  const dia = String(fecha.getDate()).padStart(2, '0');
+                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                  const anio = fecha.getFullYear();
+                                  proyecto.FechaCreacionFormateada = `${dia}-${mes}-${anio}`;
+                              }
+  
+  
+                              if (proyecto.FechaModificacion) {
+                                  const fecha = new Date(proyecto.FechaModificacion);
+                                  const dia = String(fecha.getDate()).padStart(2, '0');
+                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                  const anio = fecha.getFullYear();
+                                  proyecto.FechaModificacionFormateada = `${dia}-${mes}-${anio}`;
+                              }
+  
+  
+                              if (proyecto.actualizadoEn) {
+                                  const fecha = new Date(proyecto.actualizadoEn);
+                                  const dia = String(fecha.getDate()).padStart(2, '0');
+                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                  const anio = fecha.getFullYear();
+                                  proyecto.actualizadoEnFormateada = `${dia}-${mes}-${anio}`;
+                              } else {
+                                  proyecto.actualizadoEnFormateada = "Fecha no disponible"; // Puedes poner un valor predeterminado si no existe
+                              }
+  
+                              return proyecto;
+                          })
+                      );
+  
+                      // 3. Filtrar los proyectos según su estado
+                      const aProyectosAprobados = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Aprobado");
+                      const aProyectosPendientes = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Pendiente");
+  
+                      console.log("Proyectos Aprobados:", aProyectosAprobados);
+                      console.log("Proyectos Pendientes:", aProyectosPendientes);
+  
+                      // 4. Crear modelos JSON para cada tabla
+                      const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                          DatosProyect: aProyectosAprobados,
+                          Count: aProyectosAprobados.length
+                      });
+                      const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                          DatosProyect: aProyectosPendientes,
+                          Count: aProyectosPendientes.length
+                      });
+  
+                      // 5. Asignar los modelos a las tablas correspondientes
+                      this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                      this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+  
+                  } catch (error) {
+                      console.error("Error al cargar los proyectos con estado:", error);
+                  }
+              },
+  */
+
+
+            onPressWORklow: async function (oEvent) {
+                await this.onVerHistorial(oEvent);
+                //    await this.onActivityPress(oEvent);
 
 
 
 
-        },
-            
+            },
+
 
             onVerHistorial: async function (oEvent) {
                 try {
                     const oSource = oEvent.getSource();
-            
+
                     // Intenta obtener el contexto desde modelPendientes
                     let oContext = oSource.getBindingContext("modelPendientes");
                     let modelo = "modelPendientes";
-            
+
                     // Si no lo encuentra en modelPendientes, intenta con modelAprobados
                     if (!oContext) {
                         oContext = oSource.getBindingContext("modelAprobados");
                         modelo = "modelAprobados";
                     }
-            
+
                     if (!oContext) {
                         sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
                         return;
                     }
-            
+
                     const oItem = oContext.getObject();
                     const workflowId = oItem.workflowId;
-            
+
                     if (!workflowId) {
                         sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
                         return;
                     }
-            
+
                     const oModel = this.getOwnerComponent().getModel(); // OData Model principal
                     const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
-            
+
                     oBoundContext.setParameter("ID", workflowId);
                     await oBoundContext.execute();
-            
+
                     const result = oBoundContext.getBoundContext().getObject();
                     console.log(`✅ Historial del workflow (${modelo}):`, result);
-            
 
 
-                    await   this.onActivityPress(oEvent, result);
+
+                    await this.onActivityPress(oEvent, result);
                     sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
                     console.error("❌ Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
                 }
             },
-            
 
-  /*          onVerHistorial: async function (oEvent) {
-                try {
-                    const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
-                    const workflowId = oItem.workflowId;
-            
-                    if (!workflowId) {
-                        sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
-                        return;
-                    }
-            
-                    const oModel = this.getOwnerComponent().getModel();
-                    const oContext = oModel.bindContext("/getWorkflowTimeline(...)");
-            
-                    oContext.setParameter("ID", workflowId);
-            
-                    await oContext.execute();
-            
-                    const result = oContext.getBoundContext().getObject();
-                    console.log("✅ Historial del workflow:", result);
-            
-                    sap.m.MessageBox.information(JSON.stringify(result, null, 2));
-                } catch (error) {
-                    console.error("❌ Error al obtener el historial del workflow:", error);
-                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
-                }
-            },*/
-            
 
+            /*          onVerHistorial: async function (oEvent) {
+                          try {
+                              const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
+                              const workflowId = oItem.workflowId;
+                      
+                              if (!workflowId) {
+                                  sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                                  return;
+                              }
+                      
+                              const oModel = this.getOwnerComponent().getModel();
+                              const oContext = oModel.bindContext("/getWorkflowTimeline(...)");
+                      
+                              oContext.setParameter("ID", workflowId);
+                      
+                              await oContext.execute();
+                      
+                              const result = oContext.getBoundContext().getObject();
+                              console.log("✅ Historial del workflow:", result);
+                      
+                              sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                          } catch (error) {
+                              console.error("❌ Error al obtener el historial del workflow:", error);
+                              sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                          }
+                      },*/
 
 
 
 
 
 
-       
+
+
+
 
 
 
@@ -460,31 +460,31 @@ sap.ui.define(
             },
 
             onActivityPress: function (oEvent, result) {
-                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));  
-            
+                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));
+
                 var oButton = oEvent.getSource();
                 var sNameProyect = oButton.getCustomData()[0].getValue();
                 var sID = oButton.getCustomData()[1].getValue();
                 const eventos = result.value;
-            
+
                 var oProcessFlow = this.byId("processflow1");
                 if (!oProcessFlow) {
                     console.error("No se encontró el ProcessFlow con ID 'processflow1'");
                     return;
                 }
-            
+
                 oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
-            
+
                 const lanes = {
                     "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
                     "WORKFLOW_COMPLETED": "2"
                 };
-            
+
                 eventos.forEach((evento, index) => {
                     if (!evento.id) {
                         evento.id = "evento_" + index;
                     }
-            
+
                     const node = new sap.suite.ui.commons.ProcessFlowNode({
                         nodeId: evento.id,
                         title: evento.paso,
@@ -498,13 +498,13 @@ sap.ui.define(
                         key: "eventoId", // Clave personalizada para identificar el evento
                         value: evento.id // Valor que es el ID del evento
                     }));
-            
+
                     node.data("eventoOriginal", evento); // Guarda los datos originales
-            
+
                     console.log("EVENTO " + JSON.stringify(evento));
                     oProcessFlow.addNode(node); // Añade el nodo al ProcessFlow
                 });
-            
+
                 // ✅ Solo una vez, fuera del bucle
                 oProcessFlow.attachNodePress(this.onNodePress.bind(this));
 
@@ -512,112 +512,112 @@ sap.ui.define(
                 this.byId("text1881").setText("PEP de solicitud: " + sID);
                 this.byId("itb1").setSelectedKey("people");
             },
-            
-            
-         /*   onActivityPress: function (oEvent, result) {
-                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));  
-                console.log("Método onActivityPress ejecutado");
-            
-                var oButton = oEvent.getSource();
-                var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
-                var sID = oButton.getCustomData()[1].getValue();          // ID del proyecto
-            
-                const eventos = result.value;  // Accedemos a todos los eventos del workflow
-            
-                var oProcessFlow = this.byId("processflow1"); // Asegúrate de definirlo aquí
-                if (!oProcessFlow) {
-                    console.error("No se pudo encontrar el ProcessFlow con el id 'processflow1'");
-                    return;
-                }
-            
-                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
-            
-                this.bProcessFlowAllowed = true;
-            
-                eventos.forEach((evento, index) => {
-                    console.log(`Evento ${index + 1}:`);
-                    console.log("ID: ", evento.id);  // Asegúrate de que el ID es válido
-                    console.log("Tipo: ", evento.tipo);
-                    console.log("Descripción: ", evento.descripcion);
-                    console.log("Timestamp: ", evento.timestamp);
-                    console.log("Instancia: ", evento.instancia);
-                    console.log("Paso: ", evento.paso);
-                    console.log("Usuario: ", evento.usuario);
-                    console.log("---------------------------");
-            
-                    if (!evento.id) {
-                        console.error(`Evento ${index + 1} no tiene un ID válido, asignando uno alternativo.`);
-                        evento.id = "evento_" + index;  // Asigna un ID alternativo si no hay uno
-                    }
-            
-                    // Verifica que el id se asigna correctamente en el nodo
-                    console.log("Creando nodo con ID:", evento.id);
-            
-                    var lanes = {
-                        "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
-                        "WORKFLOW_COMPLETED": "2",
-                        // Añade más tipos de eventos y sus lanes si es necesario
-                    };
-            
-                    var node = new sap.suite.ui.commons.ProcessFlowNode({
-                        nodeId: evento.id,
-                        title: evento.paso,
-                        laneId: lanes[evento.tipo] || "0",
-                        state: "Neutral",
-                        stateText: evento.paso,
-                        children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
-                        isTitleClickable: true // Muy importante
-                    });
-                    
-                    // 🔁 Asegura que el nodo reaccione al click
-                    node.attachPress(this.onNodePress, this); // Bind al controlador actual
-                    
-                    oProcessFlow.addNode(node);
-                    
-                });
-            
-                var oTitle = this.byId("idTitleProceso");
-                oTitle.setText("Proceso de solicitud: " + sNameProyect);
-            
-                var oText = this.byId("text1881");
-                oText.setText("PEP de solicitud: " + sID);
-            
-                // Cambiar la pestaña seleccionada al IconTabFilter con id 'people'
-                var oIconTabBar = this.byId("itb1");
-                oIconTabBar.setSelectedKey("people");
-            
-                // Añadir evento de presión en los nodos
-             //   node.attachPress(this.onNodePress, this); // ✅ correcta
 
-         
-            },*/
+
+            /*   onActivityPress: function (oEvent, result) {
+                   console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));  
+                   console.log("Método onActivityPress ejecutado");
+               
+                   var oButton = oEvent.getSource();
+                   var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
+                   var sID = oButton.getCustomData()[1].getValue();          // ID del proyecto
+               
+                   const eventos = result.value;  // Accedemos a todos los eventos del workflow
+               
+                   var oProcessFlow = this.byId("processflow1"); // Asegúrate de definirlo aquí
+                   if (!oProcessFlow) {
+                       console.error("No se pudo encontrar el ProcessFlow con el id 'processflow1'");
+                       return;
+                   }
+               
+                   oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+               
+                   this.bProcessFlowAllowed = true;
+               
+                   eventos.forEach((evento, index) => {
+                       console.log(`Evento ${index + 1}:`);
+                       console.log("ID: ", evento.id);  // Asegúrate de que el ID es válido
+                       console.log("Tipo: ", evento.tipo);
+                       console.log("Descripción: ", evento.descripcion);
+                       console.log("Timestamp: ", evento.timestamp);
+                       console.log("Instancia: ", evento.instancia);
+                       console.log("Paso: ", evento.paso);
+                       console.log("Usuario: ", evento.usuario);
+                       console.log("---------------------------");
+               
+                       if (!evento.id) {
+                           console.error(`Evento ${index + 1} no tiene un ID válido, asignando uno alternativo.`);
+                           evento.id = "evento_" + index;  // Asigna un ID alternativo si no hay uno
+                       }
+               
+                       // Verifica que el id se asigna correctamente en el nodo
+                       console.log("Creando nodo con ID:", evento.id);
+               
+                       var lanes = {
+                           "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
+                           "WORKFLOW_COMPLETED": "2",
+                           // Añade más tipos de eventos y sus lanes si es necesario
+                       };
+               
+                       var node = new sap.suite.ui.commons.ProcessFlowNode({
+                           nodeId: evento.id,
+                           title: evento.paso,
+                           laneId: lanes[evento.tipo] || "0",
+                           state: "Neutral",
+                           stateText: evento.paso,
+                           children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
+                           isTitleClickable: true // Muy importante
+                       });
+                       
+                       // 🔁 Asegura que el nodo reaccione al click
+                       node.attachPress(this.onNodePress, this); // Bind al controlador actual
+                       
+                       oProcessFlow.addNode(node);
+                       
+                   });
+               
+                   var oTitle = this.byId("idTitleProceso");
+                   oTitle.setText("Proceso de solicitud: " + sNameProyect);
+               
+                   var oText = this.byId("text1881");
+                   oText.setText("PEP de solicitud: " + sID);
+               
+                   // Cambiar la pestaña seleccionada al IconTabFilter con id 'people'
+                   var oIconTabBar = this.byId("itb1");
+                   oIconTabBar.setSelectedKey("people");
+               
+                   // Añadir evento de presión en los nodos
+                //   node.attachPress(this.onNodePress, this); // ✅ correcta
+   
+            
+               },*/
 
             onNodePress: function (oEvent) {
                 // Obtener el nodo presionado
                 var oNode = oEvent.getSource();
-            
+
                 // Recuperar los datos personalizados (CustomData)
                 var aCustomData = oNode.getCustomData();
-            
+
                 // Depurar los datos personalizados
                 console.log("Datos personalizados del nodo: ", aCustomData);
-            
+
                 if (aCustomData && aCustomData.length > 0) {
                     // Buscar el CustomData con el key "eventoId"
                     var oEventoIdData = aCustomData.find(function (data) {
                         return data.getKey() === "eventoId";
                     });
-            
+
                     if (oEventoIdData) {
                         // Recuperar el valor de "eventoId"
                         var sEventoId = oEventoIdData.getValue();
                         console.log("ID del evento presionado:", sEventoId);
-            
+
                         // Buscar el evento en el array `result.value` usando el ID
                         const evento = result.value.find(function (evento) {
                             return evento.id === sEventoId;
                         });
-            
+
                         if (evento) {
                             // Si se encontró el evento, puedes hacer algo con los datos
                             console.log("Detalles del evento:", evento);
@@ -631,200 +631,200 @@ sap.ui.define(
                     console.error("El nodo no tiene datos personalizados.");
                 }
             },
-            
-            
-            
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-         /*   onActivityPress: function (oEvent, result) {
-                console.log("RESULT DEL WORKLOW " + JSON.stringify(result));  
-                console.log("Método onActivityPress ejecutado");
-            
-                var oButton = oEvent.getSource();
-                var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
-                var sID = oButton.getCustomData()[1].getValue();          // ID del proyecto
-            
-                const eventos = result.value;  // Accedemos a todos los eventos del workflow
-            
-                var oProcessFlow = this.byId("processflow1"); // Asegúrate de definirlo aquí
-                if (!oProcessFlow) {
-                    console.error("No se pudo encontrar el ProcessFlow con el id 'processflow1'");
-                    return;
-                }
-            
-                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
-            
-                this.bProcessFlowAllowed = true;
-            
-                eventos.forEach((evento, index) => {
-                    console.log(`Evento ${index + 1}:`);
-                    console.log("ID: ", evento.id);
-                    console.log("Tipo: ", evento.tipo);
-                    console.log("Descripción: ", evento.descripcion);
-                    console.log("Timestamp: ", evento.timestamp);
-                    console.log("Instancia: ", evento.instancia);
-                    console.log("Paso: ", evento.paso);
-                    console.log("Usuario: ", evento.usuario);
-                    console.log("---------------------------");
-            
-                    // Crear nodos dinámicamente basados en los eventos
-                    oProcessFlow.addNode(new sap.suite.ui.commons.ProcessFlowNode({
-                        nodeId: evento.id, // Usar el ID del evento como nodeId
-                        title: evento.paso, // Usar la descripción como título
-                        laneId: "0", // Puedes asignar un laneId dinámico si lo necesitas
-                        state: "Neutral", // Puedes usar estado dinámico según el evento
-                        stateText: evento.paso, // Usar tipo de evento para el estado
-                        children: []  // Si el evento tiene pasos siguientes, puedes agregar nodos hijos
-                    }));
-                });
-            
-                var oTitle = this.byId("idTitleProceso");
-                oTitle.setText("Proceso de solicitud: " + sNameProyect);
-            
-                var oText = this.byId("text1881");
-                oText.setText("PEP de solicitud: " + sID);
-            
-                // Cambiar la pestaña seleccionada al IconTabFilter con id 'people'
-                var oIconTabBar = this.byId("itb1");
-                oIconTabBar.setSelectedKey("people");
-            
-                // Añadir evento de presión en los nodos
-                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
-            },
-            
-            
-
-
-            onNodePress: function (oEvent) {
-                var sNodeId = oEvent.getParameter("nodeId");
-            
-                var oProcessFlow = this.byId("processflow1");
-                var aNodes = oProcessFlow.getNodes();
-            
-                var oNode = aNodes.find(function (node) {
-                    return node.getNodeId() === sNodeId;
-                });
-            
-                if (!oNode) {
-                    console.error("Nodo no encontrado para nodeId: " + sNodeId);
-                    return;
-                }
-            
-                console.log("Nodo encontrado:", oNode.getTitle());
-            },
-            */
-            
 
 
 
 
-         /*   onNodePress: function (oEvent) {
-                // Obtener el nodo seleccionado
-                var oNode = oEvent.getParameters().getNodeId(); // ID del nodo seleccionado
 
-                // Obtener el nodo del ProcessFlow
-                var oProcessFlow = this.byId("processflow1");
-                var aNodes = oProcessFlow.getNodes(); // Obtener todos los nodos
 
-                // Encontrar el nodo que coincide con el nodeId
-                var oSelectedNode = aNodes.find(function (node) {
-                    return node.getNodeId() === oNode;
-                });
 
-                if (!oSelectedNode) {
-                    console.error("Nodo no encontrado");
-                    return;
-                }
 
-                // Obtener información del nodo
-                var sNodeTitle = oSelectedNode.getTitle(); // Título del nodo
-                var sStateText = oSelectedNode.getStateText(); // Estado del nodo
 
-                // Crear Popover si no existe
-                if (!this._oPopover) {
-                    this._oPopover = new sap.m.Popover({
-                        title: "Detalles",
-                        placement: sap.m.PlacementType.Auto,
-                        content: [
-                            new sap.m.Text({ text: "" }), // Placeholder para el texto dinámico
-                            new sap.m.Button({
-                                text: "Cerrar",
-                                press: function () {
-                                    this._oPopover.close(); // Cerrar el popover
-                                }.bind(this)
-                            })
-                        ]
-                    });
 
-                }
 
-                // Actualizar el texto del Popover con la información del nodo
-                var oText = this._oPopover.getContent()[0];
 
-                // Cambiar el texto según el estado o el título del nodo
-                var sDynamicText;
-                if (sStateText === "Estado1") {
-                    sDynamicText = "Solicitud Enviado Correctamente. \nTítulo: " + sNodeTitle;
-                } else if (sStateText === "Estado2") {
-                    sDynamicText = "Información adicional para Estado2. \nTítulo: " + sNodeTitle;
-                } else {
-                    sDynamicText = "Nodo: " + sNodeTitle + "\nEstado: " + sStateText;
-                }
 
-                oText.setText(sDynamicText);
 
-                // Mostrar el Popover en el nodo seleccionado
-                this._oPopover.openBy(oEvent.getSource());
-                // Agregar el Popover como dependiente de la vista
-                this.getView().addDependent(this._oPopover); // Abrir el popover en el nodo presionado
-            },*/
 
-        /*    onIconTabSelect: function (oEvent) {
-                var sSelectedKey = oEvent.getParameter("key");
-                var oIconTabBar = this.byId("itb1");
-                var oPeopleTab = this.byId("ma77"); // Accede al IconTabFilter que deseas ocultar
 
-                // Verificar si el usuario está intentando acceder al IconTabFilter "people" sin haber pasado por "attachments"
-                if (sSelectedKey === "people" && !this.bProcessFlowAllowed) {
-                    // Mostrar un mensaje de advertencia
-                    sap.m.MessageBox.show(
-                        "Por favor, seleccione una solicitud en la pestaña de solicitudes para ver el proceso.",
-                        {
-                            title: "Advertencia", // Título del MessageBox
-                            actions: [sap.m.MessageBox.Action.OK], // Opciones de botones
-                            onClose: function (oAction) {
-                                // Acción a realizar cuando se cierra el MessageBox
+
+
+
+            /*   onActivityPress: function (oEvent, result) {
+                   console.log("RESULT DEL WORKLOW " + JSON.stringify(result));  
+                   console.log("Método onActivityPress ejecutado");
+               
+                   var oButton = oEvent.getSource();
+                   var sNameProyect = oButton.getCustomData()[0].getValue(); // nombre del proyecto
+                   var sID = oButton.getCustomData()[1].getValue();          // ID del proyecto
+               
+                   const eventos = result.value;  // Accedemos a todos los eventos del workflow
+               
+                   var oProcessFlow = this.byId("processflow1"); // Asegúrate de definirlo aquí
+                   if (!oProcessFlow) {
+                       console.error("No se pudo encontrar el ProcessFlow con el id 'processflow1'");
+                       return;
+                   }
+               
+                   oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+               
+                   this.bProcessFlowAllowed = true;
+               
+                   eventos.forEach((evento, index) => {
+                       console.log(`Evento ${index + 1}:`);
+                       console.log("ID: ", evento.id);
+                       console.log("Tipo: ", evento.tipo);
+                       console.log("Descripción: ", evento.descripcion);
+                       console.log("Timestamp: ", evento.timestamp);
+                       console.log("Instancia: ", evento.instancia);
+                       console.log("Paso: ", evento.paso);
+                       console.log("Usuario: ", evento.usuario);
+                       console.log("---------------------------");
+               
+                       // Crear nodos dinámicamente basados en los eventos
+                       oProcessFlow.addNode(new sap.suite.ui.commons.ProcessFlowNode({
+                           nodeId: evento.id, // Usar el ID del evento como nodeId
+                           title: evento.paso, // Usar la descripción como título
+                           laneId: "0", // Puedes asignar un laneId dinámico si lo necesitas
+                           state: "Neutral", // Puedes usar estado dinámico según el evento
+                           stateText: evento.paso, // Usar tipo de evento para el estado
+                           children: []  // Si el evento tiene pasos siguientes, puedes agregar nodos hijos
+                       }));
+                   });
+               
+                   var oTitle = this.byId("idTitleProceso");
+                   oTitle.setText("Proceso de solicitud: " + sNameProyect);
+               
+                   var oText = this.byId("text1881");
+                   oText.setText("PEP de solicitud: " + sID);
+               
+                   // Cambiar la pestaña seleccionada al IconTabFilter con id 'people'
+                   var oIconTabBar = this.byId("itb1");
+                   oIconTabBar.setSelectedKey("people");
+               
+                   // Añadir evento de presión en los nodos
+                   oProcessFlow.attachNodePress(this.onNodePress.bind(this));
+               },
+               
+               
+   
+   
+               onNodePress: function (oEvent) {
+                   var sNodeId = oEvent.getParameter("nodeId");
+               
+                   var oProcessFlow = this.byId("processflow1");
+                   var aNodes = oProcessFlow.getNodes();
+               
+                   var oNode = aNodes.find(function (node) {
+                       return node.getNodeId() === sNodeId;
+                   });
+               
+                   if (!oNode) {
+                       console.error("Nodo no encontrado para nodeId: " + sNodeId);
+                       return;
+                   }
+               
+                   console.log("Nodo encontrado:", oNode.getTitle());
+               },
+               */
+
+
+
+
+
+            /*   onNodePress: function (oEvent) {
+                   // Obtener el nodo seleccionado
+                   var oNode = oEvent.getParameters().getNodeId(); // ID del nodo seleccionado
+   
+                   // Obtener el nodo del ProcessFlow
+                   var oProcessFlow = this.byId("processflow1");
+                   var aNodes = oProcessFlow.getNodes(); // Obtener todos los nodos
+   
+                   // Encontrar el nodo que coincide con el nodeId
+                   var oSelectedNode = aNodes.find(function (node) {
+                       return node.getNodeId() === oNode;
+                   });
+   
+                   if (!oSelectedNode) {
+                       console.error("Nodo no encontrado");
+                       return;
+                   }
+   
+                   // Obtener información del nodo
+                   var sNodeTitle = oSelectedNode.getTitle(); // Título del nodo
+                   var sStateText = oSelectedNode.getStateText(); // Estado del nodo
+   
+                   // Crear Popover si no existe
+                   if (!this._oPopover) {
+                       this._oPopover = new sap.m.Popover({
+                           title: "Detalles",
+                           placement: sap.m.PlacementType.Auto,
+                           content: [
+                               new sap.m.Text({ text: "" }), // Placeholder para el texto dinámico
+                               new sap.m.Button({
+                                   text: "Cerrar",
+                                   press: function () {
+                                       this._oPopover.close(); // Cerrar el popover
+                                   }.bind(this)
+                               })
+                           ]
+                       });
+   
+                   }
+   
+                   // Actualizar el texto del Popover con la información del nodo
+                   var oText = this._oPopover.getContent()[0];
+   
+                   // Cambiar el texto según el estado o el título del nodo
+                   var sDynamicText;
+                   if (sStateText === "Estado1") {
+                       sDynamicText = "Solicitud Enviado Correctamente. \nTítulo: " + sNodeTitle;
+                   } else if (sStateText === "Estado2") {
+                       sDynamicText = "Información adicional para Estado2. \nTítulo: " + sNodeTitle;
+                   } else {
+                       sDynamicText = "Nodo: " + sNodeTitle + "\nEstado: " + sStateText;
+                   }
+   
+                   oText.setText(sDynamicText);
+   
+                   // Mostrar el Popover en el nodo seleccionado
+                   this._oPopover.openBy(oEvent.getSource());
+                   // Agregar el Popover como dependiente de la vista
+                   this.getView().addDependent(this._oPopover); // Abrir el popover en el nodo presionado
+               },*/
+
+            /*    onIconTabSelect: function (oEvent) {
+                    var sSelectedKey = oEvent.getParameter("key");
+                    var oIconTabBar = this.byId("itb1");
+                    var oPeopleTab = this.byId("ma77"); // Accede al IconTabFilter que deseas ocultar
+    
+                    // Verificar si el usuario está intentando acceder al IconTabFilter "people" sin haber pasado por "attachments"
+                    if (sSelectedKey === "people" && !this.bProcessFlowAllowed) {
+                        // Mostrar un mensaje de advertencia
+                        sap.m.MessageBox.show(
+                            "Por favor, seleccione una solicitud en la pestaña de solicitudes para ver el proceso.",
+                            {
+                                title: "Advertencia", // Título del MessageBox
+                                actions: [sap.m.MessageBox.Action.OK], // Opciones de botones
+                                onClose: function (oAction) {
+                                    // Acción a realizar cuando se cierra el MessageBox
+                                }
                             }
-                        }
-                    );
-
-                    // Volver a la primera pestaña (lista de solicitudes)
-                    oIconTabBar.setSelectedKey("attachments");
-
-                    return; // Detener la ejecución
-                }
-
-                // Lógica para mostrar u ocultar el IconTabFilter basado en el estado
-                if (this.bProcessFlowAllowed) {
-                    oPeopleTab.setVisible(true); // Mostrar si se permite
-                } else {
-                    oPeopleTab.setVisible(false); // Ocultar si no se permite
-                }
-            },*/
+                        );
+    
+                        // Volver a la primera pestaña (lista de solicitudes)
+                        oIconTabBar.setSelectedKey("attachments");
+    
+                        return; // Detener la ejecución
+                    }
+    
+                    // Lógica para mostrar u ocultar el IconTabFilter basado en el estado
+                    if (this.bProcessFlowAllowed) {
+                        oPeopleTab.setVisible(true); // Mostrar si se permite
+                    } else {
+                        oPeopleTab.setVisible(false); // Ocultar si no se permite
+                    }
+                },*/
 
 
 
@@ -848,7 +848,7 @@ sap.ui.define(
                 // Obtener el ID recibido como parámetro de la URL
                 const newId = oEvent.getParameter("arguments").newId;
 
-                    console.log("ids comtenriofg")
+                console.log("ids comtenriofg")
                 // Verifica si el ID es válido
                 if (!newId) {
                     console.error("No se recibió un ID válido");
@@ -858,10 +858,10 @@ sap.ui.define(
                 //actualizar tabla 
                 await this.filterEstado();
 
-   
+
             },
 
-          
+
             /*  _processTableRows: function (oTable, newId) {
                   const oItems = oTable.getItems();
                   let found = false;
@@ -1329,8 +1329,8 @@ sap.ui.define(
                 });
             },*/
 
-           onDeletePress: async function (oEvent) {
-             //   let oModel = this.getView().getModel("modelPendientes");
+            onDeletePress: async function (oEvent) {
+                //   let oModel = this.getView().getModel("modelPendientes");
 
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
@@ -1349,7 +1349,7 @@ sap.ui.define(
                         method: "GET",
                         headers: { "x-csrf-token": "Fetch" }
                     });
-                    
+
 
                     if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
 
@@ -1456,7 +1456,7 @@ sap.ui.define(
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
-                                             // Asegura que "this" siga apuntando al controlador
+                                            // Asegura que "this" siga apuntando al controlador
                                         });
 
 
@@ -1601,19 +1601,22 @@ sap.ui.define(
                },*/
 
 
-               onNavToView1: function () {
+            onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                var oComponent = this.getOwnerComponent();
+                oRouter.navTo("viewNoParam");
+
                 
+                var oComponent = this.getOwnerComponent();
+
                 // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
                 var oTargetView = oComponent.byId("view");
-            
+
                 if (!oTargetView) {
                     console.warn("No se encontró la vista objetivo.");
-                    oRouter.navTo("viewNoParam"); // Navega aunque no se haya encontrado la vista
+                  // Navega aunque no se haya encontrado la vista
                     return;
                 }
-            
+
                 // Función para limpiar los controles de la vista
                 function clearAllFields(oControl) {
                     if (oControl instanceof sap.m.Input) {
@@ -1632,7 +1635,7 @@ sap.ui.define(
                         oControl.destroyFeeds();     // Elimina los feeds asociados
                         oControl.setVizProperties({}); // Restablece las propiedades visuales
                     }
-            
+
                     // Limpiar controles dentro de contenedores
                     if (oControl.getAggregation) {
                         const aAggregations = oControl.getMetadata().getAllAggregations();
@@ -1646,80 +1649,95 @@ sap.ui.define(
                         }
                     }
                 }
-            
+
                 // Ejecutar la limpieza en la vista antes de navegar
                 oTargetView.findAggregatedObjects(false, clearAllFields);
-            
+
                 // Aquí puedes agregar la lógica para actualizar la vista
                 // Si tu vista tiene un modelo o necesitas recargar datos, hazlo aquí
+
+
+                var oView = this.getView();
+                console.log("viwq " + oView);
+
+                if (oView.getElementBinding()) {
+                    oView.getElementBinding().refresh(); // Refresca solo el binding a nivel de vista
+                }
+
                 var oModel = oComponent.getModel(); // Asumiendo que el modelo es global
                 if (oModel) {
                     oModel.refresh(); // Esto recargará el modelo
                 }
-            
+
                 // Actualizar todos los controles vinculados, si es necesario
                 // oTargetView.getBindingContext().requestContext(); // Esto puede forzar la actualización del contexto, si es necesario.
-            
+
                 // Si necesitas actualizar algún dato específico, puedes hacerlo aquí.
-            
+
                 // Navegar a la nueva vista después de limpiar y actualizar la vista
                 oRouter.navTo("viewNoParam");
             },
-            
-            
 
-         /*   onNavToView1: function () {
-                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                var oComponent = this.getOwnerComponent();
+         /*   onLogoutPress: function () {
+           //     window.location.href = "/logout.do";
 
-                // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
-                var oTargetView = oComponent.byId("view");
+            },*/
 
-                if (!oTargetView) {
-                    console.warn("No se encontró la vista objetivo.");
-                    oRouter.navTo("viewNoParam"); // Navega aunque no se haya encontrado la vista
-                    return;
-                }
-
-                // Función para limpiar los controles de la vista
-                function clearAllFields(oControl) {
-                    if (oControl instanceof sap.m.Input) {
-                        oControl.setValue("");
-                    } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
-                        oControl.setSelectedKey("");
-                    } else if (oControl instanceof sap.m.DatePicker) {
-                        oControl.setDateValue(null);
-                    } else if (oControl instanceof sap.m.TextArea) {
-                        oControl.setValue("");
-                    } else if (oControl instanceof sap.m.CheckBox) {
-                        oControl.setSelected(false);
-                    }
-
-                    // Limpiar controles dentro de contenedores
-                    if (oControl.getAggregation) {
-                        const aAggregations = oControl.getMetadata().getAllAggregations();
-                        for (let sAggregationName in aAggregations) {
-                            const oAggregation = oControl.getAggregation(sAggregationName);
-                            if (Array.isArray(oAggregation)) {
-                                oAggregation.forEach(clearAllFields);
-                            } else if (oAggregation instanceof sap.ui.core.Control) {
-                                clearAllFields(oAggregation);
-                            }
-                        }
-                    }
-                }
-
-                // Ejecutar la limpieza en la vista antes de navegar
-                oTargetView.findAggregatedObjects(false, clearAllFields);
-
-                // Navegar a la nueva vista después de limpiar
-                oRouter.navTo("viewNoParam");
-            }*/
-
-
-
+            /*   onNavToView1: function () {
+                   var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                   var oComponent = this.getOwnerComponent();
+   
+                   // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
+                   var oTargetView = oComponent.byId("view");
+   
+                   if (!oTargetView) {
+                       console.warn("No se encontró la vista objetivo.");
+                       oRouter.navTo("viewNoParam"); // Navega aunque no se haya encontrado la vista
+                       return;
+                   }
+   
+                   // Función para limpiar los controles de la vista
+                   function clearAllFields(oControl) {
+                       if (oControl instanceof sap.m.Input) {
+                           oControl.setValue("");
+                       } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
+                           oControl.setSelectedKey("");
+                       } else if (oControl instanceof sap.m.DatePicker) {
+                           oControl.setDateValue(null);
+                       } else if (oControl instanceof sap.m.TextArea) {
+                           oControl.setValue("");
+                       } else if (oControl instanceof sap.m.CheckBox) {
+                           oControl.setSelected(false);
+                       }
+   
+                       // Limpiar controles dentro de contenedores
+                       if (oControl.getAggregation) {
+                           const aAggregations = oControl.getMetadata().getAllAggregations();
+                           for (let sAggregationName in aAggregations) {
+                               const oAggregation = oControl.getAggregation(sAggregationName);
+                               if (Array.isArray(oAggregation)) {
+                                   oAggregation.forEach(clearAllFields);
+                               } else if (oAggregation instanceof sap.ui.core.Control) {
+                                   clearAllFields(oAggregation);
+                               }
+                           }
+                       }
+                   }
+   
+                   // Ejecutar la limpieza en la vista antes de navegar
+                   oTargetView.findAggregatedObjects(false, clearAllFields);
+   
+                   // Navegar a la nueva vista después de limpiar
+                   oRouter.navTo("viewNoParam");
+               }*/
 
 
         });
-    }
+
+
+    },
+    
+
+
+
 );

@@ -1,6 +1,7 @@
 {
   "welcomeFile": "project1",
   "authenticationMethod": "route",
+  
   "routes": [
     {
       "source": "^/(.*)$",
@@ -9,6 +10,7 @@
       "csrfProtection": true,
       "authenticationType": "xsuaa"
     }
+    
 
 
   ]

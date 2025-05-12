@@ -30,7 +30,7 @@
                                 height="38px"
                                 id="image0"
                             />  			                                                            <ToolbarSpacer /> 
- <Button icon="sap-icon://log" id="buton" type="Transparent" press="onPress" ariaLabelledBy="actionButtonLabel" class="sapUiLargeMargin" />
+ <Button icon="sap-icon://log" id="buton" type="Transparent" press="onLogoutPress" ariaLabelledBy="actionButtonLabel"     class="whiteIconButton sapUiLargeMargin"/>
                         </contentLeft>
                     </Bar>
                 </customHeader>

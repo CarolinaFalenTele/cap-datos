@@ -154,5 +154,8 @@
     border-radius: 5px; 
     
 }
+.whiteIconButton .sapMBtnInner .sapMBtnIcon {
+    color: white !important;
+}
 
 
