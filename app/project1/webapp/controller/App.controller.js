@@ -844,17 +844,20 @@ sap.ui.define(
             },
 
 
-            _onObjectMatched: function (oEvent) {
+            _onObjectMatched: async function (oEvent) {
                 // Obtener el ID recibido como parámetro de la URL
                 const newId = oEvent.getParameter("arguments").newId;
 
+                    console.log("ids comtenriofg")
                 // Verifica si el ID es válido
                 if (!newId) {
                     console.error("No se recibió un ID válido");
                     return;
                 }
 
-                // Llamar a la función para resaltar la fila
+                //actualizar tabla 
+                await this.filterEstado();
+
    
             },
 
@@ -1327,7 +1330,7 @@ sap.ui.define(
             },*/
 
            onDeletePress: async function (oEvent) {
-                let oModel = this.getView().getModel("modelPendientes");
+             //   let oModel = this.getView().getModel("modelPendientes");
 
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
@@ -1439,7 +1442,7 @@ sap.ui.define(
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
-                                            onClose: function () {
+                                            onClose: async function () {
                                                 let oTable = this.byId("idPendientes");
                                                 if (oTable) {
                                                     let oBinding = oTable.getBinding("items");
@@ -1451,11 +1454,7 @@ sap.ui.define(
                                                 } else {
                                                     console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
                                                 }
-                                            
-                                                let oModel = this.getView().getModel("modelPendientes");
-                                                if (oModel?.refresh) {
-                                                    oModel.refresh(); // Esto solo funciona si es un ODataModel
-                                                }
+                                                await this.filterEstado();
                                             }.bind(this)
                                              // Asegura que "this" siga apuntando al controlador
                                         });
@@ -1602,9 +1601,74 @@ sap.ui.define(
                },*/
 
 
+               onNavToView1: function () {
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                var oComponent = this.getOwnerComponent();
+                
+                // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
+                var oTargetView = oComponent.byId("view");
+            
+                if (!oTargetView) {
+                    console.warn("No se encontró la vista objetivo.");
+                    oRouter.navTo("viewNoParam"); // Navega aunque no se haya encontrado la vista
+                    return;
+                }
+            
+                // Función para limpiar los controles de la vista
+                function clearAllFields(oControl) {
+                    if (oControl instanceof sap.m.Input) {
+                        oControl.setValue("");
+                    } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
+                        oControl.setSelectedKey("");
+                    } else if (oControl instanceof sap.m.DatePicker) {
+                        oControl.setDateValue(null);
+                    } else if (oControl instanceof sap.m.TextArea) {
+                        oControl.setValue("");
+                    } else if (oControl instanceof sap.m.CheckBox) {
+                        oControl.setSelected(false);
+                    } else if (oControl instanceof sap.viz.ui5.controls.VizFrame) {
+                        // Limpiar el VizFrame: por ejemplo, eliminando datos vinculados o restableciendo la configuración
+                        oControl.destroyDataset();  // Elimina los datasets actuales
+                        oControl.destroyFeeds();     // Elimina los feeds asociados
+                        oControl.setVizProperties({}); // Restablece las propiedades visuales
+                    }
+            
+                    // Limpiar controles dentro de contenedores
+                    if (oControl.getAggregation) {
+                        const aAggregations = oControl.getMetadata().getAllAggregations();
+                        for (let sAggregationName in aAggregations) {
+                            const oAggregation = oControl.getAggregation(sAggregationName);
+                            if (Array.isArray(oAggregation)) {
+                                oAggregation.forEach(clearAllFields);
+                            } else if (oAggregation instanceof sap.ui.core.Control) {
+                                clearAllFields(oAggregation);
+                            }
+                        }
+                    }
+                }
+            
+                // Ejecutar la limpieza en la vista antes de navegar
+                oTargetView.findAggregatedObjects(false, clearAllFields);
+            
+                // Aquí puedes agregar la lógica para actualizar la vista
+                // Si tu vista tiene un modelo o necesitas recargar datos, hazlo aquí
+                var oModel = oComponent.getModel(); // Asumiendo que el modelo es global
+                if (oModel) {
+                    oModel.refresh(); // Esto recargará el modelo
+                }
+            
+                // Actualizar todos los controles vinculados, si es necesario
+                // oTargetView.getBindingContext().requestContext(); // Esto puede forzar la actualización del contexto, si es necesario.
+            
+                // Si necesitas actualizar algún dato específico, puedes hacerlo aquí.
+            
+                // Navegar a la nueva vista después de limpiar y actualizar la vista
+                oRouter.navTo("viewNoParam");
+            },
+            
+            
 
-
-            onNavToView1: function () {
+         /*   onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 var oComponent = this.getOwnerComponent();
 
@@ -1650,7 +1714,7 @@ sap.ui.define(
 
                 // Navegar a la nueva vista después de limpiar
                 oRouter.navTo("viewNoParam");
-            }
+            }*/
 
 
 
