@@ -253,6 +253,111 @@ sap.ui.define(
             },
 
 
+
+            onActivityPress: function (oEvent, result) {
+                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));
+
+                var oButton = oEvent.getSource();
+                var sNameProyect = oButton.getCustomData()[0].getValue();
+                var sID = oButton.getCustomData()[1].getValue();
+
+                const eventos = result.value;
+
+                var oProcessFlow = this.byId("processflow1");
+                if (!oProcessFlow) {
+                    console.error("No se encontró el ProcessFlow con ID 'processflow1'");
+                    return;
+                }
+
+                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+
+                // ✅ SOLO esta línea para crear nodos
+                this.createProcessFlowNodes(eventos, oProcessFlow);
+
+                // ✅ Solo una vez, fuera del bucle
+                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
+
+                this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
+                this.byId("text1881").setText("PEP de solicitud: " + sID);
+                this.byId("itb1").setSelectedKey("people");
+            },
+
+
+            onNodePress: function (oEvent) {
+                const node = oEvent.getParameters(); // El nodo presionado directamente
+
+                if (!node) {
+                    console.warn("⚠️ Nodo no encontrado (evento vacío)");
+                    return;
+                }
+
+                const evento = node.data("eventoOriginal");
+                if (!evento) {
+                    console.warn("⚠️ El nodo no tiene data 'eventoOriginal'");
+                    return;
+                }
+
+                // Crear el Popover si no existe
+                if (!this._oPopover) {
+                    this._oPopover = new sap.m.Popover({
+                        title: "Detalles del paso",
+                        placement: sap.m.PlacementType.Auto,
+                        content: [
+                            new sap.m.Text({ id: "popoverText", text: "" }), // Placeholder para el texto
+                            new sap.m.Button({
+                                text: "Cerrar",
+                                press: function () {
+                                    this._oPopover.close();
+                                }.bind(this)
+                            })
+                        ]
+                    });
+                }
+
+                // Obtener el control de texto y actualizarlo con datos del evento
+                const sContenido = `Paso: ${evento.paso}\nDescripción: ${evento.descripcion}\nFecha: ${evento.timestamp}`;
+                const oText = this._oPopover.getContent()[0];
+                oText.setText(sContenido);
+
+                // Mostrar el popover anclado al nodo
+                this._oPopover.openBy(node);
+            },
+
+
+            createProcessFlowNodes: function (eventos, oProcessFlow) {
+                const lanes = {
+                    "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
+                    "WORKFLOW_COMPLETED": "2"
+                };
+
+                eventos.forEach((evento, index) => {
+                    if (!evento.id) {
+                        evento.id = "evento_" + index;
+                    }
+
+                    const node = new sap.suite.ui.commons.ProcessFlowNode({
+                        nodeId: evento.id,
+                        title: evento.paso,
+                        laneId: lanes[evento.tipo] || "0",
+                        state: "Neutral",
+                        stateText: evento.paso,
+                        children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
+                        isTitleClickable: true
+                    });
+
+                    node.addCustomData(new sap.ui.core.CustomData({
+                        key: "eventoId",
+                        value: evento.id
+                    }));
+
+                    node.data("eventoOriginal", evento);
+
+                    console.log("EVENTO " + JSON.stringify(evento));
+                    oProcessFlow.addNode(node);
+                });
+            },
+
+
             /*          onVerHistorial: async function (oEvent) {
                           try {
                               const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
@@ -459,59 +564,59 @@ sap.ui.define(
                 oBinding.filter(oCombinedFilter);
             },
 
-            onActivityPress: function (oEvent, result) {
-                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));
-
-                var oButton = oEvent.getSource();
-                var sNameProyect = oButton.getCustomData()[0].getValue();
-                var sID = oButton.getCustomData()[1].getValue();
-                const eventos = result.value;
-
-                var oProcessFlow = this.byId("processflow1");
-                if (!oProcessFlow) {
-                    console.error("No se encontró el ProcessFlow con ID 'processflow1'");
-                    return;
-                }
-
-                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
-
-                const lanes = {
-                    "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
-                    "WORKFLOW_COMPLETED": "2"
-                };
-
-                eventos.forEach((evento, index) => {
-                    if (!evento.id) {
-                        evento.id = "evento_" + index;
+            /*    onActivityPress: function (oEvent, result) {
+                    console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));
+    
+                    var oButton = oEvent.getSource();
+                    var sNameProyect = oButton.getCustomData()[0].getValue();
+                    var sID = oButton.getCustomData()[1].getValue();
+                    const eventos = result.value;
+    
+                    var oProcessFlow = this.byId("processflow1");
+                    if (!oProcessFlow) {
+                        console.error("No se encontró el ProcessFlow con ID 'processflow1'");
+                        return;
                     }
-
-                    const node = new sap.suite.ui.commons.ProcessFlowNode({
-                        nodeId: evento.id,
-                        title: evento.paso,
-                        laneId: lanes[evento.tipo] || "0",
-                        state: "Neutral",
-                        stateText: evento.paso,
-                        children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
-                        isTitleClickable: true
+    
+                    oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+    
+                    const lanes = {
+                        "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
+                        "WORKFLOW_COMPLETED": "2"
+                    };
+    
+                    eventos.forEach((evento, index) => {
+                        if (!evento.id) {
+                            evento.id = "evento_" + index;
+                        }
+    
+                        const node = new sap.suite.ui.commons.ProcessFlowNode({
+                            nodeId: evento.id,
+                            title: evento.paso,
+                            laneId: lanes[evento.tipo] || "0",
+                            state: "Neutral",
+                            stateText: evento.paso,
+                            children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
+                            isTitleClickable: true
+                        });
+                        node.addCustomData(new sap.ui.core.CustomData({
+                            key: "eventoId", // Clave personalizada para identificar el evento
+                            value: evento.id // Valor que es el ID del evento
+                        }));
+    
+                        node.data("eventoOriginal", evento); // Guarda los datos originales
+    
+                        console.log("EVENTO " + JSON.stringify(evento));
+                        oProcessFlow.addNode(node); // Añade el nodo al ProcessFlow
                     });
-                    node.addCustomData(new sap.ui.core.CustomData({
-                        key: "eventoId", // Clave personalizada para identificar el evento
-                        value: evento.id // Valor que es el ID del evento
-                    }));
-
-                    node.data("eventoOriginal", evento); // Guarda los datos originales
-
-                    console.log("EVENTO " + JSON.stringify(evento));
-                    oProcessFlow.addNode(node); // Añade el nodo al ProcessFlow
-                });
-
-                // ✅ Solo una vez, fuera del bucle
-                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
-
-                this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
-                this.byId("text1881").setText("PEP de solicitud: " + sID);
-                this.byId("itb1").setSelectedKey("people");
-            },
+    
+                    // ✅ Solo una vez, fuera del bucle
+                    oProcessFlow.attachNodePress(this.onNodePress.bind(this));
+    
+                    this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
+                    this.byId("text1881").setText("PEP de solicitud: " + sID);
+                    this.byId("itb1").setSelectedKey("people");
+                },*/
 
 
             /*   onActivityPress: function (oEvent, result) {
@@ -590,7 +695,7 @@ sap.ui.define(
                 //   node.attachPress(this.onNodePress, this); // ✅ correcta
    
             
-               },*/
+               },
 
             onNodePress: function (oEvent) {
                 // Obtener el nodo presionado
@@ -631,7 +736,7 @@ sap.ui.define(
                     console.error("El nodo no tiene datos personalizados.");
                 }
             },
-
+*/
 
 
 
@@ -1605,7 +1710,7 @@ sap.ui.define(
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 oRouter.navTo("viewNoParam");
 
-                
+
                 var oComponent = this.getOwnerComponent();
 
                 // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
@@ -1613,7 +1718,7 @@ sap.ui.define(
 
                 if (!oTargetView) {
                     console.warn("No se encontró la vista objetivo.");
-                  // Navega aunque no se haya encontrado la vista
+                    // Navega aunque no se haya encontrado la vista
                     return;
                 }
 
@@ -1678,10 +1783,10 @@ sap.ui.define(
                 oRouter.navTo("viewNoParam");
             },
 
-         /*   onLogoutPress: function () {
-           //     window.location.href = "/logout.do";
-
-            },*/
+            /*   onLogoutPress: function () {
+              //     window.location.href = "/logout.do";
+   
+               },*/
 
             /*   onNavToView1: function () {
                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -1736,7 +1841,7 @@ sap.ui.define(
 
 
     },
-    
+
 
 
 

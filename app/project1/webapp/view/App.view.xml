@@ -357,13 +357,13 @@
                                                                                     xmlns:core="sap.ui.core"
                                                                                     id="mivop"
                                                                                     key="nameProyect"
-                                                                                    value="{nameProyect}"
+                                                                                    value="{modelPendientes>nameProyect}"
                                                                                 />
 
                                                                                 <core:CustomData
                                                                                     xmlns:core="sap.ui.core"
                                                                                     key="projectId"
-                                                                                    value="{ID}"
+                                                                                    value="{modelPendientes>ID}"
                                                                                 />
                                                                             </customData>
                                                                         </Button>
