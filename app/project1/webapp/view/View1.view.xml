@@ -352,11 +352,12 @@
                                                                 </viz:dataset>
                                                                 <viz:feeds>
                                                                     <viz.feeds:FeedItem id="juras" uid="valueAxis" type="Measure" values="Duración (días)"/>
-                                                                    <viz.feeds:FeedItem id="nopue" uid="categoryAxis" type="Dimension" values="Fase"/>
+                                                                    <viz.feeds:FeedItem id="nopue" uid="color" type="Dimension" values="Fase"/>
                                                                 </viz:feeds>
                                                                 <viz:feeds>
                                                                     <viz.feeds:FeedItem id="feedLabel" uid="tooltip" type="Measure" values="Información"/>
                                                                 </viz:feeds>
+                                                                
                                                             </viz:VizFrame>
                                                         </items>
                                                     </FlexBox>

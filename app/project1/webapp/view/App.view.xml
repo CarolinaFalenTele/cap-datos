@@ -29,7 +29,8 @@
                                 src="https://freelogopng.com/images/all_img/1682997299telefonica-icon-png.png"
                                 height="38px"
                                 id="image0"
-                            />
+                            />  			                                                            <ToolbarSpacer /> 
+ <Button icon="sap-icon://log" id="buton" type="Transparent" press="onPress" ariaLabelledBy="actionButtonLabel" class="sapUiLargeMargin" />
                         </contentLeft>
                     </Bar>
                 </customHeader>
@@ -143,7 +144,7 @@
                                                         >
                                                             <Label
                                                                 id="txtFecha"
-                                                                text="Fecha Creacion"
+                                                                text="Fecha Creación "
                                                             />
                                                         </Column>
 
@@ -300,7 +301,7 @@
                                                                             <core:CustomData
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"
-                                                                                value="{ID}"
+                                                                                value="{modelPendientes>ID}"
                                                                             />
                                                                         </customData>
                                                                     </Button>
@@ -336,7 +337,7 @@
                                                                             <core:CustomData
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"
-                                                                                value="{ID}"
+                                                                                value="{modelPendientes>ID}"
                                                                             />
                                                                         </customData>
                                                                     </Button>
@@ -409,15 +410,18 @@
                                                         </Toolbar>
                                                     </headerToolbar>
                                                     <columns>
+                                                        <!-- Columna: Fecha Creación -->
                                                         <Column
                                                             id="ud"
                                                             width="12em"
                                                         >
                                                             <Label
                                                                 id="2d"
-                                                                text="Fecha"
+                                                                text="Fecha Creación"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Codigo Proyecto -->
                                                         <Column
                                                             id="22d"
                                                             width="12em"
@@ -427,6 +431,8 @@
                                                                 text="Codigo Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Nombre Proyecto -->
                                                         <Column
                                                             id="d87"
                                                             minScreenWidth="Tablet"
@@ -437,6 +443,8 @@
                                                                 text="Nombre Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Descripción -->
                                                         <Column
                                                             id="d4"
                                                             minScreenWidth="Tablet"
@@ -444,9 +452,11 @@
                                                         >
                                                             <Label
                                                                 id="dkh"
-                                                                text="Descripcion"
+                                                                text="Descripción"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Área -->
                                                         <Column
                                                             id="d34"
                                                             minScreenWidth="Tablet"
@@ -454,30 +464,57 @@
                                                         >
                                                             <Label
                                                                 id="dh"
-                                                                text="Area"
+                                                                text="Área"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Jefe de Proyecto -->
                                                         <Column
                                                             id="d34h"
                                                             minScreenWidth="Tablet"
                                                             demandPopin="true"
-                                                            hAlign="End"
                                                         >
                                                             <Label
                                                                 id="dhh"
                                                                 text="Jefe de Proyecto"
                                                             />
                                                         </Column>
+
+                                                        <!-- Columna: Fecha de Aprobación -->
+                                                        <Column
+                                                            id="fechaAprobacion"
+                                                            minScreenWidth="Tablet"
+                                                            demandPopin="true"
+                                                        >
+                                                            <Label
+                                                                id="fechapro"
+                                                                text="Fecha de Aprobación"
+                                                            />
+                                                        </Column>
+
+                                                        <!-- Columna: Estado -->
                                                         <Column
                                                             id="dnn"
-                                                            hAlign="End"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
                                                                 id="dass"
                                                                 text="Estado"
                                                             />
                                                         </Column>
+
+                                                             <Column
+                                                            id="botones"
+                                                            hAlign="Center"
+                                                            width="auto"
+                                                        >
+                                                            <Label
+                                                                id="txtBusttons"
+                                                                text=""
+                                                            />
+                                                        </Column>
                                                     </columns>
+
                                                     <items>
                                                         <ColumnListItem
                                                             id="q111d"
@@ -515,10 +552,60 @@
                                                                 />
 
                                                                 <ObjectStatus
+                                                                    id="fechaaproboTxt"
+                                                                    text="{modelAprobados>actualizadoEnFormateada}"
+                                                                />
+
+                                                                <ObjectStatus
                                                                     id="status02"
                                                                     text="{modelAprobados>Estado}"
                                                                     state="Success"
                                                                 />
+                                          
+
+
+                                                                 <HBox id="hbo2">
+                    <!-- Primer botón -->
+                    <Button
+                        press="DialogInfo"
+                        icon="sap-icon://message-information"
+                        ariaHasPopup="Dialog"
+                    >
+                        <customData>
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                key="projectId"
+                                value="{modelAprobados>ID}"
+                            />
+                        </customData>
+                    </Button>
+
+
+
+                    <!-- Tercer botón -->
+                    <Button
+                        xmlns="sap.m"
+                        icon="sap-icon://activity-2"
+
+                        tooltip="Proceso Solicitud"
+                        id="idButtonProcess"
+                        press="onVerHistorial"
+                    >
+                        <customData>
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                id="idproccna"
+                                key="nameProyect"
+                                value="{modelAprobados>nameProyect}"
+                            />
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                key="projectId"
+                                value="{modelAprobados>ID}"
+                            />
+                        </customData>
+                    </Button>
+                </HBox>
                                                             </cells>
                                                         </ColumnListItem>
                                                     </items>
@@ -544,10 +631,9 @@
                                                             <Title
                                                                 id="idTitleProceso"
                                                                 text="Proceso"
-                                                                
                                                             />
 
-                                                            <ToolbarSpacer/>
+                                                            <ToolbarSpacer />
 
                                                             <Button
                                                                 id="kfsldkfjwo"
@@ -561,136 +647,25 @@
                                                             text="Proceso de Solictud"
                                                             id="text1881"
                                                         />
-                                                        
 
-                                                        <suite:ProcessFlow
-                                                            id="processflow1"
-                                                            nodePress="onNodePress"
-                                                        >
-                                                            <suite:nodes>
-                                                                <!-- Nodo principal -->
-                                                                <suite:ProcessFlowNode
-                                                                    id="mainNode"
-                                                                    nodeId="0"
-                                                                    laneId="0"
-                                                                    title="{nameProyect}"
-                                                                    titleAbbreviation="SO 1"
-                                                                    isTitleClickable="false"
-                                                                    state="Positive"
-                                                                    stateText="En Progreso"
-                                                                    texts=""
-                                                                    children="1"
-                                                                />
+                                                    <suite:ProcessFlow
+    id="processflow1"
+    nodePress="onNodePress"
+>
+    
+      <suite:lanes>
+        <suite:ProcessFlowLaneHeader id="lane0" laneId="0" iconSrc="sap-icon://crm-service-manager" text="Solicitud CDO" position="0"/>
+        <suite:ProcessFlowLaneHeader id="lane1" laneId="1" iconSrc="sap-icon://approvals" text="Pendiente de Aprobación" position="1"/>
+        <suite:ProcessFlowLaneHeader id="lane2" laneId="2" iconSrc="sap-icon://notes" text="Requiere Basis/ TQ/ Factoria" position="2"/>
+        <suite:ProcessFlowLaneHeader id="lane3" laneId="3" iconSrc="sap-icon://testing" text="Revision PMO" position="3"/>
+        <suite:ProcessFlowLaneHeader id="lane4" laneId="4" iconSrc="sap-icon://factory" text="Aprobado PMO" position="4"/>
+        <suite:ProcessFlowLaneHeader id="lane5" laneId="5" iconSrc="sap-icon://calendar" text="Revision Control de Gestion" position="5"/>
+        <suite:ProcessFlowLaneHeader id="lane6" laneId="6" iconSrc="sap-icon://accept" text="Aprobado de Gesion" position="6"/>
+        <suite:ProcessFlowLaneHeader id="lane8" laneId="8" iconSrc="sap-icon://message-error" text="Revision Direccion" position="7"/>
+        <suite:ProcessFlowLaneHeader id="lane9" laneId="9" iconSrc="sap-icon://payment-approval" text="Aprobación Dirección" position="8"/>
+    </suite:lanes>
+</suite:ProcessFlow>
 
-                                                                <!-- Nodo secundario: "Pendiente de Aprobación" -->
-                                                                <suite:ProcessFlowNode
-                                                                    id="approvalNode"
-                                                                    nodeId="1"
-                                                                    laneId="1"
-                                                                    title="Pendiente de Aprobación"
-                                                                    titleAbbreviation="PA"
-                                                                    isTitleClickable="false"
-                                                                    state="Neutral"
-                                                                    stateText="Esperando Aprobación"
-                                                                    texts=""
-                                                                    children="2"
-                                                                />
-
-                                                                <!-- Nodo secundario: "Revisión de Basis" -->
-                                                                <suite:ProcessFlowNode
-                                                                    id="basisNode"
-                                                                    nodeId="2"
-                                                                    laneId="2"
-                                                                    title="Nota de Basis"
-                                                                    titleAbbreviation="NB"
-                                                                    isTitleClickable="false"
-                                                                    state="Negative"
-                                                                    stateText="Revisión Necesaria"
-                                                                    texts="Nota adicional sobre Basis"
-                                                                    children="3"
-                                                                />
-
-                                                                <!-- Nodo final: "Aprobado" -->
-                                                                <suite:ProcessFlowNode
-                                                                    id="approvedNode"
-                                                                    nodeId="3"
-                                                                    laneId="8"
-                                                                    title="Aprobado"
-                                                                    titleAbbreviation="APR"
-                                                                    isTitleClickable="false"
-                                                                    state="Positive"
-                                                                    stateText="Aprobación Completa"
-                                                                    texts=""
-                                                                />
-                                                            </suite:nodes>
-
-                                                            <!-- Definir las lanes -->
-                                                            <suite:lanes>
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane0"
-                                                                    laneId="0"
-                                                                    iconSrc="sap-icon://crm-service-manager"
-                                                                    text="Solicitud CDO"
-                                                                    position="0"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane1"
-                                                                    laneId="1"
-                                                                    iconSrc="sap-icon://approvals"
-                                                                    text="Pendiente de Aprobación"
-                                                                    position="1"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane2"
-                                                                    laneId="2"
-                                                                    iconSrc="sap-icon://notes"
-                                                                    text="Requiere Basis/ TQ/ Factoria"
-                                                                    position="2"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane3"
-                                                                    laneId="3"
-                                                                    iconSrc="sap-icon://testing"
-                                                                    text="Revision PMO"
-                                                                    position="3"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane4"
-                                                                    laneId="4"
-                                                                    iconSrc="sap-icon://factory"
-                                                                    text="Aprobado PMO"
-                                                                    position="4"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane5"
-                                                                    laneId="5"
-                                                                    iconSrc="sap-icon://calendar"
-                                                                    text="Revision Control de Gestion"
-                                                                    position="5"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane6"
-                                                                    laneId="6"
-                                                                    iconSrc="sap-icon://accept"
-                                                                    text="Aprobado de Gesion"
-                                                                    position="6"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane8"
-                                                                    laneId="8"
-                                                                    iconSrc="sap-icon://message-error"
-                                                                    text="Revision Direccion"
-                                                                    position="7"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane9"
-                                                                    laneId="9"
-                                                                    iconSrc="sap-icon://payment-approval"
-                                                                    text="Aprobación Dirección"
-                                                                    position="8"
-                                                                />
-                                                            </suite:lanes>
-                                                        </suite:ProcessFlow>
                                                     </content>
                                                 </Panel>
                                             </IconTabFilter>

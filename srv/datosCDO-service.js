@@ -130,7 +130,7 @@ this.on("getWorkflowTimeline", async (req) => {
     const token = await getWorkflowToken(); // función que obtiene el token
     console.log("🔑 Token obtenido (truncado):", token.substring(0, 30) + "...");
 
-    const response = await fetch(`https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/2fe7fd97-2cb9-11f0-8bac-eeee0a975038/execution-logs`, {
+    const response = await fetch(`https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/execution-logs`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -179,7 +179,7 @@ this.on("getWorkflowTimeline", async (req) => {
       const descripcion = tipoEventoLegible[ev.type] || ev.type;
       const paso = ev.subject || ev.subjectId || ev.activityId || "Paso desconocido";
     
-      console.log(`➡️ ${ev.type} → ${descripcion}, Paso: ${paso}`);
+      console.log(`➡️ ${ev.type}  →  ${descripcion}, Paso: ${paso}`);
     
       return {
         id: ev.id,
@@ -192,6 +192,8 @@ this.on("getWorkflowTimeline", async (req) => {
       };
     });
     
+    return eventosTransformados;
+
   } catch (error) {
     console.error("❌ Error al obtener el timeline del workflow:", error.message);
     req.reject(500, "Error al consultar el historial del workflow");

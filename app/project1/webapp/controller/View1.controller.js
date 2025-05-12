@@ -21,8 +21,45 @@ sap.ui.define([
       onInit: function () {
 
 
-        // Crear un modelo inicial con los hitos y vincularlo a la vista
-        var oModel = new sap.ui.model.json.JSONModel({
+        // Crear y configurar modelos
+        this._initModels();
+
+        // Configurar VizFrame1
+        this._initVizFrame1();
+
+        // Configurar VizFrame2
+        this._initVizFrame2();
+
+        // Inicializar gráficos
+        this.updateVizFrame1();
+        this.updateVizFrame3();
+
+        // Configuración de enrutador
+        this._initRouter();
+
+      
+        // Llamadas a funciones auxiliares
+        this.token();
+        this.getUserInfo();
+
+ 
+        this._yearlySums = {
+          2024: 0,
+          2025: 0,
+          2026: 0,
+          2027: 0,
+          2028: 0,
+          2029: 0,
+        };
+      
+
+      },
+
+
+
+
+      _initModels: function () {
+        const oModel = new sap.ui.model.json.JSONModel({
           milestones: [
             { fase: "Kick off", fechaInicio: null, fechaFin: null },
             { fase: "Diseño", fechaInicio: null, fechaFin: null },
@@ -36,33 +73,7 @@ sap.ui.define([
         });
         this.getView().setModel(oModel, "planning");
 
-        var oVizframe1 = this.byId("idVizFrame");
-        oVizframe1.setVizProperties({ "title": { "text": "Planificacion" } });
-
-        this._tableValues = {
-          "tablaConsuExter": {},
-          "table_dimicFecha": {},
-          "tablaRecExterno": {},
-          "idOtroserConsu": {},
-          "idGastoViajeConsu": {},
-          "idServiExterno": {},
-          "idGastoRecuExter": {},
-          "tablaInfrestuctura": {},
-          "tablaLicencia": {},
-          "tableServicioInterno": {},
-          "tablGastoViajeInterno": {},
-        };
-
-        this._editedRows = this._editedRows || {};
-
-        this._rowYearlySums = this._rowYearlySums || {}; // Asegúrate de que esté inicializado
-
-        this.currentRow = 0; // Fila actualmente seleccionada
-
-        this.currentTable = 0; // Para la tabla actual (esto es lo que faltaba definir)
-
-
-        var oFechasModel = new sap.ui.model.json.JSONModel({
+        const oFechasModel = new sap.ui.model.json.JSONModel({
           fechas: [
             {
               fase: "Fechas Importantes",
@@ -72,74 +83,43 @@ sap.ui.define([
             // Agrega más datos según sea necesario
           ]
         });
-
         this.getView().setModel(oFechasModel, "fechasModel");
+      },
 
-        var oVizframe2 = this.byId("idVizFrame2");
-        oVizframe2.setVizProperties({ "title": { "text": "Plan" } })
 
-        // Inicializar el gráfico con los datos actuales
-        this.updateVizFrame1();
-        this.updateVizFrame3();
+      
 
-        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+      _initVizFrame1: function () {
+        const oVizframe1 = this.byId("idVizFrame");
+        oVizframe1.setVizProperties({
+          title: { text: "Planificacion" },
+          plotArea: {
+            colorPalette: [
+              "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0",
+              "#B2912F", "#B276B2", "#DECF3F", "#F15854"
+            ]
+          },
+          color: {
+            value: "{color}" 
+          }
+          
+        });
+      },
 
+
+
+
+      _initVizFrame2: function () {
+        const oVizframe2 = this.byId("idVizFrame2");
+        oVizframe2.setVizProperties({
+          title: { text: "Plan" }
+        });
+      },
+
+      _initRouter: function () {
+        const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
         oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
-
-        this.updateVizFrame2();
-
-        this._yearlySums = {
-          2024: 0,
-          2025: 0,
-          2026: 0,
-          2027: 0,
-          2028: 0,
-          2029: 0,
-        };
-
-        this.token();
-        this.getUserInfo();
-
-
-        //  const token = await this.obtenerJWT(); // <--  Llamar desde "this"
-
-        //   const oRouter = this.getOwnerComponent().getRouter();
-        //   oRouter.getRoute("view").attachPatternMatched(this._onRouteMatched, this);
-
       },
-
-      onAprobar: function () {
-        this._enviarRespuesta("aprobado");
-      },
-
-      onRechazar: function () {
-        this._enviarRespuesta("rechazado");
-      },
-
-      _enviarRespuesta: async function (accion) {
-        const oModel = this.getView().getModel();
-        const oContext = oModel.bindContext("/completarTarea(...)");
-
-        const payload = {
-          generatedid: this.generatedId,
-          accion: accion
-        };
-
-        oContext.setParameter("payload", JSON.stringify(payload));
-
-        try {
-          await oContext.execute();
-          const result = oContext.getBoundContext().getObject();
-          sap.m.MessageToast.show("Workflow actualizado con acción: " + accion);
-        } catch (error) {
-          sap.m.MessageBox.error("Error al enviar respuesta: " + error.message);
-        }
-      },
-
-
-
-
-
 
 
       highlightControls: function () {
@@ -179,7 +159,7 @@ sap.ui.define([
         // Establecer el ValueState a Warning (amarillo)
         controlsToHighlight.forEach(control => {
           if (control && control.setValueState) {
-            control.setValueState("Success");
+            control.setValueState("Information");
 
           }
         });
@@ -445,26 +425,30 @@ sap.ui.define([
             return;
           }
           const sUrl = `/odata/v4/datos-cdo/WorkflowInstancias(${idWOrk})`;
-      
+
           const updatedEstado = decision === "aprobado" ? "Aprobado" : "Rechazado";
-      
+          const updatedDate = new Date().toISOString(); // Fecha en formato ISO 8601
+
+
           const patchResponse = await fetch(sUrl, {
             method: "PATCH",
             headers: {
               "Accept": "application/json",
               "Content-Type": "application/json",
-              "x-csrf-token": this._sCsrfToken // asegúrate que este token esté actualizado
+              "x-csrf-token": this._sCsrfToken
             },
             body: JSON.stringify({
-              estado: updatedEstado
+              estado: updatedEstado,
+              actualizadoEn: updatedDate
+
             })
           });
-      
+
           if (!patchResponse.ok) {
             const errorText = await patchResponse.text();
             throw new Error("Error actualizando el estado del proyecto: " + errorText);
           }
-      
+
           sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
 
 
@@ -702,7 +686,123 @@ sap.ui.define([
 
 
       //----------Leer Proveedor------------------------
+
       leerProveedor: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
+      
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+      
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+      
+          const oData = await response.json();
+          var oTable = this.byId("table2");
+          var aItems = oTable.getItems();
+      
+          // 🔐 Guardamos todos los IDs aquí
+          this._proveedoresIDs = [];
+      
+          if (oData.value && oData.value.length > 0) {
+            oData.value.forEach((proveedorData, index) => {
+              var oItem = aItems[index];
+              if (oItem) {
+                var aCells = oItem.getCells();
+                if (aCells.length > 1) {
+                  aCells[0].setValue(proveedorData.valueCondi || "");
+                  aCells[1].setValue(proveedorData.valueProvee || "");
+                }
+      
+                // Guardar el ID en la lista global
+                this._proveedoresIDs[index] = proveedorData.ID;
+              }
+            });
+      
+            // Guardar checkboxes generales
+            this.byId("box_condi").setSelected(oData.value[0].checkCondi || false);
+            this.byId("box_prove").setSelected(oData.value[0].checkProveedor || false);
+      
+            console.log("IDs cargados:", this._proveedoresIDs);
+      
+          } else {
+            console.log("No hay datos de proveedores disponibles.");
+          }
+      
+        } catch (error) {
+          console.error("Error al obtener los datos de proveedor:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de proveedor");
+        }
+      },
+      
+  /*    leerProveedor: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          //   console.log("Datos de proveedor:", oData);
+
+          var oTable = this.byId("table2");
+          var aItems = oTable.getItems();
+
+          if (oData.value && oData.value.length > 0) {
+            oData.value.forEach(function (proveedorData, index) {
+              var oItem = aItems[index];
+              if (oItem) {
+                var aCells = oItem.getCells();
+                if (aCells.length > 1) {
+                  aCells[0].setValue(proveedorData.valueCondi || "");
+                  aCells[1].setValue(proveedorData.valueProvee || "");
+                }
+              }
+            });
+          
+            // Opcional: aplicar el primer check a nivel general
+            this.byId("box_condi").setSelected(oData.value[0].checkCondi || false);
+            this.byId("box_prove").setSelected(oData.value[0].checkProveedor || false);
+          
+            this._proveedoresIDs[index] = proveedorData.ID;
+
+
+
+            console.log("IDS PROVEEDOR " + JSON.stringify(this._proveedoresIDs[index]));
+
+          }
+       
+          else {
+            console.log("No hay datos de proveedores disponibles.");
+          }
+
+        } catch (error) {
+          console.error("Error al obtener los datos de proveedor:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de proveedor");
+        }
+      },*/
+
+
+
+
+     /* leerProveedor: async function (projectID) {
         var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
 
         try {
@@ -753,7 +853,7 @@ sap.ui.define([
           console.error("Error al obtener los datos de proveedor:", error);
           sap.m.MessageToast.show("Error al cargar los datos de proveedor");
         }
-      },
+      },*/
 
 
       leerFacturacion: async function (projectID) {
@@ -935,8 +1035,8 @@ sap.ui.define([
             var Recurso = oData.value[0]; // Toma solo el primer recurso
             var idWorkflowInstancias = Recurso.ID; // Obtén el ID del recurso
             ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
-            
-            var idWorkIniciado =  Recurso.workflowId;
+
+            var idWorkIniciado = Recurso.workflowId;
 
             this._idWorkIniciado = idWorkIniciado;
 
@@ -946,7 +1046,7 @@ sap.ui.define([
 
             this._idWorkflowInstancias = idWorkflowInstancias;
 
-            console.log("idWorkflowInstancias ID " + this._idWorkflowInstancias + "--> " +  this._idWorkIniciado);
+            console.log("idWorkflowInstancias ID " + this._idWorkflowInstancias + "--> " + this._idWorkIniciado);
 
           } else {
             console.log("NO SE ENCONTRARON DATOS WorkflowInstancias");
@@ -3392,31 +3492,31 @@ sap.ui.define([
           datosExtra: sDatosExtra,
           IPC_apli: sIPC
         };
-        
+
         // Agregar fechaCreacion solo si es nuevo (POST)
         if (!sProjectID) {
           payload.fechaCreacion = localDate;
         }
-        
+
         // Crear la fecha de modificación (formato yyyy-MM-dd)
         let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
           pattern: "yyyy-MM-dd"
         });
         const fechaModificacion = new Date();
         const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
-        
+
         // Agregar FechaModificacion solo si es PATCH
         if (sProjectID) {
           payload.FechaModificacion = formattedFechaModificacion;
         }
-        
+
         // Validar campos antes de hacer la llamada
         if (!payload.descripcion || !payload.nameProyect) {
           sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
           console.error("Validación fallida: Falta código o nombre del proyecto", payload);
           return;
         }
-        
+
         // Log del payload antes de enviarlo
         console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
@@ -3518,7 +3618,7 @@ sap.ui.define([
 
               // 1 Payload para iniciar workflow de aprobación
 
-              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
+         /*     const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
                 + generatedId
                 + ";aprobacion=true";
 
@@ -3560,7 +3660,7 @@ sap.ui.define([
 
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
-              }
+              }*/
               // Navegar a la vista 'app' con el nuevo ID
               this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
@@ -4253,10 +4353,63 @@ sap.ui.define([
       },
 
 
-
-
-
       insertarProveedor: async function (generatedId, sProjectID) {
+
+        const stoken = this._sCsrfToken;
+        var oTable = this.byId("table2");
+        var aItems = oTable.getItems();
+      
+        for (let i = 0; i < aItems.length; i++) {
+          var oItem = aItems[i];
+          var aCells = oItem.getCells();
+
+          
+          var checkCondi = this.byId("box_condi").getSelected(); // Checkbox Condicionado
+          var checkProveedor = this.byId("box_prove").getSelected(); // Checkbox Proveedores
+      
+          var datos = {
+            checkCondi: checkCondi,
+            checkProveedor: checkProveedor,
+            valueCondi: aCells[0].getValue(),
+            valueProvee: aCells[1].getValue(),
+            datosProyect_ID: generatedId  // asegúrate de tener esta variable
+          };
+      
+          // Si ya hay un ID para este índice, hacemos PATCH
+          if (this._proveedoresIDs && this._proveedoresIDs[i]) {
+            var id = this._proveedoresIDs[i];
+            await fetch(`/odata/v4/datos-cdo/ProveedoresC(${id})`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                "x-csrf-token": stoken
+              },
+              body: JSON.stringify(datos)
+            });
+          } else {
+            // Si no hay ID, es un nuevo registro
+            await fetch(`/odata/v4/datos-cdo/ProveedoresC`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                "x-csrf-token": stoken
+              },
+              body: JSON.stringify(datos)
+            });
+          }
+        }
+      
+        sap.m.MessageToast.show("Proveedores guardados correctamente");
+      },
+      
+    
+      
+      
+      
+
+  
+      
+   /*   insertarProveedor: async function (generatedId, sProjectID) {
 
         const stoken = this._sCsrfToken;
         console.log("TOKEN RECIBIDO EN PROVEEDOR:", stoken);
@@ -4337,7 +4490,7 @@ sap.ui.define([
           let result = await response.json();
           //  console.log("Resultado:", result);
         }
-      },
+      },*/
 
 
       //--- INSERTAR RECURSOS INTERNOS -----
