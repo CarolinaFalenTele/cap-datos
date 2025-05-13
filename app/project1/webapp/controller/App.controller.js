@@ -41,10 +41,84 @@ sap.ui.define(
             },
 
 
-
-
-
             filterEstado: async function () {
+                try {
+                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
+                    const data = await response.json();
+                    const aProjects = data.value;
+            
+                    const aProyectosConEstado = await Promise.all(
+                        aProjects.map(async (proyecto) => {
+                            const projectId = proyecto.ID;
+            
+                            // Buscar última instancia de workflow relacionada
+                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+                            const wfData = await wfResponse.json();
+                            const wfItem = wfData.value[0];
+            
+                            // Si no hay workflow, lo marcamos como "Pendiente"
+                            proyecto.Estado = wfItem?.estado || "Pendiente";
+                            proyecto.workflowId = wfItem?.workflowId || null;
+                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
+            
+                            // Formateo de fechas
+                            if (proyecto.fechaCreacion) {
+                                const fecha = new Date(proyecto.fechaCreacion);
+                                proyecto.FechaCreacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                            }
+            
+                            if (proyecto.FechaModificacion) {
+                                const fecha = new Date(proyecto.FechaModificacion);
+                                proyecto.FechaModificacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                            }
+            
+                            if (proyecto.actualizadoEn) {
+                                const fecha = new Date(proyecto.actualizadoEn);
+                                proyecto.actualizadoEnFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                            } else {
+                                proyecto.actualizadoEnFormateada = "Fecha no disponible";
+                            }
+            
+                            return proyecto;
+                        })
+                    );
+            
+                    // Clasificación por estado
+                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
+                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
+            
+                    // Crear modelos
+                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobados,
+                        Count: aProyectosAprobados.length
+                    });
+            
+                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosPendientes,
+                        Count: aProyectosPendientes.length
+                    });
+            
+                    // Contador total de proyectos
+                    const totalProyectos = aProyectosConEstado.length;
+            
+                    // Crear el modelo para el total
+                    const oJsonModelTotal = new sap.ui.model.json.JSONModel({
+                        Count: totalProyectos
+                    });
+            
+                    // Asignar los modelos a la vista
+                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+                    this.getView().setModel(oJsonModelTotal, "modelTotal"); // Este es el modelo para el total
+            
+                } catch (error) {
+                    console.error("Error al cargar los proyectos con estado:", error);
+                }
+            },
+            
+
+
+            /*filterEstado: async function () {
                 try {
                     const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
                     const data = await response.json();
@@ -107,7 +181,7 @@ sap.ui.define(
                 } catch (error) {
                     console.error("Error al cargar los proyectos con estado:", error);
                 }
-            },
+            },*/
 
 
             /*  filterEstado: async function () {
@@ -196,14 +270,6 @@ sap.ui.define(
   */
 
 
-            onPressWORklow: async function (oEvent) {
-                await this.onVerHistorial(oEvent);
-                //    await this.onActivityPress(oEvent);
-
-
-
-
-            },
 
 
             onVerHistorial: async function (oEvent) {
@@ -240,14 +306,14 @@ sap.ui.define(
                     await oBoundContext.execute();
 
                     const result = oBoundContext.getBoundContext().getObject();
-                    console.log(`✅ Historial del workflow (${modelo}):`, result);
+                    console.log(` Historial del workflow (${modelo}):`, result);
 
 
 
                     await this.onActivityPress(oEvent, result);
                     sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
-                    console.error("❌ Error al obtener el historial del workflow:", error);
+                    console.error(" Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
                 }
             },
@@ -271,10 +337,11 @@ sap.ui.define(
 
                 oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
 
-                // ✅ SOLO esta línea para crear nodos
-                this.createProcessFlowNodes(eventos, oProcessFlow);
 
-                // ✅ Solo una vez, fuera del bucle
+                //  SOLO esta línea para crear nodos
+                this.createProcessFlowNodes(eventos, oProcessFlow , sNameProyect);
+
+                //  Solo una vez, fuera del bucle
                 oProcessFlow.attachNodePress(this.onNodePress.bind(this));
 
                 this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
@@ -284,26 +351,25 @@ sap.ui.define(
 
 
             onNodePress: function (oEvent) {
-                const node = oEvent.getParameters(); // El nodo presionado directamente
-
+                const node = oEvent.getParameters();
+            
                 if (!node) {
-                    console.warn("⚠️ Nodo no encontrado (evento vacío)");
+                    console.warn(" Nodo no encontrado (evento vacío)");
                     return;
                 }
-
+            
                 const evento = node.data("eventoOriginal");
                 if (!evento) {
-                    console.warn("⚠️ El nodo no tiene data 'eventoOriginal'");
+                    console.warn(" El nodo no tiene data 'eventoOriginal'");
                     return;
                 }
-
-                // Crear el Popover si no existe
+            
                 if (!this._oPopover) {
                     this._oPopover = new sap.m.Popover({
                         title: "Detalles del paso",
                         placement: sap.m.PlacementType.Auto,
                         content: [
-                            new sap.m.Text({ id: "popoverText", text: "" }), // Placeholder para el texto
+                            new sap.m.Text({ id: "popoverText", text: "" }),
                             new sap.m.Button({
                                 text: "Cerrar",
                                 press: function () {
@@ -313,49 +379,119 @@ sap.ui.define(
                         ]
                     });
                 }
-
-                // Obtener el control de texto y actualizarlo con datos del evento
+            
                 const sContenido = `Paso: ${evento.paso}\nDescripción: ${evento.descripcion}\nFecha: ${evento.timestamp}`;
                 const oText = this._oPopover.getContent()[0];
                 oText.setText(sContenido);
-
-                // Mostrar el popover anclado al nodo
+        
                 this._oPopover.openBy(node);
+        
+        
             },
-
-
-            createProcessFlowNodes: function (eventos, oProcessFlow) {
-                const lanes = {
-                    "INTERMEDIATE_TIMER_EVENT_TRIGGERED": "1",
-                    "WORKFLOW_COMPLETED": "2"
+            
+            createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
+                const laneMap = {
+                    "EMAIL": "1",
+                    "APROBADO PMO": "4",
+                    "PMO": "3",
+                    "CONTROL": "5",
+                    "GESTION": "6",
+                    "RECHAZO": "8",
+                    "FINALIZADO": "9",
+                    "DIRECCION": "9",
+                    "PENDIENTE": "1",
+                    "BASIS": "2",
+                    "DESCONOCIDO": "0"
                 };
-
-                eventos.forEach((evento, index) => {
-                    if (!evento.id) {
-                        evento.id = "evento_" + index;
+            
+                const stateMap = {
+                    "APROBADO": "Positive",
+                    "RECHAZO": "Negative",
+                    "FINALIZADO": "Positive",
+                    "PENDIENTE": "Critical",
+                    "EMAIL": "Neutral",
+                    "DESCONOCIDO": "Neutral"
+                };
+            
+                // Filtrar eventos útiles
+                let eventosUtiles = eventos.filter(e => e.paso || e.tipo.includes("WORKFLOW") || e.tipo.includes("MAILTASK") || e.tipo.includes("RECHAZO"));
+            
+                // Eliminar duplicados por paso + instancia (nos quedamos el más reciente)
+                const eventoMap = new Map();
+                eventosUtiles.forEach(e => {
+                    const clave = `${e.instancia}-${(e.paso || "").trim()}`;
+                    const existente = eventoMap.get(clave);
+            
+                    if (!existente || new Date(e.timestamp) > new Date(existente.timestamp)) {
+                        eventoMap.set(clave, e);
                     }
-
+                });
+            
+                // Convertir a array y ordenar por fecha
+                const eventosFiltrados = Array.from(eventoMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+                eventosFiltrados.forEach((evento, index) => {
+                    if (!evento.id) evento.id = "evento_" + index;
+            
+                    const pasoRaw = (evento.paso || "Paso desconocido").trim();
+                    const paso = pasoRaw.toUpperCase();
+                    const descripcion = evento.descripcion || "";
+            
+                    // Lane
+                    let laneId = "0";
+                    for (let key in laneMap) {
+                        if (paso.includes(key)) {
+                            laneId = laneMap[key];
+                            break;
+                        }
+                    }
+            
+                    // Color (state)
+                    let state = "Neutral";
+                    for (let key in stateMap) {
+                        if (paso.includes(key)) {
+                            state = stateMap[key];
+                            break;
+                        }
+                    }
+            
+                    // Enlace con siguiente nodo si aplica
+                    let children = [];
+                    const nextEvento = eventosFiltrados[index + 1];
+                    if (nextEvento && !paso.includes("RECHAZO")) {
+                        children.push(nextEvento.id);
+                    }
+            
+                    // Solo el primer nodo lleva el nombre del proyecto
+                    const title = index === 0 ? sNameProyect : "";
+            
                     const node = new sap.suite.ui.commons.ProcessFlowNode({
                         nodeId: evento.id,
-                        title: evento.paso,
-                        laneId: lanes[evento.tipo] || "0",
-                        state: "Neutral",
-                        stateText: evento.paso,
-                        children: index < eventos.length - 1 ? [eventos[index + 1].id || ("evento_" + (index + 1))] : [],
-                        isTitleClickable: true
+                        title: title,
+                        titleAbbreviation: paso.substring(0, 3),
+                        laneId: laneId,
+                        state: state,
+                        stateText: descripcion,
+                        children: children,
+                        isTitleClickable: true,
+                        focused: false,
+                        highlighted: false,
+                        texts: [pasoRaw, descripcion]
                     });
-
+            
                     node.addCustomData(new sap.ui.core.CustomData({
                         key: "eventoId",
                         value: evento.id
                     }));
-
+            
                     node.data("eventoOriginal", evento);
-
-                    console.log("EVENTO " + JSON.stringify(evento));
+            
                     oProcessFlow.addNode(node);
                 });
             },
+            
+            
+            
 
 
             /*          onVerHistorial: async function (oEvent) {
@@ -376,11 +512,11 @@ sap.ui.define(
                               await oContext.execute();
                       
                               const result = oContext.getBoundContext().getObject();
-                              console.log("✅ Historial del workflow:", result);
+                              console.log(" Historial del workflow:", result);
                       
                               sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                           } catch (error) {
-                              console.error("❌ Error al obtener el historial del workflow:", error);
+                              console.error(" Error al obtener el historial del workflow:", error);
                               sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
                           }
                       },*/
@@ -420,13 +556,13 @@ sap.ui.define(
                             //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
                             //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
 
-                            // console.log("📌 Datos seteados en la vista:", userInfo);
+                            // console.log(" Datos seteados en la vista:", userInfo);
                         } else {
                             console.error("No se encontró la información del usuario.");
                         }
                     })
                     .catch(error => {
-                        console.error("❌ Error obteniendo datos del usuario:", error);
+                        console.error(" Error obteniendo datos del usuario:", error);
                     });
             },
 

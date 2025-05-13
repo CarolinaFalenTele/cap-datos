@@ -20,46 +20,8 @@ sap.ui.define([
 
       onInit: function () {
 
-
-        // Crear y configurar modelos
-        this._initModels();
-
-        // Configurar VizFrame1
-        this._initVizFrame1();
-
-        // Configurar VizFrame2
-        this._initVizFrame2();
-
-        // Inicializar gráficos
-        this.updateVizFrame1();
-        this.updateVizFrame3();
-
-        // Configuración de enrutador
-        this._initRouter();
-
-      
-        // Llamadas a funciones auxiliares
-        this.token();
-        this.getUserInfo();
-
- 
-        this._yearlySums = {
-          2024: 0,
-          2025: 0,
-          2026: 0,
-          2027: 0,
-          2028: 0,
-          2029: 0,
-        };
-      
-
-      },
-
-
-
-
-      _initModels: function () {
-        const oModel = new sap.ui.model.json.JSONModel({
+        // Crear un modelo inicial con los hitos y vincularlo a la vista
+        var oModel = new sap.ui.model.json.JSONModel({
           milestones: [
             { fase: "Kick off", fechaInicio: null, fechaFin: null },
             { fase: "Diseño", fechaInicio: null, fechaFin: null },
@@ -73,7 +35,33 @@ sap.ui.define([
         });
         this.getView().setModel(oModel, "planning");
 
-        const oFechasModel = new sap.ui.model.json.JSONModel({
+        var oVizframe1 = this.byId("idVizFrame");
+        oVizframe1.setVizProperties({ "title": { "text": "Planificacion" } });
+
+        this._tableValues = {
+          "tablaConsuExter": {},
+          "table_dimicFecha": {},
+          "tablaRecExterno": {},
+          "idOtroserConsu": {},
+          "idGastoViajeConsu": {},
+          "idServiExterno": {},
+          "idGastoRecuExter": {},
+          "tablaInfrestuctura": {},
+          "tablaLicencia": {},
+          "tableServicioInterno": {},
+          "tablGastoViajeInterno": {},
+        };
+
+        this._editedRows = this._editedRows || {};
+
+        this._rowYearlySums = this._rowYearlySums || {}; // Asegúrate de que esté inicializado
+
+        this.currentRow = 0; // Fila actualmente seleccionada
+
+        this.currentTable = 0; // Para la tabla actual (esto es lo que faltaba definir)
+
+
+        var oFechasModel = new sap.ui.model.json.JSONModel({
           fechas: [
             {
               fase: "Fechas Importantes",
@@ -83,43 +71,43 @@ sap.ui.define([
             // Agrega más datos según sea necesario
           ]
         });
+
         this.getView().setModel(oFechasModel, "fechasModel");
-      },
 
+        var oVizframe2 = this.byId("idVizFrame2");
+        oVizframe2.setVizProperties({ "title": { "text": "Plan" } })
 
-      
+        // Inicializar el gráfico con los datos actuales
+        this.updateVizFrame1();
+        this.updateVizFrame3();
 
-      _initVizFrame1: function () {
-        const oVizframe1 = this.byId("idVizFrame");
-        oVizframe1.setVizProperties({
-          title: { text: "Planificacion" },
-          plotArea: {
-            colorPalette: [
-              "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0",
-              "#B2912F", "#B276B2", "#DECF3F", "#F15854"
-            ]
-          },
-          color: {
-            value: "{color}" 
-          }
-          
-        });
-      },
+        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 
-
-
-
-      _initVizFrame2: function () {
-        const oVizframe2 = this.byId("idVizFrame2");
-        oVizframe2.setVizProperties({
-          title: { text: "Plan" }
-        });
-      },
-
-      _initRouter: function () {
-        const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
         oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
+
+        this.updateVizFrame2();
+
+        this._yearlySums = {
+          2024: 0,
+          2025: 0,
+          2026: 0,
+          2027: 0,
+          2028: 0,
+          2029: 0,
+        };
+
+        this.token();
+        this.getUserInfo();
+
+
+
       },
+
+
+
+
+     
+  
 
 
       highlightControls: function () {
@@ -386,10 +374,13 @@ sap.ui.define([
         }
       },
 
-      _onDecisionPress: function (oEvent) {
+      _onDecisionPress: async function (oEvent) {
         const decision = oEvent.getSource().data("valor");
         if (decision) {
-          this._completarWorkflow(decision);
+          await   this._completarWorkflow(decision);
+          var oRouter = await  sap.ui.core.UIComponent.getRouterFor(this);
+         oRouter.navTo("appNoparame");
+
         } else {
           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
         }
@@ -3618,7 +3609,7 @@ sap.ui.define([
 
               // 1 Payload para iniciar workflow de aprobación
 
-         /*     const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
+              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
                 + generatedId
                 + ";aprobacion=true";
 
@@ -3660,7 +3651,7 @@ sap.ui.define([
 
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
-              }*/
+              }
               // Navegar a la vista 'app' con el nuevo ID
             this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
@@ -4173,10 +4164,94 @@ sap.ui.define([
 
 
 
-
-
-
       inserChart: async function (generatedId, sCsrfToken) {
+
+        const saChartdata = this._aChartData;
+        const idPlan = this._idPlani; // Asegúrate de que esta variable está correctamente asignada
+    
+        //  Nueva función para convertir duración a formato ISO 8601 (Edm.Duration)
+        const formatDuration = function (minutes) {
+          const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+          const mins = String(minutes % 60).padStart(2, '0');
+          return `${hours}:${mins}:00`; // Ejemplo: "06:00:00"
+      };
+      
+        // Preparamos el array de payload con la estructura adecuada
+        const payload2Array = saChartdata.map(chart => ({
+          hito: chart.fase,
+          fecha_inicio: chart.fechaInicio,
+          fecha_fin: chart.fechaFin,
+          duracion: formatDuration(chart.duracion), //  nuevo formato correcto
+          datosProyect_ID: generatedId
+      }));
+      
+        try {
+            // Obtenemos los registros existentes en la base de datos por 'datosProyect_ID'
+            const existingRecordsResponse = await fetch(`/odata/v4/datos-cdo/planificacion?$filter=datosProyect_ID eq '${generatedId}'`, {
+                headers: {
+                    "x-csrf-token": sCsrfToken
+                }
+            });
+    
+            const existingRecords = await existingRecordsResponse.json();
+            const existingHitos = existingRecords.value.map(record => record.hito);
+    
+            for (const payload2 of payload2Array) {
+                if (existingHitos.includes(payload2.hito)) {
+                    const recordToUpdate = existingRecords.value.find(record => record.hito === payload2.hito);
+    
+                    if (recordToUpdate && recordToUpdate.id) {
+                        const response = await fetch(`/odata/v4/datos-cdo/planificacion(${recordToUpdate.id})`, {
+                            method: 'PATCH',
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-csrf-token": sCsrfToken
+                            },
+                            body: JSON.stringify(payload2)
+                        });
+    
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log("Planificación actualizada con éxito:", result);
+                        } else {
+                            const errorMessage = await response.text();
+                            console.log("Error al actualizar la planificación:", errorMessage);
+                            sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
+                        }
+                    } else {
+                        console.log("ID no válido para el registro a actualizar:", recordToUpdate);
+                        sap.m.MessageToast.show("Error al actualizar: ID no válido.");
+                    }
+                } else {
+                    const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-csrf-token": sCsrfToken
+                        },
+                        body: JSON.stringify(payload2)
+                    });
+    
+                    if (response2.ok) {
+                        const result2 = await response2.json();
+                        console.log("Planificación guardada con éxito:", result2);
+                    } else {
+                        const errorMessage = await response2.text();
+                        console.log("Error al guardar la planificación:", errorMessage);
+                        sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
+                    }
+                }
+            }
+    
+        } catch (error) {
+            console.error("Error en la operación:", error);
+            sap.m.MessageToast.show("Ocurrió un error durante la operación.");
+        }
+    },
+    
+
+
+      /*inserChart: async function (generatedId, sCsrfToken) {
 
         const saChartdata = this._aChartData;
         const idPlan = this._idPlani; // Asegúrate de que esta variable está correctamente asignada
@@ -4258,7 +4333,8 @@ sap.ui.define([
           console.error("Error en la operación:", error);
           sap.m.MessageToast.show("Ocurrió un error durante la operación.");
         }
-      },
+      },*/
+
 
 
       insertFacturacion: async function (generatedId) {

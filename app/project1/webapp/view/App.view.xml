@@ -30,7 +30,6 @@
                                 height="38px"
                                 id="image0"
                             />  			                                                            <ToolbarSpacer /> 
- <Button icon="sap-icon://log" id="buton" type="Transparent" press="onLogoutPress" ariaLabelledBy="actionButtonLabel"     class="whiteIconButton sapUiLargeMargin"/>
                         </contentLeft>
                     </Bar>
                 </customHeader>
@@ -60,7 +59,7 @@
                                 <ObjectAttribute
                                     id="223"
                                     title="Solicitudes"
-                                    text="{estadoModel>/Count}"
+                                    text="{modelTotal>/Count}"
                                     active="true"
                                 />
                                 <ObjectAttribute
@@ -104,7 +103,7 @@
                                                 key="attachments"
                                                 icon="sap-icon://attachment"
                                                 tooltip="Solicitudes pendientes"
-                                                count=""
+                                                count="{modelPendientes>/Count}"
                                             >
                                                 <Table
                                                     id="idPendientes"
@@ -379,7 +378,7 @@
                                                 key="notes"
                                                 icon="sap-icon://notes"
                                                 tooltip="Solicitudes Aprobadas"
-                                                count=""
+                                                count="{modelAprobados>/Count}"
                                             >
                                                 <Table
                                                     id="idProductsTable"
@@ -663,6 +662,8 @@
         <suite:ProcessFlowLaneHeader id="lane6" laneId="6" iconSrc="sap-icon://accept" text="Aprobado de Gesion" position="6"/>
         <suite:ProcessFlowLaneHeader id="lane8" laneId="8" iconSrc="sap-icon://message-error" text="Revision Direccion" position="7"/>
         <suite:ProcessFlowLaneHeader id="lane9" laneId="9" iconSrc="sap-icon://payment-approval" text="Aprobación Dirección" position="8"/>
+                <suite:ProcessFlowLaneHeader id="lane99" laneId="99" text="Rechazado / Fin de flujo" position="9"/>
+
     </suite:lanes>
 </suite:ProcessFlow>
 

@@ -2189,7 +2189,7 @@
                                                                             </VBox>
 
                                                                             <VBox id="vbox205" width="auto">
-                                                                                <Input xmlns="sap.m" value="sdsdf" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
+                                                                                <Input xmlns="sap.m" value="" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
 
                                                                                 <Input xmlns="sap.m" value="" id="inputOtrosServi1" description="Otros Servicios"   editable="false" width="auto" fieldWidth="45%"/>
 
