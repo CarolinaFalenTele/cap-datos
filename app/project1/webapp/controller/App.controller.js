@@ -401,7 +401,6 @@ sap.ui.define(
                 };
             
                 const pasosExcluidos = [
-                    "inicializar variable",
                     "Condición de Espera",
                     "Esperar a terminar el flujo",
                     "Espera respuesta"
@@ -425,6 +424,7 @@ sap.ui.define(
                     new Date(a.timestamp) - new Date(b.timestamp)
                 );
             
+
                 if (listaEventos.length === 0) {
                     console.warn("No hay eventos válidos para mostrar en el flujo.");
                     return;
@@ -433,11 +433,33 @@ sap.ui.define(
                 // Crear nodos (sin nodo inicial)
                 listaEventos.forEach((evento, index) => {
                     if (!evento.id) evento.id = "evento_" + index;
-            
-                    const pasoRaw = (evento.paso || "Paso desconocido").trim();
+                
+                    if (index === 0 && (evento.paso || "").toUpperCase().includes("INICIALIZAR VARIABLE")) {
+                        evento.paso = "Solicitud enviada correctamente " + sNameProyect;
+                    }
+                    
+
+
+
+
+                    let pasoRaw = (evento.paso || "Paso desconocido").trim();
+
+                    if (
+                        index === listaEventos.length - 1 &&
+                        pasoRaw === "Paso desconocido" &&
+                        (evento.descripcion || "").toUpperCase().includes("FINALIZACIÓN DEL WORKFLOW")
+                    ) {
+                        pasoRaw = "Fin del proceso de aprobación";
+                    }
+                    
+
+
                     const paso = pasoRaw.toUpperCase();
+
+
+          
                     const descripcion = evento.descripcion || "";
-            
+                
                     let laneId = "0";
                     for (let key in laneMap) {
                         if (paso.includes(key)) {
@@ -445,7 +467,7 @@ sap.ui.define(
                             break;
                         }
                     }
-            
+                
                     let state = "Neutral";
                     for (let key in stateMap) {
                         if ((evento.tipo || "").toUpperCase().includes(key)) {
@@ -453,10 +475,18 @@ sap.ui.define(
                             break;
                         }
                     }
-            
+
+                    if ((evento.tipo || "").toUpperCase() === "INTERMEDIATE_TIMER_EVENT_TRIGGERED") {
+                        state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
+                    }
+                    
+                    
+                    if ((evento.tipo || "").toUpperCase() === "EXCLUSIVE_GATEWAY_REACHED") {
+                        state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
+                    }
                     const siguiente = listaEventos[index + 1];
                     const children = siguiente ? [siguiente.id] : [];
-            
+                
                     const node = new sap.suite.ui.commons.ProcessFlowNode({
                         nodeId: evento.id,
                         laneId: laneId,
@@ -470,15 +500,16 @@ sap.ui.define(
                         highlighted: false,
                         texts: [pasoRaw, descripcion]
                     });
-            
+                
                     node.addCustomData(new sap.ui.core.CustomData({
                         key: "eventoOriginal",
-                        value: JSON.stringify(evento) // si haces esto, recuerda hacer JSON.parse() después
+                        value: JSON.stringify(evento)
                     }));
-                    
+                
                     node.data("eventoOriginal", evento);
                     oProcessFlow.addNode(node);
                 });
+                
             },
             
             onNodePress: function (oEvent) {
@@ -496,43 +527,70 @@ sap.ui.define(
                 }
             
                 if (!this._oPopover) {
-                    // Crear el popover solo una vez
                     this._oPopover = new sap.m.Popover({
                         title: "Detalles del Paso",
                         placement: sap.m.PlacementType.Auto,
-                        contentWidth: "250px",
+                        contentWidth: "300px",
                         content: [
                             new sap.m.VBox({
                                 items: [
-                                    new sap.m.Label({ text: "Paso:", design: "Bold" }),
-                                    new sap.m.Text({ id: "textPaso" }),
-                                    new sap.m.Label({ text: "Descripción:", design: "Bold", class: "sapUiSmallMarginTop" }),
-                                    new sap.m.Text({ id: "textDescripcion" }),
-                                    new sap.m.Label({ text: "Fecha:", design: "Bold", class: "sapUiSmallMarginTop" }),
-                                    new sap.m.Text({ id: "textFecha" })
+                                    new sap.m.HBox({
+                                        alignItems: "Center",
+                                        items: [
+                                            new sap.ui.core.Icon({
+                                                src: "sap-icon://hint",
+                                                color: "#0070f2",
+                                            }),
+                                            new sap.m.Label({
+                                                text: " Información del Paso ",
+                                                design: "Bold",
+                                                class: "sapUiSmallMarginBegin"
+                                            })
+                                        ],
+                                        class: "sapUiSmallMarginBottom"
+                                    }),
+                                    new sap.m.ObjectStatus({
+                                        title: "Paso ",
+                                        text: "{/eventoPaso}",
+                                        state: "Success",
+                                        id: "statusPaso"
+                                    }),
+                                    new sap.m.ObjectStatus({
+                                        title: "Descripción ",
+                                        text: "{/eventoDescripcion}",
+                                        state: "Information",
+                                        id: "statusDescripcion"
+                                    }),
+                                    new sap.m.ObjectStatus({
+                                        title: "Fecha ",
+                                        text: "{/eventoFecha}",
+                                        state: "Warning",
+                                        id: "statusFecha"
+                                    }),
+                                    new sap.m.Button({
+                                        text: "Cerrar",
+                                        type: "Emphasized",
+                                        icon: "sap-icon://decline",
+                                        press: function () {
+                                            this._oPopover.close();
+                                        }.bind(this),
+                                        class: "sapUiSmallMarginTop"
+                                    })
                                 ],
-                                class: "sapUiSmallMargin"
-                            }),
-                            new sap.m.ToolbarSpacer(),
-                            new sap.m.Button({
-                                text: "Cerrar",
-                                type: "Emphasized",
-                                press: function () {
-                                    this._oPopover.close();
-                                }.bind(this),
-                                class: "sapUiSmallMarginTop"
+                                class: "sapUiContentPadding"
                             })
                         ]
                     });
                 }
             
-                // Actualizar contenido
-                sap.ui.getCore().byId("textPaso").setText(evento.paso);
-                sap.ui.getCore().byId("textDescripcion").setText(evento.descripcion);
-                sap.ui.getCore().byId("textFecha").setText(evento.timestamp);
+                // Actualizar datos en los ObjectStatus
+                sap.ui.getCore().byId("statusPaso").setText(evento.paso);
+                sap.ui.getCore().byId("statusDescripcion").setText(evento.descripcion);
+                sap.ui.getCore().byId("statusFecha").setText(evento.timestamp);
             
                 this._oPopover.openBy(node);
             },
+            
             
             
             

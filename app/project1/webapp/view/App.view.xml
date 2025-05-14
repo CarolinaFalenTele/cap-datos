@@ -668,7 +668,7 @@
         <suite:ProcessFlowLaneHeader id="lane0" laneId="0" iconSrc="sap-icon://crm-service-manager" text="Solicitud CDO" position="0"/>
         <suite:ProcessFlowLaneHeader id="lane1" laneId="1" iconSrc="sap-icon://approvals" text="Pendiente de Aprobación" position="1"/>
         <suite:ProcessFlowLaneHeader id="lane2" laneId="2" iconSrc="sap-icon://notes" text="Requiere Basis/ TQ/ Factoria" position="2"/>
-        <suite:ProcessFlowLaneHeader id="lane3" laneId="3" iconSrc="sap-icon://testing" text="Revision PMO" position="3"/>
+        <suite:ProcessFlowLaneHeader id="lane3" laneId="3" iconSrc="sap-icon://activity-individual" text="Revision PMO" position="3"/>
         <suite:ProcessFlowLaneHeader id="lane4" laneId="4" iconSrc="sap-icon://factory" text="Aprobado PMO" position="4"/>
         <suite:ProcessFlowLaneHeader id="lane5" laneId="5" iconSrc="sap-icon://calendar" text="Revision Control de Gestion" position="5"/>
         <suite:ProcessFlowLaneHeader id="lane6" laneId="6" iconSrc="sap-icon://accept" text="Aprobado de Gesion" position="6"/>
