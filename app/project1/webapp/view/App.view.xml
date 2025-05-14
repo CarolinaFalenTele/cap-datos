@@ -273,11 +273,13 @@
                                                                 />
                                                                 <Text
                                                                     id="txtCellArea"
-                                                                    text="{modelPendientes>Area/NombreArea}"
+                                                                    text="{modelPendientes>NombreArea}"
+                                                                     class="boldText"
                                                                 />
                                                                 <Text
                                                                     id="txtCellJefeProyecto"
-                                                                    text="{modelPendientes>jefeProyectID/name}"
+                                                                    text="{modelPendientes>NombreJefe}"
+                                                                     class="boldText"
                                                                 />
                                                                 <ObjectIdentifier
                                                                     id="txtfechamodificacion"

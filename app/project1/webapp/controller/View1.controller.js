@@ -297,6 +297,7 @@ sap.ui.define([
             // Mostrar u ocultar la tabla según el valor de Iniciativa_ID
             if (oData.Iniciativa_ID === "423e4567-e89b-12d3-a456-426614174003") {
               this.byId("table0").setVisible(true);
+              this.byId("CheckBOzx34").setVisible(true);
             } else {
               this.byId("table0").setVisible(false);
             }
@@ -1256,6 +1257,7 @@ sap.ui.define([
             ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
 
 
+ 
             this.byId("inputServi2").setValue(Recurso.servicios ? parseFloat(Recurso.servicios).toFixed(2) : "0.00");
             this.byId("inputOtroSer2").setValue(Recurso.OtrosServicios ? parseFloat(Recurso.OtrosServicios).toFixed(2) : "0.00");
             this.byId("inptGastoVi2").setValue(Recurso.GastosdeViaje ? parseFloat(Recurso.GastosdeViaje).toFixed(2) : "0.00");
@@ -1263,10 +1265,62 @@ sap.ui.define([
 
 
 
-
             this._idTotalConsuEx = idTotalConsuEx;
 
             console.log("JORNADAS ID " + this._idTotalConsuEx);
+
+          } else {
+            console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+
+
+      leerTotalRecuExterTotal: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/RecuExterTotal?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS TOTAL   Recurso Externo   TRAIDO:", oData);
+
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var idtotalRecurExter = Recurso.ID; // Obtén el ID del recurso
+            ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            this.byId("inputServi").setValue(Recurso.servicios ? parseFloat(Recurso.servicios).toFixed(2) : "0.00");
+            this.byId("input10_1724757017406").setValue(Recurso.OtrosServicios ? parseFloat(Recurso.OtrosServicios).toFixed(2) : "0.00");
+            this.byId("input9_1724757015442").setValue(Recurso.GastosdeViaje ? parseFloat(Recurso.GastosdeViaje).toFixed(2) : "0.00");
+            this.byId("totalConsuExternot").setValue(Recurso.Total ? parseFloat(Recurso.Total).toFixed(2) : "0.00");
+
+
+
+
+            this._idtotalRecurExter = idtotalRecurExter;
+
+            console.log("JORNADAS ID " + this._idtotalRecurExter);
 
           } else {
             console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
@@ -4161,6 +4215,57 @@ sap.ui.define([
       },
 
 
+      insertTotalRecuExterTotal: async function (generatedId, sCsrfToken) {
+
+        var idRecurExterTotal = this._idtotalRecurExter;
+        var sServiciosC = parseInt(this.byId("inputServi").getValue(), 10);
+        var sOtroServiC = parseInt(this.byId("input10_1724757017406").getValue(), 10);
+        var sGastoViaC = parseInt(this.byId("input9_1724757015442").getValue(), 10);
+     //   var sTotaleJorC = parseInt(this.byId("totalConsuExternot").getValue(), 10);
+
+
+        console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
+
+
+        var payload = {
+          servicios: sServiciosC,
+          OtrosServicios: sOtroServiC,
+          GastosdeViaje: sGastoViaC,
+          Total: sTotaleJorC,
+          datosProyect_ID: generatedId
+        };
+
+        let sUrl = "/odata/v4/datos-cdo/RecuExterTotal";
+        let sMethod = "POST";
+
+        // 👉 Aquí decides si haces POST o PATCH
+        if (idRecurExterTotal) {
+          sUrl += `(${idRecurExterTotal})`;  // Construyes la URL con ID si vas a hacer UPDATE
+          sMethod = "PATCH";          // PATCH para actualizar
+        }
+
+        try {
+          const response = await fetch(sUrl, {
+            method: sMethod,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            MessageToast.show(idRecurExterTotal ? "Total Cosumo Externo   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+          } else {
+            const error = await response.json();
+            console.error("Error:", error);
+            MessageToast.show("Error al guardar el Total Cosumo Externo ");
+          }
+        } catch (err) {
+          console.error("Error en fetch:", err);
+          MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
+        }
+      },
 
 
 
@@ -4572,133 +4677,120 @@ sap.ui.define([
       //--- INSERTAR RECURSOS INTERNOS -----
 
       insertRecursosInternos: async function (generatedId) {
+
         const stokenr = this._sCsrfToken;
+
         const sRecursoID = this._recurso_ID; // ID del proyecto
-    
+
         console.log("ENTRANDO A RECURSO INTERNO ----->>>> " + sRecursoID)
-        
         // Obtener la tabla por su ID
         const oTable = this.byId("table_dimicFecha");
-    
+
         // Obtener todos los elementos del tipo ColumnListItem
         const aItems = oTable.getItems();
-    
-        // Definir una variable para almacenar los campos incompletos
-        let incompleteFields = [];
-        let errorCount = 0;
-    
+
         // Iterar sobre cada fila
         for (let i = 0; i < aItems.length; i++) {
-            const oItem = aItems[i];  // Obtener la fila actual
-    
-            // Obtener los controles dentro de cada celda
-            const sVertical = oItem.getCells()[0]?.getSelectedKey() || "";
-            const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
-            const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
-            const sConcepto = oItem.getCells()[3]?.getValue() || "";
-            const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0");
-            const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-            const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-            const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-            const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-            const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-            const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-            const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0");
-            const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
-    
-            // Función para validar los campos
-            const validateField = (control, value, fieldName) => {
-                if (!value || (typeof value === 'string' && value.trim() === "")) {
-                    control.setValueState("Error");
-                    control.setValueStateText("Este campo es obligatorio");
-                    errorCount++;
-                    if (!incompleteFields.includes(fieldName)) {
-                        incompleteFields.push(fieldName);
-                    }
-                } else {
-                    control.setValueState("None");
-                }
-            };
-    
-            // Validar todos los campos
-            validateField(oItem.getCells()[0], sVertical, "Vertical");
-            validateField(oItem.getCells()[1], stipoServi, "Tipo de Servicio");
-            validateField(oItem.getCells()[2], sPerfil, "Perfil");
-            validateField(oItem.getCells()[3], sConcepto, "Concepto");
-    
-            // Si hay errores, mostrar mensaje y detener el proceso
-            if (errorCount > 0) {
-                sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
-                return;
+          const oItem = aItems[i];  // Obtener la fila actual
+
+          // Obtener los controles dentro de cada celda
+          const sVertical = oItem.getCells()[0]?.getSelectedKey() || "";
+          const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
+          const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
+          const sConcepto = oItem.getCells()[3]?.getValue() || "";
+          const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0");
+          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0");
+          const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+          
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal.toFixed(2)),
+            totalE: Number(stotalRe.toFixed(2)),
+            tipoServicio_ID: stipoServi,
+            PerfilServicio_ID: sPerfil,
+            datosProyect_ID: generatedId,
+          };
+
+          // Verificar si existe el ID de recurso para hacer actualización o inserción
+          //      const recursoID = oItem.getBindingContext()?.getProperty("ID"); // Obtiene el ID del recurso, si existe
+
+          console.log("ID DE ACTUALIZACION ----->>>>>", sRecursoID);
+          let response;
+          if (sRecursoID) {
+            // Si el ID existe, hacemos PATCH para actualizar
+            response = await fetch(`/odata/v4/datos-cdo/RecursosInternos(${sRecursoID})`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                "x-csrf-token": stokenr
+
+              },
+              body: JSON.stringify(payload)
+            });
+
+
+
+          } else {
+            // Si no existe el ID, hacemos POST para insertar
+            response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-csrf-token": stokenr
+              },
+              body: JSON.stringify(payload)
+            });
+          }
+
+          // Manejo de la respuesta
+          if (response.ok) {
+            const result = await response.json();
+            console.log("📌 Respuesta completa de la API:", result);
+
+            const idRecursos = result.ID; // Verificar si `ID` realmente existe en la respuesta
+            console.log("📌 ID de Recurso obtenido:", idRecursos);
+
+            if (!idRecursos) {
+              console.error("⚠️ La API no devolvió un ID válido.");
+              return;
             }
-    
-            // Construir el payload para cada fila
-            const payload = {
-                Vertical_ID: sVertical,
-                ConceptoOferta: sConcepto,
-                PMJ: sPMJ,
-                year1: Number(syear1.toFixed(2)),
-                year2: Number(syear2.toFixed(2)),
-                year3: Number(syear3.toFixed(2)),
-                year4: Number(syear4.toFixed(2)),
-                year5: Number(syear5.toFixed(2)),
-                year6: Number(syear6.toFixed(2)),
-                total: Number(sTotal.toFixed(2)),
-                totalE: Number(stotalRe.toFixed(2)),
-                tipoServicio_ID: stipoServi,
-                PerfilServicio_ID: sPerfil,
-                datosProyect_ID: generatedId,
-            };
-    
-            // Verificar si existe el ID de recurso para hacer actualización o inserción
-            let response;
-            if (sRecursoID) {
-                // Si el ID existe, hacemos PATCH para actualizar
-                response = await fetch(`/odata/v4/datos-cdo/RecursosInternos(${sRecursoID})`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-csrf-token": stokenr
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } else {
-                // Si no existe el ID, hacemos POST para insertar
-                response = await fetch("/odata/v4/datos-cdo/RecursosInternos", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-csrf-token": stokenr
-                    },
-                    body: JSON.stringify(payload)
-                });
-            }
-    
-            // Manejo de la respuesta
-            if (response.ok) {
-                const result = await response.json();
-                console.log("📌 Respuesta completa de la API:", result);
-    
-                const idRecursos = result.ID; // Verificar si `ID` realmente existe en la respuesta
-                console.log("📌 ID de Recurso obtenido:", idRecursos);
-    
-                if (!idRecursos) {
-                    console.error("⚠️ La API no devolvió un ID válido.");
-                    return;
-                }
-    
-                this._RecursoInt = idRecursos;
-                await this.InsertMesAñoRecurInterno(oItem, idRecursos);
-    
-                console.log("TERMINANDO  RECURSOS------");
-                console.log("Fila " + (i + 1) + " guardada con éxito: RECURSOS INTERNOS", result);
-            } else {
-                const errorMessage = await response.text();
-                console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-                sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
-            }
+
+            this._RecursoInt = idRecursos;
+            //  await this.insertServicioInterno(idRecursos);
+            //   await this.insertGastoViajeInterno(idRecursos);
+            await this.InsertMesAñoRecurInterno(oItem, idRecursos);
+
+            console.log("TERMINANDO  RECURSOS------");
+            console.log("Fila " + (i + 1) + " guardada con éxito: RECURSOS INTERNOS", result);
+          } else {
+            const errorMessage = await response.text();
+            console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+            sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+          }
         }
-    },
+      },
     
     
 
@@ -10027,12 +10119,16 @@ sap.ui.define([
         var oTable = this.getView().byId("table0");
 
         if (selectedText === "Opex Servicios") {
-          oTable.setVisible(true);
+
+
           this.byId("input2_172475612").setValue(parseFloat("0.00%".replace("%", "")).toFixed(2));
           this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
 
-        } else {
-          oTable.setVisible(false);
+        } else if(selectedText === "Opex Servicios") {
+
+          
+        }else {
+
           this.byId("input2_172475612").setValue(parseFloat("5.00%".replace("%", "")).toFixed(2));
         }
 
@@ -10040,6 +10136,10 @@ sap.ui.define([
 
 
         if (selectedText === "Proyecto/Servicio a Cliente Externo") {
+          oTable.setVisible(true);
+          this.byId("CheckBOzx34").setVisible(true);
+          this.byId("idComentariosFact").setVisible(true);
+          this.byId("TextoCon").setVisible(true);
           this.byId("input2_17221205").setValue(parseFloat("20.00".replace(",", ".")).toFixed(2));
           this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
 
@@ -10053,6 +10153,10 @@ sap.ui.define([
           this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
 
         } else {
+          oTable.setVisible(false);
+          this.byId("idComentariosFact").setVisible(false);
+          this.byId("TextoCon").setVisible(false);
+          this.byId("CheckBOzx34").setVisible(false);
           this.byId("input2_17221205").setValue("");
         }
 

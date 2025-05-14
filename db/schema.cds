@@ -9,6 +9,17 @@ entity Jefeproyect {
       valueJefe : String;
 }
 
+entity TipoCompra {
+  key ID        : UUID @cds.auto;
+   tipo: String;
+   valor: String;
+}
+entity MotivoCondi {
+  key ID: UUID @cds.auto;
+  tipo: String;
+}
+
+
 
 entity DatosProyect {
   key ID                       : UUID @cds.auto;
@@ -29,6 +40,7 @@ entity DatosProyect {
       Empleado                 : String;
       fechaCreacion            : DateTime;
       descripcion              : String;
+      comentarioCompra         : String;
       Total                    : Integer64;
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
@@ -43,6 +55,8 @@ entity DatosProyect {
       Iniciativa               : Association to TipoIniciativa;
       Area                     : Association to Area;
       jefeProyectID            : Association to Jefeproyect;
+      TipoCompra               : Association to TipoCompra;
+      MotivoCondi              : Association  to MotivoCondi;
       RecursosInternos         : Association to RecursosInternos
                                    on RecursosInternos.datosProyect_ID = ID;
       otrosGastoRecu           : Association to many otrosGastoRecu

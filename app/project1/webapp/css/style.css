@@ -159,3 +159,28 @@
 }
 
 
+.customCheck .sapMCbLabel {
+    color: #0070f3; /* Azul, puedes cambiarlo */
+    font-size: 16px; /* Texto más grande */
+    font-weight: bold;
+}
+
+.customCheck .sapMCb {
+    transform: scale(1.3); /* Aumenta el tamaño del cuadrado del checkbox */
+}
+
+/* Cambia el color del borde del checkbox */
+.customCheck .sapMCbBg {
+    border-color: #0070f3; /* Borde azul */
+}
+
+/* Cambia el color de fondo del checkbox marcado */
+.customCheck .sapMCbBg.sapMCbMarkChecked {
+    background-color: #0070f3;
+    border-color: #0070f3;
+}
+
+/* Opcional: cambia el tamaño del checkbox */
+.customCheck .sapMCb {
+    transform: scale(1.3);
+}

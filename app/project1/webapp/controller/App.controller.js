@@ -50,7 +50,88 @@ sap.ui.define(
 
             },
 
+
             filterEstado: async function () {
+                try {
+                    // Cargar proyectos con relaciones expand
+                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID");
+                    const data = await response.json();
+                    const aProjects = data.value;
+            
+                    const aProyectosConEstado = await Promise.all(
+                        aProjects.map(async (proyecto) => {
+                            const projectId = proyecto.ID;
+            
+                            // Buscar última instancia de workflow
+                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+                            const wfData = await wfResponse.json();
+                            const wfItem = wfData.value[0];
+            
+                            // Estado del proyecto
+                            proyecto.Estado = wfItem?.estado || "Pendiente";
+                            proyecto.workflowId = wfItem?.workflowId || null;
+                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
+            
+                            // Formateo de fechas
+                            const formatearFecha = (fechaStr) => {
+                                if (!fechaStr) return null;
+                                const fecha = new Date(fechaStr);
+                                return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                            };
+            
+                            proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
+                            proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
+                            proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
+            
+                            // Obtener los nombres relacionados
+                            proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
+                            proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
+            
+                            return proyecto;
+                        })
+                    );
+            
+                    // Separar por estado
+                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
+                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
+            
+                    // Actualizar contador de estado
+                    if (aProyectosPendientes.length > 0) {
+                        this.byId("status0").setText("Pendiente");
+                    } else {
+                        this.byId("status0").setText("Aprobado");
+                    }
+            
+                    // Modelos JSON
+                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobados,
+                        Count: aProyectosAprobados.length
+                    });
+            
+                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosPendientes,
+                        Count: aProyectosPendientes.length
+                    });
+            
+                    const oJsonModelTotal = new sap.ui.model.json.JSONModel({
+                        Count: aProyectosConEstado.length
+                    });
+            
+                    // Asignar modelos
+                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+                    this.getView().setModel(oJsonModelTotal, "modelTotal");
+            
+                    // Verificar los nombres en consola
+                    console.log(aProyectosPendientes[0]?.NombreArea);
+                    console.log(aProyectosPendientes[0]?.NombreJefe);
+            
+                } catch (error) {
+                    console.error("Error al cargar los proyectos con estado:", error);
+                }
+            },
+            
+       /*     filterEstado: async function () {
                 try {
                     const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
                     const data = await response.json();
@@ -133,160 +214,10 @@ sap.ui.define(
                 } catch (error) {
                     console.error("Error al cargar los proyectos con estado:", error);
                 }
-            },
+            },*/
             
 
 
-            /*filterEstado: async function () {
-                try {
-                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                    const data = await response.json();
-                    const aProjects = data.value;
-
-                    const aProyectosConEstado = await Promise.all(
-                        aProjects.map(async (proyecto) => {
-                            const projectId = proyecto.ID;
-
-                            // Buscar última instancia de workflow relacionada
-                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                            const wfData = await wfResponse.json();
-                            const wfItem = wfData.value[0];
-
-                            // Si no hay workflow, lo marcamos como "Pendiente"
-                            proyecto.Estado = wfItem?.estado || "Pendiente";
-                            proyecto.workflowId = wfItem?.workflowId || null;
-                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-
-                            // Formateo de fechas
-                            if (proyecto.fechaCreacion) {
-                                const fecha = new Date(proyecto.fechaCreacion);
-                                proyecto.FechaCreacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                            }
-
-                            if (proyecto.FechaModificacion) {
-                                const fecha = new Date(proyecto.FechaModificacion);
-                                proyecto.FechaModificacionFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                            }
-
-                            if (proyecto.actualizadoEn) {
-                                const fecha = new Date(proyecto.actualizadoEn);
-                                proyecto.actualizadoEnFormateada = `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                            } else {
-                                proyecto.actualizadoEnFormateada = "Fecha no disponible";
-                            }
-
-                            return proyecto;
-                        })
-                    );
-
-                    // Clasificación por estado
-                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
-                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
-
-                    // Crear modelos
-                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    });
-
-                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosPendientes,
-                        Count: aProyectosPendientes.length
-                    });
-
-                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-
-                } catch (error) {
-                    console.error("Error al cargar los proyectos con estado:", error);
-                }
-            },*/
-
-
-            /*  filterEstado: async function () {
-                  try {
-                      // 1. Obtener los proyectos desde OData
-                      const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
-                      const data = await response.json();
-                      const aProjects = data.value;
-  
-                      console.log("Proyectos desde fetch:", aProjects);
-  
-                      // 2. Enriquecer con el estado y formatear la fecha
-                      const aProyectosConEstado = await Promise.all(
-                          aProjects.map(async (proyecto) => {
-                              const projectId = proyecto.ID;
-  
-                              // 2.1 Obtener estado desde WorkflowInstancias
-                              const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                              const wfData = await wfResponse.json();
-  
-  
-  
-                              proyecto.Estado = wfData.value[0]?.estado || "Sin estado";
-                              proyecto.workflowId = wfData.value[0]?.workflowId || null;
-                              proyecto.actualizadoEn = wfData.value[0]?.actualizadoEn || null; 
-  
-  
-                              // 2.2 Formatear la fecha (ajusta el nombre del campo si es distinto)
-                              if (proyecto.fechaCreacion) {
-                                  const fecha = new Date(proyecto.fechaCreacion);
-                                  const dia = String(fecha.getDate()).padStart(2, '0');
-                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                  const anio = fecha.getFullYear();
-                                  proyecto.FechaCreacionFormateada = `${dia}-${mes}-${anio}`;
-                              }
-  
-  
-                              if (proyecto.FechaModificacion) {
-                                  const fecha = new Date(proyecto.FechaModificacion);
-                                  const dia = String(fecha.getDate()).padStart(2, '0');
-                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                  const anio = fecha.getFullYear();
-                                  proyecto.FechaModificacionFormateada = `${dia}-${mes}-${anio}`;
-                              }
-  
-  
-                              if (proyecto.actualizadoEn) {
-                                  const fecha = new Date(proyecto.actualizadoEn);
-                                  const dia = String(fecha.getDate()).padStart(2, '0');
-                                  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                                  const anio = fecha.getFullYear();
-                                  proyecto.actualizadoEnFormateada = `${dia}-${mes}-${anio}`;
-                              } else {
-                                  proyecto.actualizadoEnFormateada = "Fecha no disponible"; // Puedes poner un valor predeterminado si no existe
-                              }
-  
-                              return proyecto;
-                          })
-                      );
-  
-                      // 3. Filtrar los proyectos según su estado
-                      const aProyectosAprobados = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Aprobado");
-                      const aProyectosPendientes = aProyectosConEstado.filter((proyecto) => proyecto.Estado === "Pendiente");
-  
-                      console.log("Proyectos Aprobados:", aProyectosAprobados);
-                      console.log("Proyectos Pendientes:", aProyectosPendientes);
-  
-                      // 4. Crear modelos JSON para cada tabla
-                      const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                          DatosProyect: aProyectosAprobados,
-                          Count: aProyectosAprobados.length
-                      });
-                      const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                          DatosProyect: aProyectosPendientes,
-                          Count: aProyectosPendientes.length
-                      });
-  
-                      // 5. Asignar los modelos a las tablas correspondientes
-                      this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                      this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-  
-                  } catch (error) {
-                      console.error("Error al cargar los proyectos con estado:", error);
-                  }
-              },
-  */
 
 
 
