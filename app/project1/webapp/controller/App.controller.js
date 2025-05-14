@@ -41,6 +41,15 @@ sap.ui.define(
             },
 
 
+
+            pressFichas: function(){
+
+                    
+
+
+
+            },
+
             filterEstado: async function () {
                 try {
                     const response = await fetch("/odata/v4/datos-cdo/DatosProyect");
@@ -87,6 +96,16 @@ sap.ui.define(
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
             
+                        if(aProyectosPendientes){
+
+                            this.byId("status0").setText("Pendiente");
+
+                        }else{
+                            this.byId("status0").setText("Aprobado");
+                         //  this.byId("status0").setstate("Aprobado");
+                        }
+
+
                     // Crear modelos
                     const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobados,
@@ -349,95 +368,76 @@ sap.ui.define(
                 this.byId("itb1").setSelectedKey("people");
             },
 
-
-            onNodePress: function (oEvent) {
-                const node = oEvent.getParameters();
-            
-                if (!node) {
-                    console.warn(" Nodo no encontrado (evento vacío)");
-                    return;
-                }
-            
-                const evento = node.data("eventoOriginal");
-                if (!evento) {
-                    console.warn(" El nodo no tiene data 'eventoOriginal'");
-                    return;
-                }
-            
-                if (!this._oPopover) {
-                    this._oPopover = new sap.m.Popover({
-                        title: "Detalles del paso",
-                        placement: sap.m.PlacementType.Auto,
-                        content: [
-                            new sap.m.Text({ id: "popoverText", text: "" }),
-                            new sap.m.Button({
-                                text: "Cerrar",
-                                press: function () {
-                                    this._oPopover.close();
-                                }.bind(this)
-                            })
-                        ]
-                    });
-                }
-            
-                const sContenido = `Paso: ${evento.paso}\nDescripción: ${evento.descripcion}\nFecha: ${evento.timestamp}`;
-                const oText = this._oPopover.getContent()[0];
-                oText.setText(sContenido);
-        
-                this._oPopover.openBy(node);
-        
-        
-            },
-            
             createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
                 const laneMap = {
-                    "EMAIL": "1",
+                    "CDO": "0",
+                    "APROBACIÓN": "1",
+                    "NOTIFICACIÓN": "1",
+                    "CONFIRMAR ENTRADAS": "2",
+                    "BASIS": "2",
+                    "LEER ENTRADAS": "3",
+                    "REVISION PMO": "3",
                     "APROBADO PMO": "4",
-                    "PMO": "3",
+                    "APROBADO": "4",
                     "CONTROL": "5",
                     "GESTION": "6",
-                    "RECHAZO": "8",
-                    "FINALIZADO": "9",
-                    "DIRECCION": "9",
-                    "PENDIENTE": "1",
-                    "BASIS": "2",
-                    "DESCONOCIDO": "0"
+                    "REVISION DIRECCION": "8",
+                    "DIRECCION": "8",
+                    "APROBACIÓN DIRECCIÓN": "9",
+                    "RECHAZO": "99",
+                    "FINALIZADO": "99"
                 };
             
                 const stateMap = {
-                    "APROBADO": "Positive",
+                    "COMPLETED": "Positive",
+                    "APPROVED": "Positive",
                     "RECHAZO": "Negative",
-                    "FINALIZADO": "Positive",
+                    "REJECTED": "Negative",
                     "PENDIENTE": "Critical",
                     "EMAIL": "Neutral",
-                    "DESCONOCIDO": "Neutral"
+                    "CREATED": "Neutral",
+                    "TRIGGERED": "Neutral",
+                    "REACHED": "Neutral"
                 };
             
-                // Filtrar eventos útiles
-                let eventosUtiles = eventos.filter(e => e.paso || e.tipo.includes("WORKFLOW") || e.tipo.includes("MAILTASK") || e.tipo.includes("RECHAZO"));
+                const pasosExcluidos = [
+                    "inicializar variable",
+                    "Condición de Espera",
+                    "Esperar a terminar el flujo",
+                    "Espera respuesta"
+                ];
             
-                // Eliminar duplicados por paso + instancia (nos quedamos el más reciente)
+                const eventosFiltrados = eventos.filter(e => {
+                    const paso = (e.paso || "").trim().toUpperCase();
+                    return !pasosExcluidos.some(ex => paso.includes(ex.toUpperCase()));
+                });
+            
                 const eventoMap = new Map();
-                eventosUtiles.forEach(e => {
+                eventosFiltrados.forEach(e => {
                     const clave = `${e.instancia}-${(e.paso || "").trim()}`;
                     const existente = eventoMap.get(clave);
-            
                     if (!existente || new Date(e.timestamp) > new Date(existente.timestamp)) {
                         eventoMap.set(clave, e);
                     }
                 });
             
-                // Convertir a array y ordenar por fecha
-                const eventosFiltrados = Array.from(eventoMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                const listaEventos = Array.from(eventoMap.values()).sort((a, b) =>
+                    new Date(a.timestamp) - new Date(b.timestamp)
+                );
             
-                eventosFiltrados.forEach((evento, index) => {
+                if (listaEventos.length === 0) {
+                    console.warn("No hay eventos válidos para mostrar en el flujo.");
+                    return;
+                }
+            
+                // Crear nodos (sin nodo inicial)
+                listaEventos.forEach((evento, index) => {
                     if (!evento.id) evento.id = "evento_" + index;
             
                     const pasoRaw = (evento.paso || "Paso desconocido").trim();
                     const paso = pasoRaw.toUpperCase();
                     const descripcion = evento.descripcion || "";
             
-                    // Lane
                     let laneId = "0";
                     for (let key in laneMap) {
                         if (paso.includes(key)) {
@@ -446,30 +446,22 @@ sap.ui.define(
                         }
                     }
             
-                    // Color (state)
                     let state = "Neutral";
                     for (let key in stateMap) {
-                        if (paso.includes(key)) {
+                        if ((evento.tipo || "").toUpperCase().includes(key)) {
                             state = stateMap[key];
                             break;
                         }
                     }
             
-                    // Enlace con siguiente nodo si aplica
-                    let children = [];
-                    const nextEvento = eventosFiltrados[index + 1];
-                    if (nextEvento && !paso.includes("RECHAZO")) {
-                        children.push(nextEvento.id);
-                    }
-            
-                    // Solo el primer nodo lleva el nombre del proyecto
-                    const title = index === 0 ? sNameProyect : "";
+                    const siguiente = listaEventos[index + 1];
+                    const children = siguiente ? [siguiente.id] : [];
             
                     const node = new sap.suite.ui.commons.ProcessFlowNode({
                         nodeId: evento.id,
-                        title: title,
-                        titleAbbreviation: paso.substring(0, 3),
                         laneId: laneId,
+                        title: pasoRaw,
+                        titleAbbreviation: pasoRaw.substring(0, 3),
                         state: state,
                         stateText: descripcion,
                         children: children,
@@ -480,15 +472,68 @@ sap.ui.define(
                     });
             
                     node.addCustomData(new sap.ui.core.CustomData({
-                        key: "eventoId",
-                        value: evento.id
+                        key: "eventoOriginal",
+                        value: JSON.stringify(evento) // si haces esto, recuerda hacer JSON.parse() después
                     }));
-            
+                    
                     node.data("eventoOriginal", evento);
-            
                     oProcessFlow.addNode(node);
                 });
             },
+            
+            onNodePress: function (oEvent) {
+                const node = oEvent.getParameters();
+            
+                if (!node) {
+                    console.warn("Nodo no encontrado (evento vacío)");
+                    return;
+                }
+            
+                const evento = node.data("eventoOriginal");
+                if (!evento) {
+                    console.warn("El nodo no tiene data 'eventoOriginal'");
+                    return;
+                }
+            
+                if (!this._oPopover) {
+                    // Crear el popover solo una vez
+                    this._oPopover = new sap.m.Popover({
+                        title: "Detalles del Paso",
+                        placement: sap.m.PlacementType.Auto,
+                        contentWidth: "250px",
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    new sap.m.Label({ text: "Paso:", design: "Bold" }),
+                                    new sap.m.Text({ id: "textPaso" }),
+                                    new sap.m.Label({ text: "Descripción:", design: "Bold", class: "sapUiSmallMarginTop" }),
+                                    new sap.m.Text({ id: "textDescripcion" }),
+                                    new sap.m.Label({ text: "Fecha:", design: "Bold", class: "sapUiSmallMarginTop" }),
+                                    new sap.m.Text({ id: "textFecha" })
+                                ],
+                                class: "sapUiSmallMargin"
+                            }),
+                            new sap.m.ToolbarSpacer(),
+                            new sap.m.Button({
+                                text: "Cerrar",
+                                type: "Emphasized",
+                                press: function () {
+                                    this._oPopover.close();
+                                }.bind(this),
+                                class: "sapUiSmallMarginTop"
+                            })
+                        ]
+                    });
+                }
+            
+                // Actualizar contenido
+                sap.ui.getCore().byId("textPaso").setText(evento.paso);
+                sap.ui.getCore().byId("textDescripcion").setText(evento.descripcion);
+                sap.ui.getCore().byId("textFecha").setText(evento.timestamp);
+            
+                this._oPopover.openBy(node);
+            },
+            
             
             
             

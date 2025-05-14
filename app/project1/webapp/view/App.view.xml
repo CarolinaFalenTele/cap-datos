@@ -73,7 +73,7 @@
                                 <statuses>
                                     <ObjectStatus
                                         id="status0"
-                                        title="Approval"
+                                        title="Aprobación"
                                         text="Pending"
                                         state="Warning"
                                     />
@@ -642,9 +642,21 @@
                                                     </headerToolbar>
 
                                                     <content>
+
+                                                         <ObjectAttribute
+                                    id="3434"
+                                    title="Flujo de Aprobación"
+                                    text="Fichas CDO"
+                                    active="true"
+                                press="pressFichas"
+                                    
+                                />
+
+                                                        <ToolbarSpacer />
+
                                                         <Text
                                                             text="Proceso de Solictud"
-                                                            id="text1881"
+                                                            id="text1881" class="color"
                                                         />
 
                                                     <suite:ProcessFlow
