@@ -352,11 +352,12 @@
                                                                 </viz:dataset>
                                                                 <viz:feeds>
                                                                     <viz.feeds:FeedItem id="juras" uid="valueAxis" type="Measure" values="Duración (días)"/>
-                                                                    <viz.feeds:FeedItem id="nopue" uid="categoryAxis" type="Dimension" values="Fase"/>
+                                                                    <viz.feeds:FeedItem id="nopue" uid="color" type="Dimension" values="Fase"/>
                                                                 </viz:feeds>
                                                                 <viz:feeds>
                                                                     <viz.feeds:FeedItem id="feedLabel" uid="tooltip" type="Measure" values="Información"/>
                                                                 </viz:feeds>
+                                                                
                                                             </viz:VizFrame>
                                                         </items>
                                                     </FlexBox>
@@ -422,6 +423,7 @@
                                                     </FlexBox>
 
                                                     <FlexBox width="100%" id="box0_1721815442596">
+                                                                                                             <HBox id="cambfgiDFSDFggy"    class="sapUiSmallMargin">
                                                         <Table ariaLabelledBy="__xmlview0--label9_1714468867114" noDataText="Drop column list items here and columns in the area above" id="table2" width="400px" class="customHeaderColor2"> 
                                                             <items>
                                                                 <ColumnListItem id="item2_1723105790552">
@@ -468,6 +470,56 @@
                                                                 </Column>
                                                             </columns>
                                                         </Table>
+                                                        <ToolbarSpacer/>
+                                                        <ToolbarSpacer/>
+
+                                                      <VBox id="cambio2" class="sapUiSmallMargin" justifyContent="End" alignItems="End" width="100%">
+                                                        
+                                                        <!-- Fila con los dos Select -->
+                                                        <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="End">
+                                                            <VBox class="sapUiSmallMarginEnd" justifyContent="End" alignItems="End">
+                                                                <Label text="Tipo Compra" class="color"  />
+                                                                <Select id="select_tipoCom"
+                                                                        selectedKey="{TipoCompra>valor}"
+                                                                        change="onInputChange"
+                                                                        items="{/TipoCompra}">
+                                                                    <items>
+                                                                        <core:Item key="{ID}" text="{tipo}" />
+                                                                    </items>
+                                                                </Select>
+                                                            </VBox>
+                                                            
+                                                            <VBox justifyContent="End" alignItems="End">
+                                                                <Label text="Condición" class="color"  />
+                                                                <Select id="selectMotivo"
+                                                                        selectedKey="{MotivoCondi>valor}"
+                                                                        change="onInputChange"
+                                                                        items="{/MotivoCondi}">
+                                                                    <items>
+                                                                        <core:Item key="{ID}" text="{tipo}" />
+                                                                    </items>
+                                                                </Select>
+                                                            </VBox>
+                                                        </HBox>
+
+                                                        <!-- Título Comentarios -->
+                                                        <Toolbar id="tooblser3" class="sapUiSmallMarginBottom">
+                                                            <Title id="noem23" text="Comentarios Facturación" level="H2" class="color" />
+                                                        </Toolbar>
+
+                                                        <!-- TextArea -->
+                                                        <TextArea id="idComentariosFac"
+                                                                placeholder="Escribe aquí..."
+                                                                rows="2"
+                                                                cols="60"
+                                                                class="sapUiSmallMarginBottom" />
+                                                    </VBox>
+
+
+
+
+                                                             </HBox> 
+
                                                     </FlexBox>
                                                 </content>
                                             </Panel>
@@ -493,7 +545,7 @@
                                                                         <Title id="text9_1714476556932c" text="Objectivo y Alcance" level="H2"   class="color"/>
                                                                     </Toolbar>
                                                             <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idObje" rows="4" cols="60"/>
-                                                                                                                    </VBox> 
+                                                         </VBox> 
 
                                                         </items>
 
@@ -512,7 +564,7 @@
 
                                                     <FlexBox width="100%" id="box0_1714486261986">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin customHeaderColor" visible="false" width="600px">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin sapUiLargeMarginTop customHeaderColor" visible="false" width="600px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="d55">
                                                                         <Title id="d2654" text="Cliente facturacion" level="H2"   class="color"/>
@@ -583,7 +635,42 @@
                                                                 </columns>
                                                             </Table>
 
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0" class="sapUiSmallMargin  customHeaderColor" width="600px" visible="false">
+
+
+
+
+                                       <VBox id="vboxFactura" class="sapUiMediumMarginBegin"  justifyContent="End" alignItems="End" width="100%">
+
+
+
+ <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="Start">
+                                                            <VBox class="sapUiSmallMarginEnd">
+                                                     	<CheckBox text="Mensual " id="idCheckMensual" selected="false"  visible="false"   class="customCheck" />
+                                                            </VBox>
+                                                            
+                                                            <VBox>
+                                                                <Label text="Condición" id="TextoCon" class="color" visible="false"  />
+                                                               <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComentarioTipo" rows="2" cols="60" visible="false"/>
+
+                                                            </VBox>
+                                                        </HBox>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0"    class="sapUiSmallMargin  customHeaderColor" width="600px" visible="false">
                                                                 <headerToolbar>
                                                                     <Toolbar id="dfff">
                                                                         <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"  class="color"/>
@@ -671,6 +758,7 @@
                                                                     </Column>
                                                                 </columns>
                                                             </Table>
+                                                            </VBox>
                                                         </items>
                                                     </FlexBox>
                                                 </content>
@@ -2188,7 +2276,7 @@
                                                                             </VBox>
 
                                                                             <VBox id="vbox205" width="auto">
-                                                                                <Input xmlns="sap.m" value="sdsdf" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
+                                                                                <Input xmlns="sap.m" value="" description="Servicios" editable="false" fieldWidth="45%" id="inputServi1" width="105%" class="customNonEditableInput"/>
 
                                                                                 <Input xmlns="sap.m" value="" id="inputOtrosServi1" description="Otros Servicios"   editable="false" width="auto" fieldWidth="45%"/>
 

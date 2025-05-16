@@ -479,24 +479,24 @@
                                                         <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="End">
                                                             <VBox class="sapUiSmallMarginEnd" justifyContent="End" alignItems="End">
                                                                 <Label text="Tipo Compra" class="color"  />
-                                                                <Select id="select_tipoCom"
-                                                                        selectedKey="{Area>valueArea}"
+                                                          <Select id="select_tipoCom"
+                                                                        selectedKey="{TipoCompra>valor}"
                                                                         change="onInputChange"
-                                                                        items="{/Area}">
+                                                                        items="{/TipoCompra}">
                                                                     <items>
-                                                                        <core:Item key="{ID}" text="{NombreArea}" />
+                                                                        <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
                                                                 </Select>
                                                             </VBox>
                                                             
                                                             <VBox justifyContent="End" alignItems="End">
                                                                 <Label text="Condición" class="color"  />
-                                                                <Select id="selectCondicio"
-                                                                        selectedKey="{Area>valueArea}"
+                                                                <Select id="selectMotivo"
+                                                                        selectedKey="{MotivoCondi>valor}"
                                                                         change="onInputChange"
-                                                                        items="{/Area}">
+                                                                        items="{/MotivoCondi}">
                                                                     <items>
-                                                                        <core:Item key="{ID}" text="{NombreArea}" />
+                                                                        <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
                                                                 </Select>
                                                             </VBox>
@@ -645,12 +645,12 @@
 
  <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="Start">
                                                             <VBox class="sapUiSmallMarginEnd">
-                                                     	<CheckBox text="Mensual " id="CheckBOzx34" selected="true"  visible="false"   class="customCheck" />
+                                                     	<CheckBox text="Mensual " id="idCheckMensual" selected="false"  visible="false"   class="customCheck" />
                                                             </VBox>
                                                             
                                                             <VBox>
                                                                 <Label text="Condición" id="TextoCon" class="color" visible="false"  />
-                                                               <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComentariosFact" rows="2" cols="60" visible="false"/>
+                                                               <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComentarioTipo" rows="2" cols="60" visible="false"/>
 
                                                             </VBox>
                                                         </HBox>
@@ -2312,12 +2312,12 @@
 
                                                                                     <Input xmlns="sap.m" value="" id="input10_1724757017406" description="Otros Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
-                                                                                    <Input xmlns="sap.m" value="" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="2" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
 
                                                                              <ToolbarSpacer />
                                                                                 <ToolbarSpacer />
                                                                                  <ToolbarSpacer  class="colorCora"/>
-                                                                                    <Input xmlns="sap.m" value="" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="2" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
                                                                                 </items>
                                                                             </VBox>
                                                                         </cells>

@@ -31,7 +31,7 @@ module.exports = cds.service.impl(async function () {
     otrosRecursos,
     ConsumoExternos,
     GastoViajeConsumo,
-    otrosServiciosConsu
+    otrosServiciosConsu,
   } = this.entities;
 
 
@@ -333,8 +333,8 @@ this.on('getUserInfo', async (req) => {
     const {
         codigoProyect, nameProyect, Total,descripcion, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
         sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado,
-        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion,
-        AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin
+        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual,
+        AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin, TipoCompra_ID, MotivoCondi_ID,   comentarioFacturacion, comentarioTipoCompra
     } = req.data;
 
    // req.data.fechaCreacion = new Date().toISOString();
@@ -353,10 +353,13 @@ this.on('getUserInfo', async (req) => {
             FechaModificacion,
             descripcion,
             pluriAnual,
+            mensual,
             Total,
             funcionalString,
             multijuridica,
             clienteFacturacion,
+            comentarioFacturacion,
+            comentarioTipoCompra,
             IPC_apli,
             sMultiJuri,
             objetivoAlcance,
@@ -365,6 +368,8 @@ this.on('getUserInfo', async (req) => {
             FechaFin,
             AsuncionesyRestricciones,
             Naturaleza_ID,
+            TipoCompra: { ID: TipoCompra_ID },
+            MotivoCondi: { ID: MotivoCondi_ID },
             Iniciativa_ID,
             Area_ID,
             jefeProyectID_ID,

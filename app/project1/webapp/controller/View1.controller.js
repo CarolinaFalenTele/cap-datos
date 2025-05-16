@@ -99,8 +99,6 @@ sap.ui.define([
         this.token();
         this.getUserInfo();
 
-
-
       },
 
 
@@ -280,6 +278,10 @@ sap.ui.define([
             this.byId("input0").setValue(oData.codigoProyect || "");
             this.byId("input1").setValue(oData.nameProyect || "");
             this.byId("23d3").setText(oData.Empleado || "");
+            this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
+            this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
+            this.byId("idCheckMensual").setSelected(!!oData.mensual);
+
             this.byId("dddtg").setText(oData.Email || "");
             this.byId("int_clienteFun").setValue(oData.funcionalString || "");
             this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
@@ -291,15 +293,21 @@ sap.ui.define([
             this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
             this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
             this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+            this.byId("selectMotivo").setSelectedKey(oData.MotivoCondi_ID || "");
+            this.byId("select_tipoCom").setSelectedKey(oData.TipoCompra_ID || "");
             this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
             this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
 
             // Mostrar u ocultar la tabla según el valor de Iniciativa_ID
-            if (oData.Iniciativa_ID === "423e4567-e89b-12d3-a456-426614174003") {
+            if (oData.Iniciativa_ID === "323e4567-e89b-12d3-a456-426614174002") {
               this.byId("table0").setVisible(true);
-              this.byId("CheckBOzx34").setVisible(true);
+              this.byId("idCheckMensual").setVisible(true);
+              this.byId("idComentarioTipo").setVisible(true);
+
             } else {
               this.byId("table0").setVisible(false);
+              this.byId("idCheckMensual").setVisible(false);
+              this.byId("idComentarioTipo").setVisible(false);
             }
 
             this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
@@ -335,8 +343,10 @@ sap.ui.define([
               this.leerPerfilJornadas(sProjectID),
               this.leerTotalRecursoInterno(sProjectID),
               this.leerTotalConsumoExter(sProjectID),
-              // Call the function to read workflow instances associated with the given project ID
-              this.leerWorkflowInstancias(sProjectID)
+              this.leerTotalRecuExterTotal(sProjectID),
+              this.leerWorkflowInstancias(sProjectID),
+              this.leerTotalInfraestrLicencia(sProjectID),
+              this.leerTotalResumenCostesTotal(sProjectID)
 
             ]);
 
@@ -1313,7 +1323,7 @@ sap.ui.define([
             this.byId("inputServi").setValue(Recurso.servicios ? parseFloat(Recurso.servicios).toFixed(2) : "0.00");
             this.byId("input10_1724757017406").setValue(Recurso.OtrosServicios ? parseFloat(Recurso.OtrosServicios).toFixed(2) : "0.00");
             this.byId("input9_1724757015442").setValue(Recurso.GastosdeViaje ? parseFloat(Recurso.GastosdeViaje).toFixed(2) : "0.00");
-            this.byId("totalConsuExternot").setValue(Recurso.Total ? parseFloat(Recurso.Total).toFixed(2) : "0.00");
+            this.byId("totaRecurExterno").setValue(Recurso.Total ? parseFloat(Recurso.Total).toFixed(2) : "0.00");
 
 
 
@@ -1332,6 +1342,115 @@ sap.ui.define([
           sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
+
+
+
+
+      leerTotalInfraestrLicencia: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/InfraestrLicencia?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var idTotalInfrLicen = Recurso.ID; // Obtén el ID del recurso
+            ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            this.byId("totalInfraestruc").setValue(Recurso.totalInfraestruc ? parseFloat(Recurso.totalInfraestruc).toFixed(2) : "0.00");
+            this.byId("input0_1724758359").setValue(Recurso.totalLicencia ? parseFloat(Recurso.totalLicencia).toFixed(2) : "0.00");
+         
+
+
+
+            this._idInfraLicencia = idTotalInfrLicen;
+
+            console.log("JORNADAS ID " + this._idInfraLicencia);
+
+          } else {
+            console.log("NO SE ENCONTRARON DATOS PARA InfraestrLicencia");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+
+
+
+      leerTotalResumenCostesTotal: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ResumenCostesTotal?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var idResumenCoste = Recurso.ID; // Obtén el ID del recurso
+            ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            this.byId("totalSubtotal").setValue(Recurso.Subtotal ? parseFloat(Recurso.Subtotal).toFixed(2) : "0.00");
+            this.byId("input2_172475612").setValue(Recurso.CosteEstruPorce ? parseFloat(Recurso.CosteEstruPorce).toFixed(2) : "0.00");
+            this.byId("input2_1724756105").setValue(Recurso.Costeestructura ? parseFloat(Recurso.Costeestructura).toFixed(2) : "0.00");
+            this.byId("input2_17221205").setValue(Recurso.totalLicencias ? parseFloat(Recurso.totalLicencias).toFixed(2) : "0.00");
+            this.byId("input2_1756121205").setValue(Recurso.Margeingresos ? parseFloat(Recurso.Margeingresos).toFixed(2) : "0.00");
+
+
+
+
+            this._ResumenTotal = idResumenCoste;
+
+            console.log("JORNADAS ID " + this._ResumenTotal);
+
+
+          } else {
+            console.log("NO SE ENCONTRARON DATOS PARA _ResumenTotal");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
 
 
       /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<
@@ -3458,6 +3577,7 @@ sap.ui.define([
         const spluriAnual = this.byId("box_pluriAnual").getSelected();
         const sClienteFac = this.byId("id_Cfactur").getValue();
         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+        const sMensual = this.byId("idCheckMensual").getSelected();
         const sClienteFunc = this.byId("int_clienteFun").getValue();
         const sObjetivoAlcance = this.byId("idObje").getValue();
         const sAsunyRestric = this.byId("idAsunyRestri").getValue();
@@ -3465,7 +3585,10 @@ sap.ui.define([
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
         const sIPC = this.byId("input_ipc").getValue();
+        const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
+        const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
 
+     
         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
 
         const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
@@ -3474,6 +3597,8 @@ sap.ui.define([
         const sSelectedKey = this.byId("idNatu").getSelectedKey();
         const sSelecKeyA = this.byId("slct_area").getSelectedKey();
         const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
+        const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
+        const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
         const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
         const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
         const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
@@ -3517,10 +3642,15 @@ sap.ui.define([
           pluriAnual: spluriAnual,
           Total: sTotal,
           descripcion: sdescripcion,
+          mensual: sMensual,
+          comentarioTipoCompra:  sComentarioTipCompra,
+          comentarioFacturacion: sComentarioFacturacion, 
           funcionalString: sClienteFunc,
           clienteFacturacion: sClienteFac,
           multijuridica: sMultiJuri,
-          Naturaleza_ID: sSelectedKey,
+          TipoCompra_ID: sSelecKeyTipoCompra,
+          TipoCompra: { ID: sSelecKeyTipoCompra },
+          MotivoCondi: { ID: sSelecKeyMotivoCondi },
           Area_ID: sSelecKeyA,
           Iniciativa_ID: sSelectKeyIni,
           jefeProyectID_ID: sSelecKeyJe,
@@ -3654,7 +3784,11 @@ sap.ui.define([
                 this.insertarLicencia(generatedId),
                 this.insertPerfilJornadas(generatedId, sCsrfToken),
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
-                this.insertTotalConsuExt(generatedId, sCsrfToken)
+                this.insertTotalConsuExt(generatedId, sCsrfToken),
+                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
+                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
+                this.insertResumenCostesTotal(generatedId, sCsrfToken),
+
               ]);
 
 
@@ -3662,7 +3796,7 @@ sap.ui.define([
 
 
               // 1 Payload para iniciar workflow de aprobación
-
+/*
               const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
                 + generatedId
                 + ";aprobacion=true";
@@ -3705,7 +3839,7 @@ sap.ui.define([
 
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
-              }
+              }*/
               // Navegar a la vista 'app' con el nuevo ID
             this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
@@ -4221,7 +4355,7 @@ sap.ui.define([
         var sServiciosC = parseInt(this.byId("inputServi").getValue(), 10);
         var sOtroServiC = parseInt(this.byId("input10_1724757017406").getValue(), 10);
         var sGastoViaC = parseInt(this.byId("input9_1724757015442").getValue(), 10);
-     //   var sTotaleJorC = parseInt(this.byId("totalConsuExternot").getValue(), 10);
+      var sTotaleJorC = parseInt(this.byId("totaRecurExterno").getValue(), 10);
 
 
         console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
@@ -4266,6 +4400,134 @@ sap.ui.define([
           MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
         }
       },
+
+
+
+
+      insertTotalInfraestrLicencia: async function (generatedId, sCsrfToken) {
+
+        var idInfraLicencia  = this._idInfraLicencia;
+
+        var sTotalInfraEstruc = parseInt(this.byId("totalInfraestruc").getValue(), 10);
+      var sTotalLicencia = parseInt(this.byId("input0_1724758359").getValue(), 10);
+
+
+        console.log("ID RECIBIDO DEL INSERT " + idInfraLicencia);
+
+
+        var payload = {
+          totalInfraestruc: sTotalInfraEstruc,
+          totalLicencia: sTotalLicencia,
+          datosProyect_ID: generatedId
+        };
+
+        let sUrl = "/odata/v4/datos-cdo/InfraestrLicencia";
+        let sMethod = "POST";
+
+        // 👉 Aquí decides si haces POST o PATCH
+        if (idInfraLicencia) {
+          sUrl += `(${idInfraLicencia})`;  // Construyes la URL con ID si vas a hacer UPDATE
+          sMethod = "PATCH";          // PATCH para actualizar
+        }
+
+        try {
+          const response = await fetch(sUrl, {
+            method: sMethod,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            MessageToast.show(idInfraLicencia ? "Total InfraEstructura y Licencia   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+          } else {
+            const error = await response.json();
+            console.error("Error:", error);
+            MessageToast.show("Error al guardar el Total InfraEstructura y Licencia ");
+          }
+        } catch (err) {
+          console.error("Error en fetch:", err);
+          MessageToast.show("Error de conexión al guardar InfraEstructura y Licencia  ");
+        }
+      },
+
+
+
+
+
+
+
+      insertResumenCostesTotal: async function (generatedId, sCsrfToken) {
+
+        var idResumenCostetotal  = this._ResumenTotal;
+
+
+        var sSubtotal  = parseInt(this.byId("totalSubtotal").getValue(), 10);
+        var sCosteEstrucPorcen = parseInt(this.byId("input2_172475612").getValue(), 10);
+        var sCosteEs = parseInt(this.byId("input2_1724756105").getValue(), 10);
+        var sMargenPorce = parseInt(this.byId("input2_17221205").getValue(), 10);
+        var sMargenIngreso = parseInt(this.byId("input2_1756121205").getValue(), 10);
+        var Total = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+
+        console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
+
+
+        var payload = {
+          Subtotal: sSubtotal,
+          CosteEstruPorce: sCosteEstrucPorcen,
+          Costeestructura: sCosteEs,
+          totalLicencias: sMargenPorce,
+          Margeingresos: sMargenIngreso,
+          datosProyect_ID: generatedId
+        };
+
+        let sUrl = "/odata/v4/datos-cdo/ResumenCostesTotal";
+        let sMethod = "POST";
+
+        // 👉 Aquí decides si haces POST o PATCH
+        if (idResumenCostetotal) {
+          sUrl += `(${idResumenCostetotal})`;  // Construyes la URL con ID si vas a hacer UPDATE
+          sMethod = "PATCH";          // PATCH para actualizar
+        }
+
+        try {
+          const response = await fetch(sUrl, {
+            method: sMethod,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            MessageToast.show(idResumenCostetotal ? "Total idResumenCostetotal   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+          } else {
+            const error = await response.json();
+            console.error("Error:", error);
+            MessageToast.show("Error al guardar el Total idResumenCostetotal ");
+          }
+        } catch (err) {
+          console.error("Error en fetch:", err);
+          MessageToast.show("Error de conexión al guardar idResumenCostetotal  ");
+        }
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -10137,8 +10399,8 @@ sap.ui.define([
 
         if (selectedText === "Proyecto/Servicio a Cliente Externo") {
           oTable.setVisible(true);
-          this.byId("CheckBOzx34").setVisible(true);
-          this.byId("idComentariosFact").setVisible(true);
+          this.byId("idCheckMensual").setVisible(true);
+          this.byId("idComentarioTipo").setVisible(true);
           this.byId("TextoCon").setVisible(true);
           this.byId("input2_17221205").setValue(parseFloat("20.00".replace(",", ".")).toFixed(2));
           this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
@@ -10154,9 +10416,9 @@ sap.ui.define([
 
         } else {
           oTable.setVisible(false);
-          this.byId("idComentariosFact").setVisible(false);
+          this.byId("idComentarioTipo").setVisible(false);
           this.byId("TextoCon").setVisible(false);
-          this.byId("CheckBOzx34").setVisible(false);
+          this.byId("idCheckMensual").setVisible(false);
           this.byId("input2_17221205").setValue("");
         }
 

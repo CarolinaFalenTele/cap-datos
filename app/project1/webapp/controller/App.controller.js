@@ -94,14 +94,18 @@ sap.ui.define(
                     // Separar por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
-            
-                    // Actualizar contador de estado
+                 
+                 
+                    const oStatusControl = this.byId("status0");
+   
                     if (aProyectosPendientes.length > 0) {
-                        this.byId("status0").setText("Pendiente");
+                        oStatusControl.setText("Pendiente");
+                        oStatusControl.setState("Warning"); // Amarillo (pendiente)
                     } else {
-                        this.byId("status0").setText("Aprobado");
+                        oStatusControl.setText("Aprobado");
+                        oStatusControl.setState("Success"); // Verde (aprobado)
                     }
-            
+                    
                     // Modelos JSON
                     const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobados,

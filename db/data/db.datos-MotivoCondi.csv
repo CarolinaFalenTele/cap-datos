@@ -1,9 +1,9 @@
-ID,Tipo
-1,"Trabajos anteriores"
-2,"Sector B2B Público (lo pide el cliente y se puede demostrar que es así)"
-3,"Sector B2B Privado (lo pide el cliente y se puede demostrar que es así)"
-4,"Sector Interno (lo pide el cliente y se puede demostrar que es así)"
-5,"Razones estratégicas (sólo derivado de decisiones del Comité Ejecutivo de Telefónica)"
-6,"Producto y/o Tecnología"
-7,"Planta / Infraestructura existente"
-8, ""
+ID,tipo,valor
+1,"Trabajos anteriores","Trabajos anteriores"
+2,"Sector B2B Público (lo pide el cliente y se puede demostrar que es así)","Sector B2B Público (lo pide el cliente y se puede demostrar que es así)"
+3,"Sector B2B Privado (lo pide el cliente y se puede demostrar que es así)","Sector B2B Privado (lo pide el cliente y se puede demostrar que es así)"
+4,"Sector Interno (lo pide el cliente y se puede demostrar que es así)","Sector Interno (lo pide el cliente y se puede demostrar que es así)"
+5,"Razones estratégicas (sólo derivado de decisiones del Comité Ejecutivo de Telefónica)","Razones estratégicas (sólo derivado de decisiones del Comité Ejecutivo de Telefónica)"
+6,"Producto y/o Tecnología","Producto y/o Tecnología"
+7,"Planta / Infraestructura existente","Planta / Infraestructura existente"
+8, "", ""
