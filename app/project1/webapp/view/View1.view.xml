@@ -50,7 +50,7 @@
                                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel1">
                                                 <headerToolbar>
                                                     <Toolbar id="toolbar3341">
-                                                        <Title text="Solicitud de proyecto" id="titulo1" class="miTitulo "/>
+                                                        <Title text="Solicitud de proyecto" id="titulo1" class="miTitulo color"/>
                                                         <ToolbarSpacer id="333d"/>
                                                         <Button icon="sap-icon://hint" id="btn_1" width="10px" press=".pruebaCambioDIner"/>
                                                     </Toolbar>
@@ -73,7 +73,7 @@
                                                                                 </items>
                                                                             </Select>
 
-                                                                            <Select xmlns="sap.m" id="slct_Jefe" selectedKey="{Jefeproyect>valueJefe}" items="{/Jefeproyect}" change="onInputChange" forceSelection="false">
+                                                                            <Select xmlns="sap.m" id="slct_Jefe" selectedKey="{Jefeproyect>valueJefe}" items="{/Jefeproyect}"   tooltip="Nombre del Jefe de Proyecto preasignado: si el jefe de proyecto no está disponible en el despegable escribir"   change="onInputChange" forceSelection="false">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{name}" id="item155p"/>
                                                                                 </items>
@@ -146,11 +146,11 @@
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreIniciativa}" id="item159"/>
                                                                                 </items>
                                                                             </Select>
-                                                                            <Input xmlns="sap.m" id="int_clienteFun" liveChange="onInputChange"/>
+                                                                            <Input xmlns="sap.m" id="int_clienteFun" liveChange="onInputChange"  tooltip="En caso de que exista más de una juridica marca el checkbox de 'Multijurida' y completar la informacion en la tabla Cliente Facturacion / Juridicas. En caso contrario indicar la juridica en Cliente Facturacion  "/>
 
-                                                                            <Input xmlns="sap.m" id="id_Cfactur" placeholder="Facturacion..." liveChange="onInputChange" tooltip="Facturacion"/>
+                                                                            <Input xmlns="sap.m" id="id_Cfactur" placeholder="Facturacion..." liveChange="onInputChange" />
 
-                                                                            <Select xmlns="sap.m" id="idNatu" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}" change="onInputChange">
+                                                                            <Select xmlns="sap.m" id="idNatu" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}" change="onInputChange" tooltip="OPEX o CAPEX">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreNaturaleza}" id="item160"/>
                                                                                 </items>
@@ -161,7 +161,7 @@
                                                                                 </items>
                                                                             </Select>
 
-                                                                            <Select xmlns="sap.m" id="selc_ejcu" selectedKey="{EjecucionVia>valueEjecuVia}" forceSelection="false" items="{/EjecucionVia}">
+                                                                            <Select xmlns="sap.m" id="selc_ejcu" selectedKey="{EjecucionVia>valueEjecuVia}" forceSelection="false" items="{/EjecucionVia}"  tooltip="Aplica a iniciativas GlobalSAP">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreEjecuVia}" id="item162"/>
                                                                                 </items>
@@ -224,7 +224,8 @@
                                                                         <cells>
                                                                             <CheckBox xmlns="sap.m" text=" " selected="false" select=".onCheckBoxSelectMulti" id="box_multiJuridica"/>
                                                                             <CheckBox xmlns="sap.m" text="" selected="false" id="box_pluriAnual"/>
-                                                                            <Input xmlns="sap.m" value="" id="input_ipc" placeholder="2,5%"/>
+                                                                            <Input xmlns="sap.m" value="2,5%" id="input_ipc" placeholder="2,5%" textAlign="End"   width="6rem" tooltip="En los proyecto PluriAnuales se considera un incremento del IPC del 2,5% para Recursos Internos a partir del segundo año, para Recursos Externos el responsable de la cotizacion tiene que considerar si es necesario incrementar la tarifa en cada uno de los años sucesivos"/>
+                                                                            <Input xmlns="sap.m" value="" id="inputCambioEu" placeholder="$" textAlign="End"  change="onTipoCambioLive"  tooltip="En caso de querer obtener el total de la tabla oferta en $ indicar el tipo de cambio aplicado. Consultar a Control el tipo de cambio vigente en el momento de la realización de la ficha "/>
 
                                                                             <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
                                                                             <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
@@ -245,6 +246,12 @@
                                                                     <Column id="column5_1714405548914" hAlign="Center">
                                                                         <header>
                                                                             <Label text="IPC Aplicable " id="label5_1714405548914"/>
+                                                                        </header>
+                                                                    </Column>   
+                                                                    
+                                                                     <Column id="column5_17144055489768686676814" hAlign="Center">
+                                                                        <header>
+                                                                            <Label text="Cambio EUR - USD " id="label5_171687678678674405548914"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column0_1714405544374" hAlign="Center">
@@ -267,7 +274,7 @@
                                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel2" class="sapUiTinyMarginTop">
                                                 <headerToolbar>
                                                     <Toolbar id="toolbar2">
-                                                        <Title text="Planificación " id="titulo_2" class="customHeaderTitle"/>
+                                                        <Title text="Planificación "   id="titulo_2" class="customHeaderTitle color"/>
                                                         <ToolbarSpacer id="f"/>
                                                         <Button icon="sap-icon://settings" id="btn2"/>
                                                     </Toolbar>
@@ -1636,7 +1643,7 @@
                                                                             <Text xmlns="sap.m" text="" id="text5442"/>
                                                                             <Text xmlns="sap.m" text="" id="text5344"/>
                                                                             <Text xmlns="sap.m" text="" id="text5544" class="boldText"/>
-                                                                            <Text xmlns="sap.m" text="5454" id="text5644" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text5644" class="boldText"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                     <ColumnListItem id="item1_17235616033">
@@ -2428,7 +2435,8 @@
                                                                                 <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen  sobre ingresos %" change=".onColumnTotales" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_1756121205" description="Margen sobre ingresos" editable="false" width="auto" fieldWidth="45%"/>
-                                                                                <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total" editable="false" change=".calcularDistribucionInput"/>
+                                                                                <Input xmlns="sap.m" value="" id="input0_1725625161348" description="Total EUR" editable="false" change=".calcularDistribucionInput"/>
+                                                                                  <Input xmlns="sap.m" value="" id="input0_1725625132423424361348" description="Total USD" visible="false" editable="false" change=".calcularDistribucionInput"/>
                                                                             </items>
                                                                         </VBox>
                                                                     </cells>
@@ -4328,7 +4336,7 @@
                                                 <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0_1729068544153">
                                                     <headerToolbar>
                                                         <Toolbar id="toolbar651">
-                                                            <Title id="idtitleAnexo" text="Informacion Adicional"/>
+                                                            <Title id="idtitleAnexo" text="Informacion Adicional" class="color"/>
 
                                                             <ToolbarSpacer id="idToan"/>
 
@@ -4337,13 +4345,13 @@
                                                     </headerToolbar>
 
                                                     <content>
-                                                        <Text text="Información adicional considerada relevante a presentar junto con la solicitud del proyecto" class="**`sapUiTinyMargin sapUiSmallMarginBottom" id="text66_1729068544144"/>
+                                                        <Text text="Información adicional considerada relevante a presentar junto con la solicitud del proyecto"  class="**`sapUiTinyMargin sapUiSmallMarginBottom" id="text66_1729068544144"/>
 
-                                                        <FlexBox width="100%" id="box0_1729069223752">
+                                                        <FlexBox width="100%" id="box0_1729069223752"   justifyContent="Center">
                                                             <items>
-                                                                <core:Icon src="sap-icon://customer-order-entry" class="customIconColor sapUiMediumMargin" size="2em" id="icon2"/>
+                                                                <core:Icon src="sap-icon://customer-order-entry" class="customIconColor sapUiMediumMargin" size="3em" id="icon2"/>
 
-                                                                <TextArea xmlns="sap.m" value="" placeholder="Informacion extra..." rows="4" id="area0" width="500px"/>
+                                                                <TextArea xmlns="sap.m" value="" placeholder="Informacion extra..." rows="4" id="area0"  width="500px"/>
                                                             </items>
                                                         </FlexBox>
                                                     </content>

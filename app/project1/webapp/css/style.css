@@ -92,7 +92,7 @@
   
 
   .customIconColor {
-    color: green; 
+    color:  hsl(226, 100%, 60%) !important; 
 }
   
 .customIconColor .sapUiIcon {

@@ -99,13 +99,31 @@ sap.ui.define([
         this.token();
         this.getUserInfo();
 
+        this.onColumnTotales();
+
       },
 
 
 
 
      
-  
+      onTipoCambioLive: function (oEvent) {
+        var oInput = oEvent.getSource();
+        var sValue = oInput.getValue().trim();
+      
+        // Permitir que el usuario borre el campo sin forzar nada aún
+        if (sValue === "") {
+          return;
+        }
+      
+        // Solo intentar formatear si es un número válido
+        var fValue = parseFloat(sValue);
+        if (!isNaN(fValue)) {
+          // Actualizar el campo con el valor formateado a 4 decimales
+          oInput.setValue(fValue.toFixed(4));
+        }
+      },
+      
 
 
       highlightControls: function () {
@@ -277,6 +295,8 @@ sap.ui.define([
             // Ejemplos de cómo poblar los controles
             this.byId("input0").setValue(oData.codigoProyect || "");
             this.byId("input1").setValue(oData.nameProyect || "");
+            this.byId("area0").setValue(oData.datosExtra || "");
+
             this.byId("23d3").setText(oData.Empleado || "");
             this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
             this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
@@ -1450,6 +1470,9 @@ sap.ui.define([
             this._ResumenTotal = idResumenCoste;
 
             console.log("JORNADAS ID " + this._ResumenTotal);
+
+
+            this.onColumnTotales();
 
 
           } else {
@@ -3381,200 +3404,6 @@ sap.ui.define([
 
 
 
-
-
-      // Definir el modelo OData
-      /* onSave: async function () {
-         let errorCount = 0;
-        const incompleteFields = [];
-      
-        const sProjectID = this._sProjectID; // ID del proyecto
-        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
-        const sEmail = this.byId("dddtg").getText();
-        const sEmpleado = this.byId("23d3").getText();
-        const snameProyect = this.byId("input1").getValue();
-        const sdescripcion = this.byId("idDescripcion").getValue();
-        const sTotal = parseInt(this.byId("input0_1725625161348").getValue(), 10);
-        const spluriAnual = this.byId("box_pluriAnual").getSelected();
-        const sClienteFac = this.byId("id_Cfactur").getValue();
-        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-        const sClienteFunc = this.byId("int_clienteFun").getValue();
-        const sObjetivoAlcance = this.byId("idObje").getValue();
-        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-        const sDatosExtra = this.byId("area0").getValue();
-        const sFechaIni = this.byId("date_inico").getDateValue();
-        const sFechaFin = this.byId("date_fin").getDateValue();
-        const sIPC = this.byId("input_ipc").getValue();
-      
-        var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
-      
-        const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
-        const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
-      
-        const sSelectedKey = this.byId("idNatu").getSelectedKey();
-        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
-        const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
-        const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
-        const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
-        const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
-        const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
-        const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
-      
-        const validateField = (control, value, fieldName) => {
-          if (!value || (typeof value === 'string' && value.trim() === "")) {
-            control.setValueState("Error");
-            control.setValueStateText("Este campo es obligatorio");
-            errorCount++;
-            if (!incompleteFields.includes(fieldName)) {
-              incompleteFields.push(fieldName);
-            }
-          } else {
-            control.setValueState("None");
-          }
-        };
-      
-        // Validar campos antes de hacer la llamada
-        validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
-        validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
-      
-        if (errorCount > 0) {
-          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
-          return;
-        }
-      
-        const now = new Date();
-        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-      
-        // Aquí agregas la nueva variable 'fechamodificacion' a tu payload
-        const payload = {
-          codigoProyect: "1",
-          nameProyect: snameProyect,
-          Email: sEmail,
-          Empleado: sEmpleado,
-          fechaCreacion: localDate,
-          pluriAnual: spluriAnual,
-          Total: sTotal,
-          descripcion: sdescripcion,
-          funcionalString: sClienteFunc,
-          clienteFacturacion: sClienteFac,
-          multijuridica: sMultiJuri,
-          Naturaleza_ID: sSelectedKey,
-          Area_ID: sSelecKeyA,
-          Iniciativa_ID: sSelectKeyIni,
-          jefeProyectID_ID: sSelecKeyJe,
-          objetivoAlcance: sObjetivoAlcance,
-          AsuncionesyRestricciones: sAsunyRestric,
-          Vertical_ID: sSelectKeyVerti,
-          Fechainicio: sFechaIniFormatted,
-          FechaFin: sFechaFinFormatted,
-          Seguimiento_ID: sSelectKeySegui,
-          EjecucionVia_ID: sSelectKeyEjcu,
-          AmReceptor_ID: sSelectKeyAmrep,
-          clienteFuncional_ID: sSelectKeyClienNuevo,
-          Estado: "Pendiente",
-          datosExtra: sDatosExtra,
-          IPC_apli: sIPC
-        };
-
-
-
-        // Crear la fecha de modificación (solo la fecha, sin hora ni zona horaria)
-        let oDateFormat1; // Declaramos fuera de cualquier bloque de función o condicional
-
-        if (!oDateFormat1) { // Solo lo creamos si no ha sido declarado aún
-          oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
-                pattern: "yyyy-MM-dd"
-            });
-        }
-
-        // Luego podemos usar oDateFormat como se desee
-        const fechaModificacion = new Date();
-        const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
-
-        // Si ya existe un sProjectID, agregamos 'FechaModificacion' en el payload para el PATCH
-        if (sProjectID) {
-          payload.FechaModificacion = formattedFechaModificacion; // Solo agregamos la fecha en formato 'yyyy-MM-dd'
-        }
-           
-       // Validar campos antes de hacer la llamada
-       if (!payload.descripcion || !payload.nameProyect) {
-         sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
-         console.error("Validación fallida: Falta código o nombre del proyecto", payload);
-         return;
-       }
-
-       // Log del payload antes de enviarlo
-       console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
-
-
-        try {
-          let oModel = this.getView().getModel();
-          let sServiceUrl = oModel.sServiceUrl;
-      
-          let response;
-          let url = "/odata/v4/datos-cdo/DatosProyect";
-          let method = "POST";
-      
-          if (sProjectID) {
-            // Actualización (PATCH)
-            url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-            method = "PATCH";
-          }
-      
-          //  Obtener el CSRF Token
-          let oTokenResponse = await fetch(sServiceUrl, {
-            method: "GET",
-            headers: { "x-csrf-token": "Fetch" }
-          });
-          if (!oTokenResponse.ok) {
-            throw new Error("Error al obtener el CSRF Token");
-          }
-      
-          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-          if (!sCsrfToken) {
-            throw new Error("No se recibió un CSRF Token");
-          }
-      
-          console.log("CSRF Token obtenido:", sCsrfToken);
-      
-          // Realizamos la llamada al servicio
-          response = await fetch(url, {
-            method: method,
-            headers: {
-              "Content-Type": "application/json",
-              "x-csrf-token": sCsrfToken
-            },
-            body: JSON.stringify(payload),
-          });
-      
-           if (!response.ok) throw new Error("Error al procesar la solicitud OData");
- 
-           const result = await response.json();
-           const generatedId = result.ID || result.data?.ID;
- 
-           if (generatedId) {
-             const data = { scodigoProyect: scodigoProyect, snameProyect: snameProyect, generatedId: generatedId };
- 
-             await fetch("/odata/v4/datos-cdo/StartProcess", {
-               method: "POST",
-               headers: { "Content-Type": "application/json", "x-csrf-token": sCsrfToken },
-               body: JSON.stringify(data)
-             });
- 
-             this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
-           } else {
-             console.error("No se generó un ID válido.");
-             sap.m.MessageToast.show("Error: No se generó un ID válido.");
-           }
-         } catch (error) {
-           console.error("Error en la llamada al servicio:", error);
-           sap.m.MessageToast.show("Error al procesar la solicitud: " + error.message);
-         }
-       },*/
-
-
-
       onSave: async function () {
         let errorCount = 0;
         const incompleteFields = [];
@@ -3808,8 +3637,8 @@ sap.ui.define([
 
 
               // 1 Payload para iniciar workflow de aprobación
-/*
-              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
+
+        /*      const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
                 + generatedId
                 + ";aprobacion=true";
 
@@ -3851,8 +3680,8 @@ sap.ui.define([
 
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
-              }*/
-              // Navegar a la vista 'app' con el nuevo ID
+              }
+              // Navegar a la vista 'app' con el nuevo ID*/
             this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
@@ -9042,227 +8871,7 @@ sap.ui.define([
 
 
 
-      /*   calcularDistribucionInput: function () {
-           let elementos = [
-               { id: "input0_1725625161348", nombre: "Input1", tipo: "input" },
-               { id: "totalSubtotal", nombre: "Input2", tipo: "input" },
-               { id: "input2_1724756105", nombre: "Input3", tipo: "input" },
-               { id: "text33", nombre: "Text1", tipo: "text" },
-               { id: "text32_1723542481599", nombre: "Text2", tipo: "text" },
-               { id: "text560", nombre: "Text3", tipo: "text" }
-           ];
-       
-           let valoresDistribuidos = {};
-       
-           elementos.forEach(elemento => {
-               let oElemento = this.byId(elemento.id);
-               if (!oElemento) {
-                   console.error(`Error: No se encontró el elemento con ID '${elemento.id}'`);
-                   return;
-               }
-       
-               let valor = elemento.tipo === "input" ? parseFloat(oElemento.getValue()) || 0 : parseFloat(oElemento.getText()) || 0;
-               if (valor === 0) {
-                   console.log(`⚠ El valor del elemento ${elemento.nombre} es 0, no se puede distribuir.`);
-                   return;
-               }
-       
-               for (let table in this._porcentajesPorTabla) {
-                   let porcentaje = this._porcentajesPorTabla[table];
-                   let valorDistribuido = (valor * porcentaje) / 100;
-       
-                   if (!valoresDistribuidos[table]) {
-                       valoresDistribuidos[table] = {};
-                   }
-       
-                   for (let year in this._insercionesPorAnoYTabla) {
-                       if (!this._insercionesPorAnoYTabla[year][table]) {
-                           continue;
-                       }
-       
-                       let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
-       
-                       if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
-                           continue;
-                       }
-       
-                       if (!valoresDistribuidos[table][year]) {
-                           valoresDistribuidos[table][year] = [];
-                       }
-       
-                       if (elemento.tipo === "text") {
-                           let numInserciones = this._insercionesPorAnoYTabla[year][table] || 1;
-                           let valorPorInsercion = valorDistribuido / numInserciones;
-                           let porcentajePorInsercion = (100 / numInserciones);
-                           let sumaValores = 0;
-                           let valoresTemporales = [];
-       
-                           for (let i = 0; i < numInserciones; i++) {
-                               let valorTemp = (i === numInserciones - 1) ? (valorDistribuido - sumaValores) : valorPorInsercion;
-                               sumaValores += valorTemp;
-                               valoresTemporales.push({
-                                   elemento: elemento.nombre,
-                                   porcentaje: porcentajePorInsercion.toFixed(2),
-                                   valor: valorTemp.toFixed(2)
-                               });
-                           }
-       
-                           valoresDistribuidos[table][year].push(...valoresTemporales);
-                       } else {
-                           let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
-                           let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
-       
-                           valoresDistribuidos[table][year].push({
-                               elemento: elemento.nombre,
-                               porcentaje: porcentajePorAno.toFixed(2),
-                               valor: valorDistribuidoPorAno.toFixed(2)
-                           });
-                       }
-                   }
-               }
-           });
-       
-           console.log("Distribución final de valores:", valoresDistribuidos);
-           return valoresDistribuidos;
-       },*/
-
-
-
-
-      /*-  calcularDistribucionInput: function () {
-          let elementos = [
-              { id: "input0_1725625161348", nombre: "Input1", tipo: "input" },
-              { id: "totalSubtotal", nombre: "Input2", tipo: "input" },
-              { id: "input2_1724756105", nombre: "Input3", tipo: "input" },
-              { id: "text33", nombre: "Text1", tipo: "text" },
-              { id: "text32_1723542481599", nombre: "Text2", tipo: "text" }
-          ];
-      
-          let valoresDistribuidos = {};
-      
-          elementos.forEach(elemento => {
-              let oElemento = this.byId(elemento.id);
-              if (!oElemento) {
-                  console.error(`Error: No se encontró el elemento con ID '${elemento.id}'`);
-                  return;
-              }
-      
-              let valor = elemento.tipo === "input" ? parseFloat(oElemento.getValue()) || 0 : parseFloat(oElemento.getText()) || 0;
-              if (valor === 0) {
-                  console.log(`⚠ El valor del elemento ${elemento.nombre} es 0, no se puede distribuir.`);
-                  return;
-              }
-      
-              for (let table in this._porcentajesPorTabla) {
-                  let porcentaje = this._porcentajesPorTabla[table];
-                  let valorDistribuido = (valor * porcentaje) / 100;
-      
-                  if (!valoresDistribuidos[table]) {
-                      valoresDistribuidos[table] = {};
-                  }
-      
-                  for (let year in this._insercionesPorAnoYTabla) {
-                      if (!this._insercionesPorAnoYTabla[year][table]) {
-                          continue;
-                      }
-      
-                      let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
-      
-                      if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
-                          continue;
-                      }
-      
-                      let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
-                      let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
-      
-                      if (!valoresDistribuidos[table][year]) {
-                          valoresDistribuidos[table][year] = [];
-                      }
-      
-                      valoresDistribuidos[table][year].push({
-                          elemento: elemento.nombre,
-                          porcentaje: porcentajePorAno.toFixed(2),
-                          valor: valorDistribuidoPorAno.toFixed(2)
-                      });
-                  }
-              }
-          });
-      
-          console.log("Distribución final de valores:", valoresDistribuidos);
-          return valoresDistribuidos;
-      },*/
-
-
-
-      /*  calcularDistribucionInput: function () {
-          //let inputIds = ["input0_1725625161348", "totalSubtotal", "input2_1724756105"]; // IDs de los inputs
-  
-  
-  
-          let inputs = [
-            { id: "input0_1725625161348", nombre: "Input1" },
-            { id: "totalSubtotal", nombre: "Input2" },
-            { id: "input2_1724756105", nombre: "Input3" }
-            //      { id: "input3_1725625161351", nombre: "Input4" }
-          ];
-  
-  
-  
-          let valoresDistribuidos = {};
-  
-          inputs.forEach(input => {
-            let oInput = this.byId(input.id);
-            if (!oInput) {
-              console.error(`Error: No se encontró el input con ID '${input.id}'`);
-              return;
-            }
-  
-            let totalInputValue = parseFloat(oInput.getValue()) || 0;
-            if (totalInputValue === 0) {
-              console.log(`⚠ El valor del input ${input.nombre} es 0, no se puede distribuir.`);
-              return;
-            }
-  
-            for (let table in this._porcentajesPorTabla) {
-              let porcentaje = this._porcentajesPorTabla[table];
-              let valorDistribuido = (totalInputValue * porcentaje) / 100;
-  
-              if (!valoresDistribuidos[table]) {
-                valoresDistribuidos[table] = {};
-              }
-  
-              for (let year in this._insercionesPorAnoYTabla) {
-                if (!this._insercionesPorAnoYTabla[year][table]) {
-                  continue;
-                }
-  
-                let insercionesEnAno = this._insercionesPorAnoYTabla[year][table];
-  
-                if (!this._insercionesPorTabla[table] || this._insercionesPorTabla[table] === 0) {
-                  continue;
-                }
-  
-                let porcentajePorAno = (insercionesEnAno / this._insercionesPorTabla[table]) * 100;
-                let valorDistribuidoPorAno = (valorDistribuido * porcentajePorAno) / 100;
-  
-                if (!valoresDistribuidos[table][year]) {
-                  valoresDistribuidos[table][year] = [];
-                }
-  
-                valoresDistribuidos[table][year].push({
-                  input: input.nombre,
-                  porcentaje: porcentajePorAno.toFixed(2),
-                  valor: valorDistribuidoPorAno.toFixed(2)
-                });
-              }
-            }
-          });
-  
-          console.log("Distribución final de valores:", valoresDistribuidos);
-          return valoresDistribuidos;
-        },*/
-
-
+   
 
 
 
@@ -9955,6 +9564,43 @@ sap.ui.define([
         if (this._insercionesPorAnoYTabla) {
           this.CaseAno();
         }
+
+
+
+
+
+        var conversionInput = this.byId("inputCambioEu").getValue().trim();
+
+        
+
+        // Obtener referencia al input donde mostrar el total convertido
+        var inputTotalUSD = this.byId("input0_1725625132423424361348");
+      
+        if (conversionInput !== "") {
+          // Convertir a número con 4 decimales
+          var conversionRate = parseFloat(parseFloat(conversionInput).toFixed(4));
+      
+        
+      
+          // Multiplicar por tasa de conversión
+          var totalDolares = TotalSumas * conversionRate;
+      
+          // Formatear con separador de miles y 2 decimales
+          var formattedTotal = new Intl.NumberFormat('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(totalDolares);
+      
+          // Mostrar el input y poner el valor con símbolo $
+          inputTotalUSD.setVisible(true);
+          inputTotalUSD.setValue(formattedTotal + ' $');
+      
+        } else {
+          // Si no hay tasa de conversión, esconder input y limpiar valor
+          inputTotalUSD.setVisible(false);
+          inputTotalUSD.setValue("");
+        }
+
 
         // Establecer el valor formateado en el input
 
