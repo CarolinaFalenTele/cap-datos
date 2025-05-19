@@ -479,10 +479,10 @@
                                                         <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="End">
                                                             <VBox class="sapUiSmallMarginEnd" justifyContent="End" alignItems="End">
                                                                 <Label text="Tipo Compra" class="color"  />
-                                                                <Select id="select_tipoCom"
+                                                          <Select id="select_tipoCom"
                                                                         selectedKey="{TipoCompra>valor}"
-                                                                        change="onInputChange"
-                                                                        items="{/TipoCompra}">
+                                                                        change="onInputChange"   width="150px"
+                                                                        items="{/TipoCompra}"   forceSelection="false">
                                                                     <items>
                                                                         <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
@@ -491,11 +491,12 @@
                                                             
                                                             <VBox justifyContent="End" alignItems="End">
                                                                 <Label text="Condición" class="color"  />
-                                                                <Select id="selectMotivo"
+                                                                <Select id="selectMotivo"   width="150px"
                                                                         selectedKey="{MotivoCondi>valor}"
                                                                         change="onInputChange"
-                                                                        items="{/MotivoCondi}">
+                                                                        items="{/MotivoCondi}"   forceSelection="false">
                                                                     <items>
+                                                                    
                                                                         <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
                                                                 </Select>
@@ -2312,12 +2313,12 @@
 
                                                                                     <Input xmlns="sap.m" value="" id="input10_1724757017406" description="Otros Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
-                                                                                    <Input xmlns="sap.m" value="" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="2" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
 
                                                                              <ToolbarSpacer />
                                                                                 <ToolbarSpacer />
                                                                                  <ToolbarSpacer  class="colorCora"/>
-                                                                                    <Input xmlns="sap.m" value="" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="2" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
                                                                                 </items>
                                                                             </VBox>
                                                                         </cells>

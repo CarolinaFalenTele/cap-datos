@@ -481,8 +481,8 @@
                                                                 <Label text="Tipo Compra" class="color"  />
                                                           <Select id="select_tipoCom"
                                                                         selectedKey="{TipoCompra>valor}"
-                                                                        change="onInputChange"
-                                                                        items="{/TipoCompra}">
+                                                                        change="onInputChange"   width="150px"
+                                                                        items="{/TipoCompra}"   forceSelection="false">
                                                                     <items>
                                                                         <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
@@ -491,11 +491,12 @@
                                                             
                                                             <VBox justifyContent="End" alignItems="End">
                                                                 <Label text="Condición" class="color"  />
-                                                                <Select id="selectMotivo"
+                                                                <Select id="selectMotivo"   width="150px"
                                                                         selectedKey="{MotivoCondi>valor}"
                                                                         change="onInputChange"
-                                                                        items="{/MotivoCondi}">
+                                                                        items="{/MotivoCondi}"   forceSelection="false">
                                                                     <items>
+                                                                    
                                                                         <core:Item key="{ID}" text="{tipo}" />
                                                                     </items>
                                                                 </Select>

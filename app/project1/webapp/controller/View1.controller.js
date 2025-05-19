@@ -387,15 +387,27 @@ sap.ui.define([
 
       _onDecisionPress: async function (oEvent) {
         const decision = oEvent.getSource().data("valor");
+    
         if (decision) {
-          await   this._completarWorkflow(decision);
-          var oRouter = await  sap.ui.core.UIComponent.getRouterFor(this);
-         oRouter.navTo("appNoparame");
-
+            await this._completarWorkflow(decision);
+    
+            // Mostrar mensaje informativo al usuario
+            sap.m.MessageBox.information(
+                "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                {
+                    title: "Aprobación enviada",
+                    onClose: function () {
+                        // Redirigir al finalizar el mensaje
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("appNoparame");
+                    }.bind(this) // Importante: asegurar el contexto
+                }
+            );
         } else {
-          sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+            sap.m.MessageBox.warning("No se pudo determinar la decisión.");
         }
-      },
+    },
+    
 
 
 

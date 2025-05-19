@@ -280,7 +280,7 @@ sap.ui.define([
             this.byId("23d3").setText(oData.Empleado || "");
             this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
             this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
-            this.byId("idCheckMensual").setSelected(oData.mensual || "");
+            this.byId("idCheckMensual").setSelected(!!oData.mensual);
 
             this.byId("dddtg").setText(oData.Email || "");
             this.byId("int_clienteFun").setValue(oData.funcionalString || "");
@@ -343,8 +343,10 @@ sap.ui.define([
               this.leerPerfilJornadas(sProjectID),
               this.leerTotalRecursoInterno(sProjectID),
               this.leerTotalConsumoExter(sProjectID),
-              // Call the function to read workflow instances associated with the given project ID
-              this.leerWorkflowInstancias(sProjectID)
+              this.leerTotalRecuExterTotal(sProjectID),
+              this.leerWorkflowInstancias(sProjectID),
+              this.leerTotalInfraestrLicencia(sProjectID),
+              this.leerTotalResumenCostesTotal(sProjectID)
 
             ]);
 
@@ -385,15 +387,27 @@ sap.ui.define([
 
       _onDecisionPress: async function (oEvent) {
         const decision = oEvent.getSource().data("valor");
+    
         if (decision) {
-          await   this._completarWorkflow(decision);
-          var oRouter = await  sap.ui.core.UIComponent.getRouterFor(this);
-         oRouter.navTo("appNoparame");
-
+            await this._completarWorkflow(decision);
+    
+            // Mostrar mensaje informativo al usuario
+            sap.m.MessageBox.information(
+                "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                {
+                    title: "Aprobación enviada",
+                    onClose: function () {
+                        // Redirigir al finalizar el mensaje
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("appNoparame");
+                    }.bind(this) // Importante: asegurar el contexto
+                }
+            );
         } else {
-          sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+            sap.m.MessageBox.warning("No se pudo determinar la decisión.");
         }
-      },
+    },
+    
 
 
 
@@ -1321,7 +1335,7 @@ sap.ui.define([
             this.byId("inputServi").setValue(Recurso.servicios ? parseFloat(Recurso.servicios).toFixed(2) : "0.00");
             this.byId("input10_1724757017406").setValue(Recurso.OtrosServicios ? parseFloat(Recurso.OtrosServicios).toFixed(2) : "0.00");
             this.byId("input9_1724757015442").setValue(Recurso.GastosdeViaje ? parseFloat(Recurso.GastosdeViaje).toFixed(2) : "0.00");
-            this.byId("totalConsuExternot").setValue(Recurso.Total ? parseFloat(Recurso.Total).toFixed(2) : "0.00");
+            this.byId("totaRecurExterno").setValue(Recurso.Total ? parseFloat(Recurso.Total).toFixed(2) : "0.00");
 
 
 
@@ -1340,6 +1354,115 @@ sap.ui.define([
           sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
+
+
+
+
+      leerTotalInfraestrLicencia: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/InfraestrLicencia?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var idTotalInfrLicen = Recurso.ID; // Obtén el ID del recurso
+            ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            this.byId("totalInfraestruc").setValue(Recurso.totalInfraestruc ? parseFloat(Recurso.totalInfraestruc).toFixed(2) : "0.00");
+            this.byId("input0_1724758359").setValue(Recurso.totalLicencia ? parseFloat(Recurso.totalLicencia).toFixed(2) : "0.00");
+         
+
+
+
+            this._idInfraLicencia = idTotalInfrLicen;
+
+            console.log("JORNADAS ID " + this._idInfraLicencia);
+
+          } else {
+            console.log("NO SE ENCONTRARON DATOS PARA InfraestrLicencia");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
+
+
+
+      leerTotalResumenCostesTotal: async function (projectID) {
+        var sUrl = `/odata/v4/datos-cdo/ResumenCostesTotal?$filter=datosProyect_ID eq ${projectID}`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+
+
+          // Verificar si hay datos en oData.value
+          if (oData.value && oData.value.length > 0) {
+            var Recurso = oData.value[0]; // Toma solo el primer recurso
+            var idResumenCoste = Recurso.ID; // Obtén el ID del recurso
+            ///  console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
+
+
+            this.byId("totalSubtotal").setValue(Recurso.Subtotal ? parseFloat(Recurso.Subtotal).toFixed(2) : "0.00");
+            this.byId("input2_172475612").setValue(Recurso.CosteEstruPorce ? parseFloat(Recurso.CosteEstruPorce).toFixed(2) : "0.00");
+            this.byId("input2_1724756105").setValue(Recurso.Costeestructura ? parseFloat(Recurso.Costeestructura).toFixed(2) : "0.00");
+            this.byId("input2_17221205").setValue(Recurso.totalLicencias ? parseFloat(Recurso.totalLicencias).toFixed(2) : "0.00");
+            this.byId("input2_1756121205").setValue(Recurso.Margeingresos ? parseFloat(Recurso.Margeingresos).toFixed(2) : "0.00");
+
+
+
+
+            this._ResumenTotal = idResumenCoste;
+
+            console.log("JORNADAS ID " + this._ResumenTotal);
+
+
+          } else {
+            console.log("NO SE ENCONTRARON DATOS PARA _ResumenTotal");
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener los datos de Recursos Internos:", error);
+          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        }
+      },
+
 
 
       /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<
@@ -3531,9 +3654,9 @@ sap.ui.define([
           pluriAnual: spluriAnual,
           Total: sTotal,
           descripcion: sdescripcion,
-          mensual: true,
-          comentarioTipoCompra:  "HOla2",
-          comentarioFacturacion: "hola2", 
+          mensual: sMensual,
+          comentarioTipoCompra:  sComentarioTipCompra,
+          comentarioFacturacion: sComentarioFacturacion, 
           funcionalString: sClienteFunc,
           clienteFacturacion: sClienteFac,
           multijuridica: sMultiJuri,
@@ -3673,7 +3796,11 @@ sap.ui.define([
                 this.insertarLicencia(generatedId),
                 this.insertPerfilJornadas(generatedId, sCsrfToken),
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
-                this.insertTotalConsuExt(generatedId, sCsrfToken)
+                this.insertTotalConsuExt(generatedId, sCsrfToken),
+                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
+                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
+                this.insertResumenCostesTotal(generatedId, sCsrfToken),
+
               ]);
 
 
@@ -4240,7 +4367,7 @@ sap.ui.define([
         var sServiciosC = parseInt(this.byId("inputServi").getValue(), 10);
         var sOtroServiC = parseInt(this.byId("input10_1724757017406").getValue(), 10);
         var sGastoViaC = parseInt(this.byId("input9_1724757015442").getValue(), 10);
-     //   var sTotaleJorC = parseInt(this.byId("totalConsuExternot").getValue(), 10);
+      var sTotaleJorC = parseInt(this.byId("totaRecurExterno").getValue(), 10);
 
 
         console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
@@ -4285,6 +4412,134 @@ sap.ui.define([
           MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
         }
       },
+
+
+
+
+      insertTotalInfraestrLicencia: async function (generatedId, sCsrfToken) {
+
+        var idInfraLicencia  = this._idInfraLicencia;
+
+        var sTotalInfraEstruc = parseInt(this.byId("totalInfraestruc").getValue(), 10);
+      var sTotalLicencia = parseInt(this.byId("input0_1724758359").getValue(), 10);
+
+
+        console.log("ID RECIBIDO DEL INSERT " + idInfraLicencia);
+
+
+        var payload = {
+          totalInfraestruc: sTotalInfraEstruc,
+          totalLicencia: sTotalLicencia,
+          datosProyect_ID: generatedId
+        };
+
+        let sUrl = "/odata/v4/datos-cdo/InfraestrLicencia";
+        let sMethod = "POST";
+
+        // 👉 Aquí decides si haces POST o PATCH
+        if (idInfraLicencia) {
+          sUrl += `(${idInfraLicencia})`;  // Construyes la URL con ID si vas a hacer UPDATE
+          sMethod = "PATCH";          // PATCH para actualizar
+        }
+
+        try {
+          const response = await fetch(sUrl, {
+            method: sMethod,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            MessageToast.show(idInfraLicencia ? "Total InfraEstructura y Licencia   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+          } else {
+            const error = await response.json();
+            console.error("Error:", error);
+            MessageToast.show("Error al guardar el Total InfraEstructura y Licencia ");
+          }
+        } catch (err) {
+          console.error("Error en fetch:", err);
+          MessageToast.show("Error de conexión al guardar InfraEstructura y Licencia  ");
+        }
+      },
+
+
+
+
+
+
+
+      insertResumenCostesTotal: async function (generatedId, sCsrfToken) {
+
+        var idResumenCostetotal  = this._ResumenTotal;
+
+
+        var sSubtotal  = parseInt(this.byId("totalSubtotal").getValue(), 10);
+        var sCosteEstrucPorcen = parseInt(this.byId("input2_172475612").getValue(), 10);
+        var sCosteEs = parseInt(this.byId("input2_1724756105").getValue(), 10);
+        var sMargenPorce = parseInt(this.byId("input2_17221205").getValue(), 10);
+        var sMargenIngreso = parseInt(this.byId("input2_1756121205").getValue(), 10);
+        var Total = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+
+        console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
+
+
+        var payload = {
+          Subtotal: sSubtotal,
+          CosteEstruPorce: sCosteEstrucPorcen,
+          Costeestructura: sCosteEs,
+          totalLicencias: sMargenPorce,
+          Margeingresos: sMargenIngreso,
+          datosProyect_ID: generatedId
+        };
+
+        let sUrl = "/odata/v4/datos-cdo/ResumenCostesTotal";
+        let sMethod = "POST";
+
+        // 👉 Aquí decides si haces POST o PATCH
+        if (idResumenCostetotal) {
+          sUrl += `(${idResumenCostetotal})`;  // Construyes la URL con ID si vas a hacer UPDATE
+          sMethod = "PATCH";          // PATCH para actualizar
+        }
+
+        try {
+          const response = await fetch(sUrl, {
+            method: sMethod,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            MessageToast.show(idResumenCostetotal ? "Total idResumenCostetotal   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+          } else {
+            const error = await response.json();
+            console.error("Error:", error);
+            MessageToast.show("Error al guardar el Total idResumenCostetotal ");
+          }
+        } catch (err) {
+          console.error("Error en fetch:", err);
+          MessageToast.show("Error de conexión al guardar idResumenCostetotal  ");
+        }
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
