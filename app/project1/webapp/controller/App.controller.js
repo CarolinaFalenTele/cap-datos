@@ -1661,7 +1661,14 @@ sap.ui.define(
                                         "serviRecurExter",
                                         "GastoViajeRecExter",
                                         "LicenciasCon",
-                                        "WorkflowInstancias"
+                                        "WorkflowInstancias",
+                                        "ResumenCostesTotal",
+                                        "RecurInterTotal",
+                                        "ConsuExterTotal",
+                                        "RecuExterTotal",
+                                        "InfraestrLicencia",
+                                        "PerfilTotal"
+
                                     ];
 
                                     // 2️ Obtener y eliminar registros relacionados

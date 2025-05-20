@@ -165,9 +165,6 @@
     font-weight: bold;
 }
 
-.customCheck .sapMCb {
-    transform: scale(1.3); /* Aumenta el tamaño del cuadrado del checkbox */
-}
 
 /* Cambia el color del borde del checkbox */
 .customCheck .sapMCbBg {
@@ -180,7 +177,3 @@
     border-color: #0070f3;
 }
 
-/* Opcional: cambia el tamaño del checkbox */
-.customCheck .sapMCb {
-    transform: scale(1.3);
-}

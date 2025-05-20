@@ -104,8 +104,30 @@ sap.ui.define([
       },
 
 
+      onInfoPress: function (oEvent) {
+        // Cargar el popover si no está aún
+        if (!this._oPopover) {
+            this._oPopover = this.byId("infoPopover");
+        }
+        this._oPopover.openBy(oEvent.getSource());
+    },
+    
 
+    
+    onInfoPressRecursos: function (oEvent) {
+      // Cargar el popover si no está aún
+      if (!this._oPopover) {
+          this._oPopover = this.byId("infoPopoverRecursos");
+      }
+      this._oPopover.openBy(oEvent.getSource());
+  }, 
 
+  onInfoGeneralPress: function (oEvent) {
+    if (!this._oPopoverGeneral) {
+        this._oPopoverGeneral = this.byId("infoPopoverGeneral");
+    }
+    this._oPopoverGeneral.openBy(oEvent.getSource());
+},
      
       onTipoCambioLive: function (oEvent) {
         var oInput = oEvent.getSource();
@@ -3426,6 +3448,14 @@ sap.ui.define([
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
         const sIPC = this.byId("input_ipc").getValue();
+        // Quitar el símbolo % y reemplazar coma por punto para poder parsear
+let numIPC = sIPC.replace("%", "").replace(",", ".");
+
+// Convertir a número (float)
+let ipcNumber = parseFloat(numIPC);
+
+
+
         const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
         const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
 
@@ -3506,7 +3536,7 @@ sap.ui.define([
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
           datosExtra: sDatosExtra,
-          IPC_apli: sIPC
+          IPC_apli: ipcNumber
         };
 
         // Agregar fechaCreacion solo si es nuevo (POST)
@@ -8176,7 +8206,7 @@ sap.ui.define([
 
           //  console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
         } else {
-          sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+      //    sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
         }
       },
 

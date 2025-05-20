@@ -52,7 +52,7 @@
                                                     <Toolbar id="toolbar3341">
                                                         <Title text="Solicitud de proyecto" id="titulo1" class="miTitulo color"/>
                                                         <ToolbarSpacer id="333d"/>
-                                                        <Button icon="sap-icon://hint" id="btn_1" width="10px" press=".pruebaCambioDIner"/>
+                <Button icon="sap-icon://hint" type="Transparent" press="onInfoGeneralPress" tooltip="Ver ayuda de los campos" />
                                                     </Toolbar>
                                                 </headerToolbar>
                                                 <content>
@@ -64,10 +64,10 @@
                                                                     <ColumnListItem type="Active" id="item1">
                                                                         <cells>
                                                                             <Input xmlns="sap.m" id="input0" type="Number" value="" placeholder="5524455" liveChange="onInputChange" editable="false" tooltip="Codigo Proyecto asignado por la PMO" showSuggestion="true"/>
-                                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange" tooltip="Area Funcional de la DAGC que pertenece a la solicitud" showSuggestion="true"/>
+                                                                            <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange"  showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" value="" id="idDescripcion"/>
 
-                                                                            <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false">
+                                                                            <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false"  tooltip="Area Funcional de la DAGC que pertenece a la solicitud">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreArea}" id="item155"/>
                                                                                 </items>
@@ -227,8 +227,8 @@
                                                                             <Input xmlns="sap.m" value="2,5%" id="input_ipc" placeholder="2,5%" textAlign="End"   width="6rem" tooltip="En los proyecto PluriAnuales se considera un incremento del IPC del 2,5% para Recursos Internos a partir del segundo año, para Recursos Externos el responsable de la cotizacion tiene que considerar si es necesario incrementar la tarifa en cada uno de los años sucesivos"/>
                                                                             <Input xmlns="sap.m" value="" id="inputCambioEu" placeholder="$" textAlign="End"  change="onTipoCambioLive"  tooltip="En caso de querer obtener el total de la tabla oferta en $ indicar el tipo de cambio aplicado. Consultar a Control el tipo de cambio vigente en el momento de la realización de la ficha "/>
 
-                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
-                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_inico" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy" tooltip="Inserta la Fecha inicio del proyecto"/>
+                                                                            <DatePicker xmlns="sap.m" id="date_fin" change="onselectmethodsetinfo" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy" tooltip="Inserta la Fecha fin del proyecto"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -293,7 +293,7 @@
                                                                 <columns>
                                                                     <Column id="column9_1714468867115" hAlign="Center">
                                                                         <header>
-                                                                            <Label text="Hito/Fase" id="label9_1714468867114"/>
+                                                                            <Label text="Hito/Fase" id="label9_1714468867114"   tooltip="Indicar las fechas de las fases que apliquen a la iniciativa"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column10_1714468867116">
@@ -430,7 +430,8 @@
                                                     </FlexBox>
 
                                                     <FlexBox width="100%" id="box0_1721815442596">
-                                                                                                             <HBox id="cambfgiDFSDFggy"    class="sapUiSmallMargin">
+                                                     <HBox id="cambfgiDFSDFggy"   justifyContent="SpaceAround" width="1800px" class="sapUiSmallMargin  sapUiLargeMarginEnd">
+                                                     
                                                         <Table ariaLabelledBy="__xmlview0--label9_1714468867114" noDataText="Drop column list items here and columns in the area above" id="table2" width="400px" class="customHeaderColor2"> 
                                                             <items>
                                                                 <ColumnListItem id="item2_1723105790552">
@@ -467,24 +468,28 @@
                                                             <columns>
                                                                 <Column id="column0_1723105402188">
                                                                     <header>
-                                                                        <CheckBox xmlns="sap.m" text="Condicionado" selected="false" id="box_condi" select="onSelectCheckbox"/>
+                                                                        <CheckBox xmlns="sap.m" text="Condicionado" selected="false" id="box_condi" select="onSelectCheckbox" tooltip="Si es una contratación condicionada marca el checkbox e indicar los proveedores condicionados, asi como el motivo del condicionamiento en el apartado Motivo de Condicionamiento  "/>
                                                                     </header>
                                                                 </Column>
                                                                 <Column id="column1_1723105402189">
                                                                     <header>
-                                                                        <CheckBox xmlns="sap.m" text="Proveedores" selected="false" id="box_prove" select="onSelectCheckbox"/>
+                                                                        <CheckBox xmlns="sap.m" text="Proveedores" selected="false" id="box_prove" select="onSelectCheckbox"  tooltip="Si se va a abrir a Licitación marca el checkbox e indicar los proveedores a ser invitados al proceso (Contratación ordinaria) " />
                                                                     </header>
                                                                 </Column>
                                                             </columns>
                                                         </Table>
                                                         <ToolbarSpacer/>
-                                                        <ToolbarSpacer/>
 
-                                                      <VBox id="cambio2" class="sapUiSmallMargin" justifyContent="End" alignItems="End" width="100%">
+
+                                                <VBox id="cambio2"
+                                                        class="sapUiLargeMarginBegin"
+                                                        justifyContent="End"
+                                                        alignItems="End"
+                                                        width="100%">
                                                         
                                                         <!-- Fila con los dos Select -->
-                                                        <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="End">
-                                                            <VBox class="sapUiSmallMarginEnd" justifyContent="End" alignItems="End">
+                                                        <HBox class="sapUiLargeMarginBottom" justifyContent="End" alignItems="Center">
+                                                            <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="End" alignItems="End">
                                                                 <Label text="Tipo Compra" class="color"  />
                                                           <Select id="select_tipoCom"
                                                                         selectedKey="{TipoCompra>valor}"
@@ -512,13 +517,13 @@
 
                                                         <!-- Título Comentarios -->
                                                         <Toolbar id="tooblser3" class="sapUiSmallMarginBottom">
-                                                            <Title id="noem23" text="Comentarios Facturación" level="H2" class="color" />
+                                                            <Title id="noem23" text="Motivo de Condicionamiento" level="H2" class="color" />
                                                         </Toolbar>
 
                                                         <!-- TextArea -->
                                                         <TextArea id="idComentariosFac"
                                                                 placeholder="Escribe aquí..."
-                                                                rows="2"
+                                                                rows="3"
                                                                 cols="60"
                                                                 class="sapUiSmallMarginBottom" />
                                                     </VBox>
@@ -570,12 +575,22 @@
                                                         </items>
                                                     </FlexBox>
 
+
+
+
                                                     <FlexBox width="100%" id="box0_1714486261986">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiTinyMargin sapUiLargeMarginTop customHeaderColor" visible="false" width="600px">
+                                                   
+                                                        <Label text="" id="label25466427"/>
+                                                        <Label text="" id="la3423423442342306427"  class="sapUiLargeMarginTop"/>
+                                                        <Label text="" id="frted"/>
+                                                         <Label text="" id="3234324"/>
+                                                        <Label text="" id="la342344232323442306427"/>
+                                                        <Label text="" id="frt234234ed"  class="sapUiLargeMarginTop"/>
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiLargeMargin sapUiLargeMarginTop sapUiLargeMarginBottom  customHeaderColor" visible="false" width="600px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="d55">
-                                                                        <Title id="d2654" text="Cliente facturacion" level="H2"   class="color"/>
+                                                                        <Title id="d2654" text="Cliente Facturacion" level="H2"   class="color"    tooltip="Indicar las jurídicas y sus correspondientes porcentajes aplicables" />
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -651,14 +666,14 @@
 
 
 
- <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="Start">
-                                                            <VBox class="sapUiSmallMarginEnd">
-                                                     	<CheckBox text="Mensual " id="idCheckMensual" selected="false"  visible="false"   class="customCheck" />
+                                                        <HBox class="sapUiSmallMarginBottom" justifyContent="End" alignItems="End">
+                                                            <VBox class="sapUiSmallMarginEnd" justifyContent="End">
+                                                     	    <CheckBox text="Mensual " id="idCheckMensual" selected="false"  visible="false"   class="customCheck"  tooltip="Marcar en caso de facturación mensual (Mantenimiento, servicios,... )" />
                                                             </VBox>
                                                             
-                                                            <VBox>
-                                                                <Label text="Condición" id="TextoCon" class="color" visible="false"  />
-                                                               <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComentarioTipo" rows="2" cols="60" visible="false"/>
+                                                            <VBox justifyContent="End">
+                                                                <Label text="Comentarios de Facturación"   textAlign="End" id="TextoCon" class="color" visible="false"  tooltip="Comentarios sobre la facturación si aplica" />
+                                                               <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComentarioTipo" rows="1" cols="60" visible="false"  />
 
                                                             </VBox>
                                                         </HBox>
@@ -680,10 +695,14 @@
 
                                                             <Table noDataText="Drop column list items here and columns in the area above" id="table0"    class="sapUiSmallMargin  customHeaderColor" width="600px" visible="false">
                                                                 <headerToolbar>
-                                                                    <Toolbar id="dfff">
-                                                                        <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2"  class="color"/>
-                                                                    </Toolbar>
-                                                                </headerToolbar>
+                                                            <Toolbar id="dfff">
+                                                                <HBox alignItems="Center">
+                                                                    <Button icon="sap-icon://hint" type="Transparent" press="onInfoPress" tooltip="Ver más información"/>
+                                                                    <Title id="d2ff" text="Facturación Proyecto / Servicio Cliente Externo" level="H2" class="color"/>
+                                                                </HBox>
+                                                            </Toolbar>
+                                                        </headerToolbar>
+
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item0_1718882030913">
                                                                         <cells>
@@ -766,7 +785,8 @@
                                                                     </Column>
                                                                 </columns>
                                                             </Table>
-                                                            </VBox>
+
+                                              </VBox>
                                                         </items>
                                                     </FlexBox>
                                                 </content>
@@ -778,11 +798,15 @@
                                                     <Toolbar id="toolbar1_1714730282344">
                                                         <Title text="Comité de Oportunidades" id="titulo4" class="miTitulo"/>
                                                         <ToolbarSpacer id="t"/>
-                                                        <Button icon="sap-icon://settings" id="btn_des"/>
-                                                    </Toolbar>
+                                        <Button icon="sap-icon://hint" 
+                                                            type="Transparent" 
+                                                            press="onInfoPressRecursos" 
+                                                            tooltip="Ver más información" />                                                  
+                                                            
+                                              </Toolbar>
                                                 </headerToolbar>
                                                 <content>
-                                                    <Text text="Comité de Oportunidades" id="text9_1714730282344" class="sapUiSmallMargin myText2"/>
+                                                    <Text text="Comité de Oportunidades" id="text9_1714730282344" class="sapUiSmallMargin myText2 "/>
                                                     <FlexBox width="100%" id="box0_1714732707799" justifyContent="Center">
                                                         <items>
                                                             <Table noDataText="Drop column list items here and columns in the area above" id="tabla_datos" class="sapUiMediumMargin customHeaderColor2" width="1000px" >
@@ -859,7 +883,12 @@
                                                                 <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="auto" class="customHeaderColor">
                                                                     <headerToolbar>
                                                                         <Toolbar id="toolbr1" class=".customTableHeader">
-                                                                            <Title text="Recursos Interno" id="tituo1" class="customTextColor "/>
+                                                                        
+                                                                          <HBox>
+                                                                   
+                                                                          <Title text="Recursos Interno" id="tituo1" class="customTextColor "/>
+
+                                                                            </HBox>
 
                                                                             <ToolbarSpacer id="d45"/>
                                                                         </Toolbar>
@@ -867,7 +896,7 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item1_174747617887">
                                                                             <cells>
-                                                                                <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                                <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}"   tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )">
                                                                                     <items>
                                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item0_1716637548"/>
                                                                                     </items>
@@ -961,7 +990,7 @@
                                                                     <columns>
                                                                         <Column id="column3_1714747617887" hAlign="Center">
                                                                             <header>
-                                                                                <Label text="Vertical" id="lbl_ver" class="color" textAlign="Center" />
+                                                                                <Label text="Vertical" id="lbl_ver" class="color" textAlign="Center"  tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )" />
                                                                             </header>
                                                                         </Column>
 
@@ -1070,6 +1099,36 @@
                                                                                 <Text xmlns="sap.m" text="" id="text32_172354299" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
+
+
+                                                                        <ColumnListItem id="item3_9999999999999">
+                                                                        <cells>
+                                                                            <Select xmlns="sap.m" id="select2_999001" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                                <items>
+                                                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item999001"/>
+                                                                                </items>
+                                                                            </Select>
+
+                                                                            <Select xmlns="sap.m" id="select165999" selectedKey="{TipoServicio>valueTipoServ}" forceSelection="false" items="{/TipoServicio}">
+                                                                                <items>
+                                                                                    <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreTipoServ}" id="item999002"/>
+                                                                                </items>
+                                                                            </Select>
+
+                                                                            <Text xmlns="sap.m" text="" id="text999001"/>
+                                                                            <Input xmlns="sap.m" value="" id="input999001"/>
+                                                                            <Text xmlns="sap.m" id="pmj999001" text="" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999002"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999003"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999004"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999005"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999006"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999007"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999008" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text999009" class="boldText"/>
+                                                                        </cells>
+                                                                    </ColumnListItem>
+
                                                                     </items>
                                                                     <columns>
                                                                         <Column id="column0_1727879576856">
@@ -1244,8 +1303,8 @@
                                                                                 <Text xmlns="sap.m" text="" id="text552"/>
                                                                                 <Text xmlns="sap.m" text="" id="text536"/>
                                                                                 <Text xmlns="sap.m" text="" id="text547"/>
-                                                                                <Text xmlns="sap.m" text="bt" id="text558" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="hf" id="text560" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="" id="text558" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="" id="text560" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                         <ColumnListItem id="item0_1723561579633">
@@ -2293,7 +2352,7 @@
                                                                                 <ToolbarSpacer />
                                                                                  <ToolbarSpacer  class="colorCora"/>
 
-                                                                                <Input xmlns="sap.m" value="" id="totalRecuInter" description="Recursos Internos" editable="false" width="auto" fieldWidth="45%"/>
+                                                                                <Input xmlns="sap.m" value="" id="totalRecuInter" description="Recursos Internos" editable="false" width="auto" fieldWidth="45%" />
 
                                                                                 <items/>
                                                                             </VBox>
@@ -2320,7 +2379,7 @@
 
                                                                                     <Input xmlns="sap.m" value="" id="input10_1724757017406" description="Otros Servicios" editable="false" width="105%" fieldWidth="45%"/>
 
-                                                                                    <Input xmlns="sap.m" value="2" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="" id="input9_1724757015442" description="Gastis de viaje" editable="false" width="105%" fieldWidth="45%"/>
 
                                                                              <ToolbarSpacer />
                                                                                 <ToolbarSpacer />
@@ -2386,7 +2445,7 @@
                                                                     <Column id="column3_1724667573396" width="260px" hAlign="Center">
                                                                         <header>
                                                                             <VBox id="sdkjffhj">
-                                                                                <Label text="Recursos Internos " id="text69_1724667573396"/>
+                                                                                <Label text="Recursos Internos " id="text69_1724667573396"   tooltip="Recursos propios de Telefonica"/>
                                                                                <Label xmlns="sap.m" text="Ezfuerzo PMJ Coste" id="text66_172474778"/>
                                                                             </VBox>
                                                                         </header>
@@ -2395,7 +2454,7 @@
                                                                     <Column id="column4_1724667576735" width="260px" hAlign="Center">
                                                                         <header>
                                                                             <VBox id="vox2">
-                                                                               <Label text="Consumo Externo" id="text70"/>
+                                                                               <Label text="Consumo Externo" id="text70" tooltip="Uso de recursos externosa contratados"/>
                                                                                 <Label xmlns="sap.m" text="Ezfuerzo PMJ Coste" id="text67_1724747722141"/>
                                                                             </VBox>
                                                                         </header>
@@ -2403,7 +2462,7 @@
                                                                     <Column id="column5_1724667579931" width="250px" hAlign="Center">
                                                                         <header>
                                                                             <VBox id="vox3">
-                                                                               <Label text="Recurso Externo" id="text752890"/>
+                                                                               <Label text="Recurso Externo" id="text752890"  tooltip="Recursos a subcontratar"/>
                                                                                <Label xmlns="sap.m" text="Ezfuerzo PMJ Coste" id="text67_17241"/>
                                                                             </VBox>
                                                                         </header>
@@ -2430,7 +2489,7 @@
                                                                         </VBox>
                                                                         <VBox width="100%" direction="Column" id="vbox1_1728582556153">
                                                                             <items>
-                                                                                <Input xmlns="sap.m" value="" id="totalSubtotal" description="Subtotal" editable="false" width="auto" fieldWidth="45%"/>
+                                                                                <Input xmlns="sap.m" value="" id="totalSubtotal" description="Subtotal" editable="false" width="auto" fieldWidth="45%" tooltip="Incluyendo licencias e infraestructuras"/>
                                                                                 <Input xmlns="sap.m" value="3.50" id="input2_172475612" description="Coste Estructura%" editable="false" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_1724756105" description="Coste estructura" editable="false" width="auto" fieldWidth="45%"/>
                                                                                 <Input xmlns="sap.m" value="" id="input2_17221205" description="Margen  sobre ingresos %" change=".onColumnTotales" width="auto" fieldWidth="45%"/>
@@ -4375,4 +4434,80 @@
             </footer>
         </Page>
     </App>
+
+
+        <Popover
+        id="infoPopoverRecursos"
+        placement="Bottom"
+        title="Información sobre Recursos"
+        contentWidth="auto">
+        <VBox class="sapUiSmallMargin">
+            <Text text="• En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... ) " />
+            <Text text="• Recursos Externos: Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio  y PMJ(Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... ) " />
+        </VBox>
+    </Popover>
+
+
+    <Popover
+    id="infoPopoverGeneral"
+    placement="Bottom"
+    title="Información General"
+    contentWidth="450px">
+    <VBox class="sapUiSmallMargin">
+        <Text text="📌 Información útil para completar los campos:" class="sapUiSmallMarginBottom"/>
+        
+        <Text text="• Código Proyecto: " class="boldText"/>
+        <Text text=" Codigo Proyecto asignado por la PMO"/>
+
+        <Text text="• Área: " class="boldText"/>
+        <Text text=" Área Funcional de la DAGC que pertenece a la solicitud"/>
+
+        <Text text="• Jefe de Proyecto: " class="boldText"/>
+        <Text text=" Nombre del Jefe de Proyecto preasignado: si el jefe de proyecto no está disponible en el desplegable, escribir"/>
+
+        <Text text="• Multijurídica: " class="boldText"/>
+        <Text text=" En caso de que exista más de una jurídica, marca el checkbox de 'Multijurídica' y completa la información en la tabla Cliente Facturación / Jurídicas. En caso contrario, indica la jurídica en Cliente Facturación."/>
+
+        <Text text="• Ejecución Via: " class="boldText"/>
+        <Text text=" Aplica a iniciativas GlobalSAP"/>
+
+         <Text text="• Naturaleza: " class="boldText"/>
+        <Text text=" OPEX o CAPEX"/>
+
+        
+         <Text text="• IPC Aplicable: " class="boldText"/>
+        <Text text=" En los proyecto PluriAnuales se considera un incremento del IPC del 2,5% para Recursos Internos a partir del segundo año, para Recursos Externos el responsable de la cotizacion tiene que considerar si es necesario incrementar la tarifa en cada uno de los años sucesivos"/>
+        
+       <Text text="• Cambio EUR - USD: " class="boldText"/>
+        <Text text=" En caso de querer obtener el total de la tabla oferta en $ indicar el tipo de cambio aplicado. Consultar a Control el tipo de cambio vigente en el momento de la realización de la ficha "/>
+        
+
+       <Text text="• Fecha inicio del Proyecto: " class="boldText"/>
+        <Text text=" Insertar la fecha de inicio del proyecto"/>
+        
+
+       <Text text="• Fecha fin del Proyecto: " class="boldText"/>
+        <Text text=" Insertar la fecha de fin del proyecto"/>
+        
+
+    </VBox>
+</Popover>
+
+
+
+
+
+
+<Popover
+    id="infoPopover"
+    placement="Bottom"
+    title="Información sobre Facturación"
+    contentWidth="auto">
+    <FormattedText
+        htmlText="• Para proyectos cortos (hasta 3 meses): se debe facturar el 30% a la firma y el 70% a la entrega.&lt;br&gt;
+        • Para proyectos de mayor duración: se debe facturar por hitos, comenzando con un hito de facturación a la firma de la propuesta.&lt;br&gt;
+        • Se debe intentar minimizar el working capital en la planificación de facturación.&lt;br&gt;
+        • En caso de dudas, consultar con Finanzas." />
+</Popover>
+
 </mvc:View>
