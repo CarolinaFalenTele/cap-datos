@@ -31,10 +31,7 @@
                             <statuses>
                                 <ObjectStatus id="23437" title="Approval" text="Pending" state="Warning"/>
                             </statuses>
-                            <markers>
-                                <ObjectMarker id="235" type="Flagged"/>
-                                <ObjectMarker id="23443" type="Favorite"/>
-                            </markers>
+                         
                             <headerContainer>
                                 <IconTabBar id="itb1333" selectedKey="key2" upperCase="true" select="onTabSelect">
                                     <items>
@@ -59,7 +56,7 @@
                                                  
                                                     <FlexBox width="100%" id="flx_1" justifyContent="Center">
                                                         <items>
-                                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="onAfterShow  customHeaderColor2" width="1350px" headerText="Datos Proyecto">
+                                                            <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="onAfterShow  customHeaderColor2" width="1450px" headerText="Datos Proyecto">
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item1">
                                                                         <cells>
@@ -67,25 +64,25 @@
                                                                             <Input xmlns="sap.m" id="input1" value="" placeholder="Proyect...." liveChange="onInputChange"  showSuggestion="true"/>
                                                                             <Input xmlns="sap.m" value="" id="idDescripcion"/>
 
-                                                                            <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}" forceSelection="false"  tooltip="Area Funcional de la DAGC que pertenece a la solicitud">
+                                                                            <Select xmlns="sap.m" id="slct_area" change="onInputChange" selectedKey="{Area>valueArea}" items="{/Area}"   width="100%"  forceSelection="false"  tooltip="Area Funcional de la DAGC que pertenece a la solicitud">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreArea}" id="item155"/>
                                                                                 </items>
                                                                             </Select>
 
-                                                                            <Select xmlns="sap.m" id="slct_Jefe" selectedKey="{Jefeproyect>valueJefe}" items="{/Jefeproyect}"   tooltip="Nombre del Jefe de Proyecto preasignado: si el jefe de proyecto no está disponible en el despegable escribir"   change="onInputChange" forceSelection="false">
+                                                                            <Select xmlns="sap.m" id="slct_Jefe" selectedKey="{Jefeproyect>valueJefe}" items="{/Jefeproyect}"   width="100%" tooltip="Nombre del Jefe de Proyecto preasignado: si el jefe de proyecto no está disponible en el despegable escribir"   change="onInputChange" forceSelection="false">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{name}" id="item155p"/>
                                                                                 </items>
                                                                             </Select>
 
-                                                                            <Select xmlns="sap.m" id="slct_verti" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}">
+                                                                            <Select xmlns="sap.m" id="slct_verti" selectedKey="{Vertical>valueVertical}" forceSelection="false" width="100%"  items="{/Vertical}">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item156"/>
                                                                                 </items>
                                                                             </Select>
 
-                                                                            <Select xmlns="sap.m" id="slct_client" selectedKey="{clienteFuncional>valueClienteFun}" forceSelection="false" items="{/clienteFuncional}" change="onInputChange">
+                                                                            <Select xmlns="sap.m" id="slct_client" selectedKey="{clienteFuncional>valueClienteFun}" forceSelection="false" width="100%"  items="{/clienteFuncional}" change="onInputChange">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreClienteFun}" id="item158"/>
                                                                                 </items>
@@ -110,13 +107,13 @@
                                                                             <Label text="Descripcion" id="text63" textAlign="Center"/>
                                                                         </header>
                                                                     </Column>
-                                                                    <Column id="column5" hAlign="Center">
+                                                                    <Column id="column5" hAlign="Center"  width="270px">
                                                                         <header>
                                                                             <Label text="Area" id="label5"/>
                                                                         </header>
                                                                     </Column>
 
-                                                                    <Column id="column0" hAlign="Center">
+                                                                    <Column id="column0" hAlign="Center" width="260px">
                                                                         <header>
                                                                             <Label text="Jefe  Proyecto" id="label0"/>
                                                                         </header>
@@ -137,11 +134,11 @@
                                                     </FlexBox>
                                                     <FlexBox width="100%" id="box1" justifyContent="Center">
                                                         <items>
-                                                            <Table ariaLabelledBy="__xmlview0--label4 __label10" noDataText="Drop column list items here and columns in the area above" id="table4" class="sapUiTinyMargin customHeaderColor2" width="1350px">
+                                                            <Table ariaLabelledBy="__xmlview0--label4 __label10" noDataText="Drop column list items here and columns in the area above" id="table4" class="sapUiTinyMargin customHeaderColor2" width="1450px">
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item8">
                                                                         <cells>
-                                                                            <Select xmlns="sap.m" id="slct_inic" change="onSelectIniMethod" selectedKey="{TipoIniciativa>valueinicia}" forceSelection="false" items="{/TipoIniciativa}">
+                                                                            <Select xmlns="sap.m" id="slct_inic" change="onSelectIniMethod" selectedKey="{TipoIniciativa>valueinicia}"   width="100%" forceSelection="false" items="{/TipoIniciativa}">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreIniciativa}" id="item159"/>
                                                                                 </items>
@@ -150,7 +147,7 @@
 
                                                                             <Input xmlns="sap.m" id="id_Cfactur" placeholder="Facturacion..." liveChange="onInputChange" />
 
-                                                                            <Select xmlns="sap.m" id="idNatu" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}" change="onInputChange" tooltip="OPEX o CAPEX">
+                                                                            <Select xmlns="sap.m" id="idNatu" selectedKey="{Naturaleza>valueNaturaleza}" forceSelection="false" items="{/Naturaleza}"   change="onInputChange" tooltip="OPEX o CAPEX">
                                                                                 <items>
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreNaturaleza}" id="item160"/>
                                                                                 </items>
@@ -176,9 +173,9 @@
                                                                     </ColumnListItem>
                                                                 </items>
                                                                 <columns>
-                                                                    <Column id="column12" hAlign="Center">
+                                                                    <Column id="column12" hAlign="Center"  width="290px">
                                                                         <header>
-                                                                            <Label text="Tipo Iniciativa" id="label12"/>
+                                                                            <Label text="Tipo Iniciativa" id="label12" />
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column0_1724664686677">
@@ -194,7 +191,7 @@
                                                                     </Column>
                                                                     <Column id="column14" hAlign="Center">
                                                                         <header>
-                                                                            <Label text="Naturaleza" id="label14"/>
+                                                                            <Label text="Naturaleza" id="label14" />
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column9" hAlign="Center">
@@ -345,7 +342,7 @@
     </viz:feeds>
 </viz:VizFrame>-->
 
-                                                            <viz:VizFrame id="idVizFrame" height="400px" width="500px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="bar" visible="true">
+                                                            <viz:VizFrame id="idVizFrame" height="400px" width="500px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="bar" visible="true" >
                                                                 <viz:dataset>
                                                                     <viz.data:FlattenedDataset id="fnor" data="{planning>/chartData}">
                                                                         <viz.data:dimensions>
@@ -488,12 +485,12 @@
                                                         width="100%">
                                                         
                                                         <!-- Fila con los dos Select -->
-                                                        <HBox class="sapUiLargeMarginBottom" justifyContent="End" alignItems="Center">
-                                                            <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="End" alignItems="End">
+                                                        <HBox class="sapUiLargeMarginBottom" justifyContent="Center" alignItems="Center">
+                                                            <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="Center" alignItems="Center">
                                                                 <Label text="Tipo Compra" class="color"  />
                                                           <Select id="select_tipoCom"
                                                                         selectedKey="{TipoCompra>valor}"
-                                                                        change="onInputChange"   width="150px"
+                                                                        change="onInputChange"   width="300px"
                                                                         items="{/TipoCompra}"   forceSelection="false">
                                                                     <items>
                                                                         <core:Item key="{ID}" text="{tipo}" />
@@ -501,9 +498,9 @@
                                                                 </Select>
                                                             </VBox>
                                                             
-                                                            <VBox justifyContent="End" alignItems="End">
-                                                                <Label text="Condición" class="color"  />
-                                                                <Select id="selectMotivo"   width="150px"
+                                                            <VBox justifyContent="Center" alignItems="Center">
+                                                                <Label text="Motivo Condicionamiento" class="color"  />
+                                                                <Select id="selectMotivo"   width="520px"
                                                                         selectedKey="{MotivoCondi>valor}"
                                                                         change="onInputChange"
                                                                         items="{/MotivoCondi}"   forceSelection="false">
@@ -517,7 +514,7 @@
 
                                                         <!-- Título Comentarios -->
                                                         <Toolbar id="tooblser3" class="sapUiSmallMarginBottom">
-                                                            <Title id="noem23" text="Motivo de Condicionamiento" level="H2" class="color" />
+                                                            <Title id="noem23" text="Comentarios Tipo de Compra" level="H2" class="color" />
                                                         </Toolbar>
 
                                                         <!-- TextArea -->
@@ -2384,7 +2381,7 @@
                                                                              <ToolbarSpacer />
                                                                                 <ToolbarSpacer />
                                                                                  <ToolbarSpacer  class="colorCora"/>
-                                                                                    <Input xmlns="sap.m" value="2" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
+                                                                                    <Input xmlns="sap.m" value="" id="totaRecurExterno" description="Recursos Externos" editable="false" width="105%" fieldWidth="45%"/>
                                                                                 </items>
                                                                             </VBox>
                                                                         </cells>
@@ -4428,8 +4425,9 @@
                 <OverflowToolbar id="toolba1">
                     <ToolbarSpacer id="25432"/>
 
+	            	<OverflowToolbarButton tooltip="Delete" text="Delete" icon="sap-icon://delete" press="onClearFields"/>                    
+                    <Button id="btnBorrado" type="Emphasized" text="Guardar" press="onBorrador" />
                     <Button id="btnAceptar" type="Accept" text="Enviar" press="onSave" />
-                    <Button id="btnBorrar" type="Reject" text="Borrar" press="onClearFields"/>
                 </OverflowToolbar>
             </footer>
         </Page>
