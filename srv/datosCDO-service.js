@@ -360,6 +360,8 @@ this.on('getUserInfo', async (req) => {
             clienteFacturacion,
             comentarioFacturacion,
             comentarioTipoCompra,
+            comentarioPvD,
+            comentarioProveedor,
             IPC_apli,
             sMultiJuri,
             CambioEuRUSD,
@@ -381,8 +383,7 @@ this.on('getUserInfo', async (req) => {
             Estado,
             clienteFuncional_ID,
             costeEstructura,
-            comentarioPvD,
-            comentarioProveedor
+         
         });
 
         console.log(" Inserción exitosa.");

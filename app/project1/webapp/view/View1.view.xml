@@ -3431,7 +3431,7 @@
                                                                                     >
                                                                                         <core:Item
                                                                                             xmlns:core="sap.ui.core"
-                                                                                            key="ID"
+                                                                                            key="{ID}"
                                                                                             text="{NombreTipoServ}"
                                                                                             id="item13888"
                                                                                         />
@@ -4430,7 +4430,7 @@
                                                                                 >
                                                                                     <core:Item
                                                                                         xmlns:core="sap.ui.core"
-                                                                                        key="ID"
+                                                                                        key="{ID}"
                                                                                         text="{NombreTipoServ}"
                                                                                         id="item1023"
                                                                                     />
@@ -4528,7 +4528,7 @@
                                                                                 >
                                                                                     <core:Item
                                                                                         xmlns:core="sap.ui.core"
-                                                                                        key="ID"
+                                                                                        key="{ID}"
                                                                                         text="{NombreTipoServ}"
                                                                                         id="item138858"
                                                                                     />
@@ -4609,7 +4609,7 @@
                                                                                 >
                                                                                     <core:Item
                                                                                         xmlns:core="sap.ui.core"
-                                                                                        key="ID"
+                                                                                        key="{ID}"
                                                                                         text="{NombreVertical}"
                                                                                         id="item8_1753535"
                                                                                     />
@@ -5143,7 +5143,7 @@
                                                                                     >
                                                                                         <core:Item
                                                                                             xmlns:core="sap.ui.core"
-                                                                                            key="ID"
+                                                                                            key="{ID}"
                                                                                             text="{NombreVertical}"
                                                                                             id="item455276"
                                                                                         />
