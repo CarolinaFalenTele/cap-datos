@@ -296,7 +296,8 @@ sap.ui.define(
 
 
             onActivityPress: function (oEvent, result) {
-                console.log("RESULT DEL WORKFLOW " + JSON.stringify(result));
+
+                this.byId("ma77").setVisible(true); // Para ocultar
 
                 var oButton = oEvent.getSource();
                 var sNameProyect = oButton.getCustomData()[0].getValue();
@@ -309,6 +310,7 @@ sap.ui.define(
                     console.error("No se encontró el ProcessFlow con ID 'processflow1'");
                     return;
                 }
+
 
                 oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
 

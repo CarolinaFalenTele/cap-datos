@@ -141,7 +141,7 @@
         },
         {
           "name": "view",
-          "pattern": "view/{sProjectID}",
+          "pattern": "view/{sProjectID}/{sourceModel}",
           "target": "view"
         },
         {

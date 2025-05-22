@@ -633,7 +633,8 @@
 
 
 
-                     <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"     count="{modelBorrador>/Count}">
+                     <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"  tooltip="Mis borradores"
+  count="{modelBorrador>/Count}">
                                         <Table
                                             id="newId_tablePendientes"
                                             sticky="HeaderToolbar,ColumnHeaders"
@@ -774,6 +775,7 @@
                                                 key="people"
                                                 tooltip="Seguimiento de Proceso"
                                                 icon="sap-icon://process"
+                                                visible="false"
                                             >
                                                 <Panel
                                                     xmlns="sap.m"

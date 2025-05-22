@@ -10,8 +10,6 @@
       "csrfProtection": true,
       "authenticationType": "xsuaa"
     }
-    
-
-
+  
   ]
 }

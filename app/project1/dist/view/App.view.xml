@@ -95,9 +95,7 @@
                                         select="onIconTabSelect"
                                     >
                                         <items>
-                                            <!--  <IconTabFilter id="ma" key="info" icon="sap-icon://hint">
-                                                <Text id="ma2" text="Info content goes here ..." />
-                                            </IconTabFilter>-->
+                                        
                                             <IconTabFilter
                                                 id="ma3"
                                                 key="attachments"
@@ -112,6 +110,7 @@
                                                     items="{modelPendientes>/DatosProyect}"
                                                     class="sapFDynamicPageAlignContent customHeaderColor2"
                                                     width="auto"
+                                                    noDataText="No existen solicitudes pendientes en este momento "
                                                 >
                                                     <headerToolbar>
                                                         <Toolbar
@@ -566,23 +565,42 @@
 
 
                                                                  <HBox id="hbo2">
-                    <!-- Primer botón -->
-                    <Button
-                        press="DialogInfo"
-                        icon="sap-icon://message-information"
-                        ariaHasPopup="Dialog"
-                    >
-                        <customData>
-                            <core:CustomData
-                                xmlns:core="sap.ui.core"
-                                key="projectId"
-                                value="{modelAprobados>ID}"
-                            />
-                        </customData>
-                    </Button>
+                                                                    <!-- Primer botón -->
+                                                                    <Button
+                                                                        press="DialogInfo"
+                                                                        icon="sap-icon://message-information"
+                                                                        ariaHasPopup="Dialog"
+                                                                    >
+                                                                        <customData>
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelAprobados>ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
 
 
-
+                                                        <Button
+                                                                        id="butn346"
+                                                                        icon="sap-icon://show"
+                                                                        press="onEditPress"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                id="idButonEdit"
+                                                                                key="nameProyect"
+                                                                                value="{nameProyect}"
+                                                                            />
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
                     <!-- Tercer botón -->
                     <Button
                         xmlns="sap.m"
@@ -612,11 +630,152 @@
                                                     </items>
                                                 </Table>
                                             </IconTabFilter>
+
+
+
+                     <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"  tooltip="Mis borradores"
+  count="{modelBorrador>/Count}">
+                                        <Table
+                                            id="newId_tablePendientes"
+                                            sticky="HeaderToolbar,ColumnHeaders"
+                                            inset="false"
+                                            items="{modelBorrador>/DatosProyect}"
+                                            class="sapFDynamicPageAlignContent customHeaderColor2"
+                                            width="auto"
+                                            noDataText="No existen borradores disponibles "
+                                        >
+                                            <headerToolbar>
+                                                <Toolbar id="newId_headerToolbar">
+                                                    <Title
+                                                        id="newId_title"
+                                                        text="Borradores"
+                                                        level="H2"
+                                                        class="color"
+                                                    />
+                                                    <ToolbarSpacer />
+                                                    <SearchField
+                                                        id="newId_searchField"
+                                                        liveChange="onSearch"
+                                                        class="sapUiLargeMargin"
+                                                        placeholder="Buscar por Nombre de Proyecto"
+                                                        width="30%"
+                                                    />
+                                                </Toolbar>
+                                            </headerToolbar>
+
+                                            <columns>
+                                                <Column id="newId_colFecha" width="12em" hAlign="Center">
+                                                    <Label id="newId_lblFecha" text="Fecha Creación " />
+                                                </Column>
+
+
+                                                <Column id="newId_colNombreProyecto" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                                    <Label id="newId_lblNombreProyecto" text="Nombre Proyecto" />
+                                                </Column>
+
+                                                <Column id="newId_colDescripcion" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                                    <Label id="newId_lblDescripcion" text="Descripción" />
+                                                </Column>
+
+                                                <Column id="newId_colArea" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                                    <Label id="newId_lblArea" text="Área" />
+                                                </Column>
+
+                                                <Column id="newId_colJefeProyecto" width="12em" hAlign="Center">
+                                                    <Label id="newId_lblJefeProyecto" text="Jefe de Proyecto" />
+                                                </Column>
+
+                                                <Column id="newId_colFechModi" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                                    <Label id="newId_lblFechModi" text="Fecha Modificacion" />
+                                                </Column>
+
+                                                <Column id="newId_colEstado" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                                                    <Label id="newId_lblEstado" text="Estado" />
+                                                </Column>
+
+                                                <Column id="newId_colAcciones" hAlign="Center" width="10em">
+                                                    <Label id="newId_lblAcciones" text="" />
+                                                </Column>
+                                            </columns>
+
+                                            <items>
+                                                <ColumnListItem id="newId_itemPendiente">
+                                                    <cells>
+                                                        <ObjectIdentifier id="newId_objFechaCreacion" title="{modelBorrador>FechaCreacionFormateada}" />
+                                                        <ObjectIdentifier id="newId_objNombreProyecto" title="{modelBorrador>nameProyect}" />
+                                                        <Text id="newId_txtDescripcion" text="{modelBorrador>descripcion}" class="boldText" />
+                                                        <Text id="newId_txtArea" text="{modelBorrador>NombreArea}" class="boldText" />
+                                                        <Text id="newId_txtJefeProyecto" text="{modelBorrador>NombreJefe}" class="boldText" />
+                                                        <ObjectIdentifier id="newId_objFechaModificacion" title="{modelBorrador>FechaModificacionFormateada}" />
+                                                        <ObjectStatus id="newId_estadoProyecto" text="{modelBorrador>Estado}" state="Warning" />
+
+                                                        <HBox id="newId_hboxBotones">
+                                                            <Button
+                                                                id="newId_btnInfo"
+                                                                press="DialogInfo"
+                                                                icon="sap-icon://message-information"
+                                                                ariaHasPopup="Dialog"
+                                                            >
+                                                                <customData>
+                                                                    <core:CustomData
+                                                                        xmlns:core="sap.ui.core"
+                                                                        key="projectId"
+                                                                        value="{modelBorrador>ID}"
+                                                                    />
+                                                                </customData>
+                                                            </Button>
+
+                                                            <Button
+                                                                id="newId_btnEditar"
+                                                                icon="sap-icon://edit"
+                                                                press="onEditPress"
+                                                            >
+                                                                <customData>
+                                                                    <core:CustomData
+                                                                        xmlns:core="sap.ui.core"
+                                                                        id="newId_customName"
+                                                                        key="nameProyect"
+                                                                        value="{modelBorrador>nameProyect}"
+                                                                    />
+                                                                    <core:CustomData
+                                                                        xmlns:core="sap.ui.core"
+                                                                        key="projectId"
+                                                                        value="{modelBorrador>ID}"
+                                                                    />
+                                                                </customData>
+                                                            </Button>
+
+                                                            <Button
+                                                                id="newId_btnEliminar"
+                                                                icon="sap-icon://delete"
+                                                                press="onDeletePress"
+                                                            >
+                                                                <customData>
+                                                                    <core:CustomData
+                                                                        xmlns:core="sap.ui.core"
+                                                                        key="projectId"
+                                                                        value="{modelBorrador>ID}"
+                                                                    />
+                                                                </customData>
+                                                            </Button>
+
+                                                            <items>
+                                                            
+                                                            </items>
+                                                        </HBox>
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                 </IconTabFilter>
+
+
                                             <IconTabFilter
                                                 id="ma77"
                                                 key="people"
                                                 tooltip="Seguimiento de Proceso"
                                                 icon="sap-icon://process"
+                                                visible="false"
                                             >
                                                 <Panel
                                                     xmlns="sap.m"

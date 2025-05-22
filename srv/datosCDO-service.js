@@ -332,7 +332,7 @@ this.on('getUserInfo', async (req) => {
 
     const {
         codigoProyect, nameProyect, Total,descripcion, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
-        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado,
+        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado, comentarioProveedor, comentarioPvD, CambioEuRUSD,
         Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual,
         AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin, TipoCompra_ID, MotivoCondi_ID,   comentarioFacturacion, comentarioTipoCompra
     } = req.data;
@@ -362,6 +362,7 @@ this.on('getUserInfo', async (req) => {
             comentarioTipoCompra,
             IPC_apli,
             sMultiJuri,
+            CambioEuRUSD,
             objetivoAlcance,
             datosExtra,
             Fechainicio,
@@ -379,7 +380,9 @@ this.on('getUserInfo', async (req) => {
             Vertical_ID,
             Estado,
             clienteFuncional_ID,
-            costeEstructura
+            costeEstructura,
+            comentarioPvD,
+            comentarioProveedor
         });
 
         console.log(" Inserción exitosa.");

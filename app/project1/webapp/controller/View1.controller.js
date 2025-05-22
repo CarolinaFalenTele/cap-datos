@@ -38,6 +38,13 @@ sap.ui.define([
         var oVizframe1 = this.byId("idVizFrame");
         oVizframe1.setVizProperties({ "title": { "text": "Planificacion" } });
 
+        var scales = [{
+          'feed': 'color',
+          'palette': ["#f7f7ff", "#0066ff", "#c5f8f9", "#75c0c7", "#f3e996", "#d6786b"  , "#e1c3f4"]
+         }];
+         var vizScalesOption = {replace: true};
+         oVizframe1.setVizScales(scales, vizScalesOption)
+
         this._tableValues = {
           "tablaConsuExter": {},
           "table_dimicFecha": {},
@@ -102,7 +109,7 @@ sap.ui.define([
 
         this.onColumnTotales();
 
-
+  ;
 
 
       },
@@ -264,7 +271,7 @@ sap.ui.define([
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
         let aprobacionFlag = oArgs.aprobacion === "true";
     
-        // ✅ CORRECCIÓN: revisar si viene concatenado sourceModel con "modelPendientes;aprobacion=true"
+        //  CORRECCIÓN: revisar si viene concatenado sourceModel con "modelPendientes;aprobacion=true"
         if (sSourceModel.includes(";")) {
             const parts = sSourceModel.split(";");
             sSourceModel = parts[0];
@@ -277,7 +284,7 @@ sap.ui.define([
             });
         }
     
-        // ✅ Si es modelAprobados, solo visualizar
+        //  Si es modelAprobados, solo visualizar
         if (sSourceModel === "modelAprobados") {
             this._Visualizar(sProjectID);
             return;
@@ -285,7 +292,7 @@ sap.ui.define([
     
         console.log("Parametros de navegación:", oArgs);
     
-        // ✅ Activar modo aprobación solo si viene desde modelPendientes y está aprobado
+        //  Activar modo aprobación solo si viene desde modelPendientes y está aprobado
         this._isAprobacion = (sSourceModel === "modelPendientes") && aprobacionFlag;
     
         if (this._isAprobacion) {
@@ -349,7 +356,7 @@ sap.ui.define([
             this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
             this.byId("idObje").setValue(oData.objetivoAlcance || "");
             this.byId("idDescripcion").setValue(oData.descripcion || "");
-            this.byId("text67_1728582763477").setText(oData.Total || "");
+            this.byId("input0_1725625161348").setValue(oData.Total || "");
             this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
             this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
             this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
@@ -372,6 +379,17 @@ sap.ui.define([
               this.byId("idComentarioTipo").setVisible(false);
             }
 
+          // Visible textArea Pvd 
+            if (oData.Iniciativa_ID === "223e4567-e89b-12d3-a456-426614174001") {
+              this.byId("idComenpVd").setEditable(true);
+
+
+            }else{
+              this.byId("idComenpVd").setEditable(false);
+
+
+
+            }
             this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
             this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
             this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
@@ -528,7 +546,7 @@ sap.ui.define([
           this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
           this.byId("idObje").setValue(oData.objetivoAlcance || "");
           this.byId("idDescripcion").setValue(oData.descripcion || "");
-          this.byId("text67_1728582763477").setText(oData.Total || "");
+          this.byId("input0_1725625161348").setValue(oData.Total || "");
           this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
           this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
           this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
@@ -548,7 +566,7 @@ sap.ui.define([
           } else {
             this.byId("table0").setVisible(false);
             this.byId("idCheckMensual").setVisible(false);
-            this.byId("idComentarioTipo").setVisible(false);
+            this.byId("idComentarioTipo").setVisible(false);  
           }
 
           this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
@@ -960,7 +978,7 @@ sap.ui.define([
           var oTable = this.byId("table2");
           var aItems = oTable.getItems();
       
-          // 🔐 Guardamos todos los IDs aquí
+          //  Guardamos todos los IDs aquí
           this._proveedoresIDs = [];
       
           if (oData.value && oData.value.length > 0) {
@@ -2277,6 +2295,7 @@ sap.ui.define([
             }
 
             this._idlSErvi = idlSErvi;
+          
             await this.leerFechasServiRecInter(idlSErvi);
 
           } else {
@@ -3624,12 +3643,13 @@ sap.ui.define([
         const incompleteFields = [];
 
         const sProjectID = this._sProjectID; // ID del proyecto
-        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
+        const scodigoProyect = parseFloat(this.byId("input0").getValue(), 10);
         const sEmail = this.byId("dddtg").getText();
         const sEmpleado = this.byId("23d3").getText();
+        const sCambioEurUsd =  parseFloat(this.byId("inputCambioEu").getValue());
         const snameProyect = this.byId("input1").getValue();
         const sdescripcion = this.byId("idDescripcion").getValue();
-        const sTotal = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+        const sTotal = parseFloat(this.byId("input0_1725625161348").getValue());
         const spluriAnual = this.byId("box_pluriAnual").getSelected();
         const sClienteFac = this.byId("id_Cfactur").getValue();
         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
@@ -3641,6 +3661,10 @@ sap.ui.define([
         const sFechaIni = this.byId("date_inico").getDateValue();
         const sFechaFin = this.byId("date_fin").getDateValue();
         const sIPC = this.byId("input_ipc").getValue();
+        const sComentarioProvee = this.byId("idTextComProve").getValue();
+
+        const sComentarioPVd = this.byId("idComenpVd").getValue();
+
         // Quitar el símbolo % y reemplazar coma por punto para poder parsear
           let numIPC = sIPC.replace("%", "").replace(",", ".");
 
@@ -3709,9 +3733,12 @@ sap.ui.define([
           mensual: sMensual,
           comentarioTipoCompra:  sComentarioTipCompra,
           comentarioFacturacion: sComentarioFacturacion, 
+          comentarioProveedor: sComentarioProvee,
+          comentarioPvD: sComentarioPVd,
           funcionalString: sClienteFunc,
           clienteFacturacion: sClienteFac,
           multijuridica: sMultiJuri,
+          Naturaleza_ID: sSelectedKey,
           TipoCompra_ID: sSelecKeyTipoCompra,
           TipoCompra: { ID: sSelecKeyTipoCompra },
           MotivoCondi: { ID: sSelecKeyMotivoCondi },
@@ -3729,7 +3756,8 @@ sap.ui.define([
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
           datosExtra: sDatosExtra,
-          IPC_apli: ipcNumber
+          IPC_apli: ipcNumber,
+          CambioEuRUSD: sCambioEurUsd
         };
 
         // Agregar fechaCreacion solo si es nuevo (POST)
@@ -3931,7 +3959,7 @@ sap.ui.define([
         const sEmpleado = this.byId("23d3").getText();
         const snameProyect = this.byId("input1").getValue();
         const sdescripcion = this.byId("idDescripcion").getValue();
-        const sTotal = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+        const sTotal = parseFloat(this.byId("input0_1725625161348").getValue());
         const spluriAnual = this.byId("box_pluriAnual").getSelected();
         const sClienteFac = this.byId("id_Cfactur").getValue();
         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
@@ -4542,10 +4570,10 @@ let ipcNumber = parseFloat(numIPC);
       insertPerfilJornadas: async function (generatedId, sCsrfToken) {
 
         var idjornadas = this._idJornadas;
-        var sJornadaRecInter = parseInt(this.byId("inputReInter").getValue(), 10);
-        var sJornadaConsuEx = parseInt(this.byId("inputConsuEx").getValue(), 10);
-        var sJornadaRecurEx = parseInt(this.byId("inputRcurExtern").getValue(), 10);
-        var sTotaleJor = parseInt(this.byId("inputTotalJor").getValue(), 10);
+        var sJornadaRecInter = parseFloat(this.byId("inputReInter").getValue());
+        var sJornadaConsuEx = parseFloat(this.byId("inputConsuEx").getValue());
+        var sJornadaRecurEx = parseFloat(this.byId("inputRcurExtern").getValue());
+        var sTotaleJor = parseFloat(this.byId("inputTotalJor").getValue());
 
 
 
@@ -4593,10 +4621,10 @@ let ipcNumber = parseFloat(numIPC);
       insertTotalRecuInterno: async function (generatedId, sCsrfToken) {
 
         var idtotalRecur = this._idTotalRecInter;
-        var sServicios = parseInt(this.byId("inputServi1").getValue(), 10);
-        var sOtroServi = parseInt(this.byId("inputOtrosServi1").getValue(), 10);
-        var sGastoVia = parseInt(this.byId("inputGastoVia1").getValue(), 10);
-        var sTotaleJor = parseInt(this.byId("totalRecuInter").getValue(), 10);
+        var sServicios = parseFloat(this.byId("inputServi1").getValue(), 10);
+        var sOtroServi = parseFloat(this.byId("inputOtrosServi1").getValue(), 10);
+        var sGastoVia = parseFloat(this.byId("inputGastoVia1").getValue(), 10);
+        var sTotaleJor = parseFloat(this.byId("totalRecuInter").getValue(), 10);
 
 
         console.log("ID RECIBIDO DEL INSERT " + idtotalRecur);
@@ -4646,10 +4674,10 @@ let ipcNumber = parseFloat(numIPC);
       insertTotalConsuExt: async function (generatedId, sCsrfToken) {
 
         var idtotalConsuEx = this._idTotalRecInter;
-        var sServiciosC = parseInt(this.byId("inputServi2").getValue(), 10);
-        var sOtroServiC = parseInt(this.byId("inputOtroSer2").getValue(), 10);
-        var sGastoViaC = parseInt(this.byId("inptGastoVi2").getValue(), 10);
-        var sTotaleJorC = parseInt(this.byId("totalConsuExternot").getValue(), 10);
+        var sServiciosC = parseFloat(this.byId("inputServi2").getValue());
+        var sOtroServiC = parseFloat(this.byId("inputOtroSer2").getValue());
+        var sGastoViaC = parseFloat(this.byId("inptGastoVi2").getValue());
+        var sTotaleJorC = parseFloat(this.byId("totalConsuExternot").getValue());
 
 
         console.log("ID RECIBIDO DEL INSERT " + idtotalConsuEx);
@@ -4699,10 +4727,10 @@ let ipcNumber = parseFloat(numIPC);
       insertTotalRecuExterTotal: async function (generatedId, sCsrfToken) {
 
         var idRecurExterTotal = this._idtotalRecurExter;
-        var sServiciosC = parseInt(this.byId("inputServi").getValue(), 10);
-        var sOtroServiC = parseInt(this.byId("input10_1724757017406").getValue(), 10);
-        var sGastoViaC = parseInt(this.byId("input9_1724757015442").getValue(), 10);
-      var sTotaleJorC = parseInt(this.byId("totaRecurExterno").getValue(), 10);
+        var sServiciosC = parseFloat(this.byId("inputServi").getValue(), 10);
+        var sOtroServiC = parseFloat(this.byId("input10_1724757017406").getValue(), 10);
+        var sGastoViaC = parseFloat(this.byId("input9_1724757015442").getValue(), 10);
+      var sTotaleJorC = parseFloat(this.byId("totaRecurExterno").getValue(), 10);
 
 
         console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
@@ -4755,8 +4783,8 @@ let ipcNumber = parseFloat(numIPC);
 
         var idInfraLicencia  = this._idInfraLicencia;
 
-        var sTotalInfraEstruc = parseInt(this.byId("totalInfraestruc").getValue(), 10);
-      var sTotalLicencia = parseInt(this.byId("input0_1724758359").getValue(), 10);
+        var sTotalInfraEstruc = parseFloat(this.byId("totalInfraestruc").getValue());
+      var sTotalLicencia = parseFloat(this.byId("input0_1724758359").getValue(), );
 
 
         console.log("ID RECIBIDO DEL INSERT " + idInfraLicencia);
@@ -4811,12 +4839,12 @@ let ipcNumber = parseFloat(numIPC);
         var idResumenCostetotal  = this._ResumenTotal;
 
 
-        var sSubtotal  = parseInt(this.byId("totalSubtotal").getValue(), 10);
-        var sCosteEstrucPorcen = parseInt(this.byId("input2_172475612").getValue(), 10);
-        var sCosteEs = parseInt(this.byId("input2_1724756105").getValue(), 10);
-        var sMargenPorce = parseInt(this.byId("input2_17221205").getValue(), 10);
-        var sMargenIngreso = parseInt(this.byId("input2_1756121205").getValue(), 10);
-        var Total = parseInt(this.byId("input0_1725625161348").getValue(), 10);
+        var sSubtotal  = parseFloat(this.byId("totalSubtotal").getValue());
+        var sCosteEstrucPorcen = parseFloat(this.byId("input2_172475612").getValue());
+        var sCosteEs = parseFloat(this.byId("input2_1724756105").getValue());
+        var sMargenPorce = parseFloat(this.byId("input2_17221205").getValue());
+        var sMargenIngreso = parseFloat(this.byId("input2_1756121205").getValue());
+        var Total = parseFloat(this.byId("input0_1725625161348").getValue());
 
         console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
 
@@ -4825,8 +4853,9 @@ let ipcNumber = parseFloat(numIPC);
           Subtotal: sSubtotal,
           CosteEstruPorce: sCosteEstrucPorcen,
           Costeestructura: sCosteEs,
-          totalLicencias: sMargenPorce,
+          MargenPorce: sMargenPorce,
           Margeingresos: sMargenIngreso,
+          total        : Total,
           datosProyect_ID: generatedId
         };
 
@@ -5058,7 +5087,7 @@ let ipcNumber = parseFloat(numIPC);
         const oTablaFac = this.byId("table0");
         const itemsF = oTablaFac.getItems();
         const DataFac = [];
-        const totalFacturacion = parseInt(this.byId("text73_172746565340569997").getText(), 10);
+        const totalFacturacion = parseFloat(this.byId("text73_172746565340569997").getText());
 
         const existingFacturacionID = this._FacturacionID; // El ID de la facturación existente (si hay uno)
 
@@ -5088,7 +5117,7 @@ let ipcNumber = parseFloat(numIPC);
           }
 
           const descripcionHito = (aCells[1] && aCells[1].getValue) ? aCells[1].getValue() : "";
-          const facturacion = (aCells[2] && aCells[2].getValue) ? parseInt(aCells[2].getValue(), 10) : 0;
+          const facturacion = (aCells[2] && aCells[2].getValue) ? parseFloat(aCells[2].getValue(), 10) : 0;
 
           if (fechaEstimida) {
             DataFac.push({
@@ -5307,15 +5336,15 @@ let ipcNumber = parseFloat(numIPC);
           const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
           const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
           const sConcepto = oItem.getCells()[3]?.getValue() || "";
-          const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0");
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0");
-          const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
+          const sPMJ = parseFloat(oItem.getCells()[4]?.getText() || "0");
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = parseFloat(oItem.getCells()[11]?.getText() || "0");
+          const stotalRe = parseFloat(oItem.getCells()[12]?.getText() || "0");
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -5387,8 +5416,7 @@ let ipcNumber = parseFloat(numIPC);
             }
 
             this._RecursoInt = idRecursos;
-            //  await this.insertServicioInterno(idRecursos);
-            //   await this.insertGastoViajeInterno(idRecursos);
+        
             await this.InsertMesAñoRecurInterno(oItem, idRecursos);
 
             console.log("TERMINANDO  RECURSOS------");
@@ -5426,15 +5454,15 @@ let ipcNumber = parseFloat(numIPC);
           const stipoServi = oItem.getCells()[1]?.getSelectedKey() || "";
           const sPerfil = oItem.getCells()[2]?.getSelectedKey() || "";
           const sConcepto = oItem.getCells()[3]?.getValue() || "";
-          const sPMJ = this.convertToInt(oItem.getCells()[4]?.getText() || "0");
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11]?.getText() || "0");
-          const stotalRe = this.convertToInt(oItem.getCells()[12]?.getText() || "0");
+          const sPMJ = parseFloat(oItem.getCells()[4]?.getText() || "0");
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0", 10);
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0", 10);
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0", 10);
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0", 10);
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0", 10);
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0", 10);
+          const sTotal = parseFloat(oItem.getCells()[11]?.getText() || "0");
+          const stotalRe = parseFloat(oItem.getCells()[12]?.getText() || "0");
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -5506,8 +5534,7 @@ let ipcNumber = parseFloat(numIPC);
             }
 
             this._RecursoInt = idRecursos;
-            //  await this.insertServicioInterno(idRecursos);
-            //   await this.insertGastoViajeInterno(idRecursos);
+       
             await this.InsertMesAñoRecurInterno(oItem, idRecursos);
 
             console.log("TERMINANDO  RECURSOS------");
@@ -5867,7 +5894,7 @@ let ipcNumber = parseFloat(numIPC);
 
 
       convertToInt: function (value) {
-        const parsedValue = parseInt(value, 10);
+        const parsedValue = parseFloat(value, 10);
         return isNaN(parsedValue) ? 0 : parsedValue;
       },
 
@@ -6788,13 +6815,115 @@ let ipcNumber = parseFloat(numIPC);
 
 
 
+      insertServicioInterno: async function (generatedId) {
+        console.log("insertServicioInterno llamada");
 
+
+        const sTokenG = this._sCsrfToken;
+
+        let response;
+        const idOtrGRI = this._idlSErvi;
+
+        // Obtener la tabla por su ID
+        const oTable = this.byId("tableServicioInterno");
+
+        // Obtener todos los elementos del tipo ColumnListItem
+        const aItems = oTable.getItems();
+
+        // Iterar sobre cada fila
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];  // Obtener la fila actual
+
+        const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+          const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
+          const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
+          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+
+
+          // Validar si todos los datos son válidos
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) ) {
+            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            return; // Si hay un error, no se envía la solicitud
+          }
+
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            year1: Number(syear1.toFixed(2)),
+            year2: Number(syear2.toFixed(2)),
+            year3: Number(syear3.toFixed(2)),
+            year4: Number(syear4.toFixed(2)),
+            year5: Number(syear5.toFixed(2)),
+            year6: Number(syear6.toFixed(2)),
+            total: Number(sTotal),
+            totalE: stotalRe,
+            tipoServicio_ID: stipoServi,
+            datosProyect_ID: generatedId
+          };
+
+
+
+          try {
+            if (idOtrGRI) {
+
+              response = await fetch(`/odata/v4/datos-cdo/otrosGastoRecu(${idOtrGRI})`, {
+                method: 'PATCH',
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": sTokenG
+                },
+                body: JSON.stringify(payload)
+              });
+
+            } else {
+              response = await fetch("/odata/v4/datos-cdo/otrosGastoRecu", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": sTokenG
+                },
+                body: JSON.stringify(payload)
+              });
+
+            }
+
+            if (response.ok) {
+              const result = await response.json();
+              const idOtrosGastos = result.ID;
+
+
+              this._idOtrosGastos = idOtrosGastos;
+              await this.InsertMesAñoServRecurInterno(oItem, idOtrosGastos);
+
+
+              console.log("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
+            } else {
+              const errorMessage = await response.text();
+              console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            }
+          } catch (error) {
+            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+          }
+        }
+
+      },
 
 
 
       // ------------- SERVICIO DE RECURSO INTERNO 
-
-      insertServicioInterno: async function (generatedId) {
+  /*    insertServicioInterno: async function (generatedId) {
 
         const sTokenG = this._sCsrfToken;
 
@@ -6815,15 +6944,15 @@ let ipcNumber = parseFloat(numIPC);
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sPMJ = parseFloat(oItem.getCells()[4].getText()); // Text de PMJ
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -6896,7 +7025,7 @@ let ipcNumber = parseFloat(numIPC);
         }
 
       },
-
+*/
 
 
 
@@ -6921,12 +7050,12 @@ let ipcNumber = parseFloat(numIPC);
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
           const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
@@ -7029,14 +7158,14 @@ let ipcNumber = parseFloat(numIPC);
           const sPerfil = oItem.getCells()[2].getSelectedKey() || "ValorPorDefecto"; // Select de PerfilServicio
           const sConcepto = oItem.getCells()[3].getValue() || ""; // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()) || 0; // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()) || 0; // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()) || 0; // Text de TotalE
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[11].getText()) || 0; // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0; // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -7130,15 +7259,15 @@ let ipcNumber = parseFloat(numIPC);
             const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
             const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
             const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-            const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-            const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-            const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-            const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-            const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-            const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-            const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-            const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-            const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+            const sPMJ = parseFloat(oItem.getCells()[4].getText()); // Text de PMJ
+            const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0", 10);
+            const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0", 10);
+            const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0", 10);
+            const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0", 10);
+            const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0", 10);
+            const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0", 10);
+            const sTotal = parseFloat(oItem.getCells()[11].getText()); // Text de Total
+            const stotalRe = parseFloat(oItem.getCells()[12].getText()); // Text de TotalE
   
             // Validar si todos los datos son válidos
             if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
@@ -7233,23 +7362,23 @@ let ipcNumber = parseFloat(numIPC);
         for (let i = 0; i < aItems.length; i++) {
           const oItem = aItems[i];  // Obtener la fila actual
 
-          // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[5].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[6].getText()); // Text de TotalE
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) ) {
+            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7341,23 +7470,23 @@ let ipcNumber = parseFloat(numIPC);
         for (let i = 0; i < aItems.length; i++) {
           const oItem = aItems[i];  // Obtener la fila actual
 
-          // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
           const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
+
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) ) {
+            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7458,15 +7587,15 @@ let ipcNumber = parseFloat(numIPC);
           const stipoServi = oItem.getCells()[1].getSelectedKey() || "";
           const sPerfil = oItem.getCells()[2].getValue()?.trim() || "";
           const sConcepto = oItem.getCells()[3].getValue()?.trim() || "";
-          const sPMJ = this.convertToInt(oItem.getCells()[4].getValue()) || 0;
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()) || 0;
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()) || 0;
+          const sPMJ = parseFloat(oItem.getCells()[4].getValue()) || 0;
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[11].getText()) || 0;
+          const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0;
 
           // Evitar insertar filas vacías
           if (!sVertical && !stipoServi && !sPerfil && !sConcepto && sPMJ === 0 && sTotal === 0 && stotalRe === 0) {
@@ -7579,23 +7708,23 @@ let ipcNumber = parseFloat(numIPC);
         for (let i = 0; i < aItems.length; i++) {
           const oItem = aItems[i];  // Obtener la fila actual
 
-          // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
           const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
+
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) ) {
+            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7683,26 +7812,25 @@ let ipcNumber = parseFloat(numIPC);
         for (let i = 0; i < aItems.length; i++) {
           const oItem = aItems[i];  // Obtener la fila actual
 
-          // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
           const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
           const sPMJ = this.convertToInt(oItem.getCells()[4].getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
           const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
           const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
+
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) ) {
+            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
-
           // Construir el payload para cada fila
           const payload = {
             Vertical_ID: sVertical,
@@ -7784,15 +7912,15 @@ let ipcNumber = parseFloat(numIPC);
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[4]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[10]?.getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[11]?.getText()); // Text de TotalE
+          const sPMJ = parseFloat(oItem.getCells()[3]?.getText()); // Text de PMJ
+          const syear1 = parseFloat(oItem.getCells()[4]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[10]?.getText()); // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[11]?.getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -7895,15 +8023,15 @@ let ipcNumber = parseFloat(numIPC);
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
           const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
-          const sPMJ = this.convertToInt(oItem.getCells()[3]?.getText()); // Text de PMJ
-          const syear1 = parseInt(oItem.getCells()[5]?.getText() || "0", 10);
-          const syear2 = parseInt(oItem.getCells()[6]?.getText() || "0", 10);
-          const syear3 = parseInt(oItem.getCells()[7]?.getText() || "0", 10);
-          const syear4 = parseInt(oItem.getCells()[8]?.getText() || "0", 10);
-          const syear5 = parseInt(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseInt(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = this.convertToInt(oItem.getCells()[4]?.getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[5]?.getText()); // Text de TotalE
+          const sPMJ = parseFloat(oItem.getCells()[3]?.getText()); // Text de PMJ
+          const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+          const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+          const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+          const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+          const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[4]?.getText()); // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[5]?.getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -7985,7 +8113,7 @@ let ipcNumber = parseFloat(numIPC);
 
       // Función para convertir texto a entero con manejo de errores
       convertToInt: function (text) {
-        const parsed = parseInt(text, 10);
+        const parsed = parseFloat(text, 10);
         return isNaN(parsed) ? null : parsed;
       },
 
@@ -10141,12 +10269,12 @@ let ipcNumber = parseFloat(numIPC);
 
         for (var i = 0; i < columns.length; i++) {
           var headerLabel = columns[i].getHeader();
-          if (headerLabel && (headerLabel.getText() === "Total1" || headerLabel.getText() === "")) {
+          if (headerLabel && (headerLabel.getText() === "Total €" || headerLabel.getText() === "")) {
             return i;
           }
         }
 
-        // console.warn("Advertencia: No se encontró la columna 'Total1'. Se usará la última columna.");
+        // console.warn("Advertencia: No se encontró la columna 'Total €'. Se usará la última columna.");
         return lastColumnIndex + 1;
       },
 
@@ -10746,12 +10874,28 @@ let ipcNumber = parseFloat(numIPC);
 
           // IDs de los CheckBoxes
           var sOtherCheckboxId = iSelectedColumnIndex === 0 ? "box_prove" : "box_condi";
+
+
+
           var oOtherCheckbox = this.byId(sOtherCheckboxId);
 
           if (!oOtherCheckbox) {
             console.error("El otro checkbox no se encontró.");
             return;
           }
+
+
+
+          if (sOtherCheckboxId === "box_condi"){
+
+            this.byId("idTextComProve").setEditable(true);
+
+        }else{
+
+          this.byId("idTextComProve").setEditable(false);
+
+        }
+
 
           // Deshabilitar el otro checkbox si este está seleccionado
           oOtherCheckbox.setEnabled(!bSelected);
