@@ -8,7 +8,7 @@ const xsenv = require('@sap/xsenv');
 console.log("HOLAAAAAAAAAAAAA");
 
 
-
+getTokenUser();
 
 module.exports = cds.service.impl(async function () {
   
@@ -33,7 +33,6 @@ module.exports = cds.service.impl(async function () {
     GastoViajeConsumo,
     otrosServiciosConsu,
   } = this.entities;
-
 
 
 
@@ -274,30 +273,34 @@ this.on('getUserTask', async (req) => {
   
 
   
-this.on('getUserInfo', async (req) => {
-  console.log(" HOLAAAAAAAAAAAAA   estoy dentro de getUserInfo");
+  this.on('getUserInfo', async (req) => {
+    console.log("📥 Entrando en getUserInfo");
 
-  if (!req.user || !req.user.id) {
-    console.log(" No se encontró usuario autenticado.");
-    return {};
-  }
+    if (!req.user || !req.user.id) {
+      console.log("⚠️ No se encontró usuario autenticado.");
+      return {};
+    }
 
-  console.log("🧾 req.user completo:", req.user);
+    console.log("🧾 req.user completo:", req.user);
+    const attr = req.user.attr || {};
 
-  const attr = req.user.attr || {};
+    // 🔐 Obtener el token
+    const token = await getTokenUser();
 
-  const userInfo = {
-    id: req.user.id,
-    email: attr.email || "No disponible",
-    name: attr.givenName || "No disponible",
-    familyName: attr.familyName || "No disponible",
-    fullName: `${attr.givenName || ''} ${attr.familyName || ''}`.trim() || "No disponible",
-    phoneNumber: attr.phoneNumber || "No disponible"
-  };
+    const userInfo = {
+      id: req.user.id,
+      email: attr.email || "No disponible",
+      name: attr.givenName || "No disponible",
+      familyName: attr.familyName || "No disponible",
+      fullName: `${attr.givenName || ''} ${attr.familyName || ''}`.trim() || "No disponible",
+      phoneNumber: attr.phoneNumber || "No disponible",
+      token: token // ✅ aquí lo agregas
+    };
 
-  console.log(" Datos del usuario:", userInfo);
-  return userInfo;
-});
+    console.log("✅ Datos del usuario:", userInfo);
+    return userInfo;
+  });
+
 
 
   module.exports = cds.service.impl(async function() {
@@ -807,3 +810,36 @@ this.on('getUserInfo', async (req) => {
   }
   
 });
+
+
+
+async function getTokenUser() {
+  const clientid = "sb-datoscdo!t46439";
+  const clientsecret = "fOR9SpEx2do3y43ETrQtJFmk+gk=";
+  const url = "https://j8z80lwx.authentication.eu20.hana.ondemand.com/oauth/token";
+
+  try {
+    const response = await axios({
+      method: "post",
+      url: url,
+      auth: {
+        username: clientid,
+        password: clientsecret
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      data: "grant_type=client_credentials"
+    });
+
+    const token = response.data.access_token;
+    console.log("✅ Token obtenido Get USER :", token);
+    return token;
+
+  } catch (error) {
+    console.error("❌ Error obteniendo token:", error.response?.data || error.message);
+    throw error;
+  }
+
+
+}

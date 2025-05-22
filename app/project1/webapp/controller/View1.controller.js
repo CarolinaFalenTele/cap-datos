@@ -9,10 +9,11 @@ sap.ui.define([
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
   "sap/ui/model/json/JSONModel",
+    "sap/m/MessageBox"
 
 ],
 
-  function (Controller, DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel) {
+  function (Controller, DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -225,31 +226,129 @@ sap.ui.define([
             return response.json();
           })
           .then(data => {
+            console.log("Respuesta completa:", data); // Para debug
             const userInfo = data.value;
-
+            const token = data.token || (userInfo && userInfo.token);
+      
             if (userInfo) {
-              // Asignar datos a los controles en la vista
-              //this.byId("dddtg")?.setText(userInfo.name);
-              //  this.byId("dddtg")?.setText(userInfo.email);
-
               const oEmailAttr = this.byId("dddtg");
               oEmailAttr?.setText(userInfo.email);
               oEmailAttr?.setTooltip(userInfo.email);
               this.byId("23d3")?.setText(userInfo.fullName);
-              //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
-              //this.byId("telefonoUsuario")?.setText(useriInfo.phoneNumber);
-
-              //console.log(" Datos seteados en la vista:", userInfo);
+      
+              if (token) {
+                this._startSessionWatcher(token);
+                console.log("Token recibido y watcher iniciado.");
+              } else {
+                console.warn("Token no recibido en la respuesta.");
+              }
+      
             } else {
               console.error("No se encontró la información del usuario.");
             }
           })
           .catch(error => {
-            console.error(" Error obteniendo datos del usuario:", error);
+            console.error("Error obteniendo datos del usuario:", error);
           });
       },
+      
+      
 
 
+
+      _startSessionWatcher: function (token) {
+        const decoded = this._parseJwt(token);
+        const expiresAt = decoded.exp * 1000; // Expiración en milisegundos
+        const now = Date.now();
+        const timeUntilWarning = expiresAt - now - (1 * 60 * 1000); // 1 minuto antes
+      
+        if (timeUntilWarning > 0) {
+          setTimeout(() => {
+            this._showSessionWarning(expiresAt);
+          }, timeUntilWarning);
+        } else {
+          this._showSessionWarning(expiresAt);
+        }
+      },
+      
+
+      _showSessionWarning: function (expiresAt) {
+        let secondsLeft = Math.floor((expiresAt - Date.now()) / 1000);
+      
+        const interval = setInterval(() => {
+          if (secondsLeft <= 0) {
+            clearInterval(interval);
+            MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
+            return;
+          }
+      
+          // Actualiza el texto del diálogo dinámicamente
+          if (dialog && dialog.getContent && dialog.getContent()[0]) {
+            dialog.getContent()[0].setText(`Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?`);
+          }
+      
+          secondsLeft--;
+        }, 1000);
+      
+        const dialog = new sap.m.Dialog({
+          title: "⚠️ Sesión a punto de expirar",
+          content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
+          beginButton: new sap.m.Button({
+            text: "Sí, mantener sesión",
+            press: () => {
+              clearInterval(interval);
+              dialog.close();
+              this._refreshToken(); // 🔁 Simula renovación de sesión
+            }
+          }),
+          endButton: new sap.m.Button({
+            text: "No",
+            press: () => {
+              clearInterval(interval);
+              dialog.close();
+              // 🔕 No hay logout en pruebas
+            }
+          }),
+          afterClose: () => {
+            dialog.destroy();
+          }
+        });
+      
+        dialog.open();
+      },
+      
+      
+
+      _parseJwt: function (token) {
+        const base64Url = token.split('.')[1];
+        const base64 = atob(base64Url.replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(decodeURIComponent(escape(base64)));
+      },
+      
+      _refreshToken: async function () {
+        try {
+          const response = await fetch("/odata/v4/datos-cdo/getUserInfo", {
+            method: "GET"
+          });
+          const data = await response.json();
+      
+          console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
+      
+          const token = data.token || (data.value && data.value.token);
+      
+          if (token) {
+            this._startSessionWatcher(token);
+            MessageBox.success("Sesión renovada.");
+          } else {
+            throw new Error("Token no recibido.");
+          }
+        } catch (err) {
+          MessageBox.error("No se pudo renovar la sesión: " + err.message);
+        }
+      },
+      
+      
+      
       onEmailPress: function (oEvent) {
         const sEmail = oEvent.getSource().getText();
         window.location.href = "mailto:" + sEmail;
@@ -3804,28 +3903,6 @@ sap.ui.define([
 
 
 
-      /*    getTocken: async  function () {
-            try {
-                const response =  fetch('/odata/v4/datos-cdo/', {
-                    method: 'GET',
-                    headers: {
-                        'x-csrf-token': 'Fetch',
-                    },
-                    credentials: 'include', // Para enviar cookies de sesión si aplica
-                });
-        
-                const csrfToken = response.headers.get('x-csrf-token');
-                if (!csrfToken) {
-                    throw new Error('CSRF token no recibido');
-                }
-        
-                // Guardar el token para futuras solicitudes
-                console.log('Token CSRF obtenido:', csrfToken);
-                this.csrfToken = csrfToken; // Asegúrate de que `this` sea correcto
-            } catch (error) {
-                console.error('Error al obtener el token CSRF:', error);
-            }
-        },*/
 
 
       token: async function () {
