@@ -114,4 +114,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 
 
   function getUserInfo()                                                    returns String;
+    action cancelWorkflow(workflowInstanceId: String) returns String;
+
 }
+

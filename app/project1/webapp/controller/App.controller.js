@@ -1146,10 +1146,84 @@ sap.ui.define(
 
 
 
-
-
-
             onEditPress: function (oEvent) {
+                var oButton = oEvent.getSource();
+            
+                var oContextPendientes = oButton.getBindingContext("modelPendientes");
+                var oContextAprobados = oButton.getBindingContext("modelAprobados");
+                var oContextBorradores = oButton.getBindingContext("modelBorrador");
+            
+                var oContext = oContextPendientes || oContextAprobados || oContextBorradores;
+            
+                if (!oContext) {
+                    console.error("No se pudo obtener el contexto del ítem.");
+                    return;
+                }
+            
+                var sProjectID = oContext.getProperty("ID");
+                if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                }
+            
+                console.log("edit id " + sProjectID);
+            
+                var sNameProyect = oContext.getProperty("nameProyect");
+            
+                var that = this;
+            
+                var oModel = this.getView().getModel("mainService");
+                if (oModel) {
+                    oModel.setData({});
+                    oModel.refresh(true);
+                }
+            
+                var sourceModelName = oContextPendientes
+                    ? "modelPendientes"
+                    : (oContextAprobados ? "modelAprobados" : "modelBorrador");
+            
+                // Definir el título y el texto del diálogo dependiendo del modelo de origen
+                var dialogTitle = "Confirmar Edición";
+                var dialogText = "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?";
+            
+                if (sourceModelName === "modelAprobados") {
+                    dialogTitle = "Ver Solicitud";
+                    dialogText = "¿Quieres ver el contenido de esta solicitud?";
+                }
+            
+                var oDialog = new sap.m.Dialog({
+                    title: dialogTitle,
+                    type: "Message",
+                    state: "Warning",
+                    content: new sap.m.Text({
+                        text: dialogText
+                    }),
+                    beginButton: new sap.m.Button({
+                        text: "Confirmar",
+                        press: function () {
+                            oDialog.close();
+            
+                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                            oRouter.navTo("view", {
+                                sProjectID: sProjectID,
+                                sourceModel: sourceModelName
+                            }, true);
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "Cancelar",
+                        press: function () {
+                            oDialog.close();
+                        }
+                    })
+                });
+            
+                oDialog.open();
+            },
+            
+
+
+          /*  onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
 
                 var oContextPendientes = oButton.getBindingContext("modelPendientes");
@@ -1219,7 +1293,7 @@ sap.ui.define(
                 });
 
                 oDialog.open();
-            },
+            },*/
 
 
 
@@ -1648,7 +1722,11 @@ sap.ui.define(
                         oControl.setDateValue(null);
                     } else if (oControl instanceof sap.m.TextArea) {
                         oControl.setValue("");
-                    } else if (oControl instanceof sap.m.CheckBox) {
+                    }  else if (oControl instanceof sap.m.Text) {
+                            oControl.setText("");
+                    } 
+                    
+                    else if (oControl instanceof sap.m.CheckBox) {
                         oControl.setSelected(false);
                     } else if (oControl instanceof sap.viz.ui5.controls.VizFrame) {
                         // Limpiar el VizFrame: por ejemplo, eliminando datos vinculados o restableciendo la configuración

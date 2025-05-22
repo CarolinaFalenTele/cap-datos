@@ -79,6 +79,34 @@ this.on('startWorkflow', async (req) => {
 });
 
 
+this.on('cancelWorkflow', async (req) => {
+  const workflowInstanceId = req.data.workflowInstanceId; // Recibes el ID directamente
+
+  console.log("id recibido " + workflowInstanceId);
+  try {
+    const token = await getWorkflowToken(); // Tu función para obtener token OAuth2
+
+    const url = `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}`;
+
+    const result = await axios.patch(url, 
+      { status: "CANCELED" }, // Aquí va el body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return `Workflow ${workflowInstanceId} cancelado correctamente`;
+  } catch (err) {
+    console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
+    req.reject(500, `Error al cancelar workflow: ${err.message}`);
+  }
+});
+
+
+
 this.on('completeWorkflow', async (req) => {
   const { workflowInstanceId, decision } = req.data;
 

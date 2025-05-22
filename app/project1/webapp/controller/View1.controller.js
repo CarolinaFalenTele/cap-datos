@@ -4169,6 +4169,26 @@ sap.ui.define([
           let method = "POST";
 
           if (sProjectID) {
+
+            console.log("ID DEL WORK "  + this._idWorkIniciado );
+            if (this._idWorkIniciado) {
+              try {
+                // Llamada a backend para cancelar el workflow
+                const oModel = this.getView().getModel();
+                const oContextCancel = oModel.bindContext("/cancelWorkflow(...)");
+                
+                // 🚫 NO ENVIARLO como payload
+                oContextCancel.setParameter("workflowInstanceId", this._idWorkIniciado);
+                
+                await oContextCancel.execute();
+                sap.m.MessageToast.show("Workflow anterior cancelado correctamente");
+              } catch (error) {
+                sap.m.MessageBox.error("Error al cancelar workflow anterior: " + error.message);
+                return;
+              }
+            }
+
+
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
