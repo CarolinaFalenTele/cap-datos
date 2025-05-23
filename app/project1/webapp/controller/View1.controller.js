@@ -612,7 +612,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos del proyecto:", error);
-          sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+          //sap.m.MessageToast.show("Error al cargar los datos del proyecto");
         }
       },
 
@@ -848,7 +848,7 @@ sap.ui.define([
         try {
           await oContext.execute();
 
-          sap.m.MessageToast.show("Decisión enviada: " + decision);
+        ///  sap.m.MessageToast.show("Decisión enviada: " + decision);
 
           const idWOrk = this._idWorkflowInstancias;
 
@@ -881,10 +881,10 @@ sap.ui.define([
             throw new Error("Error actualizando el estado del proyecto: " + errorText);
           }
 
-          sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
+      //    sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
 
 
-          sap.m.MessageToast.show("Decisión enviada: " + decision);
+       //   sap.m.MessageToast.show("Decisión enviada: " + decision);
         } catch (err) {
           sap.m.MessageBox.error("Error al completar el workflow: " + err.message);
         }
@@ -1040,7 +1040,7 @@ sap.ui.define([
       fetchMilestones: async function (projectID) {
         if (!projectID) {
           console.error("Error: projectID es inválido o indefinido:", projectID);
-          sap.m.MessageToast.show("Error: ID del proyecto no válido.");
+     //     sap.m.MessageToast.show("Error: ID del proyecto no válido.");
           return;
         }
 
@@ -1064,7 +1064,7 @@ sap.ui.define([
 
           if (!oData || !oData.value || !Array.isArray(oData.value) || oData.value.length === 0) {
             console.warn("No se encontraron datos de planificación para el proyecto:", projectID);
-            sap.m.MessageToast.show("No hay datos de planificación disponibles.");
+   //         sap.m.MessageToast.show("No hay datos de planificación disponibles.");
             return;
           }
 
@@ -1109,7 +1109,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de planificación:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de planificación.");
+    ///      sap.m.MessageToast.show("Error al cargar los datos de planificación.");
         }
       },
 
@@ -1170,7 +1170,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de proveedor:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de proveedor");
+      //    sap.m.MessageToast.show("Error al cargar los datos de proveedor");
         }
       },
 
@@ -1358,12 +1358,12 @@ sap.ui.define([
             this.metodoSumarFac();
 
           } else {
-            console.log("No hay datos de Facturación disponibles.");
+       //     console.log("No hay datos de Facturación disponibles.");
           }
 
         } catch (error) {
           console.error("Error al obtener los datos de Facturación:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Facturación");
+     //     sap.m.MessageToast.show("Error al cargar los datos de Facturación");
         }
       },
 
@@ -1439,7 +1439,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de cliente Facturación:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de cliente Facturación");
+    //      sap.m.MessageToast.show("Error al cargar los datos de cliente Facturación");
         }
       },
 
@@ -1492,7 +1492,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+        //  sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1669,7 +1669,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1722,7 +1722,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1778,7 +1778,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+     //     //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1831,7 +1831,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1874,7 +1874,7 @@ sap.ui.define([
 
             this._idInfraLicencia = idTotalInfrLicen;
 
-            console.log("JORNADAS ID " + this._idInfraLicencia);
+        //    console.log("JORNADAS ID " + this._idInfraLicencia);
 
           } else {
             console.log("NO SE ENCONTRARON DATOS PARA InfraestrLicencia");
@@ -1883,7 +1883,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1908,7 +1908,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+     ///     console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -1942,7 +1942,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -1999,7 +1999,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2044,7 +2044,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2098,7 +2098,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de FECHAS DE GASTOS DE VIAJE :", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
       //---------------------------------------------------------------------------------
@@ -2145,7 +2145,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de FECHAS DE Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2185,7 +2185,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de FECHAS DE Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2242,7 +2242,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2276,7 +2276,7 @@ sap.ui.define([
 
           if (!oData.value || oData.value.length === 0) {
             console.warn("No se encontraron datos para el recurso externo con ID:", RecursoExterID);
-            sap.m.MessageToast.show("No se encontraron datos de recursos externos");
+            //sap.m.MessageToast.show("No se encontraron datos de recursos externos");
             return; // salimos de la función
           }
 
@@ -2301,7 +2301,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2328,7 +2328,7 @@ sap.ui.define([
           // Verifica que hay datos antes de continuar
           if (!oData.value || oData.value.length === 0) {
             console.warn("No hay datos de ValorMensuSerExter para el ID:", idExterno);
-            sap.m.MessageToast.show("No hay valores mensuales para este recurso externo.");
+            //sap.m.MessageToast.show("No hay valores mensuales para este recurso externo.");
             return;
           }
       
@@ -2348,7 +2348,7 @@ sap.ui.define([
       
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
       
@@ -2377,7 +2377,7 @@ sap.ui.define([
           // Validar que hay datos
           if (!oData.value || oData.value.length === 0) {
             console.warn("No hay datos de ValorMensuGastoViExter para el ID:", idExterno);
-            sap.m.MessageToast.show("No hay valores mensuales para este gasto externo.");
+            //sap.m.MessageToast.show("No hay valores mensuales para este gasto externo.");
             return;
           }
       
@@ -2397,7 +2397,7 @@ sap.ui.define([
       
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
       
@@ -2472,7 +2472,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2543,7 +2543,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
 
 
@@ -2629,7 +2629,7 @@ sap.ui.define([
       
         } catch (error) {
           console.error("Error al obtener los datos de Consumo Externo:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Consumo Externo");
+          //sap.m.MessageToast.show("Error al cargar los datos de Consumo Externo");
         }
       },
       
@@ -2708,7 +2708,7 @@ sap.ui.define([
       
         } catch (error) {
           console.error("Error al obtener los datos de Consumo Externo:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Consumo Externo");
+          //sap.m.MessageToast.show("Error al cargar los datos de Consumo Externo");
         }
       },*/
       
@@ -2776,7 +2776,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -2843,7 +2843,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
 
       },
@@ -2915,7 +2915,7 @@ sap.ui.define([
     
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Externos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Externos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Externos");
         }
       },
     
@@ -2984,12 +2984,12 @@ sap.ui.define([
              }
       
           } else {
-            console.log("No hay datos de servi Externos disponibles.");
+       //     console.log("No hay datos de servi Externos disponibles.");
           }
       
         } catch (error) {
           console.error("Error al obtener los datos de serviRecurExter:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
+          //sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
         }
       },
       
@@ -3058,7 +3058,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de serviRecurExter:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
+          //sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
         }
       },*/
 
@@ -3130,7 +3130,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error al obtener los datos de GastoViajeRecExter:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de GastoViajeRecExter");
+          //sap.m.MessageToast.show("Error al cargar los datos de GastoViajeRecExter");
         }
       },
       //-------------------------------------------------------------
@@ -3200,7 +3200,7 @@ sap.ui.define([
           }
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
+          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
       },
 
@@ -3244,7 +3244,7 @@ sap.ui.define([
     
         } catch (error) {
             console.error("Error al obtener los datos de Otros Conceptos:", error);
-            sap.m.MessageToast.show("Error al cargar los datos de Otros Conceptos");
+            //sap.m.MessageToast.show("Error al cargar los datos de Otros Conceptos");
         }
     },
     
@@ -3287,7 +3287,7 @@ sap.ui.define([
   
       } catch (error) {
           console.error("Error al obtener los datos de Licencias:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de Licencias");
+          //sap.m.MessageToast.show("Error al cargar los datos de Licencias");
       }
   },
   
@@ -3357,7 +3357,7 @@ sap.ui.define([
           }
         } catch (error) {
           console.error("Error al obtener los datos de LicenciasCon:", error);
-          sap.m.MessageToast.show("Error al cargar los datos de LicenciasCon");
+          //sap.m.MessageToast.show("Error al cargar los datos de LicenciasCon");
         }
 
       },
@@ -3921,7 +3921,7 @@ sap.ui.define([
             throw new Error("No se recibió un CSRF Token");
           }
 
-          console.log("CSRF Token obtenido:", sCsrfToken);
+       //   console.log("CSRF Token obtenido:", sCsrfToken);
           // Guardar el token en localStorage
           localStorage.setItem('csrfToken', sCsrfToken);
 
@@ -3929,7 +3929,7 @@ sap.ui.define([
 
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
-          sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },
 
@@ -3991,7 +3991,7 @@ sap.ui.define([
   
           } catch (error) {
             console.error("Error en la llamada al servicio:", error);
-            sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+            //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
           }
   
   
@@ -4001,6 +4001,8 @@ sap.ui.define([
 
 
       //-------------------------- METODO INSERTAR ----------------------
+
+
 
       onSave: async function () {
 
@@ -4150,7 +4152,7 @@ sap.ui.define([
 
         // Validar campos antes de hacer la llamada
         if (!payload.descripcion || !payload.nameProyect) {
-          sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
+          //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
           console.error("Validación fallida: Falta código o nombre del proyecto", payload);
           return;
         }
@@ -4181,7 +4183,7 @@ sap.ui.define([
                 oContextCancel.setParameter("workflowInstanceId", this._idWorkIniciado);
                 
                 await oContextCancel.execute();
-                sap.m.MessageToast.show("Workflow anterior cancelado correctamente");
+                //sap.m.MessageToast.show("Workflow anterior cancelado correctamente");
               } catch (error) {
                 sap.m.MessageBox.error("Error al cancelar workflow anterior: " + error.message);
                 return;
@@ -4314,7 +4316,7 @@ sap.ui.define([
                 if (result && result.workflowInstanceId) {
                   const workflowInstanceId = result.workflowInstanceId;
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
-                  sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                  //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
 
                 } else {
                   sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
@@ -4327,16 +4329,14 @@ sap.ui.define([
               this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
-              sap.m.MessageToast.show("Error: No se generó un ID válido.");
+              //sap.m.MessageToast.show("Error: No se generó un ID válido.");
             }
           }
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
-          sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },
-
-
 
 
 
@@ -4492,7 +4492,7 @@ sap.ui.define([
 
         // Validar campos antes de hacer la llamada
         if (!payload.descripcion || !payload.nameProyect) {
-          sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
+          //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
           console.error("Validación fallida: Falta código o nombre del proyecto", payload);
           return;
         }
@@ -4600,14 +4600,283 @@ sap.ui.define([
               this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
-              sap.m.MessageToast.show("Error: No se generó un ID válido.");
+              //sap.m.MessageToast.show("Error: No se generó un ID válido.");
             }
           }
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
-          sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },
+
+ /*     onBorrador: async function () {
+
+        console.log("ENTRANDO A onBorrador");
+
+
+        let errorCount = 0;
+        const incompleteFields = [];
+
+        const sProjectID = this._sProjectID; // ID del proyecto
+        const scodigoProyect = parseFloat(this.byId("input0").getValue(), 10);
+        const sEmail = this.byId("dddtg").getText();
+        const sEmpleado = this.byId("23d3").getText();
+        const sCambioEurUsd = parseFloat(this.byId("inputCambioEu").getValue());
+        const snameProyect = this.byId("input1").getValue();
+        const sdescripcion = this.byId("idDescripcion").getValue();
+        const sTotal = parseFloat(this.byId("input0_1725625161348").getValue());
+        const spluriAnual = this.byId("box_pluriAnual").getSelected();
+        const sClienteFac = this.byId("id_Cfactur").getValue();
+        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+        const sMensual = this.byId("idCheckMensual").getSelected();
+        const sClienteFunc = this.byId("int_clienteFun").getValue();
+        const sObjetivoAlcance = this.byId("idObje").getValue();
+        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
+        const sDatosExtra = this.byId("area0").getValue();
+        const sFechaIni = this.byId("date_inico").getDateValue();
+        const sFechaFin = this.byId("date_fin").getDateValue();
+        const sIPC = this.byId("input_ipc").getValue();
+
+
+
+
+        // Quitar el símbolo % y reemplazar coma por punto para poder parsear
+        let numIPC = sIPC.replace("%", "").replace(",", ".");
+
+        // Convertir a número (float)
+        let ipcNumber = parseFloat(numIPC);
+
+
+
+
+        const sComentarioProvee = this.byId("idTextComProve").getValue();
+        const sComentarioPVd = this.byId("idComenpVd").getValue();
+
+        const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
+        const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
+
+        console.log("Objeto comentarioProveedor:", sComentarioProvee);
+        console.log("Objeto comentarioPvD:", sComentarioPVd);
+
+
+        var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
+
+        const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
+        const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
+
+        const sSelectedKey = this.byId("idNatu").getSelectedKey();
+        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
+        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
+        const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
+        const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
+        const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
+        const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
+        const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
+        const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
+        const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
+        const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
+
+        const validateField = (control, value, fieldName) => {
+          if (!value || (typeof value === 'string' && value.trim() === "")) {
+            control.setValueState("Error");
+            control.setValueStateText("Este campo es obligatorio");
+            errorCount++;
+            if (!incompleteFields.includes(fieldName)) {
+              incompleteFields.push(fieldName);
+            }
+          } else {
+            control.setValueState("None");
+          }
+        };
+
+        // Validar campos antes de hacer la llamada
+        validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
+        validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
+
+        if (errorCount > 0) {
+          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
+          return;
+        }
+
+        const now = new Date();
+        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+
+        console.log(localDate);
+
+
+        const payload = {
+          codigoProyect: "1",
+          nameProyect: snameProyect,
+          Email: sEmail,
+          Empleado: sEmpleado,
+          pluriAnual: spluriAnual,
+          Total: sTotal,
+          descripcion: sdescripcion,
+          mensual: sMensual,
+          comentarioTipoCompra: sComentarioTipCompra,
+          comentarioFacturacion: sComentarioFacturacion,
+          comentarioProveedor: sComentarioProvee,
+          comentarioPvD: sComentarioPVd,
+          funcionalString: sClienteFunc,
+          clienteFacturacion: sClienteFac,
+          multijuridica: sMultiJuri,
+          Naturaleza_ID: sSelectedKey,
+          TipoCompra_ID: sSelecKeyTipoCompra,
+          TipoCompra: { ID: sSelecKeyTipoCompra },
+          MotivoCondi: { ID: sSelecKeyMotivoCondi },
+          Area_ID: sSelecKeyA,
+          Iniciativa_ID: sSelectKeyIni,
+          jefeProyectID_ID: sSelecKeyJe,
+          objetivoAlcance: sObjetivoAlcance,
+          AsuncionesyRestricciones: sAsunyRestric,
+          Vertical_ID: sSelectKeyVerti,
+          Fechainicio: sFechaIniFormatted,
+          FechaFin: sFechaFinFormatted,
+          Seguimiento_ID: sSelectKeySegui,
+          EjecucionVia_ID: sSelectKeyEjcu,
+          AmReceptor_ID: sSelectKeyAmrep,
+          clienteFuncional_ID: sSelectKeyClienNuevo,
+          Estado: "Borrador",
+          datosExtra: sDatosExtra,
+          IPC_apli: ipcNumber,
+          CambioEuRUSD: sCambioEurUsd
+        };
+
+        // Agregar fechaCreacion solo si es nuevo (POST)
+        if (!sProjectID) {
+          payload.fechaCreacion = localDate;
+        }
+
+        // Crear la fecha de modificación (formato yyyy-MM-dd)
+        let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
+          pattern: "yyyy-MM-dd"
+        });
+        const fechaModificacion = new Date();
+        const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
+
+        // Agregar FechaModificacion solo si es PATCH
+        if (sProjectID) {
+          payload.FechaModificacion = formattedFechaModificacion;
+        }
+
+        // Validar campos antes de hacer la llamada
+        if (!payload.descripcion || !payload.nameProyect) {
+          //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
+          console.error("Validación fallida: Falta código o nombre del proyecto", payload);
+          return;
+        }
+
+        // Log del payload antes de enviarlo
+        console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+
+
+
+        try {
+          let oModel = this.getView().getModel();
+          let sServiceUrl = oModel.sServiceUrl;
+
+          let response;
+          let url = "/odata/v4/datos-cdo/DatosProyect";
+          let method = "POST";
+
+          if (sProjectID) {
+            // Actualización (PATCH)
+            url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+            method = "PATCH";
+          }
+
+          // 1️ Obtener el CSRF Token
+          let oTokenResponse = await fetch(sServiceUrl, {
+            method: "GET",
+            headers: { "x-csrf-token": "Fetch" }
+          });
+          if (!oTokenResponse.ok) {
+            throw new Error("Error al obtener el CSRF Token");
+          }
+
+          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+          if (!sCsrfToken) {
+            throw new Error("No se recibió un CSRF Token");
+          }
+
+          console.log(" CSRF Token obtenido:", sCsrfToken);
+
+          // Realizamos la llamada al servicio
+          response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": sCsrfToken
+            },
+            body: JSON.stringify(payload),
+          });
+
+          // Detectar problemas en la respuesta
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Error en ${method} (${response.status}):`, errorText);
+
+            if (response.status === 400) {
+              //sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
+            } else if (response.status === 404) {
+              //sap.m.MessageToast.show("Error 404: Endpoint no encontrado.");
+            } else if (response.status === 500) {
+              //sap.m.MessageToast.show("Error 500: Problema en el servidor o base de datos.");
+            } else {
+              //sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
+            }
+
+            throw new Error(`HTTP ${response.status} - ${errorText}`);
+          }
+
+          // Procesar respuesta si es exitosa
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Respuesta completa de la API:", result);
+
+            // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
+            const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
+            console.log("ID generado:", generatedId);
+
+            if (generatedId) {
+              // Llamadas en paralelo para mejorar rendimiento
+              const insertAllResults = await Promise.all([
+                this.insertFacturacion(generatedId),
+                this.inserChart(generatedId, sCsrfToken),
+                this.insertarProveedor(generatedId),
+                this.insertClientFactura(generatedId),
+                this.insertRecursosInternos(generatedId),
+                this.insertCosumoExterno(generatedId),
+                this.insertRecursoExterno(generatedId),
+                this.insertarOtrosConceptos(generatedId),
+                this.insertServicioInterno(generatedId),
+                this.insertGastoViajeInterno(generatedId),
+                this.insertServiConsu(generatedId),
+                this.insertGastoConsu(generatedId),
+                this.insertServicioRecuExter(generatedId),
+                this.insertGastoViajeExterno(generatedId),
+                this.insertarLicencia(generatedId),
+                this.insertPerfilJornadas(generatedId, sCsrfToken),
+                this.insertTotalRecuInterno(generatedId, sCsrfToken),
+                this.insertTotalConsuExt(generatedId, sCsrfToken),
+                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
+                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
+                this.insertResumenCostesTotal(generatedId, sCsrfToken),
+
+              ]);
+
+
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+            } else {
+              console.error("No se generó un ID válido.");
+              //sap.m.MessageToast.show("Error: No se generó un ID válido.");
+            }
+          }
+        } catch (error) {
+          console.error("Error en la llamada al servicio:", error);
+          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+        }
+      },*/
 
 
 
@@ -4752,7 +5021,7 @@ let ipcNumber = parseFloat(numIPC);
 
         // Validar campos antes de hacer la llamada
         if (!payload.descripcion || !payload.nameProyect) {
-          sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
+          //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
           console.error("Validación fallida: Falta código o nombre del proyecto", payload);
           return;
         }
@@ -4808,13 +5077,13 @@ let ipcNumber = parseFloat(numIPC);
             console.error(`Error en ${method} (${response.status}):`, errorText);
 
             if (response.status === 400) {
-              sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
+              //sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
             } else if (response.status === 404) {
-              sap.m.MessageToast.show("Error 404: Endpoint no encontrado.");
+              //sap.m.MessageToast.show("Error 404: Endpoint no encontrado.");
             } else if (response.status === 500) {
-              sap.m.MessageToast.show("Error 500: Problema en el servidor o base de datos.");
+              //sap.m.MessageToast.show("Error 500: Problema en el servidor o base de datos.");
             } else {
-              sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
+              //sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
             }
 
             throw new Error(`HTTP ${response.status} - ${errorText}`);
@@ -4898,7 +5167,7 @@ let ipcNumber = parseFloat(numIPC);
                 if (result && result.workflowInstanceId) {
                   const workflowInstanceId = result.workflowInstanceId;
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
-                  sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                  //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
 
                 } else {
                   sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
@@ -4911,12 +5180,12 @@ let ipcNumber = parseFloat(numIPC);
             this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
-              sap.m.MessageToast.show("Error: No se generó un ID válido.");
+              //sap.m.MessageToast.show("Error: No se generó un ID válido.");
             }
           }
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
-          sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },*/
 
@@ -5091,7 +5360,7 @@ let ipcNumber = parseFloat(numIPC);
         var sTotaleJorC = parseFloat(this.byId("totalConsuExternot").getValue());
 
 
-        console.log("ID RECIBIDO DEL INSERT " + idtotalConsuEx);
+//        console.log("ID RECIBIDO DEL INSERT " + idtotalConsuEx);
 
 
         var payload = {
@@ -5370,11 +5639,11 @@ let ipcNumber = parseFloat(numIPC);
                 } else {
                   const errorMessage = await response.text();
                   console.log("Error al actualizar la planificación:", errorMessage);
-                  sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
+                  //sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
                 }
               } else {
                 console.log("ID no válido para el registro a actualizar:", recordToUpdate);
-                sap.m.MessageToast.show("Error al actualizar: ID no válido.");
+                //sap.m.MessageToast.show("Error al actualizar: ID no válido.");
               }
             } else {
               const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
@@ -5392,14 +5661,14 @@ let ipcNumber = parseFloat(numIPC);
               } else {
                 const errorMessage = await response2.text();
                 console.log("Error al guardar la planificación:", errorMessage);
-                sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
+                //sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
               }
             }
           }
 
         } catch (error) {
           console.error("Error en la operación:", error);
-          sap.m.MessageToast.show("Ocurrió un error durante la operación.");
+          //sap.m.MessageToast.show("Ocurrió un error durante la operación.");
         }
       },
 
@@ -5455,11 +5724,11 @@ let ipcNumber = parseFloat(numIPC);
                 } else {
                   const errorMessage = await response.text();
                   console.log("Error al actualizar la planificación:", errorMessage);
-                  sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
+                  //sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
                 }
               } else {
                 console.log("ID no válido para el registro a actualizar:", recordToUpdate);
-                sap.m.MessageToast.show("Error al actualizar: ID no válido.");
+                //sap.m.MessageToast.show("Error al actualizar: ID no válido.");
               }
             } else {
               // Si el 'hito' no existe, realizamos una inserción (POST)
@@ -5478,14 +5747,14 @@ let ipcNumber = parseFloat(numIPC);
               } else {
                 const errorMessage = await response2.text();
                 console.log("Error al guardar la planificación:", errorMessage);
-                sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
+                //sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
               }
             }
           }
 
         } catch (error) {
           console.error("Error en la operación:", error);
-          sap.m.MessageToast.show("Ocurrió un error durante la operación.");
+          //sap.m.MessageToast.show("Ocurrió un error durante la operación.");
         }
       },*/
 
@@ -5557,7 +5826,7 @@ let ipcNumber = parseFloat(numIPC);
               url = `/odata/v4/datos-cdo/Facturacion(${existingFacturacionID})`;
             } else {
               console.error("ID de facturación no válido:", existingFacturacionID);
-              sap.m.MessageToast.show("Error: ID de facturación no válido");
+              //sap.m.MessageToast.show("Error: ID de facturación no válido");
               return; // Salir de la función si el ID es inválido
             }
           }
@@ -5577,7 +5846,7 @@ let ipcNumber = parseFloat(numIPC);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la Facturación:", errorMessage);
-            sap.m.MessageToast.show("Error al guardar la Facturación: " + errorMessage);
+            //sap.m.MessageToast.show("Error al guardar la Facturación: " + errorMessage);
           }
         }
       },
@@ -5629,7 +5898,7 @@ let ipcNumber = parseFloat(numIPC);
           }
         }
 
-        sap.m.MessageToast.show("Proveedores guardados correctamente");
+        //sap.m.MessageToast.show("Proveedores guardados correctamente");
       },
 
 
@@ -5761,7 +6030,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -5837,7 +6106,7 @@ let ipcNumber = parseFloat(numIPC);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-            sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
           }
         }
       },
@@ -5879,7 +6148,7 @@ let ipcNumber = parseFloat(numIPC);
   
             // Validar si todos los datos son válidos
             if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-              sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+              //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
               return; // Si hay un error, no se envía la solicitud
             }
             
@@ -5955,7 +6224,7 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           }
         },*/
@@ -7323,11 +7592,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
 
@@ -7369,7 +7638,7 @@ let ipcNumber = parseFloat(numIPC);
     
               // Validar si todos los datos son válidos
               if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-                sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+                //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
                 return; // Si hay un error, no se envía la solicitud
               }
     
@@ -7429,11 +7698,11 @@ let ipcNumber = parseFloat(numIPC);
                 } else {
                   const errorMessage = await response.text();
                   console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-                  sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+                  //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
                 }
               } catch (error) {
                 console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-                sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+                //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
               }
             }
     
@@ -7474,7 +7743,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7536,11 +7805,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
       },
@@ -7583,7 +7852,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7645,7 +7914,7 @@ let ipcNumber = parseFloat(numIPC);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-            sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
           }
         }
       },
@@ -7685,7 +7954,7 @@ let ipcNumber = parseFloat(numIPC);
   
             // Validar si todos los datos son válidos
             if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-              sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+              //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
               return; // Si hay un error, no se envía la solicitud
             }
   
@@ -7753,7 +8022,7 @@ let ipcNumber = parseFloat(numIPC);
               } else {
                 const errorMessage = await response.text();
                 console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-                sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+                //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
               }
           }
   
@@ -7858,11 +8127,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
       },
@@ -7967,11 +8236,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
       },
@@ -8097,11 +8366,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
 
@@ -8206,7 +8475,7 @@ let ipcNumber = parseFloat(numIPC);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-            sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
           }
 
         }
@@ -8313,7 +8582,7 @@ let ipcNumber = parseFloat(numIPC);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-            sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+            //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
           }
         }
       },
@@ -8352,7 +8621,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !sConcepto ) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -8414,11 +8683,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
       },
@@ -8463,7 +8732,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !sConcepto ) {
-            sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
+            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -8523,11 +8792,11 @@ let ipcNumber = parseFloat(numIPC);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-              sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
+              //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
             }
           } catch (error) {
             console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-            sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
+            //sap.m.MessageToast.show("Error en la llamada al servicio para la fila " + (i + 1) + ": " + error.message);
           }
         }
 
@@ -8610,7 +8879,7 @@ let ipcNumber = parseFloat(numIPC);
                 console.log(`Factura actualizada:`, await updateResponse.json());
               } else {
                 console.log("Error al actualizar Factura:", await updateResponse.text());
-                sap.m.MessageToast.show("Error al actualizar Factura.");
+                //sap.m.MessageToast.show("Error al actualizar Factura.");
               }
             } else {
               const insertResponse = await fetch("/odata/v4/datos-cdo/ClientFactura", {
@@ -8626,17 +8895,17 @@ let ipcNumber = parseFloat(numIPC);
                 console.log("Factura insertada:", await insertResponse.json());
               } else {
                 console.log("Error al insertar Factura:", await insertResponse.text());
-                sap.m.MessageToast.show("Error al insertar Factura.");
+                //sap.m.MessageToast.show("Error al insertar Factura.");
               }
             }
           }
 
         } catch (error) {
           console.error("Error en la operación:", error);
-          sap.m.MessageToast.show("Ocurrió un error en la operación.");
+          //sap.m.MessageToast.show("Ocurrió un error en la operación.");
         }
 
-        sap.m.MessageToast.show("Total de oferta: " + totalOferta);
+        //sap.m.MessageToast.show("Total de oferta: " + totalOferta);
       },
 
 
@@ -8706,7 +8975,7 @@ let ipcNumber = parseFloat(numIPC);
                  console.log(`Factura con ID ${recordToUpdate.ID} actualizada con éxito:`, await updateResponse.json());
                } else {
                  console.log("Error al actualizar la Factura:", await updateResponse.text());
-                 sap.m.MessageToast.show("Error al actualizar la Factura.");
+                 //sap.m.MessageToast.show("Error al actualizar la Factura.");
                }
              } else {
                // **Si NO existe, hacer POST**
@@ -8723,17 +8992,17 @@ let ipcNumber = parseFloat(numIPC);
                  console.log("Factura guardada con éxito:", await insertResponse.json());
                } else {
                  console.log("Error al guardar la Factura:", await insertResponse.text());
-                 sap.m.MessageToast.show("Error al guardar la Factura.");
+                 //sap.m.MessageToast.show("Error al guardar la Factura.");
                }
              }
            }
          } catch (error) {
            console.error("Error en la operación:", error);
-           sap.m.MessageToast.show("Ocurrió un error en la operación.");
+           //sap.m.MessageToast.show("Ocurrió un error en la operación.");
          }
  
          // --- Mostrar el total acumulado ---
-         sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
+         //sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
        },*/
 
 
@@ -8803,12 +9072,12 @@ let ipcNumber = parseFloat(numIPC);
              } else {
                const errorMessage = await insert4.text();
                console.log("Error al guardar la Facturacion:", errorMessage);
-               sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
+               //sap.m.MessageToast.show("Error al guardar la Facturacion: " + errorMessage);
              }
            }
    
            // También puedes mostrar el total usando un mensaje SAPUI5
-           sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
+           //sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
          },*/
 
 

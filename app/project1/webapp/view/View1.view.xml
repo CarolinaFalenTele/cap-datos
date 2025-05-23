@@ -80,7 +80,7 @@
                             <ObjectAttribute
                                 id="unam"
                                 title="Area"
-                                text="Development"
+                                text="TGT"
                             />
                             <statuses>
                                 <ObjectStatus
@@ -1344,7 +1344,7 @@
                                                         <Title
                                                             text="Objetivos"
                                                             id="titu"
-                                                            class="miTitulo"
+                                                            class="customHeaderTitle color"
                                                         />
                                                         <ToolbarSpacer
                                                             id="ddd"
@@ -1417,6 +1417,9 @@
                                                     <FlexBox
                                                         width="100%"
                                                         id="box0_1714486261986"
+                                                          justifyContent="Center"
+                                                         
+                                                     alignItems="Center"
                                                     >
                                                         <items>
                                                             <Label
@@ -1445,6 +1448,7 @@
                                                                 id="frt234234ed"
                                                                 class="sapUiLargeMarginTop"
                                                             />
+
                                                             <Table
                                                                 noDataText="Drop column list items here and columns in the area above"
                                                                 id="table_clienteFac"
@@ -1931,7 +1935,8 @@
                                                         <Title
                                                             text="Comité de Oportunidades"
                                                             id="titulo4"
-                                                            class="miTitulo"
+                                                    
+                                                             class="customHeaderTitle color"
                                                         />
                                                         <ToolbarSpacer id="t" />
                                                         <Button
@@ -2119,11 +2124,7 @@
                                                                 width="100%"
                                                                 height="auto"
                                                             >
-                                                                <Button
-                                                                    id="d4855h"
-                                                                    text="Añadir Fila"
-                                                                    press="onAddRowPress('table_dimicFecha')"
-                                                                />
+                                                               
 
                                                                 <Table
                                                                     noDataText="Drop column list items here and columns in the area above"
@@ -3256,18 +3257,13 @@
                                                                 width="100%"
                                                                 height="auto"
                                                             >
-                                                                <Button
-                                                                    id="d4855ynh"
-                                                                    text="Añadir Fila"
-                                                                    press="onAddRowPress2('tablaConsuExter')"
-                                                                    class="sapUiLargeMarginTop"
-                                                                />
+                                                              
 
                                                                 <Table
                                                                     noDataText="Drop column list items here and columns in the area above"
                                                                     id="tablaConsuExter"
                                                                     width="auto"
-                                                                    class="customHeaderColor"
+                                                                    class="customHeaderColor sapUiMediumMarginTop"
                                                                 >
                                                                     <headerToolbar
                                                                     >
@@ -4082,7 +4078,7 @@
                                                                     noDataText="Drop column list items here and columns in the area above"
                                                                     id="idGastoViajeConsu"
                                                                     width="auto"
-                                                                    class="customHeaderColor2"
+                                                                    class="customHeaderColor2 "
                                                                 >
                                                                     <items>
                                                                         <ColumnListItem
@@ -4370,18 +4366,13 @@
                                                             id="scroll_containe3"
                                                             width="100%"
                                                         >
-                                                            <Button
-                                                                id="d48155ynh"
-                                                                text="Añadir Fila"
-                                                                press="onAddRowPress3"
-                                                                class="sapUiLargeMarginTop"
-                                                            />
+                                                          
 
                                                             <Table
                                                                 noDataText="Drop column list items here and columns in the area above"
                                                                 id="tablaRecExterno"
                                                                 width="auto"
-                                                                class="customHeaderColor"
+                                                                class="customHeaderColor  sapUiMediumMarginTop"
                                                             >
                                                                 <headerToolbar>
                                                                     <Toolbar
@@ -4390,7 +4381,7 @@
                                                                         <Title
                                                                             text="Recurso Externo"
                                                                             id="tituo500"
-                                                                            class="customTextColor"
+                                                                            class="customTextColor "
                                                                         />
                                                                         <ToolbarSpacer
                                                                             id="d4005"
@@ -5437,12 +5428,7 @@
                                                             width="100%"
                                                             height="auto"
                                                         >
-                                                            <Button
-                                                                id="d4549527462485855ynh"
-                                                                text="Añadir Fila"
-                                                                press="onAddRowPress4"
-                                                                class="sapUiLargeMarginTop"
-                                                            />
+                                                          
 
                                                             <Table
                                                                 noDataText="Drop column list items here and columns in the area above"
@@ -5993,6 +5979,7 @@
                                             text="Resumen Costes y Margen"
                                             count=""
                                             key="key3"
+                                           
                                         >
                                             <Panel
                                                 xmlns="sap.m"
@@ -6008,6 +5995,7 @@
                                                         <Title
                                                             id="title34"
                                                             text="Resumen Costes y Margen"
+                                                              class="customHeaderTitle color"
                                                         />
                                                         <ToolbarSpacer
                                                             id="mu345"
@@ -6792,6 +6780,7 @@
                                                         <Title
                                                             id="noest"
                                                             text="Resumen Ingresos Vs costes"
+                                                              class="customHeaderTitle color"
                                                         />
 
                                                         <ToolbarSpacer

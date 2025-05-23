@@ -127,6 +127,12 @@
 
 
 
+.miHeader2 {
+    background-color: #0066ff !important;
+    color: white !important; /* Usa blanco para mejor contraste */
+}
+
+
 .bar{
     background-color: hsl(226, 100%, 60%); 
     color: #FFFFFF !important; 
@@ -177,3 +183,10 @@
     border-color: #0070f3;
 }
 
+
+
+/* Cambiar el color del intro del ObjectHeader */
+.customIntroColor .sapMOHIntro {
+    color: #0066ff; /* Azul */
+    font-weight: bold; /* Opcional */
+}

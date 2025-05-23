@@ -270,7 +270,7 @@ sap.ui.define(
                     const workflowId = oItem.workflowId;
 
                     if (!workflowId) {
-                        sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                   //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
                         return;
                     }
 
@@ -286,7 +286,7 @@ sap.ui.define(
 
 
                     await this.onActivityPress(oEvent, result);
-                    sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                 //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
                     console.error(" Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
@@ -361,7 +361,24 @@ sap.ui.define(
                 const pasosExcluidos = [
                     "Condición de Espera",
                     "Esperar a terminar el flujo",
-                    "Espera respuesta"
+                    "Espera respuesta",
+                    "Leer entradas",
+                    "Confirmar entradas" ,
+                    "Esperar antes de avanzar",
+                    "Iniciar Variable",
+                    "Condición 3",
+                    "Espera 1",
+                    "Tarea de script 12",
+                    "Condición 5",
+                    "Wait 1 minute 10",
+                    "Condición",
+                    "Esperar Rechazo",
+                    "Tarea de script",
+                    "Wait 1 minute 11",
+                    "Condición",
+                    "Condición 2",
+                    "Condición 8",
+
                 ];
             
                 const eventosFiltrados = eventos.filter(e => {
@@ -606,6 +623,7 @@ sap.ui.define(
                     })
                     .then(data => {
                         const userInfo = data.value;
+                        const token = data.token || (userInfo && userInfo.token);
 
                         if (userInfo) {
                             // Asignar datos a los controles en la vista
@@ -617,6 +635,15 @@ sap.ui.define(
                             //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
                             //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
 
+
+                            if (token) {
+                                this._startSessionWatcher(token);
+                             ///   console.log("Token recibido y watcher iniciado.");
+                              } else {
+                                console.warn("Token no recibido en la respuesta.");
+                              }
+
+
                             // console.log(" Datos seteados en la vista:", userInfo);
                         } else {
                             console.error("No se encontró la información del usuario.");
@@ -626,6 +653,108 @@ sap.ui.define(
                         console.error(" Error obteniendo datos del usuario:", error);
                     });
             },
+
+
+            _startSessionWatcher: function (token) {
+                const decoded = this._parseJwt(token);
+                const expiresAt = decoded.exp * 1000; // Expiración en milisegundos
+                const now = Date.now();
+                const timeUntilWarning = expiresAt - now - (1 * 60 * 1000); // 1 minuto antes
+              
+                if (timeUntilWarning > 0) {
+                  setTimeout(() => {
+                    this._showSessionWarning(expiresAt);
+                  }, timeUntilWarning);
+                } else {
+                  this._showSessionWarning(expiresAt);
+                }
+              },
+              
+        
+              _showSessionWarning: function (expiresAt) {
+                let secondsLeft = Math.floor((expiresAt - Date.now()) / 1000);
+              
+                const interval = setInterval(() => {
+                  if (secondsLeft <= 0) {
+                    clearInterval(interval);
+                    MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
+                    return;
+                  }
+              
+                  // Actualiza el texto del diálogo dinámicamente
+                  if (dialog && dialog.getContent && dialog.getContent()[0]) {
+                    dialog.getContent()[0].setText(`Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?`);
+                  }
+              
+                  secondsLeft--;
+                }, 1000);
+              
+                const dialog = new sap.m.Dialog({
+                  title: "⚠️ Sesión a punto de expirar",
+                  content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
+                  beginButton: new sap.m.Button({
+                    text: "Sí, mantener sesión",
+                    press: () => {
+                      clearInterval(interval);
+                      dialog.close();
+                      this._refreshToken(); // 🔁 Simula renovación de sesión
+                    }
+                  }),
+                  endButton: new sap.m.Button({
+                    text: "No",
+                    press: () => {
+                      clearInterval(interval);
+                      dialog.close();
+                      // 🔕 No hay logout en pruebas
+                    }
+                  }),
+                  afterClose: () => {
+                    dialog.destroy();
+                  }
+                });
+              
+                dialog.open();
+              },
+              
+              
+        
+              _parseJwt: function (token) {
+                const base64Url = token.split('.')[1];
+                const base64 = atob(base64Url.replace(/-/g, '+').replace(/_/g, '/'));
+                return JSON.parse(decodeURIComponent(escape(base64)));
+              },
+              
+              _refreshToken: async function () {
+                try {
+                  const response = await fetch("/odata/v4/datos-cdo/getUserInfo", {
+                    method: "GET"
+                  });
+                  const data = await response.json();
+              
+                  console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
+              
+                  const token = data.token || (data.value && data.value.token);
+              
+                  if (token) {
+                    this._startSessionWatcher(token);
+                    MessageBox.success("Sesión renovada.");
+                  } else {
+                    throw new Error("Token no recibido.");
+                  }
+                } catch (err) {
+                  MessageBox.error("No se pudo renovar la sesión: " + err.message);
+                }
+              },
+              
+
+
+
+
+
+
+
+
+
 
 
             loadFilteredData: function () {
@@ -1034,10 +1163,84 @@ sap.ui.define(
 
 
 
-
-
-
             onEditPress: function (oEvent) {
+                var oButton = oEvent.getSource();
+            
+                var oContextPendientes = oButton.getBindingContext("modelPendientes");
+                var oContextAprobados = oButton.getBindingContext("modelAprobados");
+                var oContextBorradores = oButton.getBindingContext("modelBorrador");
+            
+                var oContext = oContextPendientes || oContextAprobados || oContextBorradores;
+            
+                if (!oContext) {
+                    console.error("No se pudo obtener el contexto del ítem.");
+                    return;
+                }
+            
+                var sProjectID = oContext.getProperty("ID");
+                if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                }
+            
+               // console.log("edit id " + sProjectID);
+            
+                var sNameProyect = oContext.getProperty("nameProyect");
+            
+                var that = this;
+            
+                var oModel = this.getView().getModel("mainService");
+                if (oModel) {
+                    oModel.setData({});
+                    oModel.refresh(true);
+                }
+            
+                var sourceModelName = oContextPendientes
+                    ? "modelPendientes"
+                    : (oContextAprobados ? "modelAprobados" : "modelBorrador");
+            
+                // Definir el título y el texto del diálogo dependiendo del modelo de origen
+                var dialogTitle = "Confirmar Edición";
+                var dialogText = "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?";
+            
+                if (sourceModelName === "modelAprobados") {
+                    dialogTitle = "Ver Solicitud";
+                    dialogText = "¿Quieres ver el contenido de esta solicitud?";
+                }
+            
+                var oDialog = new sap.m.Dialog({
+                    title: dialogTitle,
+                    type: "Message",
+                    state: "Warning",
+                    content: new sap.m.Text({
+                        text: dialogText
+                    }),
+                    beginButton: new sap.m.Button({
+                        text: "Confirmar",
+                        press: function () {
+                            oDialog.close();
+            
+                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                            oRouter.navTo("view", {
+                                sProjectID: sProjectID,
+                                sourceModel: sourceModelName
+                            }, true);
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "Cancelar",
+                        press: function () {
+                            oDialog.close();
+                        }
+                    })
+                });
+            
+                oDialog.open();
+            },
+            
+
+
+          /*  onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
 
                 var oContextPendientes = oButton.getBindingContext("modelPendientes");
@@ -1107,7 +1310,7 @@ sap.ui.define(
                 });
 
                 oDialog.open();
-            },
+            },*/
 
 
 
@@ -1243,7 +1446,7 @@ sap.ui.define(
                     return;
                 }
 
-                console.log("🔴 Eliminando Proyecto con ID:", sProjectId);
+                console.log(" Eliminando Proyecto con ID:", sProjectId);
 
                 try {
                     // 1️⃣ Obtener el CSRF Token
@@ -1258,7 +1461,7 @@ sap.ui.define(
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
 
-                    console.log("✅ CSRF Token obtenido:", sCsrfToken);
+                    console.log(" CSRF Token obtenido:", sCsrfToken);
 
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
@@ -1325,9 +1528,9 @@ sap.ui.define(
                                                     });
 
                                                     if (!deleteResponse.ok) {
-                                                        console.error(`❌ Error eliminando ${path} con ID ${hijo.ID}`);
+                                                        console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
                                                     } else {
-                                                        console.log(`✅ ${path} eliminado: ${hijo.ID}`);
+                                                        console.log(` ${path} eliminado: ${hijo.ID}`);
                                                     }
                                                 })
                                             );
@@ -1335,7 +1538,7 @@ sap.ui.define(
                                     });
 
                                     await Promise.all(deletePromises);
-                                    console.log("✅ Registros relacionados eliminados.");
+                                    console.log(" Registros relacionados eliminados.");
 
                                     // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
@@ -1347,7 +1550,7 @@ sap.ui.define(
                                     });
 
                                     if (projectResponse.ok) {
-                                        console.log("✅ Proyecto eliminado correctamente.");
+                                        console.log(" Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
@@ -1373,14 +1576,14 @@ sap.ui.define(
                                         throw new Error("Error al eliminar el proyecto principal");
                                     }
                                 } catch (error) {
-                                    console.error("❌ Error eliminando el proyecto o registros:", error);
+                                    console.error(" Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
                                 }
                             }
                         }
                     );
                 } catch (error) {
-                    console.error("❌ Error al obtener el CSRF Token:", error);
+                    console.error(" Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
             },
@@ -1536,7 +1739,11 @@ sap.ui.define(
                         oControl.setDateValue(null);
                     } else if (oControl instanceof sap.m.TextArea) {
                         oControl.setValue("");
-                    } else if (oControl instanceof sap.m.CheckBox) {
+                    }  else if (oControl instanceof sap.m.Text) {
+                            oControl.setText("");
+                    } 
+                    
+                    else if (oControl instanceof sap.m.CheckBox) {
                         oControl.setSelected(false);
                     } else if (oControl instanceof sap.viz.ui5.controls.VizFrame) {
                         // Limpiar el VizFrame: por ejemplo, eliminando datos vinculados o restableciendo la configuración

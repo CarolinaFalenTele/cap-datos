@@ -270,7 +270,7 @@ sap.ui.define(
                     const workflowId = oItem.workflowId;
 
                     if (!workflowId) {
-                        sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                   //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
                         return;
                     }
 
@@ -286,7 +286,7 @@ sap.ui.define(
 
 
                     await this.onActivityPress(oEvent, result);
-                    sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                 //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
                     console.error(" Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
@@ -361,7 +361,24 @@ sap.ui.define(
                 const pasosExcluidos = [
                     "Condición de Espera",
                     "Esperar a terminar el flujo",
-                    "Espera respuesta"
+                    "Espera respuesta",
+                    "Leer entradas",
+                    "Confirmar entradas" ,
+                    "Esperar antes de avanzar",
+                    "Iniciar Variable",
+                    "Condición 3",
+                    "Espera 1",
+                    "Tarea de script 12",
+                    "Condición 5",
+                    "Wait 1 minute 10",
+                    "Condición",
+                    "Esperar Rechazo",
+                    "Tarea de script",
+                    "Wait 1 minute 11",
+                    "Condición",
+                    "Condición 2",
+                    "Condición 8",
+
                 ];
             
                 const eventosFiltrados = eventos.filter(e => {
@@ -621,7 +638,7 @@ sap.ui.define(
 
                             if (token) {
                                 this._startSessionWatcher(token);
-                                console.log("Token recibido y watcher iniciado.");
+                             ///   console.log("Token recibido y watcher iniciado.");
                               } else {
                                 console.warn("Token no recibido en la respuesta.");
                               }
@@ -1166,7 +1183,7 @@ sap.ui.define(
                     return;
                 }
             
-                console.log("edit id " + sProjectID);
+               // console.log("edit id " + sProjectID);
             
                 var sNameProyect = oContext.getProperty("nameProyect");
             
@@ -1429,7 +1446,7 @@ sap.ui.define(
                     return;
                 }
 
-                console.log("🔴 Eliminando Proyecto con ID:", sProjectId);
+                console.log(" Eliminando Proyecto con ID:", sProjectId);
 
                 try {
                     // 1️⃣ Obtener el CSRF Token
@@ -1444,7 +1461,7 @@ sap.ui.define(
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
 
-                    console.log("✅ CSRF Token obtenido:", sCsrfToken);
+                    console.log(" CSRF Token obtenido:", sCsrfToken);
 
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
@@ -1511,9 +1528,9 @@ sap.ui.define(
                                                     });
 
                                                     if (!deleteResponse.ok) {
-                                                        console.error(`❌ Error eliminando ${path} con ID ${hijo.ID}`);
+                                                        console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
                                                     } else {
-                                                        console.log(`✅ ${path} eliminado: ${hijo.ID}`);
+                                                        console.log(` ${path} eliminado: ${hijo.ID}`);
                                                     }
                                                 })
                                             );
@@ -1521,7 +1538,7 @@ sap.ui.define(
                                     });
 
                                     await Promise.all(deletePromises);
-                                    console.log("✅ Registros relacionados eliminados.");
+                                    console.log(" Registros relacionados eliminados.");
 
                                     // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
@@ -1533,7 +1550,7 @@ sap.ui.define(
                                     });
 
                                     if (projectResponse.ok) {
-                                        console.log("✅ Proyecto eliminado correctamente.");
+                                        console.log(" Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
@@ -1559,14 +1576,14 @@ sap.ui.define(
                                         throw new Error("Error al eliminar el proyecto principal");
                                     }
                                 } catch (error) {
-                                    console.error("❌ Error eliminando el proyecto o registros:", error);
+                                    console.error(" Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
                                 }
                             }
                         }
                     );
                 } catch (error) {
-                    console.error("❌ Error al obtener el CSRF Token:", error);
+                    console.error(" Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
             },
