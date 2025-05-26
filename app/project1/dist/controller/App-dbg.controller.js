@@ -1739,9 +1739,7 @@ sap.ui.define(
                         oControl.setDateValue(null);
                     } else if (oControl instanceof sap.m.TextArea) {
                         oControl.setValue("");
-                    }  else if (oControl instanceof sap.m.Text) {
-                            oControl.setText("");
-                    } 
+                    }  
                     
                     else if (oControl instanceof sap.m.CheckBox) {
                         oControl.setSelected(false);

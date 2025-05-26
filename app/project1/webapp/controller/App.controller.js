@@ -1713,7 +1713,26 @@ sap.ui.define(
                },*/
 
 
-            onNavToView1: function () {
+
+               onNavToView1: function () {
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                var oComponent = this.getOwnerComponent();
+              
+                var oTargetView = oComponent.byId("view"); // ID de la view destino
+              
+                if (oTargetView && oTargetView.getController && typeof oTargetView.getController === "function") {
+                  var oController = oTargetView.getController();
+              
+                  if (oController._clearAllInputs) {
+                    oController._clearAllInputs(); // Limpieza manual
+                  }
+                }
+              
+                oRouter.navTo("viewNoParam");
+              },
+              
+
+          /*  onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 oRouter.navTo("viewNoParam");
 
@@ -1739,9 +1758,7 @@ sap.ui.define(
                         oControl.setDateValue(null);
                     } else if (oControl instanceof sap.m.TextArea) {
                         oControl.setValue("");
-                    }  else if (oControl instanceof sap.m.Text) {
-                            oControl.setText("");
-                    } 
+                    }  
                     
                     else if (oControl instanceof sap.m.CheckBox) {
                         oControl.setSelected(false);
@@ -1792,7 +1809,7 @@ sap.ui.define(
 
                 // Navegar a la nueva vista después de limpiar y actualizar la vista
                 oRouter.navTo("viewNoParam");
-            },
+            },*/
 
             /*   onLogoutPress: function () {
               //     window.location.href = "/logout.do";
