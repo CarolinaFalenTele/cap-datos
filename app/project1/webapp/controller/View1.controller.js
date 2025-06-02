@@ -106,12 +106,26 @@ sap.ui.define([
 
         this.onColumnTotales();
 
-        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+        /*  var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+  
+          oRouter.getRoute("viewWithMode").attachPatternMatched(this._onObjectMatched, this);*/
 
-        oRouter.getRoute("viewWithMode").attachPatternMatched(this._onObjectMatched, this);
 
 
 
+        this._mode = ""; // fallback local
+
+        const oViewModel = new sap.ui.model.json.JSONModel({ mode: "" });
+        this.getView().setModel(oViewModel, "viewModel");
+
+        const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+        // Conecta TODAS las rutas que pueden traer mode
+        ["viewWithMode", "viewNoParam", "view", "viewWithAprobacion"].forEach(function (routeName) {
+          oRouter.getRoute(routeName).attachPatternMatched(this._onObjectMatched, this);
+        }, this);
+
+        console.log("MODELO TRAIDO " + this._mode);
 
       },
 
@@ -182,8 +196,8 @@ sap.ui.define([
 
 
       highlightControls: function () {
-        console.log("Se cambiaron las pestañas debido a campos vacíos.");
-    
+        //    console.log("Se cambiaron las pestañas debido a campos vacíos.");
+
         const controlsToHighlight = [
           this.byId("input0"),
           this.byId("input1"),
@@ -206,7 +220,7 @@ sap.ui.define([
           this.byId("date_inico"),
           this.byId("date_fin")
         ];
-    
+
         // Aplicar el highlight con un pequeño delay para que el renderizado pueda ocurrir
         setTimeout(() => {
           controlsToHighlight.forEach(control => {
@@ -214,7 +228,7 @@ sap.ui.define([
               control.setValueState("Information");
             }
           });
-    
+
           // Luego de 2 segundos, revertir el highlight
           setTimeout(() => {
             controlsToHighlight.forEach(control => {
@@ -222,14 +236,14 @@ sap.ui.define([
                 control.setValueState("None");
               }
             });
-    
+
             // Aquí podrías llamar a la función que muestra el diálogo si quieres que espere el highlight
             // this.showSuccessDialog(); 
-    
+
           }, 2000);
         }, 50); // 50 ms suele ser suficiente para que la UI se refresque
       },
-    
+
 
       getUserInfo: function () {
         fetch('/odata/v4/datos-cdo/getUserInfo')
@@ -240,7 +254,7 @@ sap.ui.define([
             return response.json();
           })
           .then(data => {
-            console.log("Respuesta completa:", data); // Para debug
+            //  console.log("Respuesta completa:", data); // Para debug
             const userInfo = data.value;
             const token = data.token || (userInfo && userInfo.token);
 
@@ -252,7 +266,7 @@ sap.ui.define([
 
               if (token) {
                 this._startSessionWatcher(token);
-                console.log("Token recibido y watcher iniciado.");
+                //    console.log("Token recibido y watcher iniciado.");
               } else {
                 console.warn("Token no recibido en la respuesta.");
               }
@@ -426,12 +440,23 @@ sap.ui.define([
 
         this._mode = sMode;
 
+
+        this.getView().getModel("viewModel").setProperty("/mode", sMode);
+
+        console.log("MODELO GUARDADO (onObjectMatched):", sMode);
+
+
         console.log("MODELO TRAIDO " + this._mode);
 
 
-        
+
         if (sMode === "create") {
           await this._clearAllInputs();
+        } else if ((sMode === "edit")) {
+
+          this._clearAllInputsEdit();
+
+
         }
 
 
@@ -483,84 +508,75 @@ sap.ui.define([
         return flag;
       },
 
-
-      _configureButtons: function (sSourceModel, aprobacionFlag) {
+      _configureButtons: function (sSourceModel, aprobacionFlag, sMode) {
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
 
         if (!btnAceptar || !btnBorrado) return;
 
-        // Primero quitamos eventos para evitar duplicados
-        btnAceptar.detachPress();
-        btnBorrado.detachPress();
+        // Limpieza completa de eventos anteriores (clave para evitar dobles llamadas)
+        btnAceptar.detachPress(this.onSave, this);
+        btnAceptar.removeAllCustomData(); // Limpia valores previos
+        btnBorrado.detachPress(this.onBorrador, this);
+        btnBorrado.removeAllCustomData();
 
-        if (sSourceModel === "modelAprobados") {
-          // Deshabilitar botones y poner texto y tipo original (valores de fábrica)
-          btnAceptar.setEnabled(false);
-          btnBorrado.setEnabled(false);
-
-          btnAceptar.setText("Enviar");
-          btnAceptar.setType(sap.m.ButtonType.Accept);
-          // No asignamos evento, están deshabilitados
-
-          btnBorrado.setText("Guardar");
-          btnBorrado.setType(sap.m.ButtonType.Emphasized);
-
-        } else if (!sSourceModel) {
-          // No viene modelo: mantener comportamiento y texto/tipo original del footer
-
-          btnAceptar.setEnabled(true);
-          btnAceptar.setText("Enviar");
-          btnAceptar.setType(sap.m.ButtonType.Accept);
-          btnAceptar.attachPress(this.onSave, this);
-
-          btnBorrado.setEnabled(true);
-          btnBorrado.setText("Guardar");
-          btnBorrado.setType(sap.m.ButtonType.Emphasized);
-          btnBorrado.attachPress(this.onBorrador, this);
-
-        } else if (sSourceModel === "modelPendientes" && aprobacionFlag) {
+        // 1️ CASO ESPECIAL: Aprobación de pendientes
+        if (sSourceModel === "modelPendientes" && aprobacionFlag) {
           this._isAprobacion = true;
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Aprobar");
-          btnAceptar.data("valor", "aprobado");
           btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnAceptar.data("valor", "aprobado");
           btnAceptar.attachPress(this._onDecisionPress, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Rechazar");
-          btnBorrado.data("valor", "rechazado");
           btnBorrado.setType(sap.m.ButtonType.Reject);
+          btnBorrado.data("valor", "rechazado");
           btnBorrado.attachPress(this._onDecisionPress, this);
 
-        } else if (sSourceModel === "modelBorrador") {
+          return; //  Salimos porque no se debe aplicar ningún otro modo
+        }
+
+        // 2️ MODO DISPLAY → botones deshabilitados
+        if (sMode === "display") {
+          btnAceptar.setEnabled(false);
+          btnAceptar.setText("Enviar");
+          btnAceptar.setType(sap.m.ButtonType.Accept);
+
+          btnBorrado.setEnabled(false);
+          btnBorrado.setText("Guardar");
+          btnBorrado.setType(sap.m.ButtonType.Emphasized);
+          return;
+        }
+
+        // 3️ MODO CREATE o EDIT con borrador
+        if (sSourceModel === "modelBorrador" || sMode === "edit" || sMode === "create") {
           this._isAprobacion = false;
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Guardar");
-          btnAceptar.setType(sap.m.ButtonType.Default);
           btnAceptar.attachPress(this.onBorrador, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Enviar");
-          btnBorrado.setType(sap.m.ButtonType.Default);
           btnBorrado.attachPress(this.onSave, this);
-
-        } else {
-          this._isAprobacion = false;
-
-          btnAceptar.setEnabled(true);
-          btnAceptar.setText("Guardar");
-          btnAceptar.setType(sap.m.ButtonType.Default);
-          btnAceptar.attachPress(this.onSave, this);
-
-          btnBorrado.setEnabled(true);
-          btnBorrado.setText("Limpiar");
-          btnBorrado.setType(sap.m.ButtonType.Default);
-          btnBorrado.attachPress(this.onClearFields, this);
+          return;
         }
+
+        // 4️ MODO DEFAULT: asegurar botones habilitados con acción segura
+        btnAceptar.setEnabled(true);
+        btnAceptar.setText("Enviar");
+        btnAceptar.setType(sap.m.ButtonType.Accept);
+        btnAceptar.attachPress(this.onSave, this);
+
+        btnBorrado.setEnabled(true);
+        btnBorrado.setText("Guardar");
+        btnBorrado.setType(sap.m.ButtonType.Emphasized);
+        btnBorrado.attachPress(this.onBorrador, this);
       },
+
 
 
       _fetchProjectData: async function (sProjectID) {
@@ -689,12 +705,6 @@ sap.ui.define([
         const oModel = oView.getModel("planning");
 
 
-
-        this.sProjectID = null;
-        
-        
-        console.log("Controles encontrados:", controls);
-
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
         const aAlwaysReadOnlyIds = [
@@ -756,12 +766,47 @@ sap.ui.define([
         }
 
 
-        
+
 
         this.refreshODataModel();
 
         console.log("Todos los campos, textos y gráficos han sido limpiados.");
       },
+
+
+      _clearAllInputsEdit: function () {
+        const oView = this.getView();
+        const controls = oView.findElements(true);
+        const oModel = oView.getModel("planning");
+
+
+        const aAlwaysReadOnlyIds = [
+          "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
+          "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
+          "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442",
+          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve"
+        ];
+
+        // Limpieza general de campos
+        controls.forEach(control => {
+          // Vaciar valores
+          // Restaurar editable y enabled solo si NO está en la lista de campos bloqueados
+          const sId = control.getId().split("--").pop(); // Extrae solo el ID puro
+          const isReadOnly = aAlwaysReadOnlyIds.includes(sId);
+
+          if (!isReadOnly) {
+            if (typeof control.setEditable === "function") {
+              control.setEditable(true);
+            }
+            if (typeof control.setEnabled === "function") {
+              control.setEnabled(true);
+            }
+          }
+        });
+
+      },
+
+
 
 
 
@@ -1117,147 +1162,6 @@ sap.ui.define([
 
 
 
-
-
-      /*  _onObjectMatched: async function (oEvent) {
-  
-          const Token = this._sCsrfToken;
-          var oModel = this.getView().getModel("mainService");
-          if (oModel) {
-            oModel.setData({});  // Limpia los datos al cargar la vista
-            oModel.refresh(true);
-          }
-  
-  
-  
-          var sProjectID = oEvent.getParameter("arguments").sProjectID;
-  
-          // Almacenar el ID en una variable de instancia del controlador para usarlo más tarde
-          this._sProjectID = sProjectID;
-  
-  
-          // Construye la URL con el ID correctamente escapado
-          var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-  
-          try {
-            const response = await fetch(sUrl, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'x-csrf-token': Token
-              }
-            });
-  
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error('Network response was not ok: ' + errorText);
-            }
-  
-            const oData = await response.json();
-            //  console.log("Datos del proyecto:", oData);
-  
-  
-            // Actualiza los controles de la vista con los datos obtenidos
-            if (oData) {
-              // Ejemplos de cómo poblar los controles
-              this.byId("input0").setValue(oData.codigoProyect || "");
-              this.byId("input1").setValue(oData.nameProyect || "");
-              this.byId("int_clienteFun").setValue(oData.funcionalString || "");
-              this.byId("id_Cfactur").setValue(oData.clienteFacturacion || "");
-              this.byId("idObje").setValue(oData.objetivoAlcance || "");
-              this.byId("idDescripcion").setValue(oData.descripcion || "");
-              this.byId("text67_1728582763477").setText(oData.Total || "");
-              this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
-              this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
-              this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
-              this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
-              this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
-              this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
-              this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
-              
-  
-              // Mostrar u ocultar la tabla según el valor de Iniciativa_ID
-              if (oData.Iniciativa_ID === "423e4567-e89b-12d3-a456-426614174003") {
-                  this.byId("table0").setVisible(true);
-              } else {
-                  this.byId("table0").setVisible(false); 
-              }
-  
-              this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
-              this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
-              this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
-              this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
-              this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
-              this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
-              this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
-              this.byId("input0").setValue(oData.codigoProyect);
-              this.byId("input1").setValue(oData.nameProyect);
-              this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
-              this.byId("id_Cfactur").setValue(oData.clienteFacturacion);
-              this.byId("box_multiJuridica").setSelected(oData.multijuridica)
-  
-  
-  
-  
-              await this.fetchMilestones(sProjectID);
-              await this.leerProveedor(sProjectID);
-              await this.leerFacturacion(sProjectID);
-              await this.leerClientFactura(sProjectID);
-              await this.leerRecursos(sProjectID);
-              await this.leerConsumoExterno(sProjectID);
-              await this.leerGastoViajeConsu(sProjectID);
-              await this.leerRecursoExterno(sProjectID);
-              await this.leerOtrosServiExter(sProjectID);
-              await this.leerOtrosConcepto(sProjectID);
-              await this.leerSerivioInterno(sProjectID);
-              await this.leerGastoviajeInterno(sProjectID);
-              await this.leerConsuOtroServi(sProjectID);
-              await this.leerGastoViaExter(sProjectID);
-              await this.leerLicencias(sProjectID);
-  
-      
-  
-              this.highlightControls(); 
-  
-              // Cambiar el texto del botón de "Enviar" a "Guardar"
-              const oButton = this.byId("btnAceptar"); 
-              oButton.setText("Guardar");
-  
-              // Mostrar un toast indicando que los datos se cargaron correctamente
-              var oDialog = new sap.m.Dialog({
-                title: "Información",
-                type: "Message",
-                state: "Success",
-                content: new sap.m.Text({ text: "Datos cargados correctamente" }),
-                beginButton: new sap.m.Button({
-                  text: "OK",
-                  press: function () {
-                    oDialog.close();
-                  }
-                }),
-                afterClose: function () {
-                  oDialog.destroy();
-                }
-              });
-  
-              oDialog.open();
-  
-  
-            }
-  
-          } catch (error) {
-            console.error("Error al obtener los datos del proyecto:", error);
-            sap.m.MessageToast.show("Error al cargar los datos del proyecto");
-          }
-       
-  
-        },*/
-
-      //----------------------------------------------
-
-
-
       //----------Traer informacion de tabla Planificacion--------
 
 
@@ -1287,7 +1191,7 @@ sap.ui.define([
           const oData = await response.json();
 
           if (!oData || !oData.value || !Array.isArray(oData.value) || oData.value.length === 0) {
-            console.warn("No se encontraron datos de planificación para el proyecto:", projectID);
+            //   console.warn("No se encontraron datos de planificación para el proyecto:", projectID);
             //         sap.m.MessageToast.show("No hay datos de planificación disponibles.");
             return;
           }
@@ -1329,7 +1233,7 @@ sap.ui.define([
           this._idPlani = oData.value[0].ID; // Tomamos el primer ID recuperado
           this.updateVizFrame1(oData);
 
-          console.log("ID de planificación recuperado:", this._idPlani);
+          //    console.log("ID de planificación recuperado:", this._idPlani);
 
         } catch (error) {
           console.error("Error al obtener los datos de planificación:", error);
@@ -1398,119 +1302,6 @@ sap.ui.define([
         }
       },
 
-      /*    leerProveedor: async function (projectID) {
-            var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
-    
-            try {
-              const response = await fetch(sUrl, {
-                method: 'GET',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                }
-              });
-    
-              if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error('Network response was not ok: ' + errorText);
-              }
-    
-              const oData = await response.json();
-              //   console.log("Datos de proveedor:", oData);
-    
-              var oTable = this.byId("table2");
-              var aItems = oTable.getItems();
-    
-              if (oData.value && oData.value.length > 0) {
-                oData.value.forEach(function (proveedorData, index) {
-                  var oItem = aItems[index];
-                  if (oItem) {
-                    var aCells = oItem.getCells();
-                    if (aCells.length > 1) {
-                      aCells[0].setValue(proveedorData.valueCondi || "");
-                      aCells[1].setValue(proveedorData.valueProvee || "");
-                    }
-                  }
-                });
-              
-                // Opcional: aplicar el primer check a nivel general
-                this.byId("box_condi").setSelected(oData.value[0].checkCondi || false);
-                this.byId("box_prove").setSelected(oData.value[0].checkProveedor || false);
-              
-                this._proveedoresIDs[index] = proveedorData.ID;
-    
-    
-    
-                console.log("IDS PROVEEDOR " + JSON.stringify(this._proveedoresIDs[index]));
-    
-              }
-           
-              else {
-                console.log("No hay datos de proveedores disponibles.");
-              }
-    
-            } catch (error) {
-              console.error("Error al obtener los datos de proveedor:", error);
-              sap.m.MessageToast.show("Error al cargar los datos de proveedor");
-            }
-          },*/
-
-
-
-
-      /* leerProveedor: async function (projectID) {
-         var sUrl = `/odata/v4/datos-cdo/ProveedoresC?$filter=datosProyect_ID eq ${projectID}`;
- 
-         try {
-           const response = await fetch(sUrl, {
-             method: 'GET',
-             headers: {
-               'Accept': 'application/json',
-               'Content-Type': 'application/json'
-             }
-           });
- 
-           if (!response.ok) {
-             const errorText = await response.text();
-             throw new Error('Network response was not ok: ' + errorText);
-           }
- 
-           const oData = await response.json();
-           //   console.log("Datos de proveedor:", oData);
- 
-           var oTable = this.byId("table2");
-           var aItems = oTable.getItems();
- 
-           if (oData.value && oData.value.length > 0) {
-             var proveedorData = oData.value[0]; // Asumiendo que quieres el primer proveedor
-             var proveedorID = proveedorData.ID;
- 
-             aItems.forEach(function (oItem) {
-               var aCells = oItem.getCells();
- 
-               if (aCells.length > 1) {
-                 aCells[0].setValue(proveedorData.valueCondi || ""); // Input para valueCondi
-                 aCells[1].setValue(proveedorData.valueProvee || ""); // Input para valueProvee
-               }
- 
-               this.byId("box_condi").setSelected(proveedorData.checkCondi || false); // Checkbox Condicionado
-               this.byId("box_prove").setSelected(proveedorData.checkProveedor || false); // Checkbox Proveedores
-             }.bind(this));
- 
-             this._proveeID = proveedorID;
- 
-           }
- 
-           else {
-             console.log("No hay datos de proveedores disponibles.");
-           }
- 
-         } catch (error) {
-           console.error("Error al obtener los datos de proveedor:", error);
-           sap.m.MessageToast.show("Error al cargar los datos de proveedor");
-         }
-       },*/
-
 
       leerFacturacion: async function (projectID) {
         var sUrl = `/odata/v4/datos-cdo/Facturacion?$filter=datosProyect_ID eq ${projectID}`;
@@ -1533,7 +1324,7 @@ sap.ui.define([
 
           // Parsear la respuesta JSON
           const oData = await response.json();
-          console.log("Datos de Facturación:", oData);  // Verificar la estructura de la respuesta
+          //  console.log("Datos de Facturación:", oData);  // Verificar la estructura de la respuesta
 
           // Obtener la tabla
           var oTable = this.byId("table0");
@@ -1688,7 +1479,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de WorkflowInstancias:", oData);
+          //  console.log("Datos de WorkflowInstancias:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -1707,10 +1498,10 @@ sap.ui.define([
 
             this._idWorkflowInstancias = idWorkflowInstancias;
 
-            console.log("idWorkflowInstancias ID " + this._idWorkflowInstancias + "--> " + this._idWorkIniciado);
+            //     console.log("idWorkflowInstancias ID " + this._idWorkflowInstancias + "--> " + this._idWorkIniciado);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS WorkflowInstancias");
+            //        console.log("NO SE ENCONTRARON DATOS WorkflowInstancias");
           }
 
 
@@ -1780,74 +1571,6 @@ sap.ui.define([
 
 
 
-      /*   leerRecursos: async function (projectID) {
-           var sUrl = `/odata/v4/datos-cdo/RecursosInternos?$filter=datosProyect_ID eq ${projectID}`;
-   
-           try {
-             const response = await fetch(sUrl, {
-               method: 'GET',
-               headers: {
-                 'Accept': 'application/json',
-                 'Content-Type': 'application/json'
-               }
-             });
-   
-             if (!response.ok) {
-               const errorText = await response.text();
-               throw new Error('Network response was not ok: ' + errorText);
-             }
-   
-             const oData = await response.json();
-             // console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
-   
-             var oTable = this.byId("table_dimicFecha");
-             var aItems = oTable.getItems();
-   
-             // Verificar si hay datos en oData.value
-             if (oData.value && oData.value.length > 0) {
-               var Recurso = oData.value[0]; // Toma solo el primer recurso
-               var recursoID = Recurso.ID; // Obtén el ID del recurso
-               console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
-   
-               // Asegúrate de que la tabla tenga al menos una fila
-               // Check if there are any items in the array aItems
-               if (aItems.length > 0) {
-                 var oItem = aItems[0]; // Selecciona solo la primera fila
-                 var aCells = oItem.getCells();
-   
-                 // Asegúrate de que el índice es correcto para cada input/select
-                 if (aCells.length > 1) {
-                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
-                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
-                   aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
-                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
-                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
-                   aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                   aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00");
-                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00");
-                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00");
-                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00");
-                   aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00");
-                   aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                   aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00");
-   
-                 }
-               }
-               await this.leerFechas(recursoID);
-   
-   
-               this._recurso_ID = recursoID
-             } else {
-               //   console.log("No hay datos de SERvi Recurso  internos disponibles.");
-             }
-           } catch (error) {
-             console.error("Error al obtener los datos de Recursos Internos:", error);
-             sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-           }
-         },*/
-
-
-
       leerPerfilJornadas: async function (projectID) {
         var sUrl = `/odata/v4/datos-cdo/PerfilTotal?$filter=datosProyect_ID eq ${projectID}`;
 
@@ -1866,7 +1589,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
+          //  console.log("Datos de DATOS RECURSOS TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -1884,7 +1607,7 @@ sap.ui.define([
 
             this._idJornadas = idJornadas;
 
-            console.log("JORNADAS ID " + this._idJornadas);
+            //      console.log("JORNADAS ID " + this._idJornadas);
 
           } else {
             console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
@@ -1917,7 +1640,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL RECURSOS  TRAIDO:", oData);
+          //       console.log("Datos de DATOS TOTAL RECURSOS  TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -1937,10 +1660,10 @@ sap.ui.define([
 
             this._idTotalRecInter = idTotalRecInter;
 
-            console.log("JORNADAS ID " + this._idTotalRecInter);
+            //    console.log("JORNADAS ID " + this._idTotalRecInter);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
+            //    console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
           }
 
 
@@ -1973,7 +1696,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL total Consumo Externo  TRAIDO:", oData);
+          //   console.log("Datos de DATOS TOTAL total Consumo Externo  TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -1993,10 +1716,10 @@ sap.ui.define([
 
             this._idTotalConsuEx = idTotalConsuEx;
 
-            console.log("JORNADAS ID " + this._idTotalConsuEx);
+            //  console.log("JORNADAS ID " + this._idTotalConsuEx);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
+            // console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
           }
 
 
@@ -2026,7 +1749,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL   Recurso Externo   TRAIDO:", oData);
+          //console.log("Datos de DATOS TOTAL   Recurso Externo   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -2046,10 +1769,10 @@ sap.ui.define([
 
             this._idtotalRecurExter = idtotalRecurExter;
 
-            console.log("JORNADAS ID " + this._idtotalRecurExter);
+            //     console.log("JORNADAS ID " + this._idtotalRecurExter);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
+            //        console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
           }
 
 
@@ -2305,7 +2028,7 @@ sap.ui.define([
           var idGastInterno = idRecI.ID; // Ahora es seguro acceder a .ID
 
 
-          console.log("ID SERVICIO INTERNO:", oData);
+          //   console.log("ID SERVICIO INTERNO:", oData);
 
           // Mapeo correcto de valores para cada fecha
           let valoresPorFecha = {};
@@ -2314,7 +2037,7 @@ sap.ui.define([
             valoresPorFecha[key] = item.valor;
           });
 
-          console.log("Valores por fecha antes de enviarlos Gasto viaje Servi INterno :", valoresPorFecha);
+          //   console.log("Valores por fecha antes de enviarlos Gasto viaje Servi INterno :", valoresPorFecha);
 
           // Llamar a fechasDinamicas pasando los datos obtenidos
           this.fechasDinamicas(valoresPorFecha);
@@ -2649,7 +2372,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS GASTO VIAJE INTERNO TRAIDO: -----> ", oData);
+          // console.log("Datos de DATOS GASTO VIAJE INTERNO TRAIDO: -----> ", oData);
 
           var oTable = this.byId("tablGastoViajeInterno");
           var aItems = oTable.getItems();
@@ -2690,7 +2413,7 @@ sap.ui.define([
             }
 
           } else {
-            console.log("No hay datos de recursos internos disponibles.");
+            // console.log("No hay datos de recursos internos disponibles.");
           }
 
 
@@ -2761,7 +2484,7 @@ sap.ui.define([
               await this.leerFechasServiRecInter(id);
             }
           } else {
-            console.log("No hay datos de recursos internos disponibles.");
+            // console.log("No hay datos de recursos internos disponibles.");
           }
 
 
@@ -2797,7 +2520,7 @@ sap.ui.define([
 
           const oData = await response.json();
 
-          console.log("DATOS PARA CONSUMO exteRNOS  " + JSON.stringify(oData));
+          // console.log("DATOS PARA CONSUMO exteRNOS  " + JSON.stringify(oData));
 
           var oTable = this.byId("tablaConsuExter");
           var aItems = oTable.getItems();
@@ -2848,7 +2571,7 @@ sap.ui.define([
 
 
           } else {
-            console.log("No hay datos de Consumo Externo disponibles.");
+            //   console.log("No hay datos de Consumo Externo disponibles.");
           }
 
         } catch (error) {
@@ -2857,84 +2580,6 @@ sap.ui.define([
         }
       },
 
-      /*    leerConsumoExterno: async function (projectID) {
-            var sUrl = `/odata/v4/datos-cdo/ConsumoExternos?$filter=datosProyect_ID eq ${projectID}`;
-          
-            try {
-              const response = await fetch(sUrl, {
-                method: 'GET',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                }
-              });
-          
-              if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error('Network response was not ok: ' + errorText);
-              }
-          
-              const oData = await response.json();
-          
-                console.log("DATOS PARA CONSUMO exteRNOS  "    + JSON.stringify(oData) );
-              
-              var oTable = this.byId("tablaConsuExter");
-              var aItems = oTable.getItems();
-          
-              // Limpio array para IDs si usas
-              this._consumoExternosIDs = [];
-          
-              if (oData.value && oData.value.length > 0) {
-                oData.value.forEach((Recurso, index) => {
-                  this._consumoExternosIDs[index] = Recurso.ID; // Guardar ID por posición
-          
-                  if (index < aItems.length) {
-                    var oItem = aItems[index];
-                    var aCells = oItem.getCells();
-          
-    
-                    console.log("Número de filas visibles en la tabla: ", aItems.length);
-    
-    
-             
-                if (aCells.length > 1) {
-    
-          
-                      aCells[0].setSelectedKey(Recurso.Vertical_ID || "");
-                      aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
-                      console.log("RECURSO PERFOL "  + Recurso.tipoServicio_ID);
-                      aCells[2].setSelectedKey(Recurso.PerfilConsumo_ID|| "");
-                      aCells[3].setValue(Recurso.ConceptoOferta || "");
-                      aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
-                      aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00");
-                      aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00");
-                      aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00");
-                      aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00");
-                      aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00");
-                      aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00");
-                      aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                      aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.totalC).toFixed(2) : "0.00");
-                    }
-                  }
-                });
-          
-                // Si quieres llamar a leerFechasConsumoExterno para el primero, por ejemplo:
-                for (let i = 0; i < this._consumoExternosIDs.length; i++) {
-                  const ConsumoRecuID = this._consumoExternosIDs[i];
-                  await this.leerFechasConsumoExterno(ConsumoRecuID);
-                }
-                
-           
-          
-              } else {
-                console.log("No hay datos de Consumo Externo disponibles.");
-              }
-          
-            } catch (error) {
-              console.error("Error al obtener los datos de Consumo Externo:", error);
-              //sap.m.MessageToast.show("Error al cargar los datos de Consumo Externo");
-            }
-          },*/
 
 
       leerConsuOtroServi: async function (sProjectID) {
@@ -3096,7 +2741,7 @@ sap.ui.define([
           this._RecursoExterno = []; // Asegurarte de inicializar el array
 
           const oData = await response.json();
-          console.log("Datos traidos RecursosExternos TRAIDO:", oData);
+          //   console.log("Datos traidos RecursosExternos TRAIDO:", oData);
 
           var oTable = this.byId("tablaRecExterno");
           var aItems = oTable.getItems();
@@ -3134,7 +2779,7 @@ sap.ui.define([
             await this.leerFechasRecursoExterno(primerRecursoID);
 
           } else {
-            console.log("No hay datos de recursos externos disponibles.");
+            // console.log("No hay datos de recursos externos disponibles.");
           }
 
         } catch (error) {
@@ -3218,73 +2863,7 @@ sap.ui.define([
       },
 
 
-      /*  leerOtrosServiExter: async function (sProjectID) {
-  
-          var idExterno;
-          var sUrl = `/odata/v4/datos-cdo/serviRecurExter?$filter=datosProyect_ID eq ${sProjectID}`;
-          try {
-            const response = await fetch(sUrl, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              }
-            });
-  
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error('Network response was not ok: ' + errorText);
-            }
-  
-            this._idOtroSerEx = [];
-            const oData = await response.json();
-            // console.log("Datos traidos serviRecurExter TRAIDO:", oData);
-  
-            var oTable = this.byId("idServiExterno");
-            var aItems = oTable.getItems();
-  
-            if (oData.value && oData.value.length > 0) {
-              var Recurso = oData.value[0]; // Toma solo el primer recurso
-              idExterno = Recurso.ID; // Obtén el ID del recurso
-              //   console.log("ID del recurso:", recursoID); // Imprime el ID del recurso
-  
-  
-              if (aItems.length > 0) {
-                var oItem = aItems[0]; // Selecciona solo la primera fila
-                var aCells = oItem.getCells();
-  
-                if (aCells.length > 1) {
-                  aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
-                  aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
-                  //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
-                  aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
-                  aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
-                  aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[6].setText(Recurso.year2 ? parseFloat(Recurso.year2).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
-  
-                }
-              }
-  
-              this._RecSeX = idExterno;
-              await this.leerFechasServRecursoExterno(idExterno);
-  
-            } else {
-  
-              console.log("No hay datos de servi Externos  disponibles.");
-  
-            }
-  
-          } catch (error) {
-            console.error("Error al obtener los datos de serviRecurExter:", error);
-            //sap.m.MessageToast.show("Error al cargar los datos de serviRecurExter");
-          }
-        },*/
+
 
 
 
@@ -3305,7 +2884,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos traidos GastoViajeRecExter TRAIDO:", oData);
+          //  console.log("Datos traidos GastoViajeRecExter TRAIDO:", oData);
 
           var oTable = this.byId("idGastoRecuExter");
           var aItems = oTable.getItems();
@@ -3348,7 +2927,7 @@ sap.ui.define([
             }
 
           } else {
-            console.log("No hay datos de servi Externos disponibles.");
+            //     console.log("No hay datos de servi Externos disponibles.");
           }
 
 
@@ -3379,7 +2958,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos traidos otrosConceptos TRAIDO:", oData);
+          //   console.log("Datos traidos otrosConceptos TRAIDO:", oData);
 
           var oTable = this.byId("tablaInfrestuctura");
           var aItems = oTable.getItems();
@@ -3420,7 +2999,7 @@ sap.ui.define([
 
             }
           } else {
-            console.log("No hay datos de recursos internos disponibles.");
+            //    console.log("No hay datos de recursos internos disponibles.");
           }
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
@@ -3461,7 +3040,7 @@ sap.ui.define([
             valoresPorFecha[key] = item.valor;
           });
 
-          console.log("Valores por fecha antes de enviarlos OTROS CONCEPTOS:", valoresPorFecha);
+          //  console.log("Valores por fecha antes de enviarlos OTROS CONCEPTOS:", valoresPorFecha);
 
           this._otroConcep = idleeRExt;
           this.fechasDinamicas(valoresPorFecha);
@@ -3577,7 +3156,7 @@ sap.ui.define([
             }
 
           } else {
-            console.log("No hay datos de LicenciasCon disponibles.");
+            //   console.log("No hay datos de LicenciasCon disponibles.");
           }
         } catch (error) {
           console.error("Error al obtener los datos de LicenciasCon:", error);
@@ -4231,10 +3810,26 @@ sap.ui.define([
       onSave: async function () {
 
         console.log("Entre al ONSAVE ");
-        const sMode = this.getView().getModel("viewModel").getProperty("/mode");
-  
-        console.log("MODELO TRAIDO " + sMode);
-       
+        let sMode = this.getView().getModel("viewModel").getProperty("/mode");
+
+        // Si no está en el modelo, usa la propiedad interna
+        if (!sMode) {
+          sMode = this._mode || "";
+        }
+
+        // Último recurso: deduce por lógica
+        if (!sMode) {
+          sMode = this._sProjectID ? "edit" : "create";
+        }
+
+        console.log("MODO FINAL USADO EN onSave:", sMode);
+
+
+
+
+
+
+
         let errorCount = 0;
         const incompleteFields = [];
 
@@ -4397,18 +3992,18 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-          
 
-          if ( this._mode === "edit") {
 
-              // Si estás en modo editar, asumes que sProjectID es válido
-              if (!sProjectID) {
-                sap.m.MessageBox.error("Error: No hay ProjectID para editar.");
-                return;
-              }
+          if (this._mode === "edit") {
+
+            // Si estás en modo editar, asumes que sProjectID es válido
+            if (!sProjectID) {
+              sap.m.MessageBox.error("Error: No hay ProjectID para editar.");
+              return;
+            }
 
             console.log("ID DEL WORK " + this._idWorkIniciado);
-        
+
             if (this._idWorkIniciado) {
               try {
                 // Llamada a backend para cancelar el workflow anterior
@@ -4422,7 +4017,7 @@ sap.ui.define([
                 return;
               }
             }
-        
+
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
@@ -4434,7 +4029,7 @@ sap.ui.define([
             method = "POST";
             url = "/odata/v4/datos-cdo/DatosProyect";
           }
-        
+
           // 1️ Obtener el CSRF Token
           let oTokenResponse = await fetch(sServiceUrl, {
             method: "GET",
@@ -4443,14 +4038,14 @@ sap.ui.define([
           if (!oTokenResponse.ok) {
             throw new Error("Error al obtener el CSRF Token");
           }
-        
+
           let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
           if (!sCsrfToken) {
             throw new Error("No se recibió un CSRF Token");
           }
-        
+
           console.log(" CSRF Token obtenido:", sCsrfToken);
-        
+
           // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
             method: method,
@@ -4460,12 +4055,12 @@ sap.ui.define([
             },
             body: JSON.stringify(payload),
           });
-        
+
           // Verificar respuesta
           if (!response.ok) {
             const errorText = await response.text();
             console.error(`Error en ${method} (${response.status}):`, errorText);
-        
+
             if (response.status === 400) {
               sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
             } else if (response.status === 404) {
@@ -4475,7 +4070,7 @@ sap.ui.define([
             } else {
               sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
             }
-        
+
             throw new Error(`HTTP ${response.status} - ${errorText}`);
           }
 
@@ -4583,6 +4178,19 @@ sap.ui.define([
 
         console.log("ENTRANDO A onBorrador");
 
+        let sMode = this.getView().getModel("viewModel").getProperty("/mode");
+
+        // Si no está en el modelo, usa la propiedad interna
+        if (!sMode) {
+          sMode = this._mode || "";
+        }
+
+        // Último recurso: deduce por lógica
+        if (!sMode) {
+          sMode = this._sProjectID ? "edit" : "create";
+        }
+
+        console.log("MODO FINAL USADO EN onSave:", sMode);
 
         let errorCount = 0;
         const incompleteFields = [];
@@ -4741,6 +4349,7 @@ sap.ui.define([
 
 
 
+
         try {
           let oModel = this.getView().getModel();
           let sServiceUrl = oModel.sServiceUrl;
@@ -4749,10 +4358,26 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-          if (sProjectID) {
+
+
+          if (this._mode === "edit") {
+
+            // Si estás en modo editar, asumes que sProjectID es válido
+            if (!sProjectID) {
+              sap.m.MessageBox.error("Error: No hay ProjectID para editar.");
+              return;
+            }
+
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
+
+
+
+          } else if (this._mode === "create") {
+            // En modo create o sin sProjectID --> creación (POST)
+            method = "POST";
+            url = "/odata/v4/datos-cdo/DatosProyect";
           }
 
           // 1️ Obtener el CSRF Token
@@ -4771,7 +4396,7 @@ sap.ui.define([
 
           console.log(" CSRF Token obtenido:", sCsrfToken);
 
-          // Realizamos la llamada al servicio
+          // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
             method: method,
             headers: {
@@ -4781,7 +4406,7 @@ sap.ui.define([
             body: JSON.stringify(payload),
           });
 
-          // Detectar problemas en la respuesta
+          // Verificar respuesta
           if (!response.ok) {
             const errorText = await response.text();
             console.error(`Error en ${method} (${response.status}):`, errorText);
@@ -4798,6 +4423,7 @@ sap.ui.define([
 
             throw new Error(`HTTP ${response.status} - ${errorText}`);
           }
+
 
           // Procesar respuesta si es exitosa
           if (response.ok) {
@@ -4847,586 +4473,6 @@ sap.ui.define([
           //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
         }
       },
-
-      /*     onBorrador: async function () {
-     
-             console.log("ENTRANDO A onBorrador");
-     
-     
-             let errorCount = 0;
-             const incompleteFields = [];
-     
-             const sProjectID = this._sProjectID; // ID del proyecto
-             const scodigoProyect = parseFloat(this.byId("input0").getValue(), 10);
-             const sEmail = this.byId("dddtg").getText();
-             const sEmpleado = this.byId("23d3").getText();
-             const sCambioEurUsd = parseFloat(this.byId("inputCambioEu").getValue());
-             const snameProyect = this.byId("input1").getValue();
-             const sdescripcion = this.byId("idDescripcion").getValue();
-             const sTotal = parseFloat(this.byId("input0_1725625161348").getValue());
-             const spluriAnual = this.byId("box_pluriAnual").getSelected();
-             const sClienteFac = this.byId("id_Cfactur").getValue();
-             const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-             const sMensual = this.byId("idCheckMensual").getSelected();
-             const sClienteFunc = this.byId("int_clienteFun").getValue();
-             const sObjetivoAlcance = this.byId("idObje").getValue();
-             const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-             const sDatosExtra = this.byId("area0").getValue();
-             const sFechaIni = this.byId("date_inico").getDateValue();
-             const sFechaFin = this.byId("date_fin").getDateValue();
-             const sIPC = this.byId("input_ipc").getValue();
-     
-     
-     
-     
-             // Quitar el símbolo % y reemplazar coma por punto para poder parsear
-             let numIPC = sIPC.replace("%", "").replace(",", ".");
-     
-             // Convertir a número (float)
-             let ipcNumber = parseFloat(numIPC);
-     
-     
-     
-     
-             const sComentarioProvee = this.byId("idTextComProve").getValue();
-             const sComentarioPVd = this.byId("idComenpVd").getValue();
-     
-             const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
-             const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
-     
-             console.log("Objeto comentarioProveedor:", sComentarioProvee);
-             console.log("Objeto comentarioPvD:", sComentarioPVd);
-     
-     
-             var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
-     
-             const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
-             const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
-     
-             const sSelectedKey = this.byId("idNatu").getSelectedKey();
-             const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-             const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
-             const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
-             const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
-             const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
-             const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
-             const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
-             const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
-             const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
-             const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
-     
-             const validateField = (control, value, fieldName) => {
-               if (!value || (typeof value === 'string' && value.trim() === "")) {
-                 control.setValueState("Error");
-                 control.setValueStateText("Este campo es obligatorio");
-                 errorCount++;
-                 if (!incompleteFields.includes(fieldName)) {
-                   incompleteFields.push(fieldName);
-                 }
-               } else {
-                 control.setValueState("None");
-               }
-             };
-     
-             // Validar campos antes de hacer la llamada
-             validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
-             validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
-     
-             if (errorCount > 0) {
-               sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
-               return;
-             }
-     
-             const now = new Date();
-             const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-     
-             console.log(localDate);
-     
-     
-             const payload = {
-               codigoProyect: "1",
-               nameProyect: snameProyect,
-               Email: sEmail,
-               Empleado: sEmpleado,
-               pluriAnual: spluriAnual,
-               Total: sTotal,
-               descripcion: sdescripcion,
-               mensual: sMensual,
-               comentarioTipoCompra: sComentarioTipCompra,
-               comentarioFacturacion: sComentarioFacturacion,
-               comentarioProveedor: sComentarioProvee,
-               comentarioPvD: sComentarioPVd,
-               funcionalString: sClienteFunc,
-               clienteFacturacion: sClienteFac,
-               multijuridica: sMultiJuri,
-               Naturaleza_ID: sSelectedKey,
-               TipoCompra_ID: sSelecKeyTipoCompra,
-               TipoCompra: { ID: sSelecKeyTipoCompra },
-               MotivoCondi: { ID: sSelecKeyMotivoCondi },
-               Area_ID: sSelecKeyA,
-               Iniciativa_ID: sSelectKeyIni,
-               jefeProyectID_ID: sSelecKeyJe,
-               objetivoAlcance: sObjetivoAlcance,
-               AsuncionesyRestricciones: sAsunyRestric,
-               Vertical_ID: sSelectKeyVerti,
-               Fechainicio: sFechaIniFormatted,
-               FechaFin: sFechaFinFormatted,
-               Seguimiento_ID: sSelectKeySegui,
-               EjecucionVia_ID: sSelectKeyEjcu,
-               AmReceptor_ID: sSelectKeyAmrep,
-               clienteFuncional_ID: sSelectKeyClienNuevo,
-               Estado: "Borrador",
-               datosExtra: sDatosExtra,
-               IPC_apli: ipcNumber,
-               CambioEuRUSD: sCambioEurUsd
-             };
-     
-             // Agregar fechaCreacion solo si es nuevo (POST)
-             if (!sProjectID) {
-               payload.fechaCreacion = localDate;
-             }
-     
-             // Crear la fecha de modificación (formato yyyy-MM-dd)
-             let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
-               pattern: "yyyy-MM-dd"
-             });
-             const fechaModificacion = new Date();
-             const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
-     
-             // Agregar FechaModificacion solo si es PATCH
-             if (sProjectID) {
-               payload.FechaModificacion = formattedFechaModificacion;
-             }
-     
-             // Validar campos antes de hacer la llamada
-             if (!payload.descripcion || !payload.nameProyect) {
-               //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
-               console.error("Validación fallida: Falta código o nombre del proyecto", payload);
-               return;
-             }
-     
-             // Log del payload antes de enviarlo
-             console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
-     
-     
-     
-             try {
-               let oModel = this.getView().getModel();
-               let sServiceUrl = oModel.sServiceUrl;
-     
-               let response;
-               let url = "/odata/v4/datos-cdo/DatosProyect";
-               let method = "POST";
-     
-               if (sProjectID) {
-                 // Actualización (PATCH)
-                 url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-                 method = "PATCH";
-               }
-     
-               // 1️ Obtener el CSRF Token
-               let oTokenResponse = await fetch(sServiceUrl, {
-                 method: "GET",
-                 headers: { "x-csrf-token": "Fetch" }
-               });
-               if (!oTokenResponse.ok) {
-                 throw new Error("Error al obtener el CSRF Token");
-               }
-     
-               let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-               if (!sCsrfToken) {
-                 throw new Error("No se recibió un CSRF Token");
-               }
-     
-               console.log(" CSRF Token obtenido:", sCsrfToken);
-     
-               // Realizamos la llamada al servicio
-               response = await fetch(url, {
-                 method: method,
-                 headers: {
-                   "Content-Type": "application/json",
-                   "x-csrf-token": sCsrfToken
-                 },
-                 body: JSON.stringify(payload),
-               });
-     
-               // Detectar problemas en la respuesta
-               if (!response.ok) {
-                 const errorText = await response.text();
-                 console.error(`Error en ${method} (${response.status}):`, errorText);
-     
-                 if (response.status === 400) {
-                   //sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
-                 } else if (response.status === 404) {
-                   //sap.m.MessageToast.show("Error 404: Endpoint no encontrado.");
-                 } else if (response.status === 500) {
-                   //sap.m.MessageToast.show("Error 500: Problema en el servidor o base de datos.");
-                 } else {
-                   //sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
-                 }
-     
-                 throw new Error(`HTTP ${response.status} - ${errorText}`);
-               }
-     
-               // Procesar respuesta si es exitosa
-               if (response.ok) {
-                 const result = await response.json();
-                 console.log("Respuesta completa de la API:", result);
-     
-                 // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
-                 const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-                 console.log("ID generado:", generatedId);
-     
-                 if (generatedId) {
-                   // Llamadas en paralelo para mejorar rendimiento
-                   const insertAllResults = await Promise.all([
-                     this.insertFacturacion(generatedId),
-                     this.inserChart(generatedId, sCsrfToken),
-                     this.insertarProveedor(generatedId),
-                     this.insertClientFactura(generatedId),
-                     this.insertRecursosInternos(generatedId),
-                     this.insertCosumoExterno(generatedId),
-                     this.insertRecursoExterno(generatedId),
-                     this.insertarOtrosConceptos(generatedId),
-                     this.insertServicioInterno(generatedId),
-                     this.insertGastoViajeInterno(generatedId),
-                     this.insertServiConsu(generatedId),
-                     this.insertGastoConsu(generatedId),
-                     this.insertServicioRecuExter(generatedId),
-                     this.insertGastoViajeExterno(generatedId),
-                     this.insertarLicencia(generatedId),
-                     this.insertPerfilJornadas(generatedId, sCsrfToken),
-                     this.insertTotalRecuInterno(generatedId, sCsrfToken),
-                     this.insertTotalConsuExt(generatedId, sCsrfToken),
-                     this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
-                     this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
-                     this.insertResumenCostesTotal(generatedId, sCsrfToken),
-     
-                   ]);
-     
-     
-                   this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
-                 } else {
-                   console.error("No se generó un ID válido.");
-                   //sap.m.MessageToast.show("Error: No se generó un ID válido.");
-                 }
-               }
-             } catch (error) {
-               console.error("Error en la llamada al servicio:", error);
-               //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
-             }
-           },*/
-
-
-
-
-
-
-      /*onSave: async function () {
-
-        const generatedId = generateUUID();  
-
-
-        console.log("ID Generado" + generatedId);
-        let errorCount = 0;
-        const incompleteFields = [];
-
-        const sProjectID = this._sProjectID; // ID del proyecto
-        const scodigoProyect = parseInt(this.byId("input0").getValue(), 10);
-        const sEmail = this.byId("dddtg").getText();
-        const sEmpleado = this.byId("23d3").getText();
-        const snameProyect = this.byId("input1").getValue();
-        const sdescripcion = this.byId("idDescripcion").getValue();
-        const sTotal = parseInt(this.byId("input0_1725625161348").getValue(), 10);
-        const spluriAnual = this.byId("box_pluriAnual").getSelected();
-        const sClienteFac = this.byId("id_Cfactur").getValue();
-        const sMultiJuri = this.byId("box_multiJuridica").getSelected();
-        const sMensual = this.byId("idCheckMensual").getSelected();
-        const sClienteFunc = this.byId("int_clienteFun").getValue();
-        const sObjetivoAlcance = this.byId("idObje").getValue();
-        const sAsunyRestric = this.byId("idAsunyRestri").getValue();
-        const sDatosExtra = this.byId("area0").getValue();
-        const sFechaIni = this.byId("date_inico").getDateValue();
-        const sFechaFin = this.byId("date_fin").getDateValue();
-        const sIPC = this.byId("input_ipc").getValue();
-        // Quitar el símbolo % y reemplazar coma por punto para poder parsear
-let numIPC = sIPC.replace("%", "").replace(",", ".");
-
-// Convertir a número (float)
-let ipcNumber = parseFloat(numIPC);
-
-
-
-        const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
-        const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
-
-     
-        var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
-
-        const sFechaIniFormatted = sFechaIni ? oDateFormat.format(sFechaIni) : null;
-        const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
-
-        const sSelectedKey = this.byId("idNatu").getSelectedKey();
-        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
-        const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
-        const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
-        const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
-        const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
-        const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
-        const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
-        const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
-        const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
-
-        const validateField = (control, value, fieldName) => {
-          if (!value || (typeof value === 'string' && value.trim() === "")) {
-            control.setValueState("Error");
-            control.setValueStateText("Este campo es obligatorio");
-            errorCount++;
-            if (!incompleteFields.includes(fieldName)) {
-              incompleteFields.push(fieldName);
-            }
-          } else {
-            control.setValueState("None");
-          }
-        };
-
-        // Validar campos antes de hacer la llamada
-        validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
-        validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
-
-        if (errorCount > 0) {
-          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
-          return;
-        }
-
-        const now = new Date();
-        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-
-        console.log(localDate);
-
-
-        const payload = {
-          ID : generatedId,
-          codigoProyect: "1",
-          nameProyect: snameProyect,
-          Email: sEmail,
-          Empleado: sEmpleado,
-          pluriAnual: spluriAnual,
-          Total: sTotal,
-          descripcion: sdescripcion,
-          mensual: sMensual,
-          comentarioTipoCompra:  sComentarioTipCompra,
-          comentarioFacturacion: sComentarioFacturacion, 
-          funcionalString: sClienteFunc,
-          clienteFacturacion: sClienteFac,
-          multijuridica: sMultiJuri,
-          TipoCompra_ID: sSelecKeyTipoCompra,
-          TipoCompra: { ID: sSelecKeyTipoCompra },
-          MotivoCondi: { ID: sSelecKeyMotivoCondi },
-          Area_ID: sSelecKeyA,
-          Iniciativa_ID: sSelectKeyIni,
-          jefeProyectID_ID: sSelecKeyJe,
-          objetivoAlcance: sObjetivoAlcance,
-          AsuncionesyRestricciones: sAsunyRestric,
-          Vertical_ID: sSelectKeyVerti,
-          Fechainicio: sFechaIniFormatted,
-          FechaFin: sFechaFinFormatted,
-          Seguimiento_ID: sSelectKeySegui,
-          EjecucionVia_ID: sSelectKeyEjcu,
-          AmReceptor_ID: sSelectKeyAmrep,
-          clienteFuncional_ID: sSelectKeyClienNuevo,
-          Estado: "Pendiente",
-          datosExtra: sDatosExtra,
-          IPC_apli: ipcNumber
-        };
-
-        // Agregar fechaCreacion solo si es nuevo (POST)
-        if (!sProjectID) {
-          payload.fechaCreacion = localDate;
-        }
-
-        // Crear la fecha de modificación (formato yyyy-MM-dd)
-        let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
-          pattern: "yyyy-MM-dd"
-        });
-        const fechaModificacion = new Date();
-        const formattedFechaModificacion = oDateFormat1.format(fechaModificacion);
-
-        // Agregar FechaModificacion solo si es PATCH
-        if (sProjectID) {
-          payload.FechaModificacion = formattedFechaModificacion;
-        }
-
-        // Validar campos antes de hacer la llamada
-        if (!payload.descripcion || !payload.nameProyect) {
-          //sap.m.MessageToast.show("Error: Código y nombre del proyecto son obligatorios.");
-          console.error("Validación fallida: Falta código o nombre del proyecto", payload);
-          return;
-        }
-
-        // Log del payload antes de enviarlo
-        console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
-
-
-
-        try {
-          let oModel = this.getView().getModel();
-          let sServiceUrl = oModel.sServiceUrl;
-
-          let response;
-          let url = "/odata/v4/datos-cdo/DatosProyect";
-          let method = "POST";
-
-          if (sProjectID) {
-            // Actualización (PATCH)
-            url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-            method = "PATCH";
-          }
-
-          // 1️ Obtener el CSRF Token
-          let oTokenResponse = await fetch(sServiceUrl, {
-            method: "GET",
-            headers: { "x-csrf-token": "Fetch" }
-          });
-          if (!oTokenResponse.ok) {
-            throw new Error("Error al obtener el CSRF Token");
-          }
-
-          let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-          if (!sCsrfToken) {
-            throw new Error("No se recibió un CSRF Token");
-          }
-
-          console.log(" CSRF Token obtenido:", sCsrfToken);
-
-          // Realizamos la llamada al servicio
-          response = await fetch(url, {
-            method: method,
-            headers: {
-              "Content-Type": "application/json",
-              "x-csrf-token": sCsrfToken
-            },
-            body: JSON.stringify(payload),
-          });
-
-          // Detectar problemas en la respuesta
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Error en ${method} (${response.status}):`, errorText);
-
-            if (response.status === 400) {
-              //sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
-            } else if (response.status === 404) {
-              //sap.m.MessageToast.show("Error 404: Endpoint no encontrado.");
-            } else if (response.status === 500) {
-              //sap.m.MessageToast.show("Error 500: Problema en el servidor o base de datos.");
-            } else {
-              //sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
-            }
-
-            throw new Error(`HTTP ${response.status} - ${errorText}`);
-          }
-
-          // Procesar respuesta si es exitosa
-          if (response.ok) {
-            const result = await response.json();
-            console.log("Respuesta completa de la API:", result);
-
-            // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
-         //   const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-         ///   console.log("ID generado:", generatedId);
-
-            if (generatedId) {
-              // Llamadas en paralelo para mejorar rendimiento
-              const insertAllResults =   await Promise.all([
-                this.insertFacturacion(generatedId),
-                this.inserChart(generatedId, sCsrfToken),
-                this.insertarProveedor(generatedId),
-                this.insertClientFactura(generatedId),
-                this.insertRecursosInternos(generatedId),
-                this.insertCosumoExterno(generatedId),
-                this.insertRecursoExterno(generatedId),
-                this.insertarOtrosConceptos(generatedId),
-                this.insertServicioInterno(generatedId),
-                this.insertGastoViajeInterno(generatedId),
-                this.insertServiConsu(generatedId),
-                this.insertGastoConsu(generatedId),
-                this.insertServicioRecuExter(generatedId),
-                this.insertGastoViajeExterno(generatedId),
-                this.insertarLicencia(generatedId),
-                this.insertPerfilJornadas(generatedId, sCsrfToken),
-                this.insertTotalRecuInterno(generatedId, sCsrfToken),
-                this.insertTotalConsuExt(generatedId, sCsrfToken),
-                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
-                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
-                this.insertResumenCostesTotal(generatedId, sCsrfToken),
-
-              ]);
-
-
-              
-
-
-
-
-              // 1 Payload para iniciar workflow de aprobación
-
-        /*      const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
-                + generatedId
-                + ";aprobacion=true";
-
-
-              const oModel = this.getView().getModel();
-
-              const oContext = oModel.bindContext("/startWorkflow(...)");
-
-              oContext.setParameter("payload", JSON.stringify({
-                codigoproyect: 0,
-                nameproyect: snameProyect,
-                generatedid: generatedId,
-                urlapp: urlAPP,
-                descripcion: sdescripcion,
-                jefeProyecto: "Carolina Falen",
-                clienteFuncional: "CLiente Fun",
-                clienteFacturacion: "Cliente Fact",
-
-                usuario: "Carolina Falen"
-              }));
-
-
-              try {
-
-                await oContext.execute();
-                const result = oContext.getBoundContext().getObject();
-                this.workflowInstanceId = result.workflowInstanceId; // Guardamos esto
-
-                console.log("Resultado del flujo de trabajo:", result);
-
-                if (result && result.workflowInstanceId) {
-                  const workflowInstanceId = result.workflowInstanceId;
-                  this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
-                  //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
-
-                } else {
-                  sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
-                }
-
-              } catch (err) {
-                sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
-              }
-              // Navegar a la vista 'app' con el nuevo ID
-            this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
-            } else {
-              console.error("No se generó un ID válido.");
-              //sap.m.MessageToast.show("Error: No se generó un ID válido.");
-            }
-          }
-        } catch (error) {
-          console.error("Error en la llamada al servicio:", error);
-          //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
-        }
-      },*/
 
 
 
@@ -7771,7 +6817,7 @@ let ipcNumber = parseFloat(numIPC);
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -9351,7 +8397,7 @@ let ipcNumber = parseFloat(numIPC);
             var numericValue = parseFloat(valueOferta);
 
             // Imprimir para depuración
-            console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+            // console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
 
             // Solo sumar si valueOferta es un número válido
             if (!isNaN(numericValue)) {
@@ -9365,7 +8411,7 @@ let ipcNumber = parseFloat(numIPC);
         this.byId("text73_172746565340567").setText(totalOferta.toFixed(2) + "%");
 
 
-        console.log("Total de la columna oferta:", totalOferta);
+        //   console.log("Total de la columna oferta:", totalOferta);
 
 
         this._totalOferta = totalOferta;
