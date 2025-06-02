@@ -89,10 +89,6 @@ sap.ui.define([
         this.updateVizFrame1();
         this.updateVizFrame3();
 
-        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-
-        oRouter.getRoute("view").attachPatternMatched(this._onObjectMatched, this);
-
 
         this.updateVizFrame2();
 
@@ -110,6 +106,12 @@ sap.ui.define([
 
         this.onColumnTotales();
 
+        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+        oRouter.getRoute("viewWithMode").attachPatternMatched(this._onObjectMatched, this);
+
+
+
 
       },
 
@@ -118,19 +120,19 @@ sap.ui.define([
 
       refreshODataModel: function () {
         const oModel = this.getOwnerComponent().getModel(); // Modelo por defecto ("mainService")
-      
+
         if (oModel && typeof oModel.refresh === "function") {
           oModel.refresh(); // Esto recarga los datos desde el backend si están en uso
           console.log("Modelo OData V4 refrescado desde el servidor.");
         }
-      
+
         const oView = this.getView();
         if (oView.getElementBinding()) {
           oView.getElementBinding().refresh(true); // Refresca el binding de la vista (por si tiene contexto)
           console.log("Binding de la vista refrescado.");
         }
       },
-      
+
 
 
 
@@ -181,13 +183,12 @@ sap.ui.define([
 
       highlightControls: function () {
         console.log("Se cambiaron las pestañas debido a campos vacíos.");
-
+    
         const controlsToHighlight = [
           this.byId("input0"),
           this.byId("input1"),
           this.byId("idDescripcion"),
           this.byId("int_clienteFun"),
-          this.byId("id_Cfactur"),
           this.byId("id_Cfactur"),
           this.byId("idObje"),
           this.byId("idAsunyRestri"),
@@ -203,36 +204,32 @@ sap.ui.define([
           this.byId("selc_Segui"),
           this.byId("slct_client"),
           this.byId("date_inico"),
-          this.byId("date_fin"),
-          this.byId("input0"),
-          this.byId("input1"),
-          this.byId("box_pluriAnual"),
-          this.byId("id_Cfactur"),
-          this.byId("box_multiJuridica")
-
-          // Agrega más controles aquí según sea necesario
+          this.byId("date_fin")
         ];
-
-        // Establecer el ValueState a Warning (amarillo)
-        controlsToHighlight.forEach(control => {
-          if (control && control.setValueState) {
-            control.setValueState("Information");
-
-          }
-        });
-
-
-        // Revertir el ValueState después de 2 segundos
+    
+        // Aplicar el highlight con un pequeño delay para que el renderizado pueda ocurrir
         setTimeout(() => {
           controlsToHighlight.forEach(control => {
             if (control && control.setValueState) {
-              control.setValueState("None");
+              control.setValueState("Information");
             }
           });
-        }, 2000); // 2000 ms = 2 segundos
-
+    
+          // Luego de 2 segundos, revertir el highlight
+          setTimeout(() => {
+            controlsToHighlight.forEach(control => {
+              if (control && control.setValueState) {
+                control.setValueState("None");
+              }
+            });
+    
+            // Aquí podrías llamar a la función que muestra el diálogo si quieres que espere el highlight
+            // this.showSuccessDialog(); 
+    
+          }, 2000);
+        }, 50); // 50 ms suele ser suficiente para que la UI se refresque
       },
-
+    
 
       getUserInfo: function () {
         fetch('/odata/v4/datos-cdo/getUserInfo')
@@ -315,7 +312,7 @@ sap.ui.define([
             press: () => {
               clearInterval(interval);
               dialog.close();
-              this._refreshToken(); // 🔁 Simula renovación de sesión
+              this._refreshToken(); //  Simula renovación de sesión
             }
           }),
           endButton: new sap.m.Button({
@@ -323,7 +320,7 @@ sap.ui.define([
             press: () => {
               clearInterval(interval);
               dialog.close();
-              // 🔕 No hay logout en pruebas
+              //  No hay logout en pruebas
             }
           }),
           afterClose: () => {
@@ -418,159 +415,179 @@ sap.ui.define([
 
       _onObjectMatched: async function (oEvent) {
         this._resetButtonHandlers();
-    
+
         const oArgs = oEvent.getParameter("arguments");
         let sProjectID = oArgs.sProjectID;
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
+        const sMode = oArgs.mode || "display"; // Aquí recoges el modo correctamente
         let aprobacionFlag = this._parseAprobacionFlag(oArgs, sSourceModel);
-    
-        if (!sProjectID) {
-            await this._clearAllInputs();
+        const btnAceptar = this.byId("btnAceptar");
+        const btnBorrado = this.byId("btnBorrado");
+
+        this._mode = sMode;
+
+        console.log("MODELO TRAIDO " + this._mode);
+
+
+        
+        if (sMode === "create") {
+          await this._clearAllInputs();
         }
-    
-        if (sSourceModel === "modelAprobados") {
-            this._Visualizar(sProjectID);
-            return;
+
+
+        btnAceptar.setEnabled(true);
+        btnAceptar.setText("Enviar");
+        btnAceptar.setType(sap.m.ButtonType.Accept);
+        btnAceptar.attachPress(this.onSave, this);
+
+        btnBorrado.setEnabled(true);
+        btnBorrado.setText("Guardar");
+        btnBorrado.setType(sap.m.ButtonType.Emphasized);
+        btnBorrado.attachPress(this.onBorrador, this);
+
+        if (sSourceModel === "modelAprobados" || sMode === "display") {
+          this._Visualizar(sProjectID);
+          return;
         }
-    
+
         this._configureButtons(sSourceModel, aprobacionFlag);
-    
+
         this._sProjectID = sProjectID;
-    
+
         if (sProjectID) {
-            try {
-                const oData = await this._fetchProjectData(sProjectID);
-                await this._populateViewWithData(oData);
-            } catch (error) {
-                console.error("Error al obtener los datos del proyecto:", error);
-                sap.m.MessageToast.show("Error al cargar los datos del proyecto");
-            }
+          try {
+            const oData = await this._fetchProjectData(sProjectID);
+            await this._populateViewWithData(oData);
+          } catch (error) {
+            console.error("Error al obtener los datos del proyecto:", error);
+            sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+          }
         }
-    },
-    
-    
-    _parseAprobacionFlag: function (oArgs, sSourceModel) {
+      },
+
+
+      _parseAprobacionFlag: function (oArgs, sSourceModel) {
         let flag = false;
         if (sSourceModel.includes(";")) {
-            const parts = sSourceModel.split(";");
-            sSourceModel = parts[0];
-            parts.slice(1).forEach(part => {
-                const [key, value] = part.split("=");
-                if (key === "aprobacion") {
-                    flag = (value === "true");
-                }
-            });
+          const parts = sSourceModel.split(";");
+          sSourceModel = parts[0];
+          parts.slice(1).forEach(part => {
+            const [key, value] = part.split("=");
+            if (key === "aprobacion") {
+              flag = (value === "true");
+            }
+          });
         } else {
-            flag = (oArgs.aprobacion === "true");
+          flag = (oArgs.aprobacion === "true");
         }
         return flag;
-    },
-    
-    
-    _configureButtons: function (sSourceModel, aprobacionFlag) {
-      const btnAceptar = this.byId("btnAceptar");
-      const btnBorrado = this.byId("btnBorrado");
-  
-      if (!btnAceptar || !btnBorrado) return;
-  
-      // Primero quitamos eventos para evitar duplicados
-      btnAceptar.detachPress();
-      btnBorrado.detachPress();
-  
-      if (sSourceModel === "modelAprobados") {
+      },
+
+
+      _configureButtons: function (sSourceModel, aprobacionFlag) {
+        const btnAceptar = this.byId("btnAceptar");
+        const btnBorrado = this.byId("btnBorrado");
+
+        if (!btnAceptar || !btnBorrado) return;
+
+        // Primero quitamos eventos para evitar duplicados
+        btnAceptar.detachPress();
+        btnBorrado.detachPress();
+
+        if (sSourceModel === "modelAprobados") {
           // Deshabilitar botones y poner texto y tipo original (valores de fábrica)
           btnAceptar.setEnabled(false);
           btnBorrado.setEnabled(false);
-  
+
           btnAceptar.setText("Enviar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           // No asignamos evento, están deshabilitados
-  
+
           btnBorrado.setText("Guardar");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
-  
-      } else if (!sSourceModel) {
+
+        } else if (!sSourceModel) {
           // No viene modelo: mantener comportamiento y texto/tipo original del footer
-  
+
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Enviar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnAceptar.attachPress(this.onSave, this);
-  
+
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
           btnBorrado.attachPress(this.onBorrador, this);
-  
-      } else if (sSourceModel === "modelPendientes" && aprobacionFlag) {
+
+        } else if (sSourceModel === "modelPendientes" && aprobacionFlag) {
           this._isAprobacion = true;
-  
+
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Aprobar");
           btnAceptar.data("valor", "aprobado");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnAceptar.attachPress(this._onDecisionPress, this);
-  
+
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Rechazar");
           btnBorrado.data("valor", "rechazado");
           btnBorrado.setType(sap.m.ButtonType.Reject);
           btnBorrado.attachPress(this._onDecisionPress, this);
-  
-      } else if (sSourceModel === "modelBorrador") {
+
+        } else if (sSourceModel === "modelBorrador") {
           this._isAprobacion = false;
-  
+
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Guardar");
           btnAceptar.setType(sap.m.ButtonType.Default);
           btnAceptar.attachPress(this.onBorrador, this);
-  
+
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Enviar");
           btnBorrado.setType(sap.m.ButtonType.Default);
           btnBorrado.attachPress(this.onSave, this);
-  
-      } else {
+
+        } else {
           this._isAprobacion = false;
-  
+
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Guardar");
           btnAceptar.setType(sap.m.ButtonType.Default);
           btnAceptar.attachPress(this.onSave, this);
-  
+
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Limpiar");
           btnBorrado.setType(sap.m.ButtonType.Default);
           btnBorrado.attachPress(this.onClearFields, this);
-      }
-  },
-  
-    
-    _fetchProjectData: async function (sProjectID) {
+        }
+      },
+
+
+      _fetchProjectData: async function (sProjectID) {
         const Token = this._sCsrfToken;
         const sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
-    
+
         const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'x-csrf-token': Token
-            }
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-csrf-token': Token
+          }
         });
-    
+
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+          const errorText = await response.text();
+          throw new Error('Network response was not ok: ' + errorText);
         }
-    
+
         return await response.json();
-    },
-    
-    
-    _populateViewWithData: async function (oData) {
+      },
+
+
+      _populateViewWithData: async function (oData) {
         if (!oData) return;
-    
+
         // Poblar controles básicos
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
@@ -607,62 +624,62 @@ sap.ui.define([
         this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
         this.byId("id_Cfactur").setValue(oData.clienteFacturacion);
         this.byId("box_multiJuridica").setSelected(oData.multijuridica);
-    
+
         // Mostrar u ocultar tabla y campos según lógica
         const iniciativaId = oData.Iniciativa_ID;
         this.byId("table0").setVisible(iniciativaId === "323e4567-e89b-12d3-a456-426614174002");
         this.byId("idCheckMensual").setVisible(iniciativaId === "323e4567-e89b-12d3-a456-426614174002");
         this.byId("idComentarioTipo").setVisible(iniciativaId === "323e4567-e89b-12d3-a456-426614174002");
         this.byId("idComenpVd").setEditable(iniciativaId === "223e4567-e89b-12d3-a456-426614174001");
-    
+
         // Carga de datos adicionales (en paralelo)
         await Promise.all([
-            this.fetchMilestones(this._sProjectID),
-            this.leerProveedor(this._sProjectID),
-            this.leerFacturacion(this._sProjectID),
-            this.leerClientFactura(this._sProjectID),
-            this.leerRecursos(this._sProjectID),
-            this.leerConsumoExterno(this._sProjectID),
-            this.leerGastoViajeConsu(this._sProjectID),
-            this.leerRecursoExterno(this._sProjectID),
-            this.leerOtrosServiExter(this._sProjectID),
-            this.leerOtrosConcepto(this._sProjectID),
-            this.leerSerivioInterno(this._sProjectID),
-            this.leerGastoviajeInterno(this._sProjectID),
-            this.leerConsuOtroServi(this._sProjectID),
-            this.leerGastoViaExter(this._sProjectID),
-            this.leerLicencias(this._sProjectID),
-            this.leerPerfilJornadas(this._sProjectID),
-            this.leerTotalRecursoInterno(this._sProjectID),
-            this.leerTotalConsumoExter(this._sProjectID),
-            this.leerTotalRecuExterTotal(this._sProjectID),
-            this.leerWorkflowInstancias(this._sProjectID)
+          this.fetchMilestones(this._sProjectID),
+          this.leerProveedor(this._sProjectID),
+          this.leerFacturacion(this._sProjectID),
+          this.leerClientFactura(this._sProjectID),
+          this.leerRecursos(this._sProjectID),
+          this.leerConsumoExterno(this._sProjectID),
+          this.leerGastoViajeConsu(this._sProjectID),
+          this.leerRecursoExterno(this._sProjectID),
+          this.leerOtrosServiExter(this._sProjectID),
+          this.leerOtrosConcepto(this._sProjectID),
+          this.leerSerivioInterno(this._sProjectID),
+          this.leerGastoviajeInterno(this._sProjectID),
+          this.leerConsuOtroServi(this._sProjectID),
+          this.leerGastoViaExter(this._sProjectID),
+          this.leerLicencias(this._sProjectID),
+          this.leerPerfilJornadas(this._sProjectID),
+          this.leerTotalRecursoInterno(this._sProjectID),
+          this.leerTotalConsumoExter(this._sProjectID),
+          this.leerTotalRecuExterTotal(this._sProjectID),
+          this.leerWorkflowInstancias(this._sProjectID)
         ]);
-    
+
         this.highlightControls();
-    
+
         const btnAceptar = this.byId("btnAceptar");
         if (!this._isAprobacion && btnAceptar) {
-            btnAceptar.setText("Guardar");
+          btnAceptar.setText("Guardar");
         }
-    
+
         new sap.m.Dialog({
-            title: "Información",
-            type: "Message",
-            state: "Success",
-            content: new sap.m.Text({ text: "Datos cargados correctamente" }),
-            beginButton: new sap.m.Button({
-                text: "OK",
-                press: function () {
-                    this.getParent().close();
-                }
-            }),
-            afterClose: function () {
-                this.destroy();
+          title: "Información",
+          type: "Message",
+          state: "Success",
+          content: new sap.m.Text({ text: "Datos cargados correctamente" }),
+          beginButton: new sap.m.Button({
+            text: "OK",
+            press: function () {
+              this.getParent().close();
             }
+          }),
+          afterClose: function () {
+            this.destroy();
+          }
         }).open();
-    },
-    
+      },
+
 
 
 
@@ -671,6 +688,11 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
 
+
+
+        this.sProjectID = null;
+        
+        
         console.log("Controles encontrados:", controls);
 
         this._clearTableTextsOnly();
@@ -696,7 +718,7 @@ sap.ui.define([
             control.setSelected(false);
           }
 
-    
+
 
           // Restaurar editable y enabled solo si NO está en la lista de campos bloqueados
           const sId = control.getId().split("--").pop(); // Extrae solo el ID puro
@@ -733,6 +755,8 @@ sap.ui.define([
           oModel.setProperty("/chartModel", []);
         }
 
+
+        
 
         this.refreshODataModel();
 
@@ -821,104 +845,104 @@ sap.ui.define([
 
       _Visualizar: async function (sProjectID) {
         console.log("ENTRE A VISUALIZAR con ID:", sProjectID);
-    
+
         this._configureButtonsForView();
-    
+
         const Token = this._sCsrfToken;
         const oModel = this.getView().getModel("mainService");
-    
+
         if (oModel) {
-            oModel.setData({});
-            oModel.refresh(true);
+          oModel.setData({});
+          oModel.refresh(true);
         }
-    
+
         this._sProjectID = sProjectID;
-    
+
         // Construir URL, asumiendo que sProjectID es string. Si es numérico, elimina las comillas.
         const sUrl = `/odata/v4/datos-cdo/DatosProyect('${sProjectID}')`;
-    
+
         try {
-            const response = await fetch(sUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'x-csrf-token': Token
-                }
-            });
-    
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error('Network response was not ok: ' + errorText);
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'x-csrf-token': Token
             }
-    
-            const oData = await response.json();
-    
-            if (oData) {
-                this._fillControlsWithData(oData);
-    
-                // Carga paralela de datos relacionados
-                await Promise.all([
-                    this.fetchMilestones(sProjectID),
-                    this.leerProveedor(sProjectID),
-                    this.leerFacturacion(sProjectID),
-                    this.leerClientFactura(sProjectID),
-                    this.leerRecursos(sProjectID),
-                    this.leerConsumoExterno(sProjectID),
-                    this.leerGastoViajeConsu(sProjectID),
-                    this.leerRecursoExterno(sProjectID),
-                    this.leerOtrosServiExter(sProjectID),
-                    this.leerOtrosConcepto(sProjectID),
-                    this.leerSerivioInterno(sProjectID),
-                    this.leerGastoviajeInterno(sProjectID),
-                    this.leerConsuOtroServi(sProjectID),
-                    this.leerGastoViaExter(sProjectID),
-                    this.leerLicencias(sProjectID),
-                    this.leerPerfilJornadas(sProjectID),
-                    this.leerTotalRecursoInterno(sProjectID),
-                    this.leerTotalConsumoExter(sProjectID),
-                    this.leerTotalRecuExterTotal(sProjectID),
-                    this.leerWorkflowInstancias(sProjectID),
-                    this.leerTotalInfraestrLicencia(sProjectID),
-                    this.leerTotalResumenCostesTotal(sProjectID)
-                ]);
-    
-                this.highlightControls();
-                this._setAllControlsEditable(false);
-    
-                this._showSuccessDialog("Datos cargados correctamente");
-            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Network response was not ok: ' + errorText);
+          }
+
+          const oData = await response.json();
+
+          if (oData) {
+            this._fillControlsWithData(oData);
+
+            // Carga paralela de datos relacionados
+            await Promise.all([
+              this.fetchMilestones(sProjectID),
+              this.leerProveedor(sProjectID),
+              this.leerFacturacion(sProjectID),
+              this.leerClientFactura(sProjectID),
+              this.leerRecursos(sProjectID),
+              this.leerConsumoExterno(sProjectID),
+              this.leerGastoViajeConsu(sProjectID),
+              this.leerRecursoExterno(sProjectID),
+              this.leerOtrosServiExter(sProjectID),
+              this.leerOtrosConcepto(sProjectID),
+              this.leerSerivioInterno(sProjectID),
+              this.leerGastoviajeInterno(sProjectID),
+              this.leerConsuOtroServi(sProjectID),
+              this.leerGastoViaExter(sProjectID),
+              this.leerLicencias(sProjectID),
+              this.leerPerfilJornadas(sProjectID),
+              this.leerTotalRecursoInterno(sProjectID),
+              this.leerTotalConsumoExter(sProjectID),
+              this.leerTotalRecuExterTotal(sProjectID),
+              this.leerWorkflowInstancias(sProjectID),
+              this.leerTotalInfraestrLicencia(sProjectID),
+              this.leerTotalResumenCostesTotal(sProjectID)
+            ]);
+
+            this.highlightControls();
+            this._setAllControlsEditable(false);
+
+            this._showSuccessDialog("Datos cargados correctamente");
+          }
         } catch (error) {
-            console.error("Error al obtener los datos del proyecto:", error);
-            sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+          console.error("Error al obtener los datos del proyecto:", error);
+          sap.m.MessageToast.show("Error al cargar los datos del proyecto");
         }
-    },
-    
-    // Función para configurar los botones en modo visualización (deshabilitados y texto original)
-    _configureButtonsForView: function() {
+      },
+
+      // Función para configurar los botones en modo visualización (deshabilitados y texto original)
+      _configureButtonsForView: function () {
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
-        const btnButon  = this.byId("idDelete");
-    
+        const btnButon = this.byId("idDelete");
+
         btnAceptar.setEnabled(false);
         btnBorrado.setEnabled(false);
         btnButon.setEnabled(false);
-    
+
         btnAceptar.setText("Enviar");
         btnAceptar.setType(sap.m.ButtonType.Accept);
-    
+
         btnBorrado.setText("Guardar");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
-    },
-    
-    // Función para llenar controles con datos recibidos
-    _fillControlsWithData: function(oData) {
+      },
+
+      // Función para llenar controles con datos recibidos
+      _fillControlsWithData: function (oData) {
         // Inputs y TextAreas
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
         this.byId("area0").setValue(oData.datosExtra || "");
         this.byId("inputCambioEu").setValue(oData.CambioEuRUSD || "");
-    
+
         this.byId("23d3").setText(oData.Empleado || "");
         this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
         this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
@@ -934,7 +958,7 @@ sap.ui.define([
         this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
         this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
         this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
-    
+
         // Selects
         this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
         this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
@@ -947,47 +971,47 @@ sap.ui.define([
         this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
         this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
         this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
-    
+
         // Dates
         this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
         this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
-    
+
         // Mostrar u ocultar controles según Iniciativa_ID
         if (oData.Iniciativa_ID === "323e4567-e89b-12d3-a456-426614174002") {
-            this.byId("table0").setVisible(true);
-            this.byId("idCheckMensual").setVisible(true);
-            this.byId("idComentarioTipo").setVisible(true);
+          this.byId("table0").setVisible(true);
+          this.byId("idCheckMensual").setVisible(true);
+          this.byId("idComentarioTipo").setVisible(true);
         } else {
-            this.byId("table0").setVisible(false);
-            this.byId("idCheckMensual").setVisible(false);
-            this.byId("idComentarioTipo").setVisible(false);
+          this.byId("table0").setVisible(false);
+          this.byId("idCheckMensual").setVisible(false);
+          this.byId("idComentarioTipo").setVisible(false);
         }
-    
+
         // Editable para comentario PvD según Iniciativa_ID
         this.byId("idComenpVd").setEditable(oData.Iniciativa_ID === "223e4567-e89b-12d3-a456-426614174001");
-    },
-    
-    // Función para mostrar un diálogo de éxito
-    _showSuccessDialog: function(message) {
+      },
+
+      // Función para mostrar un diálogo de éxito
+      _showSuccessDialog: function (message) {
         var oDialog = new sap.m.Dialog({
-            title: "Información",
-            type: "Message",
-            state: "Success",
-            content: new sap.m.Text({ text: message }),
-            beginButton: new sap.m.Button({
-                text: "OK",
-                press: function () {
-                    oDialog.close();
-                }
-            }),
-            afterClose: function () {
-                oDialog.destroy();
+          title: "Información",
+          type: "Message",
+          state: "Success",
+          content: new sap.m.Text({ text: message }),
+          beginButton: new sap.m.Button({
+            text: "OK",
+            press: function () {
+              oDialog.close();
             }
+          }),
+          afterClose: function () {
+            oDialog.destroy();
+          }
         });
-    
+
         oDialog.open();
-    },
-    
+      },
+
 
 
 
@@ -4207,7 +4231,10 @@ sap.ui.define([
       onSave: async function () {
 
         console.log("Entre al ONSAVE ");
-
+        const sMode = this.getView().getModel("viewModel").getProperty("/mode");
+  
+        console.log("MODELO TRAIDO " + sMode);
+       
         let errorCount = 0;
         const incompleteFields = [];
 
@@ -4370,18 +4397,24 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-          if (sProjectID) {
+          
+
+          if ( this._mode === "edit") {
+
+              // Si estás en modo editar, asumes que sProjectID es válido
+              if (!sProjectID) {
+                sap.m.MessageBox.error("Error: No hay ProjectID para editar.");
+                return;
+              }
 
             console.log("ID DEL WORK " + this._idWorkIniciado);
+        
             if (this._idWorkIniciado) {
               try {
-                // Llamada a backend para cancelar el workflow
+                // Llamada a backend para cancelar el workflow anterior
                 const oModel = this.getView().getModel();
                 const oContextCancel = oModel.bindContext("/cancelWorkflow(...)");
-
-                // 🚫 NO ENVIARLO como payload
                 oContextCancel.setParameter("workflowInstanceId", this._idWorkIniciado);
-
                 await oContextCancel.execute();
                 //sap.m.MessageToast.show("Workflow anterior cancelado correctamente");
               } catch (error) {
@@ -4389,13 +4422,19 @@ sap.ui.define([
                 return;
               }
             }
-
-
+        
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
-          }
 
+
+
+          } else if (this._mode === "create") {
+            // En modo create o sin sProjectID --> creación (POST)
+            method = "POST";
+            url = "/odata/v4/datos-cdo/DatosProyect";
+          }
+        
           // 1️ Obtener el CSRF Token
           let oTokenResponse = await fetch(sServiceUrl, {
             method: "GET",
@@ -4404,15 +4443,15 @@ sap.ui.define([
           if (!oTokenResponse.ok) {
             throw new Error("Error al obtener el CSRF Token");
           }
-
+        
           let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
           if (!sCsrfToken) {
             throw new Error("No se recibió un CSRF Token");
           }
-
+        
           console.log(" CSRF Token obtenido:", sCsrfToken);
-
-          // Realizamos la llamada al servicio
+        
+          // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
             method: method,
             headers: {
@@ -4421,12 +4460,12 @@ sap.ui.define([
             },
             body: JSON.stringify(payload),
           });
-
-          // Detectar problemas en la respuesta
+        
+          // Verificar respuesta
           if (!response.ok) {
             const errorText = await response.text();
             console.error(`Error en ${method} (${response.status}):`, errorText);
-
+        
             if (response.status === 400) {
               sap.m.MessageToast.show("Error 400: Datos incorrectos o incompletos.");
             } else if (response.status === 404) {
@@ -4436,7 +4475,7 @@ sap.ui.define([
             } else {
               sap.m.MessageToast.show(`Error ${response.status}: ${errorText}`);
             }
-
+        
             throw new Error(`HTTP ${response.status} - ${errorText}`);
           }
 

@@ -134,13 +134,18 @@
         },
         {
           "name": "viewNoParam",
-          "pattern": "view",
+          "pattern": "view/{mode}",
           "target": "view"
         },
         {
           "name": "DialogNoparam",
           "pattern": "Dialog",
           "target": "Dialog"
+        },
+        {
+          "name": "viewWithMode",
+          "pattern": "view/{sourceModel}/{mode}/{sProjectID}",
+          "target": "view"
         },
         {
           "pattern": "viewWithAprobacion/{sProjectID}({aprobacion})",

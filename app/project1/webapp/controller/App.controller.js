@@ -1165,78 +1165,76 @@ sap.ui.define(
 
             onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
-            
+              
                 var oContextPendientes = oButton.getBindingContext("modelPendientes");
                 var oContextAprobados = oButton.getBindingContext("modelAprobados");
                 var oContextBorradores = oButton.getBindingContext("modelBorrador");
-            
+              
                 var oContext = oContextPendientes || oContextAprobados || oContextBorradores;
-            
+              
                 if (!oContext) {
-                    console.error("No se pudo obtener el contexto del ítem.");
-                    return;
+                  console.error("No se pudo obtener el contexto del ítem.");
+                  return;
                 }
-            
+              
                 var sProjectID = oContext.getProperty("ID");
                 if (!sProjectID) {
-                    console.error("El ID del proyecto es nulo o indefinido");
-                    return;
+                  console.error("El ID del proyecto es nulo o indefinido");
+                  return;
                 }
-            
-               // console.log("edit id " + sProjectID);
-            
+              
                 var sNameProyect = oContext.getProperty("nameProyect");
-            
+              
                 var that = this;
-            
+              
                 var oModel = this.getView().getModel("mainService");
                 if (oModel) {
-                    oModel.setData({});
-                    oModel.refresh(true);
+                  oModel.setData({});
+                  oModel.refresh(true);
                 }
-            
+              
                 var sourceModelName = oContextPendientes
-                    ? "modelPendientes"
-                    : (oContextAprobados ? "modelAprobados" : "modelBorrador");
-            
-                // Definir el título y el texto del diálogo dependiendo del modelo de origen
-                var dialogTitle = "Confirmar Edición";
-                var dialogText = "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?";
-            
-                if (sourceModelName === "modelAprobados") {
-                    dialogTitle = "Ver Solicitud";
-                    dialogText = "¿Quieres ver el contenido de esta solicitud?";
-                }
-            
+                  ? "modelPendientes"
+                  : (oContextAprobados ? "modelAprobados" : "modelBorrador");
+              
+                // 👇 Aquí se decide el modo dinámicamente
+                var mode = (sourceModelName === "modelAprobados") ? "display" : "edit";
+              
+                var dialogTitle = (mode === "edit") ? "Confirmar Edición" : "Ver Solicitud";
+                var dialogText = (mode === "edit")
+                  ? "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                  : "¿Quieres ver el contenido de esta solicitud?";
+              
                 var oDialog = new sap.m.Dialog({
-                    title: dialogTitle,
-                    type: "Message",
-                    state: "Warning",
-                    content: new sap.m.Text({
-                        text: dialogText
-                    }),
-                    beginButton: new sap.m.Button({
-                        text: "Confirmar",
-                        press: function () {
-                            oDialog.close();
-            
-                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
-                            oRouter.navTo("view", {
-                                sProjectID: sProjectID,
-                                sourceModel: sourceModelName
-                            }, true);
-                        }
-                    }),
-                    endButton: new sap.m.Button({
-                        text: "Cancelar",
-                        press: function () {
-                            oDialog.close();
-                        }
-                    })
+                  title: dialogTitle,
+                  type: "Message",
+                  state: "Warning",
+                  content: new sap.m.Text({ text: dialogText }),
+                  beginButton: new sap.m.Button({
+                    text: "Confirmar",
+                    press: function () {
+                      oDialog.close();
+              
+                      var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                      oRouter.navTo("viewWithMode", {
+                        sourceModel: sourceModelName,
+                        mode: mode,
+                        sProjectID: sProjectID,
+                 
+                      }, true);
+                    }
+                  }),
+                  endButton: new sap.m.Button({
+                    text: "Cancelar",
+                    press: function () {
+                      oDialog.close();
+                    }
+                  })
                 });
-            
+              
                 oDialog.open();
-            },
+              },
+              
             
 
 
@@ -1728,7 +1726,12 @@ sap.ui.define(
                   }
                 }
               
-                oRouter.navTo("viewNoParam");
+         
+
+                oRouter.navTo("viewNoParam", {
+                    mode: "create",
+                  });
+
               },
               
 
