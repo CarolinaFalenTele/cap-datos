@@ -64,6 +64,8 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity ResumenCostesTotal        as projection on datos.ResumenCostesTotal;
   entity MotivoCondi               as projection on datos.MotivoCondi;
   entity TipoCompra                as projection on datos.TipoCompra;
+  entity Usuarios as projection on datos.Usuarios;
+function userdata() returns Usuarios;
 
 
 

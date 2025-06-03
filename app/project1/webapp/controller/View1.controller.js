@@ -3825,11 +3825,6 @@ sap.ui.define([
         console.log("MODO FINAL USADO EN onSave:", sMode);
 
 
-
-
-
-
-
         let errorCount = 0;
         const incompleteFields = [];
 
@@ -3914,7 +3909,7 @@ sap.ui.define([
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-        console.log(localDate);
+      //  console.log(localDate);
 
 
         const payload = {
@@ -3950,6 +3945,7 @@ sap.ui.define([
           AmReceptor_ID: sSelectKeyAmrep,
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
+          Usuarios_ID : "",
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
           CambioEuRUSD: sCambioEurUsd
@@ -4044,7 +4040,7 @@ sap.ui.define([
             throw new Error("No se recibió un CSRF Token");
           }
 
-          console.log(" CSRF Token obtenido:", sCsrfToken);
+        //  console.log(" CSRF Token obtenido:", sCsrfToken);
 
           // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
@@ -4081,7 +4077,7 @@ sap.ui.define([
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-            console.log("ID generado:", generatedId);
+          //  console.log("ID generado:", generatedId);
 
             if (generatedId) {
               // Llamadas en paralelo para mejorar rendimiento
@@ -4432,7 +4428,7 @@ sap.ui.define([
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-            console.log("ID generado:", generatedId);
+           // console.log("ID generado:", generatedId);
 
             if (generatedId) {
               // Llamadas en paralelo para mejorar rendimiento
@@ -4592,7 +4588,7 @@ sap.ui.define([
         var sTotaleJor = parseFloat(this.byId("totalRecuInter").getValue(), 10);
 
 
-        console.log("ID RECIBIDO DEL INSERT " + idtotalRecur);
+      //  console.log("ID RECIBIDO DEL INSERT " + idtotalRecur);
 
 
         var payload = {
@@ -5056,7 +5052,7 @@ sap.ui.define([
 
         const existingFacturacionID = this._FacturacionID; // El ID de la facturación existente (si hay uno)
 
-        console.log("Total facturación:", totalFacturacion);
+      //  console.log("Total facturación:", totalFacturacion);
 
         itemsF.forEach(function (oItem) {
           const aCells = oItem.getCells();
@@ -6783,7 +6779,7 @@ sap.ui.define([
 
 
       insertServicioInterno: async function (generatedId) {
-        console.log("insertServicioInterno llamada");
+      //  console.log("insertServicioInterno llamada");
 
 
         const sTokenG = this._sCsrfToken;
@@ -7347,7 +7343,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+         //   console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7456,7 +7452,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+           // console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7540,7 +7536,7 @@ sap.ui.define([
       insertRecursoExterno: async function (generatedId) {
 
 
-        console.log("ENTRANDO A RECURSOS EXTERNOS ");
+       // console.log("ENTRANDO A RECURSOS EXTERNOS ");
         const sTokenG = this._sCsrfToken;
 
         // Obtener la tabla por su ID
@@ -7701,7 +7697,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+          //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7808,7 +7804,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+          //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
           // Construir el payload para cada fila

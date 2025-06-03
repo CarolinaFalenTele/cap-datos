@@ -11511,6 +11511,7 @@
                     <OverflowToolbarButton
                         tooltip="Delete"
                         text="Delete"
+                        id="idDelete"
                         icon="sap-icon://delete"
                         press="onClearFields"
                     />

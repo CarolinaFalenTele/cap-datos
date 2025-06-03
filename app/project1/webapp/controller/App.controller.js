@@ -13,7 +13,7 @@ sap.ui.define(
         "use strict";
 
         return BaseController.extend("project1.controller.App", {
-            onInit: function () {
+            onInit: async function () {
 
 
 
@@ -37,25 +37,49 @@ sap.ui.define(
                 this.getUserInfo();
                 this.filterEstado();
 
+                try {
+                    const userResponse = await fetch("/odata/v4/datos-cdo/userdata");
+            
+                    if (!userResponse.ok) {
+                        throw new Error("No se pudo obtener el usuario desde el backend.");
+                    }
+            
+                    const userData = await userResponse.json();
+            
+                    const userModel = new sap.ui.model.json.JSONModel(userData);
+                    this.getView().setModel(userModel, "userModel");
+            
+                    await this.filterEstado();
+            
+                } catch (error) {
+                    console.error("Error en onInit al cargar el usuario:", error);
+                }
+
+      
 
             },
 
 
 
-            pressFichas: function(){
-
-                    
-
-
-
-            },
 
 
 
             filterEstado: async function () {
                 try {
                     // Cargar proyectos con relaciones expand
-                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID");
+
+                    const userModel = this.getView().getModel("userModel");
+                    if (!userModel) {
+                      console.error("userModel no está definido aún.");
+                      return;
+                    }
+            
+                    const userId = userModel.getProperty("/ID");
+                    console.log("Usuario ID: " + userId);
+            
+                   
+
+                    const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
                     const data = await response.json();
                     const aProjects = data.value;
             
@@ -1109,10 +1133,6 @@ sap.ui.define(
                     console.error("No se recibió un ID válido");
                     return;
                 }
-
-                //actualizar tabla 
-                await this.filterEstado();
-
 
             },
 

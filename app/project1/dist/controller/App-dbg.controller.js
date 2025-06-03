@@ -145,8 +145,8 @@ sap.ui.define(
                     this.getView().setModel(oJsonModelTotal, "modelTotal");
             
                     // Verificar en consola
-                    console.log(aProyectosPendientes[0]?.NombreArea);
-                    console.log(aProyectosPendientes[0]?.NombreJefe);
+                //    console.log(aProyectosPendientes[0]?.NombreArea);
+                //    console.log(aProyectosPendientes[0]?.NombreJefe);
             
                 } catch (error) {
                     console.error("Error al cargar los proyectos con estado:", error);
@@ -1165,153 +1165,77 @@ sap.ui.define(
 
             onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
-            
+              
                 var oContextPendientes = oButton.getBindingContext("modelPendientes");
                 var oContextAprobados = oButton.getBindingContext("modelAprobados");
                 var oContextBorradores = oButton.getBindingContext("modelBorrador");
-            
+              
                 var oContext = oContextPendientes || oContextAprobados || oContextBorradores;
-            
+              
                 if (!oContext) {
-                    console.error("No se pudo obtener el contexto del ítem.");
-                    return;
+                  console.error("No se pudo obtener el contexto del ítem.");
+                  return;
                 }
-            
+              
                 var sProjectID = oContext.getProperty("ID");
                 if (!sProjectID) {
-                    console.error("El ID del proyecto es nulo o indefinido");
-                    return;
+                  console.error("El ID del proyecto es nulo o indefinido");
+                  return;
                 }
-            
-               // console.log("edit id " + sProjectID);
-            
+              
                 var sNameProyect = oContext.getProperty("nameProyect");
-            
+              
                 var that = this;
-            
+              
                 var oModel = this.getView().getModel("mainService");
                 if (oModel) {
-                    oModel.setData({});
-                    oModel.refresh(true);
+                  oModel.setData({});
+                  oModel.refresh(true);
                 }
-            
+              
                 var sourceModelName = oContextPendientes
-                    ? "modelPendientes"
-                    : (oContextAprobados ? "modelAprobados" : "modelBorrador");
-            
-                // Definir el título y el texto del diálogo dependiendo del modelo de origen
-                var dialogTitle = "Confirmar Edición";
-                var dialogText = "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?";
-            
-                if (sourceModelName === "modelAprobados") {
-                    dialogTitle = "Ver Solicitud";
-                    dialogText = "¿Quieres ver el contenido de esta solicitud?";
-                }
-            
+                  ? "modelPendientes"
+                  : (oContextAprobados ? "modelAprobados" : "modelBorrador");
+              
+                // 👇 Aquí se decide el modo dinámicamente
+                var mode = (sourceModelName === "modelAprobados") ? "display" : "edit";
+              
+                var dialogTitle = (mode === "edit") ? "Confirmar Edición" : "Ver Solicitud";
+                var dialogText = (mode === "edit")
+                  ? "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                  : "¿Quieres ver el contenido de esta solicitud?";
+              
                 var oDialog = new sap.m.Dialog({
-                    title: dialogTitle,
-                    type: "Message",
-                    state: "Warning",
-                    content: new sap.m.Text({
-                        text: dialogText
-                    }),
-                    beginButton: new sap.m.Button({
-                        text: "Confirmar",
-                        press: function () {
-                            oDialog.close();
-            
-                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
-                            oRouter.navTo("view", {
-                                sProjectID: sProjectID,
-                                sourceModel: sourceModelName
-                            }, true);
-                        }
-                    }),
-                    endButton: new sap.m.Button({
-                        text: "Cancelar",
-                        press: function () {
-                            oDialog.close();
-                        }
-                    })
+                  title: dialogTitle,
+                  type: "Message",
+                  state: "Warning",
+                  content: new sap.m.Text({ text: dialogText }),
+                  beginButton: new sap.m.Button({
+                    text: "Confirmar",
+                    press: function () {
+                      oDialog.close();
+              
+                      var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                      oRouter.navTo("viewWithMode", {
+                        sourceModel: sourceModelName,
+                        mode: mode,
+                        sProjectID: sProjectID,
+                 
+                      }, true);
+                    }
+                  }),
+                  endButton: new sap.m.Button({
+                    text: "Cancelar",
+                    press: function () {
+                      oDialog.close();
+                    }
+                  })
                 });
-            
+              
                 oDialog.open();
-            },
+              },
+              
             
-
-
-          /*  onEditPress: function (oEvent) {
-                var oButton = oEvent.getSource();
-
-                var oContextPendientes = oButton.getBindingContext("modelPendientes");
-                var oContextAprobados = oButton.getBindingContext("modelAprobados");
-                var oContextBorradores = oButton.getBindingContext("modelBorrador");
-
-                var oContext = oContextPendientes || oContextAprobados  || oContextBorradores;
-            
-                if (!oContext) {
-                    console.error("No se pudo obtener el contexto del ítem.");
-                    return;
-                }
-    
-                // Obtener el valor de "sProjectID" directamente desde el contexto del modelo
-                var sProjectID = oContext.getProperty("ID");  // "ID" debe ser el nombre correcto del campo en los datos
-
-                if (!sProjectID) {
-                    console.error("El ID del proyecto es nulo o indefinido");
-                    return;
-                }
-
-                console.log("edit id " + sProjectID);
-
-                var sNameProyect = oContext.getProperty("nameProyect"); // Obtén también el nombre del proyecto
-
-                var that = this;
-
-                // Limpia los datos previos del modelo
-                var oModel = this.getView().getModel("mainService"); // Usa el nombre correcto del modelo
-                if (oModel) {
-                    oModel.setData({});  // Limpia los datos previos
-                    oModel.refresh(true); // Fuerza la actualización del modelo
-                }
-
-
-                var sourceModelName = oContextPendientes
-                ? "modelPendientes"
-                : (oContextAprobados ? "modelAprobados" : "modelBorrador");
-            
-
-                var oDialog = new sap.m.Dialog({
-                    title: "Confirmar Edición",
-                    type: "Message",
-                    state: "Warning",
-                    content: new sap.m.Text({
-                        text: "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
-                    }),
-                    beginButton: new sap.m.Button({
-                        text: "Confirmar",
-                        press: function () {
-                            oDialog.close();
-
-                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
-                            oRouter.navTo("view", {
-                                sProjectID: sProjectID,
-                                sourceModel: sourceModelName  // Devuelve 'modelPendientes' o 'modelAprobados'
-
-                            }, true);
-                        }
-                    }),
-                    endButton: new sap.m.Button({
-                        text: "Cancelar",
-                        press: function () {
-                            oDialog.close();
-                        }
-                    })
-                });
-
-                oDialog.open();
-            },*/
-
 
 
 
@@ -1592,258 +1516,29 @@ sap.ui.define(
 
 
 
-            /* onDeletePress: async function (oEvent) {
-                   var oButton = oEvent.getSource();
-                   var sProjectId = oButton.getCustomData()[0].getValue();
-                   console.log("ID del Proyecto a eliminar:", sProjectId);
-   
-                   // Confirmación de eliminación
-                   await new Promise(resolve => setTimeout(resolve, 50));
-   
-                   sap.m.MessageBox.confirm("¿Estás seguro de que deseas eliminar este proyecto y todos sus registros relacionados?", {
-                       actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-                       onClose: async function (oAction) {
-                           if (oAction === sap.m.MessageBox.Action.YES) {
-                               try {
-                                   const paths = [
-                                       `planificacion`,
-                                       `Facturacion`,
-                                       `ClientFactura`,
-                                       `ProveedoresC`,
-                                       `RecursosInternos`,
-                                       `ConsumoExternos`,
-                                       `RecursosExternos`,
-                                       `otrosConceptos`
-                                   ];
-   
-                                   for (let path of paths) {
-                                       console.log(`Procesando entidad: ${path}`);
-   
-                                       // Solicitar registros hijos
-                                       let hijosResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
-                                           method: "GET",
-                                           headers: {
-                                               "Accept": "application/json",
-                                               "Content-Type": "application/json"
-                                           }
-                                       });
-   
-                                       if (!hijosResponse.ok) {
-                                           console.error(`Error al obtener los registros de ${path}`);
-                                           continue;
-                                       }
-   
-                                       const contentType = hijosResponse.headers.get("Content-Type");
-                                       if (contentType && contentType.includes("application/json")) {
-                                           const hijosData = await hijosResponse.json();
-                                           console.log(`Datos recibidos de ${path}:`, hijosData);
-   
-                                           // Verificar si es una lista o un objeto individual
-                                           if (Array.isArray(hijosData.value) && hijosData.value.length > 0) {
-                                               // Si es una lista, iterar y eliminar cada elemento
-                                               for (let hijo of hijosData.value) {
-                                                   console.log(`Eliminando hijo con ID ${hijo.ID} en ${path}`);
-                                                   let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                                       method: "DELETE",
-                                                       headers: {
-                                                           "Content-Type": "application/json"
-                                                       }
-                                                   });
-   
-                                                   if (!deleteResponse.ok) {
-                                                       console.error(`Error al eliminar el hijo en ${path}: ${hijo.ID}`);
-                                                   } else {
-                                                       console.log(`Hijo eliminado exitosamente en ${path}: ${hijo.ID}`);
-                                                   }
-                                               }
-                                           } else if (hijosData.ID) {
-                                               // Si es un objeto individual, eliminar directamente
-                                               console.log(`Eliminando objeto único con ID ${hijosData.ID} en ${path}`);
-                                               let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijosData.ID})`, {
-                                                   method: "DELETE",
-                                                   headers: {
-                                                       "Content-Type": "application/json"
-                                                   }
-                                               });
-   
-                                               if (!deleteResponse.ok) {
-                                                   console.error(`Error al eliminar el hijo en ${path}: ${hijosData.ID}`);
-                                               } else {
-                                                   console.log(`Hijo eliminado exitosamente en ${path}: ${hijosData.ID}`);
-                                               }
-                                           } else {
-                                               console.warn(`No se encontró ningún ID en la respuesta de ${path}`);
-                                           }
-                                       } else {
-                                           console.warn(`La respuesta de ${path} no es JSON o está vacía. Continuando con el siguiente...`);
-                                           continue;
-                                       }
-                                   }
-   
-                                   // Eliminar el proyecto principal
-                                   console.log("Eliminando el proyecto principal con ID:", sProjectId);
-                                   let response = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
-                                       method: "DELETE",
-                                       headers: {
-                                           "Content-Type": "application/json"
-                                       }
-                                   });
-   
-                                   if (response.ok) {
-                                       console.log("Proyecto eliminado exitosamente.");
-                                       sap.m.MessageToast.show("Proyecto y sus hijos eliminados exitosamente");
-   
-                                       const oTable = this.byId("idPendientes");
-                                       const oBinding = oTable.getBinding("items");
-                                       oBinding.refresh();
-   
-                                       var oModel = this.getView().getModel();
-                                       oModel.refresh();
-                                   } else {
-                                       console.error("Error al eliminar el proyecto principal.");
-                                       sap.m.MessageToast.show("Error al eliminar el proyecto");
-                                   }
-                               } catch (error) {
-                                   console.error("Error eliminando el proyecto o sus hijos:", error);
-                                   sap.m.MessageToast.show("Error al eliminar el proyecto o sus hijos");
-                               }
-                           }
-                       }.bind(this)
-                   });
-               },*/
 
-
-            onNavToView1: function () {
+               onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                oRouter.navTo("viewNoParam");
-
-
                 var oComponent = this.getOwnerComponent();
-
-                // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
-                var oTargetView = oComponent.byId("view");
-
-                if (!oTargetView) {
-                    console.warn("No se encontró la vista objetivo.");
-                    // Navega aunque no se haya encontrado la vista
-                    return;
+              
+                var oTargetView = oComponent.byId("view"); // ID de la view destino
+              
+                if (oTargetView && oTargetView.getController && typeof oTargetView.getController === "function") {
+                  var oController = oTargetView.getController();
+              
+                  if (oController._clearAllInputs) {
+                    oController._clearAllInputs(); // Limpieza manual
+                  }
                 }
+              
+         
 
-                // Función para limpiar los controles de la vista
-                function clearAllFields(oControl) {
-                    if (oControl instanceof sap.m.Input) {
-                        oControl.setValue("");
-                    } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
-                        oControl.setSelectedKey("");
-                    } else if (oControl instanceof sap.m.DatePicker) {
-                        oControl.setDateValue(null);
-                    } else if (oControl instanceof sap.m.TextArea) {
-                        oControl.setValue("");
-                    }  
-                    
-                    else if (oControl instanceof sap.m.CheckBox) {
-                        oControl.setSelected(false);
-                    } else if (oControl instanceof sap.viz.ui5.controls.VizFrame) {
-                        // Limpiar el VizFrame: por ejemplo, eliminando datos vinculados o restableciendo la configuración
-                        oControl.destroyDataset();  // Elimina los datasets actuales
-                        oControl.destroyFeeds();     // Elimina los feeds asociados
-                        oControl.setVizProperties({}); // Restablece las propiedades visuales
-                    }
+                oRouter.navTo("viewNoParam", {
+                    mode: "create",
+                  });
 
-                    // Limpiar controles dentro de contenedores
-                    if (oControl.getAggregation) {
-                        const aAggregations = oControl.getMetadata().getAllAggregations();
-                        for (let sAggregationName in aAggregations) {
-                            const oAggregation = oControl.getAggregation(sAggregationName);
-                            if (Array.isArray(oAggregation)) {
-                                oAggregation.forEach(clearAllFields);
-                            } else if (oAggregation instanceof sap.ui.core.Control) {
-                                clearAllFields(oAggregation);
-                            }
-                        }
-                    }
-                }
-
-                // Ejecutar la limpieza en la vista antes de navegar
-                oTargetView.findAggregatedObjects(false, clearAllFields);
-
-                // Aquí puedes agregar la lógica para actualizar la vista
-                // Si tu vista tiene un modelo o necesitas recargar datos, hazlo aquí
-
-
-                var oView = this.getView();
-                console.log("viwq " + oView);
-
-                if (oView.getElementBinding()) {
-                    oView.getElementBinding().refresh(); // Refresca solo el binding a nivel de vista
-                }
-
-                var oModel = oComponent.getModel(); // Asumiendo que el modelo es global
-                if (oModel) {
-                    oModel.refresh(); // Esto recargará el modelo
-                }
-
-                // Actualizar todos los controles vinculados, si es necesario
-                // oTargetView.getBindingContext().requestContext(); // Esto puede forzar la actualización del contexto, si es necesario.
-
-                // Si necesitas actualizar algún dato específico, puedes hacerlo aquí.
-
-                // Navegar a la nueva vista después de limpiar y actualizar la vista
-                oRouter.navTo("viewNoParam");
-            },
-
-            /*   onLogoutPress: function () {
-              //     window.location.href = "/logout.do";
-   
-               },*/
-
-            /*   onNavToView1: function () {
-                   var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                   var oComponent = this.getOwnerComponent();
-   
-                   // Obtener la vista que deseas limpiar (reemplaza "idView1" con el ID real de la vista)
-                   var oTargetView = oComponent.byId("view");
-   
-                   if (!oTargetView) {
-                       console.warn("No se encontró la vista objetivo.");
-                       oRouter.navTo("viewNoParam"); // Navega aunque no se haya encontrado la vista
-                       return;
-                   }
-   
-                   // Función para limpiar los controles de la vista
-                   function clearAllFields(oControl) {
-                       if (oControl instanceof sap.m.Input) {
-                           oControl.setValue("");
-                       } else if (oControl instanceof sap.m.Select || oControl instanceof sap.m.ComboBox) {
-                           oControl.setSelectedKey("");
-                       } else if (oControl instanceof sap.m.DatePicker) {
-                           oControl.setDateValue(null);
-                       } else if (oControl instanceof sap.m.TextArea) {
-                           oControl.setValue("");
-                       } else if (oControl instanceof sap.m.CheckBox) {
-                           oControl.setSelected(false);
-                       }
-   
-                       // Limpiar controles dentro de contenedores
-                       if (oControl.getAggregation) {
-                           const aAggregations = oControl.getMetadata().getAllAggregations();
-                           for (let sAggregationName in aAggregations) {
-                               const oAggregation = oControl.getAggregation(sAggregationName);
-                               if (Array.isArray(oAggregation)) {
-                                   oAggregation.forEach(clearAllFields);
-                               } else if (oAggregation instanceof sap.ui.core.Control) {
-                                   clearAllFields(oAggregation);
-                               }
-                           }
-                       }
-                   }
-   
-                   // Ejecutar la limpieza en la vista antes de navegar
-                   oTargetView.findAggregatedObjects(false, clearAllFields);
-   
-                   // Navegar a la nueva vista después de limpiar
-                   oRouter.navTo("viewNoParam");
-               }*/
+              },
+              
 
 
         });

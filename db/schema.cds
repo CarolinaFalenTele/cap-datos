@@ -62,6 +62,7 @@ entity DatosProyect {
       jefeProyectID            : Association to Jefeproyect;
       TipoCompra               : Association to TipoCompra;
       MotivoCondi              : Association to MotivoCondi;
+      Usuarios                 : Association to Usuarios;
       RecursosInternos         : Association to RecursosInternos
                                    on RecursosInternos.datosProyect_ID = ID;
       otrosGastoRecu           : Association to many otrosGastoRecu
@@ -117,6 +118,17 @@ entity DatosProyect {
       ResumenCostesTotal       : Association to many ResumenCostesTotal
                                    on ResumenCostesTotal.datosProyect_ID = ID;
 };
+
+
+
+entity Usuarios {
+  key ID          : UUID @cds.auto;    
+      nombre      : String;
+      email       : String;
+      departamento: String;
+      rol         : String;     
+}
+
 
 
 entity Area {

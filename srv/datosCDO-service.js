@@ -11,11 +11,12 @@ console.log("HOLAAAAAAAAAAAAA");
 getTokenUser();
 
 module.exports = cds.service.impl(async function () {
-  
+
   console.log("Servicio cargado correctamente");
 
   const {
     DatosProyect,
+    Usuarios,
     ProveedoresC,
     RecursosExternos,
     LicenciasCon,
@@ -38,194 +39,194 @@ module.exports = cds.service.impl(async function () {
 
   const { WorkflowService } = this.entities;
 
-this.on('startWorkflow', async (req) => {
-  const input = JSON.parse(req.data.payload);
+  this.on('startWorkflow', async (req) => {
+    const input = JSON.parse(req.data.payload);
 
-  const workflowPayload = {
-    definitionId: "eu10.p051dvk8.datoscdoprocesoflujo.aprobacionCDO",
-    context: input
-  };
+    const workflowPayload = {
+      definitionId: "eu10.p051dvk8.datoscdoprocesoflujo.aprobacionCDO",
+      context: input
+    };
 
-  try {
+    try {
+      const token = await getWorkflowToken();
+
+      const response = await axios.post(
+        'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
+        workflowPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+
+      // Aquí, asegúrate de que la respuesta tiene el ID del flujo de trabajo
+      const workflowInstanceId = response.data.id;
+      console.log("ID del Workflow:", workflowInstanceId);
+      // Opcional: lo puedes guardar en tu tabla para hacer seguimiento
+      // await INSERT.into("DatosProyect").entries({ generatedid: input.generatedid, workflowInstanceId });
+
+      return {
+        message: "Workflow iniciado correctamente",
+        workflowInstanceId: workflowInstanceId // Devuelto al frontend o quien lo consuma
+      };
+
+    } catch (err) {
+      console.error("Error en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al iniciar workflow: ${err.message}`);
+    }
+  });
+
+
+  this.on('cancelWorkflow', async (req) => {
+    const workflowInstanceId = req.data.workflowInstanceId; // Recibes el ID directamente
+
+    console.log("id recibido " + workflowInstanceId);
+    try {
+      const token = await getWorkflowToken(); // Tu función para obtener token OAuth2
+
+      const url = `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}`;
+
+      const result = await axios.patch(url,
+        { status: "CANCELED" }, // Aquí va el body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      return `Workflow ${workflowInstanceId} cancelado correctamente`;
+    } catch (err) {
+      console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al cancelar workflow: ${err.message}`);
+    }
+  });
+
+
+
+  this.on('completeWorkflow', async (req) => {
+    const { workflowInstanceId, decision } = req.data;
+
+
+    console.log("ID del Workflow:" + workflowInstanceId);
+    console.log("Iniciando actualización del workflow...");
     const token = await getWorkflowToken();
+    //console.log("Token obtenido:", token);
 
-    const response = await axios.post(
-      'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
-      workflowPayload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+    try {
+      console.log("Realizando PATCH al contexto del workflow...");
+
+      const patchResponse = await axios.patch(
+        `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/context`,
+        {
+          custom: {
+            aprobado: decision,
+            readytocontinue: true
+          }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
+      );
 
-   
-  // Aquí, asegúrate de que la respuesta tiene el ID del flujo de trabajo
-  const workflowInstanceId = response.data.id; 
-  console.log("ID del Workflow:", workflowInstanceId);
-    // Opcional: lo puedes guardar en tu tabla para hacer seguimiento
-    // await INSERT.into("DatosProyect").entries({ generatedid: input.generatedid, workflowInstanceId });
+      console.log("✅ Contexto actualizado exitosamente");
+      // console.log("📄 Respuesta:", patchResponse.data);
 
-    return {
-      message: "Workflow iniciado correctamente",
-      workflowInstanceId: workflowInstanceId // Devuelto al frontend o quien lo consuma
-    };
+      return `Workflow actualizado con decisión: ${decision}`;
 
-  } catch (err) {
-    console.error("Error en backend:", err.response?.data || err.message);
-    req.reject(500, `Error al iniciar workflow: ${err.message}`);
-  }
-});
-
-
-this.on('cancelWorkflow', async (req) => {
-  const workflowInstanceId = req.data.workflowInstanceId; // Recibes el ID directamente
-
-  console.log("id recibido " + workflowInstanceId);
-  try {
-    const token = await getWorkflowToken(); // Tu función para obtener token OAuth2
-
-    const url = `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}`;
-
-    const result = await axios.patch(url, 
-      { status: "CANCELED" }, // Aquí va el body
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    return `Workflow ${workflowInstanceId} cancelado correctamente`;
-  } catch (err) {
-    console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
-    req.reject(500, `Error al cancelar workflow: ${err.message}`);
-  }
-});
+    } catch (err) {
+      console.error("❌ Error al actualizar workflow:", err.response?.data || err.message);
+      req.reject(500, `Error al actualizar workflow: ${err.message}`);
+    }
+  });
 
 
 
-this.on('completeWorkflow', async (req) => {
-  const { workflowInstanceId, decision } = req.data;
+  this.on("getWorkflowTimeline", async (req) => {
+    const { ID } = req.data;
+    console.log("📥 ID recibido:", ID);
 
+    try {
+      const workflowInstanceId = ID;
+      const token = await getWorkflowToken(); // función que obtiene el token
+      console.log("🔑 Token obtenido (truncado):", token.substring(0, 30) + "...");
 
-  console.log("ID del Workflow:" +   workflowInstanceId); 
-  console.log("Iniciando actualización del workflow...");
-  const token = await getWorkflowToken();
-  //console.log("Token obtenido:", token);
-
-  try {
-    console.log("Realizando PATCH al contexto del workflow...");
-
-    const patchResponse = await axios.patch(
-      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/context`,
-      {
-        custom: {
-          aprobado: decision,
-          readytocontinue : true
-        }
-      },
-      {
+      const response = await fetch(`https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/execution-logs`, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         }
+      });
+
+      if (!response.ok) {
+        throw new Error(`No se pudo obtener el timeline. Código de estado: ${response.status}`);
       }
-    );
 
-    console.log("✅ Contexto actualizado exitosamente");
-   // console.log("📄 Respuesta:", patchResponse.data);
+      const timeline = await response.json();
 
-    return `Workflow actualizado con decisión: ${decision}`;
+      let events = [];
 
-  } catch (err) {
-    console.error("❌ Error al actualizar workflow:", err.response?.data || err.message);
-    req.reject(500, `Error al actualizar workflow: ${err.message}`);
-  }
-});
-
-
-
-this.on("getWorkflowTimeline", async (req) => {
-  const { ID } = req.data;
-  console.log("📥 ID recibido:", ID);
-
-  try {
-    const workflowInstanceId = ID;
-    const token = await getWorkflowToken(); // función que obtiene el token
-    console.log("🔑 Token obtenido (truncado):", token.substring(0, 30) + "...");
-
-    const response = await fetch(`https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/execution-logs`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
+      // 🔍 Detectamos si es array directo o envuelto
+      if (Array.isArray(timeline)) {
+        events = timeline;
+      } else if (Array.isArray(timeline.events)) {
+        events = timeline.events;
+      } else if (Array.isArray(timeline.logs)) {
+        events = timeline.logs;
+      } else if (Array.isArray(timeline.items)) {
+        events = timeline.items;
       }
-    });
 
-    if (!response.ok) {
-      throw new Error(`No se pudo obtener el timeline. Código de estado: ${response.status}`);
-    }
+      if (events.length === 0) {
+        console.warn("⚠️ No hay eventos disponibles para esta instancia:", ID);
+        req.reject(204, `No hay historial disponible para la instancia con ID: ${ID}`);
+        return;
+      }
 
-    const timeline = await response.json();
-
-    let events = [];
-
-    // 🔍 Detectamos si es array directo o envuelto
-    if (Array.isArray(timeline)) {
-      events = timeline;
-    } else if (Array.isArray(timeline.events)) {
-      events = timeline.events;
-    } else if (Array.isArray(timeline.logs)) {
-      events = timeline.logs;
-    } else if (Array.isArray(timeline.items)) {
-      events = timeline.items;
-    }
-
-    if (events.length === 0) {
-      console.warn("⚠️ No hay eventos disponibles para esta instancia:", ID);
-      req.reject(204, `No hay historial disponible para la instancia con ID: ${ID}`);
-      return;
-    }
-
-    // (Opcional) Traducir tipos de eventos a algo más legible
-    const tipoEventoLegible = {
-      WORKFLOW_STARTED: "Inicio del workflow",
-      WORKFLOW_COMPLETED: "Finalización del workflow",
-      WORKFLOW_CANCELED: "Cancelación del workflow",
-      WORKFLOW_SUSPENDED: "Workflow suspendido",
-      WORKFLOW_RESUMED: "Reanudación del workflow",
-      USER_TASK_COMPLETED: "Tarea completada",
-      USER_TASK_CREATED: "Tarea creada"
-      // Agrega más si lo necesitas
-    };
-
-    const eventosTransformados = events.map(ev => {
-      const descripcion = tipoEventoLegible[ev.type] || ev.type;
-      const paso = ev.subject || ev.subjectId || ev.activityId || "Paso desconocido";
-    
-      console.log(`➡️ ${ev.type}  →  ${descripcion}, Paso: ${paso}`);
-    
-      return {
-        id: ev.id,
-        tipo: ev.type,
-        descripcion,
-        timestamp: ev.timestamp,
-        usuario: ev.userId,
-        instancia: ev.referenceInstanceId,
-        paso
+      // (Opcional) Traducir tipos de eventos a algo más legible
+      const tipoEventoLegible = {
+        WORKFLOW_STARTED: "Inicio del workflow",
+        WORKFLOW_COMPLETED: "Finalización del workflow",
+        WORKFLOW_CANCELED: "Cancelación del workflow",
+        WORKFLOW_SUSPENDED: "Workflow suspendido",
+        WORKFLOW_RESUMED: "Reanudación del workflow",
+        USER_TASK_COMPLETED: "Tarea completada",
+        USER_TASK_CREATED: "Tarea creada"
+        // Agrega más si lo necesitas
       };
-    });
-    
-    return eventosTransformados;
 
-  } catch (error) {
-    console.error("❌ Error al obtener el timeline del workflow:", error.message);
-    req.reject(500, "Error al consultar el historial del workflow");
-  }
-});
+      const eventosTransformados = events.map(ev => {
+        const descripcion = tipoEventoLegible[ev.type] || ev.type;
+        const paso = ev.subject || ev.subjectId || ev.activityId || "Paso desconocido";
+
+        console.log(`➡️ ${ev.type}  →  ${descripcion}, Paso: ${paso}`);
+
+        return {
+          id: ev.id,
+          tipo: ev.type,
+          descripcion,
+          timestamp: ev.timestamp,
+          usuario: ev.userId,
+          instancia: ev.referenceInstanceId,
+          paso
+        };
+      });
+
+      return eventosTransformados;
+
+    } catch (error) {
+      console.error("❌ Error al obtener el timeline del workflow:", error.message);
+      req.reject(500, "Error al consultar el historial del workflow");
+    }
+  });
 
 
 
@@ -233,38 +234,38 @@ this.on("getWorkflowTimeline", async (req) => {
 
 
 
-this.on('getUserTask', async (req) => {
-  const { workflowInstanceId } = req.data;
+  this.on('getUserTask', async (req) => {
+    const { workflowInstanceId } = req.data;
 
-  try {
-    const token = await getWorkflowToken(); // Usa la misma función que ya tienes para obtener token
+    try {
+      const token = await getWorkflowToken(); // Usa la misma función que ya tienes para obtener token
 
-    const response = await axios.get(
-      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}&status=READY`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}&status=READY`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
         }
+      );
+
+      const tasks = response.data;
+
+      if (tasks.length > 0) {
+        return {
+          taskId: tasks[0].id,
+          subject: tasks[0].subject
+        };
+      } else {
+        return { message: "No hay tareas pendientes para esta instancia." };
       }
-    );
 
-    const tasks = response.data;
-
-    if (tasks.length > 0) {
-      return {
-        taskId: tasks[0].id,
-        subject: tasks[0].subject
-      };
-    } else {
-      return { message: "No hay tareas pendientes para esta instancia." };
+    } catch (err) {
+      console.error("Error obteniendo tareas:", err.response?.data || err.message);
+      req.reject(500, `Error al obtener la tarea: ${err.message}`);
     }
-
-  } catch (err) {
-    console.error("Error obteniendo tareas:", err.response?.data || err.message);
-    req.reject(500, `Error al obtener la tarea: ${err.message}`);
-  }
-});
+  });
 
   /*const { WorkflowService } = this.entities;
 
@@ -296,11 +297,11 @@ this.on('getUserTask', async (req) => {
       req.reject(500, `Error al iniciar workflow: ${err.message}`);
     }
   });**/
-  
 
-  
 
-  
+
+
+
   this.on('getUserInfo', async (req) => {
     console.log("📥 Entrando en getUserInfo");
 
@@ -331,30 +332,30 @@ this.on('getUserTask', async (req) => {
 
 
 
-  module.exports = cds.service.impl(async function() {
-    
+  module.exports = cds.service.impl(async function () {
+
     this.on('elenacarolina.falensoriano@telefonica.com', async (req) => {
-        const payload = req.data.payload;
-  
-        // Simulación de llamada a SAP Build Process Automation
-        const response = await fetch('https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-  
-        if (!response.ok) {
-            return req.error(500, 'Error al iniciar el flujo de trabajo');
-        }
-  
-        const data = await response.json();
-        return data.instanceId;  // Devuelve el ID del workflow
+      const payload = req.data.payload;
+
+      // Simulación de llamada a SAP Build Process Automation
+      const response = await fetch('https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        return req.error(500, 'Error al iniciar el flujo de trabajo');
+      }
+
+      const data = await response.json();
+      return data.instanceId;  // Devuelve el ID del workflow
     });
-  
+
   });
-  
+
 
 
   this.on('CREATE', 'DatosProyect', async (req) => {
@@ -362,91 +363,99 @@ this.on('getUserTask', async (req) => {
     console.log(" Datos recibidos:", JSON.stringify(req.data, null, 2));
 
     const {
-        codigoProyect, nameProyect, Total,descripcion, pluriAnual, multijuridica,funcionalString, clienteFacturacion,
-        sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado, comentarioProveedor, comentarioPvD, CambioEuRUSD,
-        Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual,
-        AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli,costeEstructura, Fechainicio , FechaFin, TipoCompra_ID, MotivoCondi_ID,   comentarioFacturacion, comentarioTipoCompra
+      codigoProyect, nameProyect, Total, descripcion, pluriAnual, multijuridica, funcionalString, clienteFacturacion,
+      sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado, comentarioProveedor, comentarioPvD, CambioEuRUSD,
+      Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual,
+      AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli, costeEstructura, Fechainicio, FechaFin, TipoCompra_ID, MotivoCondi_ID, comentarioFacturacion, comentarioTipoCompra
     } = req.data;
 
-   // req.data.fechaCreacion = new Date().toISOString();
+
+    const userEmail = req.user.id;
+
+    console.log("ID DEL USUARIO -->>> " + userEmail);
+    const user = await SELECT.one.from(Usuarios).where({ email: userEmail });
+
+
 
 
     try {
-        console.log(" Insertando en la base de datos...");
+      console.log(" Insertando en la base de datos...");
 
-        // Realizar la inserción
-        await INSERT.into(DatosProyect).entries({
-            codigoProyect,
-            nameProyect,
-            Email,
-            Empleado,
-            fechaCreacion,
-            FechaModificacion,
-            descripcion,
-            pluriAnual,
-            mensual,
-            Total,
-            funcionalString,
-            multijuridica,
-            clienteFacturacion,
-            comentarioFacturacion,
-            comentarioTipoCompra,
-            comentarioPvD,
-            comentarioProveedor,
-            IPC_apli,
-            sMultiJuri,
-            CambioEuRUSD,
-            objetivoAlcance,
-            datosExtra,
-            Fechainicio,
-            FechaFin,
-            AsuncionesyRestricciones,
-            Naturaleza_ID,
-            TipoCompra: { ID: TipoCompra_ID },
-            MotivoCondi: { ID: MotivoCondi_ID },
-            Iniciativa_ID,
-            Area_ID,
-            jefeProyectID_ID,
-            Seguimiento_ID,
-            EjecucionVia_ID,
-            AmReceptor_ID,
-            Vertical_ID,
-            Estado,
-            clienteFuncional_ID,
-            costeEstructura,
-         
-        });
+      // Realizar la inserción
+      await INSERT.into(DatosProyect).entries({
+        codigoProyect,
+        nameProyect,
+        Email,
+        Empleado,
+        fechaCreacion,
+        FechaModificacion,
+        descripcion,
+        pluriAnual,
+        mensual,
+        Total,
+        funcionalString,
+        multijuridica,
+        clienteFacturacion,
+        comentarioFacturacion,
+        comentarioTipoCompra,
+        comentarioPvD,
+        comentarioProveedor,
+        IPC_apli,
+        sMultiJuri,
+        CambioEuRUSD,
+        objetivoAlcance,
+        datosExtra,
+        Fechainicio,
+        FechaFin,
+        AsuncionesyRestricciones,
+        Naturaleza_ID,
+        TipoCompra: { ID: TipoCompra_ID },
+        MotivoCondi: { ID: MotivoCondi_ID },
+        Iniciativa_ID,
+        Area_ID,
+        jefeProyectID_ID,
+        Seguimiento_ID,
+        EjecucionVia_ID,
+        AmReceptor_ID,
+        Vertical_ID,
+        Usuarios: { ID: user.ID }, // <--- Aquí estaba el error
 
-        console.log(" Inserción exitosa.");
+        Estado,
+        clienteFuncional_ID,
+        costeEstructura,
 
-        //  Obtener el ID recién generado
-        const newRecord = await SELECT.one.from(DatosProyect).where({ nameProyect });
+      });
 
-        if (!newRecord || !newRecord.ID) {
-            console.error(" No se pudo recuperar el ID después de la inserción.");
-            return req.reject(500, "No se pudo recuperar el ID después de la inserción.");
-        }
+      console.log(" Inserción exitosa.");
 
-        console.log(" ID generado:", newRecord.ID);
+      //  Obtener el ID recién generado
+      const newRecord = await SELECT.one.from(DatosProyect).where({ nameProyect });
 
-        return { ID: newRecord.ID, mensaje: "Inserción exitosa" };
+      if (!newRecord || !newRecord.ID) {
+        console.error(" No se pudo recuperar el ID después de la inserción.");
+        return req.reject(500, "No se pudo recuperar el ID después de la inserción.");
+      }
+
+      console.log(" ID generado:", newRecord.ID);
+
+      return { ID: newRecord.ID, mensaje: "Inserción exitosa" };
 
     } catch (error) {
-        console.error(" ERROR en CREATE DatosProyect:", error);
+      console.error(" ERROR en CREATE DatosProyect:", error);
 
-        if (error.message.includes("duplicate key")) {
-            return req.reject(400, "Error: Código de proyecto duplicado.");
-        }
-        if (error.message.includes("constraint violation")) {
-            return req.reject(400, "Error: Restricción de clave foránea fallida.");
-        }
-        if (error.message.includes("table") && error.message.includes("not found")) {
-            return req.reject(500, "Error: La tabla referenciada no existe.");
-        }
+      if (error.message.includes("duplicate key")) {
+        return req.reject(400, "Error: Código de proyecto duplicado.");
+      }
+      if (error.message.includes("constraint violation")) {
+        return req.reject(400, "Error: Restricción de clave foránea fallida.");
+      }
+      if (error.message.includes("table") && error.message.includes("not found")) {
+        return req.reject(500, "Error: La tabla referenciada no existe.");
+      }
 
-        return req.reject(500, `Error interno en CREATE DatosProyect: ${error.message}`);
+      return req.reject(500, `Error interno en CREATE DatosProyect: ${error.message}`);
     }
-});
+  });
 
 
 
@@ -791,7 +800,12 @@ this.on('getUserTask', async (req) => {
     }
   });
 
-
+  this.on("userdata", async (req) => {
+    const user = await SELECT.one.from(Usuarios).where({ email: req.user.id });
+    return user;
+  });
+  
+  
   this.on('otrosConceptos', async (req) => {
     const { ID, datosProyect_ID, tipoServicio_ID, Vertical_ID } = req.data;
     // Verifica que ID no esté vacío o nulo
@@ -819,8 +833,8 @@ this.on('getUserTask', async (req) => {
   async function getWorkflowToken() {
     const clientid = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";
     const clientsecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";
-    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token"; 
-  
+    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token";
+
     const response = await axios({
       method: "post",
       url: `${url}/oauth/token`,
@@ -833,11 +847,12 @@ this.on('getUserTask', async (req) => {
       },
       data: "grant_type=client_credentials"
     });
-  
+
     return response.data.access_token;
   }
-  
+
 });
+
 
 
 
