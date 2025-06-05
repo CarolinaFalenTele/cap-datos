@@ -44,6 +44,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity otrosServiciosConsu       as projection on datos.otrosServiciosConsu;
   entity GastoViajeConsumo         as projection on datos.GastoViajeConsumo;
   entity WorkflowInstancias        as projection on datos.WorkflowInstancias;
+  entity WorkflowEtapas        as projection on datos.WorkflowEtapas;
   entity PerfilConsumo             as projection on datos.PerfilConsumo;
   entity ValorMensuReInter         as projection on datos.ValorMensuReInter;
   entity ValorMensuGastoViaConsuEx as projection on datos.ValorMensuGastoViaConsuEx;
@@ -71,6 +72,13 @@ function userdata() returns Usuarios;
 
   
   function Action1()                                                        returns String;
+
+
+ function getTareasPendientes(usuario: String) returns array of WorkflowEtapas;
+
+  action aprobarEtapa(ID: UUID, comentario: String) returns String;
+
+   action registrarTareasWorkflow(workflowInstanceId: String) returns String;
 
 
   action   StartProcess(scodigoProyect : Integer,

@@ -2,55 +2,83 @@
   "xsappname": "datoscdo",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
+
   "scopes": [
-    {
-      "name": "uaa.user",
-      "description": "UAA"
-    },
-    {
-      "name": "$uaa.Admin",
-      "description": "Admin"
-    }
+    { "name": "uaa.user", "description": "Usuario autenticado" },
+    { "name": "$uaa.Admin", "description": "Administrador UAA" },
+
+    { "name": "DatosProyect.Read", "description": "Leer proyectos" },
+    { "name": "DatosProyect.Create", "description": "Crear proyectos" },
+    { "name": "DatosProyect.Update", "description": "Actualizar proyectos" },
+    { "name": "DatosProyect.Delete", "description": "Borrar proyectos" },
+    { "name": "DatosProyect.Revisar", "description": "Acceso sección comité" },
+
+    { "name": "DatosProyect.Aprobar", "description": "Permiso para aprobar solicitudes" },
+    { "name": "DatosProyect.Rechazar", "description": "Permiso para rechazar solicitudes" }
   ],
+
   "role-templates": [
     {
       "name": "Token_Exchange",
-      "description": "UAA",
-      "scope-references": [
-        "uaa.user"
-      ]
+      "description": "Intercambio de token",
+      "scope-references": ["uaa.user"]
     },
     {
       "name": "Admin",
-      "description": "generated",
+      "description": "Acceso completo a proyectos",
       "scope-references": [
-        "uaa.Admin",
-        "DatosProyect.Create"
+        "uaa.user",
+        "DatosProyect.Read",
+        "DatosProyect.Create",
+        "DatosProyect.Update",
+        "DatosProyect.Delete",
+        "DatosProyect.Aprobar",
+        "DatosProyect.Rechazar"
+      ]
+    },
+    {
+      "name": "Visualizador",
+      "description": "Solo lectura de proyectos",
+      "scope-references": [
+        "uaa.user",
+        "DatosProyect.Read"
+      ]
+    },
+    {
+      "name": "Comite",
+      "description": "Rol para comité de revisión",
+      "scope-references": [
+        "uaa.user",
+        "DatosProyect.Read",
+        "DatosProyect.Revisar",
+        "DatosProyect.Aprobar",
+        "DatosProyect.Rechazar"
       ]
     }
   ],
-"attributes": [
-  {
-    "name": "email",
-    "description": "Correo del usuario",
-    "valueType": "string"
-  },
-  {
-    "name": "given_name",
-    "description": "Nombre del usuario",
-    "valueType": "string"
-  },
-  {
-    "name": "family_name",
-    "description": "Apellido del usuario",
-    "valueType": "string"
-  },
-  {
-    "name": "phone_number",
-    "description": "Teléfono del usuario",
-    "valueType": "string"
-  }
-],
+
+  "attributes": [
+    {
+      "name": "email",
+      "description": "Correo del usuario",
+      "valueType": "string"
+    },
+    {
+      "name": "given_name",
+      "description": "Nombre del usuario",
+      "valueType": "string"
+    },
+    {
+      "name": "family_name",
+      "description": "Apellido del usuario",
+      "valueType": "string"
+    },
+    {
+      "name": "phone_number",
+      "description": "Teléfono del usuario",
+      "valueType": "string"
+    }
+  ],
 
   "oauth2-configuration": {
     "redirect-uris": [

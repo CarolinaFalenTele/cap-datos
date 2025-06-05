@@ -578,7 +578,22 @@ entity WorkflowInstancias {
       actualizadoEn   : Timestamp;
       creadoPor       : String;
       datosProyect_ID : UUID;
+      etapas          : Association to many WorkflowEtapas on etapas.workflow_ID = ID;
+
 };
+
+entity WorkflowEtapas {
+  key ID            : UUID @cds.auto;
+      workflow_ID   : UUID;
+      taskInstanceId: String;     // NUEVO: guardar aquí el ID de la tarea activa
+      nombreEtapa   : String;     // "Control PMO", "Dirección", etc.
+      asignadoA     : String;     // email del aprobador
+      aprobadoPor   : String;     // se llena cuando se aprueba
+      estado        : String;     // "Pendiente", "Aprobado", "Rechazado"
+      comentario    : String;
+      fechaAprobado : Timestamp;
+};
+
 
 entity PerfilTotal {
   key ID              : UUID @cds.auto;
@@ -586,7 +601,7 @@ entity PerfilTotal {
       totalJorCE      : Decimal(20,4);
       totalJorRE      : Decimal(20,4);
       Total           : Decimal(20,4);
-      datosProyect_ID : UUID
+      datosProyect_ID : UUID;
 
 };
 

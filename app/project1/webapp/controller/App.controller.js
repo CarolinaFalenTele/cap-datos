@@ -35,7 +35,6 @@ sap.ui.define(
 
                 // this.DialogInfo();
                 this.getUserInfo();
-                this.filterEstado();
 
                 try {
                     const userResponse = await fetch("/odata/v4/datos-cdo/userdata");
@@ -1087,25 +1086,6 @@ sap.ui.define(
                 }
             },
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

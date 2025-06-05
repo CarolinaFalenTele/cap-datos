@@ -127,6 +127,8 @@ sap.ui.define([
 
         console.log("MODELO TRAIDO " + this._mode);
 
+
+        this.enviarID();  
       },
 
 
@@ -429,56 +431,56 @@ sap.ui.define([
 
       _onObjectMatched: async function (oEvent) {
         this._resetButtonHandlers();
-
+      
         const oArgs = oEvent.getParameter("arguments");
         let sProjectID = oArgs.sProjectID;
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
-        const sMode = oArgs.mode || "display"; // Aquí recoges el modo correctamente
+        const sMode = oArgs.mode || "display";
+      
+        // ✅ Parseamos el flag de aprobación
         let aprobacionFlag = this._parseAprobacionFlag(oArgs, sSourceModel);
+      
+        // ✅ LIMPIAMOS el sSourceModel si viene con sufijos tipo ";aprobacion=true"
+        if (sSourceModel.includes(";")) {
+          sSourceModel = sSourceModel.split(";")[0];
+        }
+      
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
-
+      
         this._mode = sMode;
-
-
+      
         this.getView().getModel("viewModel").setProperty("/mode", sMode);
-
+      
         console.log("MODELO GUARDADO (onObjectMatched):", sMode);
-
-
         console.log("MODELO TRAIDO " + this._mode);
-
-
-
+      
         if (sMode === "create") {
           await this._clearAllInputs();
         } else if ((sMode === "edit")) {
-
           this._clearAllInputsEdit();
-
-
         }
-
-
+      
         btnAceptar.setEnabled(true);
         btnAceptar.setText("Enviar");
         btnAceptar.setType(sap.m.ButtonType.Accept);
         btnAceptar.attachPress(this.onSave, this);
-
+      
         btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
-
-        if (sSourceModel === "modelAprobados" || sMode === "display") {
+      
+        if (sSourceModel === "modelAprobados" && sMode === "display") {
           this._Visualizar(sProjectID);
           return;
         }
-
-        this._configureButtons(sSourceModel, aprobacionFlag);
-
+      
+        // ✅ Llamamos con el source limpio
+        this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+      
         this._sProjectID = sProjectID;
-
+      
         if (sProjectID) {
           try {
             const oData = await this._fetchProjectData(sProjectID);
@@ -489,7 +491,7 @@ sap.ui.define([
           }
         }
       },
-
+      
 
       _parseAprobacionFlag: function (oArgs, sSourceModel) {
         let flag = false;
@@ -521,19 +523,19 @@ sap.ui.define([
         btnBorrado.removeAllCustomData();
 
         // 1️ CASO ESPECIAL: Aprobación de pendientes
-        if (sSourceModel === "modelPendientes" && aprobacionFlag) {
+        if (sSourceModel === "modelPendientes" && aprobacionFlag  ) {
           this._isAprobacion = true;
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Aprobar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
-          btnAceptar.data("valor", "aprobado");
+          btnAceptar.data("valor", "approve");
           btnAceptar.attachPress(this._onDecisionPress, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Rechazar");
           btnBorrado.setType(sap.m.ButtonType.Reject);
-          btnBorrado.data("valor", "rechazado");
+          btnBorrado.data("valor", "Reject");
           btnBorrado.attachPress(this._onDecisionPress, this);
 
           return; //  Salimos porque no se debe aplicar ningún otro modo
@@ -863,28 +865,34 @@ sap.ui.define([
 
 
 
-      _onDecisionPress: async function (oEvent) {
+      _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
-
+      
         if (decision) {
-          await this._completarWorkflow(decision);
-
-          // Mostrar mensaje informativo al usuario
+          // Lanzar el proceso async, pero no bloquear la UI
+          this._completarWorkflow(decision)
+            .catch(err => {
+              // Aquí puedes hacer un log o notificar error sin bloquear al usuario
+              console.error("Error completando workflow:", err);
+              sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+            });
+      
+          // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
           sap.m.MessageBox.information(
             "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
             {
               title: "Aprobación enviada",
               onClose: function () {
-                // Redirigir al finalizar el mensaje
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 oRouter.navTo("appNoparame");
-              }.bind(this) // Importante: asegurar el contexto
+              }.bind(this)
             }
           );
         } else {
           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
         }
       },
+      
 
 
 
@@ -1098,39 +1106,78 @@ sap.ui.define([
       },
 
 
+      enviarID: async function (workflowInstanceId) {
+        const workflowInstanceId2 = workflowInstanceId;
+      
+        if (!workflowInstanceId2) {
+          MessageBox.error("No se ha definido el ID del workflow.");
+          return;
+        }
+      
+        const oModel = this.getOwnerComponent().getModel();
+      
+        // Aquí defines el parámetro directamente en el binding
+        const oContext = oModel.bindContext(
+          `/registrarTareasWorkflow(workflowInstanceId='${workflowInstanceId}')`
+        );
+      
+        try {
+          await oContext.execute();
+          const result = oContext.getBoundContext().getObject();
+      
+          MessageToast.show("Tareas registradas correctamente");
+          console.log("Resultado:", result);
+      
+        } catch (error) {
+          MessageBox.error("Error al registrar tareas:\n" + error.message);
+        }
+      },
+      
+      
+
+
+
+
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
         const usuario = "Carolina Falen";
-
+      
         if (!workflowInstanceId) {
           sap.m.MessageBox.error("No se encontró el ID del flujo de trabajo.");
           return;
         }
-
+      
         const oModel = this.getOwnerComponent().getModel();
         const oContext = oModel.bindContext("/completeWorkflow(...)");
-
+      
         oContext.setParameter("workflowInstanceId", workflowInstanceId);
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
-
+      
         try {
           await oContext.execute();
-
-          ///  sap.m.MessageToast.show("Decisión enviada: " + decision);
-
+      
           const idWOrk = this._idWorkflowInstancias;
-
+      
           if (!idWOrk) {
             sap.m.MessageBox.error("No se encontró el ID de la instancia de workflow para actualizar el estado.");
             return;
           }
+      
           const sUrl = `/odata/v4/datos-cdo/WorkflowInstancias(${idWOrk})`;
-
-          const updatedEstado = decision === "aprobado" ? "Aprobado" : "Rechazado";
-          const updatedDate = new Date().toISOString(); // Fecha en formato ISO 8601
-
-
+      
+          // Traducir decisión a estado en español
+          let updatedEstado;
+          if (decision === "approve") {
+            updatedEstado = "Aprobado";
+          } else if (decision === "reject") {
+            updatedEstado = "Rechazado";
+          } else {
+            updatedEstado = "Desconocido";
+          }
+      
+          const updatedDate = new Date().toISOString();
+      
           const patchResponse = await fetch(sUrl, {
             method: "PATCH",
             headers: {
@@ -1141,23 +1188,22 @@ sap.ui.define([
             body: JSON.stringify({
               estado: updatedEstado,
               actualizadoEn: updatedDate
-
             })
           });
-
+      
           if (!patchResponse.ok) {
             const errorText = await patchResponse.text();
             throw new Error("Error actualizando el estado del proyecto: " + errorText);
           }
-
-          //    sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
-
-
-          //   sap.m.MessageToast.show("Decisión enviada: " + decision);
+      
+          // sap.m.MessageToast.show("Decisión enviada: " + decision);
+          // sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
+      
         } catch (err) {
           sap.m.MessageBox.error("Error al completar el workflow: " + err.message);
         }
       },
+      
 
 
 
@@ -4145,6 +4191,7 @@ sap.ui.define([
 
                 if (result && result.workflowInstanceId) {
                   const workflowInstanceId = result.workflowInstanceId;
+
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
                   //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
 
