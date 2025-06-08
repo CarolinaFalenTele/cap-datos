@@ -470,11 +470,13 @@ sap.ui.define([
         btnBorrado.setText("Guardar");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
-      
-        if (sSourceModel === "modelAprobados" && sMode === "display") {
-          this._Visualizar(sProjectID);
+        if (
+          sMode === "display" &&
+          (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas")
+      ) {
+          this._Visualizar(sProjectID, sSourceModel);
           return;
-        }
+      }
       
         // ✅ Llamamos con el source limpio
         this._configureButtons(sSourceModel, aprobacionFlag, sMode);
@@ -521,25 +523,6 @@ sap.ui.define([
         btnAceptar.removeAllCustomData(); // Limpia valores previos
         btnBorrado.detachPress(this.onBorrador, this);
         btnBorrado.removeAllCustomData();
-
-        // 1️ CASO ESPECIAL: Aprobación de pendientes
-        if (sSourceModel === "modelPendientes" && aprobacionFlag  ) {
-          this._isAprobacion = true;
-
-          btnAceptar.setEnabled(true);
-          btnAceptar.setText("Aprobar");
-          btnAceptar.setType(sap.m.ButtonType.Accept);
-          btnAceptar.data("valor", "approve");
-          btnAceptar.attachPress(this._onDecisionPress, this);
-
-          btnBorrado.setEnabled(true);
-          btnBorrado.setText("Rechazar");
-          btnBorrado.setType(sap.m.ButtonType.Reject);
-          btnBorrado.data("valor", "Reject");
-          btnBorrado.attachPress(this._onDecisionPress, this);
-
-          return; //  Salimos porque no se debe aplicar ningún otro modo
-        }
 
         // 2️ MODO DISPLAY → botones deshabilitados
         if (sMode === "display") {
@@ -868,6 +851,7 @@ sap.ui.define([
       _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
       
+        console.log("DESAION " + decision);
         if (decision) {
           // Lanzar el proceso async, pero no bloquear la UI
           this._completarWorkflow(decision)
@@ -896,7 +880,45 @@ sap.ui.define([
 
 
 
-      _Visualizar: async function (sProjectID) {
+      _Visualizar: async function (sProjectID , sSourceModel) {
+        console.log("ENTRE A VISUALIZAR con ID:", sSourceModel);
+
+
+        const btnAceptar = this.byId("btnAceptar");
+        const btnBorrado = this.byId("btnBorrado");
+    
+        // Siempre limpiar eventos y custom data para evitar duplicados
+        btnAceptar.detachPress(this.onSave, this);
+        btnAceptar.removeAllCustomData();
+        btnBorrado.detachPress(this.onBorrador, this);
+        btnBorrado.removeAllCustomData();
+        const btnDelete = this.byId("idDelete");
+
+
+        // Solo si viene del modelo 'modelEtapasAsignadas'
+        if (sSourceModel === "modelEtapasAsignadas") {
+          this._isAprobacion = true; // << ACTIVAR BANDERA
+
+            // Configurar botones para modo aprobación
+            btnDelete.setVisible(false); // Ocultar el botón en modo aprobación
+            btnAceptar.setEnabled(true);
+            btnAceptar.setText("Aprobar");
+            btnAceptar.setType(sap.m.ButtonType.Accept);
+            btnAceptar.data("valor", "approve");
+            btnAceptar.attachPress(this._onDecisionPress, this);
+    
+            btnBorrado.setEnabled(true);
+            btnBorrado.setText("Rechazar");
+            btnBorrado.setType(sap.m.ButtonType.Reject);
+            btnBorrado.data("valor", "reject");
+            btnBorrado.attachPress(this._onDecisionPress, this);
+        } else {
+            // Si no es modelEtapasAsignadas, puedes dejar los botones deshabilitados o como estaban
+            btnAceptar.setEnabled(false);
+            btnBorrado.setEnabled(false);
+        }
+    
+
         console.log("ENTRE A VISUALIZAR con ID:", sProjectID);
 
         this._configureButtonsForView();
@@ -973,6 +995,11 @@ sap.ui.define([
 
       // Función para configurar los botones en modo visualización (deshabilitados y texto original)
       _configureButtonsForView: function () {
+        if (this._isAprobacion) {
+          return;
+        } 
+
+
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
         const btnButon = this.byId("idDelete");
@@ -4158,9 +4185,8 @@ sap.ui.define([
 
               // 1 Payload para iniciar workflow de aprobación
 
-              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/view/"
-                + generatedId + "/modelPendientes"
-                + ";aprobacion=true";
+              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+  
 
 
               const oModel = this.getView().getModel();
@@ -4195,15 +4221,18 @@ sap.ui.define([
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
                   //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
 
+
                 } else {
                   sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
                 }
+
+                this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+
 
               } catch (err) {
                 sap.m.MessageBox.error("Error al iniciar el workflow: " + err.message);
               }
               // Navegar a la vista 'app' con el nuevo ID
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
               //sap.m.MessageToast.show("Error: No se generó un ID válido.");

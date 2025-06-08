@@ -240,6 +240,24 @@ module.exports = cds.service.impl(async function () {
 
 
 
+  this.on('etapasPendientesParaUsuario', async (req) => {
+    const email = req.data.email;
+
+    try {
+      const resultados = await SELECT.from(WorkflowEtapas).where({
+        estado: 'Pendiente',
+        asignadoA: email
+      });
+
+      console.log("✅ Etapas encontradas para", email, ":", resultados.length);
+      return resultados;
+
+    } catch (err) {
+      console.error("❌ Error al consultar etapas pendientes:", err.message);
+      req.reject(500, "No se pudieron obtener las etapas pendientes.");
+    }
+  });
+
   /* this.on('cancelWorkflow', async (req) => {
      const workflowInstanceId = req.data.workflowInstanceId; // Recibes el ID directamente
  
