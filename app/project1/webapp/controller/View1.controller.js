@@ -128,7 +128,7 @@ sap.ui.define([
         console.log("MODELO TRAIDO " + this._mode);
 
 
-        this.enviarID();  
+        this.enviarID();
       },
 
 
@@ -431,41 +431,41 @@ sap.ui.define([
 
       _onObjectMatched: async function (oEvent) {
         this._resetButtonHandlers();
-      
+
         const oArgs = oEvent.getParameter("arguments");
         let sProjectID = oArgs.sProjectID;
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
         const sMode = oArgs.mode || "display";
-      
+
         // ✅ Parseamos el flag de aprobación
         let aprobacionFlag = this._parseAprobacionFlag(oArgs, sSourceModel);
-      
+
         // ✅ LIMPIAMOS el sSourceModel si viene con sufijos tipo ";aprobacion=true"
         if (sSourceModel.includes(";")) {
           sSourceModel = sSourceModel.split(";")[0];
         }
-      
+
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
-      
+
         this._mode = sMode;
-      
+
         this.getView().getModel("viewModel").setProperty("/mode", sMode);
-      
+
         console.log("MODELO GUARDADO (onObjectMatched):", sMode);
         console.log("MODELO TRAIDO " + this._mode);
-      
+
         if (sMode === "create") {
           await this._clearAllInputs();
         } else if ((sMode === "edit")) {
           this._clearAllInputsEdit();
         }
-      
+
         btnAceptar.setEnabled(true);
         btnAceptar.setText("Enviar");
         btnAceptar.setType(sap.m.ButtonType.Accept);
         btnAceptar.attachPress(this.onSave, this);
-      
+
         btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
@@ -473,16 +473,16 @@ sap.ui.define([
         if (
           sMode === "display" &&
           (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas")
-      ) {
+        ) {
           this._Visualizar(sProjectID, sSourceModel);
           return;
-      }
-      
+        }
+
         // ✅ Llamamos con el source limpio
         this._configureButtons(sSourceModel, aprobacionFlag, sMode);
-      
+
         this._sProjectID = sProjectID;
-      
+
         if (sProjectID) {
           try {
             const oData = await this._fetchProjectData(sProjectID);
@@ -493,7 +493,7 @@ sap.ui.define([
           }
         }
       },
-      
+
 
       _parseAprobacionFlag: function (oArgs, sSourceModel) {
         let flag = false;
@@ -588,7 +588,7 @@ sap.ui.define([
 
       _populateViewWithData: async function (oData) {
         if (!oData) return;
-
+       
         // Poblar controles básicos
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
@@ -633,6 +633,7 @@ sap.ui.define([
         this.byId("idComentarioTipo").setVisible(iniciativaId === "323e4567-e89b-12d3-a456-426614174002");
         this.byId("idComenpVd").setEditable(iniciativaId === "223e4567-e89b-12d3-a456-426614174001");
 
+        this.onInputChange();
         // Carga de datos adicionales (en paralelo)
         await Promise.all([
           this.fetchMilestones(this._sProjectID),
@@ -654,7 +655,9 @@ sap.ui.define([
           this.leerTotalRecursoInterno(this._sProjectID),
           this.leerTotalConsumoExter(this._sProjectID),
           this.leerTotalRecuExterTotal(this._sProjectID),
-          this.leerWorkflowInstancias(this._sProjectID)
+          this.leerWorkflowInstancias(this._sProjectID),
+          this.leerTotalInfraestrLicencia(this._sProjectID),
+          this.leerTotalResumenCostesTotal(this._sProjectID)
         ]);
 
         this.highlightControls();
@@ -696,7 +699,7 @@ sap.ui.define([
           "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
           "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
           "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442",
-          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve"
+          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve, input0_1724758359"
         ];
 
         // Limpieza general de campos
@@ -769,7 +772,7 @@ sap.ui.define([
           "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
           "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
           "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442",
-          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve"
+          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve , input0_1724758359"
         ];
 
         // Limpieza general de campos
@@ -850,7 +853,7 @@ sap.ui.define([
 
       _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
-      
+
         console.log("DESAION " + decision);
         if (decision) {
           // Lanzar el proceso async, pero no bloquear la UI
@@ -860,7 +863,7 @@ sap.ui.define([
               console.error("Error completando workflow:", err);
               sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
             });
-      
+
           // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
           sap.m.MessageBox.information(
             "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
@@ -876,17 +879,17 @@ sap.ui.define([
           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
         }
       },
-      
 
 
 
-      _Visualizar: async function (sProjectID , sSourceModel) {
+
+      _Visualizar: async function (sProjectID, sSourceModel) {
         console.log("ENTRE A VISUALIZAR con ID:", sSourceModel);
 
 
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
-    
+
         // Siempre limpiar eventos y custom data para evitar duplicados
         btnAceptar.detachPress(this.onSave, this);
         btnAceptar.removeAllCustomData();
@@ -899,25 +902,25 @@ sap.ui.define([
         if (sSourceModel === "modelEtapasAsignadas") {
           this._isAprobacion = true; // << ACTIVAR BANDERA
 
-            // Configurar botones para modo aprobación
-            btnDelete.setVisible(false); // Ocultar el botón en modo aprobación
-            btnAceptar.setEnabled(true);
-            btnAceptar.setText("Aprobar");
-            btnAceptar.setType(sap.m.ButtonType.Accept);
-            btnAceptar.data("valor", "approve");
-            btnAceptar.attachPress(this._onDecisionPress, this);
-    
-            btnBorrado.setEnabled(true);
-            btnBorrado.setText("Rechazar");
-            btnBorrado.setType(sap.m.ButtonType.Reject);
-            btnBorrado.data("valor", "reject");
-            btnBorrado.attachPress(this._onDecisionPress, this);
+          // Configurar botones para modo aprobación
+          btnDelete.setVisible(false); // Ocultar el botón en modo aprobación
+          btnAceptar.setEnabled(true);
+          btnAceptar.setText("Aprobar");
+          btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnAceptar.data("valor", "approve");
+          btnAceptar.attachPress(this._onDecisionPress, this);
+
+          btnBorrado.setEnabled(true);
+          btnBorrado.setText("Rechazar");
+          btnBorrado.setType(sap.m.ButtonType.Reject);
+          btnBorrado.data("valor", "reject");
+          btnBorrado.attachPress(this._onDecisionPress, this);
         } else {
-            // Si no es modelEtapasAsignadas, puedes dejar los botones deshabilitados o como estaban
-            btnAceptar.setEnabled(false);
-            btnBorrado.setEnabled(false);
+          // Si no es modelEtapasAsignadas, puedes dejar los botones deshabilitados o como estaban
+          btnAceptar.setEnabled(false);
+          btnBorrado.setEnabled(false);
         }
-    
+
 
         console.log("ENTRE A VISUALIZAR con ID:", sProjectID);
 
@@ -997,7 +1000,7 @@ sap.ui.define([
       _configureButtonsForView: function () {
         if (this._isAprobacion) {
           return;
-        } 
+        }
 
 
         const btnAceptar = this.byId("btnAceptar");
@@ -1056,6 +1059,7 @@ sap.ui.define([
         this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
         this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
 
+        this.onInputChange();
         // Mostrar u ocultar controles según Iniciativa_ID
         if (oData.Iniciativa_ID === "323e4567-e89b-12d3-a456-426614174002") {
           this.byId("table0").setVisible(true);
@@ -1135,32 +1139,32 @@ sap.ui.define([
 
       enviarID: async function (workflowInstanceId) {
         const workflowInstanceId2 = workflowInstanceId;
-      
+
         if (!workflowInstanceId2) {
           MessageBox.error("No se ha definido el ID del workflow.");
           return;
         }
-      
+
         const oModel = this.getOwnerComponent().getModel();
-      
+
         // Aquí defines el parámetro directamente en el binding
         const oContext = oModel.bindContext(
           `/registrarTareasWorkflow(workflowInstanceId='${workflowInstanceId}')`
         );
-      
+
         try {
           await oContext.execute();
           const result = oContext.getBoundContext().getObject();
-      
-          MessageToast.show("Tareas registradas correctamente");
+
+    //      MessageToast.show("Tareas registradas correctamente");
           console.log("Resultado:", result);
-      
+
         } catch (error) {
           MessageBox.error("Error al registrar tareas:\n" + error.message);
         }
       },
-      
-      
+
+
 
 
 
@@ -1168,31 +1172,31 @@ sap.ui.define([
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
         const usuario = "Carolina Falen";
-      
+
         if (!workflowInstanceId) {
           sap.m.MessageBox.error("No se encontró el ID del flujo de trabajo.");
           return;
         }
-      
+
         const oModel = this.getOwnerComponent().getModel();
         const oContext = oModel.bindContext("/completeWorkflow(...)");
-      
+
         oContext.setParameter("workflowInstanceId", workflowInstanceId);
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
-      
+
         try {
           await oContext.execute();
-      
+
           const idWOrk = this._idWorkflowInstancias;
-      
+
           if (!idWOrk) {
             sap.m.MessageBox.error("No se encontró el ID de la instancia de workflow para actualizar el estado.");
             return;
           }
-      
+
           const sUrl = `/odata/v4/datos-cdo/WorkflowInstancias(${idWOrk})`;
-      
+
           // Traducir decisión a estado en español
           let updatedEstado;
           if (decision === "approve") {
@@ -1202,9 +1206,9 @@ sap.ui.define([
           } else {
             updatedEstado = "Desconocido";
           }
-      
+
           const updatedDate = new Date().toISOString();
-      
+
           const patchResponse = await fetch(sUrl, {
             method: "PATCH",
             headers: {
@@ -1217,20 +1221,20 @@ sap.ui.define([
               actualizadoEn: updatedDate
             })
           });
-      
+
           if (!patchResponse.ok) {
             const errorText = await patchResponse.text();
             throw new Error("Error actualizando el estado del proyecto: " + errorText);
           }
-      
+
           // sap.m.MessageToast.show("Decisión enviada: " + decision);
           // sap.m.MessageToast.show("Proyecto actualizado a estado: " + updatedEstado);
-      
+
         } catch (err) {
           sap.m.MessageBox.error("Error al completar el workflow: " + err.message);
         }
       },
-      
+
 
 
 
@@ -1859,6 +1863,7 @@ sap.ui.define([
 
 
       leerTotalInfraestrLicencia: async function (projectID) {
+
         var sUrl = `/odata/v4/datos-cdo/InfraestrLicencia?$filter=datosProyect_ID eq ${projectID}`;
 
         try {
@@ -1875,9 +1880,17 @@ sap.ui.define([
             throw new Error('Network response was not ok: ' + errorText);
           }
 
+          console.log("Llamando a URL:", sUrl);
+          console.log("Project ID recibido:", projectID);
+
+
+
+
           const oData = await response.json();
           console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+          console.log("Respuesta completa:", oData);
 
+          console.log("Cantidad de registros recibidos:", oData.value.length);
 
           // Verificar si hay datos en oData.value
           if (oData.value && oData.value.length > 0) {
@@ -1928,7 +1941,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          ///     console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+          console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -3982,7 +3995,7 @@ sap.ui.define([
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-      //  console.log(localDate);
+        //  console.log(localDate);
 
 
         const payload = {
@@ -4018,7 +4031,7 @@ sap.ui.define([
           AmReceptor_ID: sSelectKeyAmrep,
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
-          Usuarios_ID : "",
+          Usuarios_ID: "",
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
           CambioEuRUSD: sCambioEurUsd
@@ -4113,7 +4126,7 @@ sap.ui.define([
             throw new Error("No se recibió un CSRF Token");
           }
 
-        //  console.log(" CSRF Token obtenido:", sCsrfToken);
+          //  console.log(" CSRF Token obtenido:", sCsrfToken);
 
           // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
@@ -4150,9 +4163,14 @@ sap.ui.define([
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-          //  console.log("ID generado:", generatedId);
+            //  console.log("ID generado:", generatedId);
 
             if (generatedId) {
+
+
+
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+
               // Llamadas en paralelo para mejorar rendimiento
               const insertAllResults = await Promise.all([
                 this.insertFacturacion(generatedId),
@@ -4186,7 +4204,7 @@ sap.ui.define([
               // 1 Payload para iniciar workflow de aprobación
 
               const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
-  
+
 
 
               const oModel = this.getView().getModel();
@@ -4226,7 +4244,6 @@ sap.ui.define([
                   sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
                 }
 
-                this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
 
 
               } catch (err) {
@@ -4504,9 +4521,11 @@ sap.ui.define([
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
-           // console.log("ID generado:", generatedId);
+            // console.log("ID generado:", generatedId);
 
             if (generatedId) {
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+
               // Llamadas en paralelo para mejorar rendimiento
               const insertAllResults = await Promise.all([
                 this.insertFacturacion(generatedId),
@@ -4534,7 +4553,6 @@ sap.ui.define([
               ]);
 
 
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
             } else {
               console.error("No se generó un ID válido.");
               //sap.m.MessageToast.show("Error: No se generó un ID válido.");
@@ -4586,15 +4604,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idWork ? "WorkflowInstancias Actualizado correctamente" : "WorkflowInstancias insertado correctamente");
+     //       MessageToast.show(idWork ? "WorkflowInstancias Actualizado correctamente" : "WorkflowInstancias insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar WorkflowInstancias");
+       //     MessageToast.show("Error al guardar WorkflowInstancias");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar WorkflowInstancias");
+         // MessageToast.show("Error de conexión al guardar WorkflowInstancias");
         }
 
       },
@@ -4643,15 +4661,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idjornadas ? "Perfil actualizado correctamente" : "Perfil insertado correctamente");
+  //          MessageToast.show(idjornadas ? "Perfil actualizado correctamente" : "Perfil insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el perfil");
+  //          MessageToast.show("Error al guardar el perfil");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar perfil");
+    //      MessageToast.show("Error de conexión al guardar perfil");
         }
       },
 
@@ -4664,7 +4682,7 @@ sap.ui.define([
         var sTotaleJor = parseFloat(this.byId("totalRecuInter").getValue(), 10);
 
 
-      //  console.log("ID RECIBIDO DEL INSERT " + idtotalRecur);
+        //  console.log("ID RECIBIDO DEL INSERT " + idtotalRecur);
 
 
         var payload = {
@@ -4699,11 +4717,11 @@ sap.ui.define([
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el Total Recursos internos ");
+  //          MessageToast.show("Error al guardar el Total Recursos internos ");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar Total Recursos internos ");
+    //      MessageToast.show("Error de conexión al guardar Total Recursos internos ");
         }
       },
 
@@ -4748,15 +4766,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idtotalConsuEx ? "Total Cosumo Externo   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+  //          MessageToast.show(idtotalConsuEx ? "Total Cosumo Externo   actualizado correctamente" : "Recursos Internos  insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el Total Cosumo Externo ");
+    //        MessageToast.show("Error al guardar el Total Cosumo Externo ");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
+   //       MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
         }
       },
 
@@ -4801,15 +4819,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idRecurExterTotal ? "Total Cosumo Externo   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+     //       MessageToast.show(idRecurExterTotal ? "Total Cosumo Externo   actualizado correctamente" : "Recursos Internos  insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el Total Cosumo Externo ");
+       //     MessageToast.show("Error al guardar el Total Cosumo Externo ");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
+         // MessageToast.show("Error de conexión al guardar Total Cosumo Externo  ");
         }
       },
 
@@ -4853,15 +4871,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idInfraLicencia ? "Total InfraEstructura y Licencia   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+     //       MessageToast.show(idInfraLicencia ? "Total InfraEstructura y Licencia   actualizado correctamente" : "Recursos Internos  insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el Total InfraEstructura y Licencia ");
+     //       MessageToast.show("Error al guardar el Total InfraEstructura y Licencia ");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar InfraEstructura y Licencia  ");
+    //      MessageToast.show("Error de conexión al guardar InfraEstructura y Licencia  ");
         }
       },
 
@@ -4916,15 +4934,15 @@ sap.ui.define([
           });
 
           if (response.ok) {
-            MessageToast.show(idResumenCostetotal ? "Total idResumenCostetotal   actualizado correctamente" : "Recursos Internos  insertado correctamente");
+  //          MessageToast.show(idResumenCostetotal ? "Total idResumenCostetotal   actualizado correctamente" : "Recursos Internos  insertado correctamente");
           } else {
             const error = await response.json();
             console.error("Error:", error);
-            MessageToast.show("Error al guardar el Total idResumenCostetotal ");
+    //        MessageToast.show("Error al guardar el Total idResumenCostetotal ");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
-          MessageToast.show("Error de conexión al guardar idResumenCostetotal  ");
+  //        MessageToast.show("Error de conexión al guardar idResumenCostetotal  ");
         }
       },
 
@@ -5128,7 +5146,7 @@ sap.ui.define([
 
         const existingFacturacionID = this._FacturacionID; // El ID de la facturación existente (si hay uno)
 
-      //  console.log("Total facturación:", totalFacturacion);
+        //  console.log("Total facturación:", totalFacturacion);
 
         itemsF.forEach(function (oItem) {
           const aCells = oItem.getCells();
@@ -6855,7 +6873,7 @@ sap.ui.define([
 
 
       insertServicioInterno: async function (generatedId) {
-      //  console.log("insertServicioInterno llamada");
+        //  console.log("insertServicioInterno llamada");
 
 
         const sTokenG = this._sCsrfToken;
@@ -7419,7 +7437,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-         //   console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            //   console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7528,7 +7546,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-           // console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            // console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7612,7 +7630,7 @@ sap.ui.define([
       insertRecursoExterno: async function (generatedId) {
 
 
-       // console.log("ENTRANDO A RECURSOS EXTERNOS ");
+        // console.log("ENTRANDO A RECURSOS EXTERNOS ");
         const sTokenG = this._sCsrfToken;
 
         // Obtener la tabla por su ID
@@ -7773,7 +7791,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-          //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
 
@@ -7880,7 +7898,7 @@ sap.ui.define([
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-          //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
             return; // Si hay un error, no se envía la solicitud
           }
           // Construir el payload para cada fila
@@ -10820,6 +10838,7 @@ sap.ui.define([
           sKey2 = oSelect2.getSelectedItem().getKey();
         }
 
+      
         var oSelect1 = this.byId("slct_Jefe");
         var sSelectValue1 = "";
 

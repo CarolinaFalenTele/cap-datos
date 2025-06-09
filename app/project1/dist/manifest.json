@@ -160,7 +160,7 @@
           "target": "view"
         },
         {
-          "pattern": "viewWithAprobacion/{sProjectID}({aprobacion})",
+          "pattern": "viewWithAprobacion/{sourceModel}/{mode}/{sProjectID};aprobacion={aprobacion}",
           "name": "viewWithAprobacion",
           "target": "view"
         }

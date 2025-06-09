@@ -13,7 +13,7 @@ sap.ui.define(
         "use strict";
 
         return BaseController.extend("project1.controller.App", {
-            onInit: async function () {
+            onInit: function () {
 
 
 
@@ -35,27 +35,11 @@ sap.ui.define(
 
                 // this.DialogInfo();
                 this.getUserInfo();
-                this.filterEstado();
 
-                try {
-                    const userResponse = await fetch("/odata/v4/datos-cdo/userdata");
-            
-                    if (!userResponse.ok) {
-                        throw new Error("No se pudo obtener el usuario desde el backend.");
-                    }
-            
-                    const userData = await userResponse.json();
-            
-                    const userModel = new sap.ui.model.json.JSONModel(userData);
-                    this.getView().setModel(userModel, "userModel");
-            
-                    await this.filterEstado();
-            
-                } catch (error) {
-                    console.error("Error en onInit al cargar el usuario:", error);
-                }
 
-      
+                // Llama a una función separada que sí puede ser async
+                this._cargarDatosUsuario();
+
 
             },
 
@@ -64,72 +48,206 @@ sap.ui.define(
 
 
 
+
+
+
+
+            _cargarDatosUsuario: async function () {
+                try {
+                    const userResponse = await fetch("/odata/v4/datos-cdo/userdata");
+
+                    if (!userResponse.ok) {
+                        throw new Error("No se pudo obtener el usuario desde el backend.");
+                    }
+
+                    const userData = await userResponse.json();
+
+                    const userModel = new sap.ui.model.json.JSONModel(userData);
+                    this.getView().setModel(userModel, "userModel");
+
+                    await this.filterEstado();
+
+
+                } catch (error) {
+                    console.error("Error al cargar el usuario:", error);
+                }
+            },
+
+
             filterEstado: async function () {
                 try {
-                    // Cargar proyectos con relaciones expand
-
                     const userModel = this.getView().getModel("userModel");
                     if (!userModel) {
-                      console.error("userModel no está definido aún.");
-                      return;
+                        console.error("userModel no está definido aún.");
+                        return;
                     }
-            
+
                     const userId = userModel.getProperty("/ID");
+                    const userEmail = userModel.getProperty("/email");
                     console.log("Usuario ID: " + userId);
-            
-                   
+                    console.log("Usuario Email: " + userEmail);
 
                     const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
                     const data = await response.json();
                     const aProjects = data.value;
-            
+
                     const aProyectosConEstado = await Promise.all(
                         aProjects.map(async (proyecto) => {
                             const projectId = proyecto.ID;
-            
-                            // Formateo de fechas
+
                             const formatearFecha = (fechaStr) => {
                                 if (!fechaStr) return null;
                                 const fecha = new Date(fechaStr);
                                 return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
                             };
-            
+
                             proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
                             proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
-            
-                            // Obtener los nombres relacionados
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-            
-                            // Si ya tiene estado "Borrador", no buscamos en WorkflowInstancias
+
                             if (proyecto.Estado === "Borrador") {
                                 proyecto.workflowId = null;
                                 proyecto.actualizadoEn = null;
                                 proyecto.actualizadoEnFormateada = "No aplica";
+                                proyecto.Etapas = [];
                                 return proyecto;
                             }
-            
-                            // Buscar última instancia de workflow solo si no es Borrador
-                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+
+                            const wfResponse = await fetch(
+                                `/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq ${projectId}&$orderby=creadoEn desc&$top=1`
+                            );
                             const wfData = await wfResponse.json();
                             const wfItem = wfData.value[0];
-            
-                            // Estado del proyecto
-                            proyecto.Estado = wfItem?.estado || "Pendiente";
+
+                            console.log(wfItem);
+
+                            // Obtener etapas desde WorkflowEtapas directamente
+                            let etapas = [];
+
+                            if (wfItem?.ID) {
+                                const etapasResponse = await fetch(
+                                    `/odata/v4/datos-cdo/WorkflowEtapas?$filter=workflow_ID eq ${wfItem.workflowId}`
+                                );
+                                const etapasData = await etapasResponse.json();
+                                etapas = etapasData.value || [];
+                            }
+
+                            const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
+
+                            if (hayEtapasPendientes) {
+                                proyecto.Estado = "Pendiente";
+                            } else if (wfItem?.estado) {
+                                proyecto.Estado = wfItem.estado;
+                            } else {
+                                // No hay workflow ni etapas: mantenemos el estado original de la base de datos
+                                proyecto.Estado = proyecto.Estado || "Borrador";
+                            }
+                            
+
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
                             proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
-            
+                            proyecto.Etapas = etapas;
+
                             return proyecto;
                         })
                     );
-            
-                    // Separar por estado
+
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
                     const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
-            
-                    // Control de estado visual
+                    const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
+
+
+                    const aEtapasAsignadas = [];
+                    const aProyectosAsignadosAlUsuario = [];
+
+                    aProyectosPendientes.forEach((proyecto) => {
+                        let tieneEtapaAsignada = false;
+
+                        proyecto.Etapas.forEach((etapa) => {
+                            if (
+                                etapa.estado === "Pendiente" &&
+                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
+                            ) {
+                                tieneEtapaAsignada = true;
+
+                                aEtapasAsignadas.push({
+                                    nombreEtapa: etapa.nombreEtapa,
+                                    asignadoA: etapa.asignadoA,
+                                    aprobadoPor: etapa.aprobadoPor,
+                                    estado: etapa.estado,
+                                    comentario: etapa.comentario,
+                                    fechaAprobado: etapa.fechaAprobado,
+                                    nameProyect: proyecto.nameProyect,
+                                    creadoPor: proyecto.creadoPor,
+                                    descripcion: proyecto.descripcion,
+                                    projectId: proyecto.ID // <-- AÑADE ESTO
+
+                                });
+                            }
+                        });
+
+                        if (tieneEtapaAsignada) {
+                            aProyectosAsignadosAlUsuario.push(proyecto);
+                        }
+                    });
+
+                    // Modelos JSON para la vista
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobados,
+                        Count: aProyectosAprobados.length
+                    }), "modelAprobados");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosPendientes,
+                        Count: aProyectosPendientes.length
+                    }), "modelPendientes");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosBorrador,
+                        Count: aProyectosBorrador.length
+                    }), "modelBorrador");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Count: aProyectosConEstado.length
+                    }), "modelTotal");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Etapas: aEtapasAsignadas,
+                        Count: aEtapasAsignadas.length
+                    }), "modelEtapasAsignadas");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAsignadosAlUsuario,
+                        Count: aProyectosAsignadosAlUsuario.length
+                    }), "modelAsignados");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Etapas: aEtapasAsignadas, // filtrado solo para el usuario actual
+                        Count: aEtapasAsignadas.length
+
+                    }), "modelEtapasAsignadas");
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosRechazados,
+                        Count: aProyectosRechazados.length
+                    }), "modelRechazados");
+                    
+                    console.log("Etapas asignadas:", aEtapasAsignadas); // ← debería estar vacío si no hay nada asignado
+                    console.log("Cantidad:", aEtapasAsignadas.length);
+
+                    // Mostrar la pestaña solo si hay etapas asignadas
+                    const oIconTab = this.byId("id34");
+                    if (oIconTab) {
+                        oIconTab.setVisible(aEtapasAsignadas.length > 0);
+                    }
+
+
+                    console.log("Etapas asignadas al usuario:", aProyectosAprobados);
+                    console.log("Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario);
+
                     const oStatusControl = this.byId("status0");
                     if (aProyectosPendientes.length > 0) {
                         oStatusControl.setText("Pendiente");
@@ -141,130 +259,216 @@ sap.ui.define(
                         oStatusControl.setText("Aprobado");
                         oStatusControl.setState("Success");
                     }
-            
-                    // Modelos JSON
-                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    });
-            
-                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosPendientes,
-                        Count: aProyectosPendientes.length
-                    });
-            
-                    const oJsonModelBorrador = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosBorrador,
-                        Count: aProyectosBorrador.length
-                    });
-            
-                    const oJsonModelTotal = new sap.ui.model.json.JSONModel({
-                        Count: aProyectosConEstado.length
-                    });
-            
-                    // Asignar modelos
-                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-                    this.getView().setModel(oJsonModelBorrador, "modelBorrador");
-                    this.getView().setModel(oJsonModelTotal, "modelTotal");
-            
-                    // Verificar en consola
-                //    console.log(aProyectosPendientes[0]?.NombreArea);
-                //    console.log(aProyectosPendientes[0]?.NombreJefe);
-            
+
                 } catch (error) {
                     console.error("Error al cargar los proyectos con estado:", error);
                 }
             },
-            
-            
 
-         /*   filterEstado: async function () {
-                try {
-                    // Cargar proyectos con relaciones expand
-                    const response = await fetch("/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID");
-                    const data = await response.json();
-                    const aProjects = data.value;
-            
-                    const aProyectosConEstado = await Promise.all(
-                        aProjects.map(async (proyecto) => {
-                            const projectId = proyecto.ID;
-            
-                            // Buscar última instancia de workflow
-                            const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                            const wfData = await wfResponse.json();
-                            const wfItem = wfData.value[0];
-            
-                            // Estado del proyecto
-                            proyecto.Estado = wfItem?.estado || "Pendiente";
-                            proyecto.workflowId = wfItem?.workflowId || null;
-                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-            
-                            // Formateo de fechas
-                            const formatearFecha = (fechaStr) => {
-                                if (!fechaStr) return null;
-                                const fecha = new Date(fechaStr);
-                                return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                            };
-            
-                            proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
-                            proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
-                            proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
-            
-                            // Obtener los nombres relacionados
-                            proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
-                            proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-            
-                            return proyecto;
-                        })
-                    );
-            
-                    // Separar por estado
-                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
-                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
-                 
-                 
-                    const oStatusControl = this.byId("status0");
-   
-                    if (aProyectosPendientes.length > 0) {
-                        oStatusControl.setText("Pendiente");
-                        oStatusControl.setState("Warning"); // Amarillo (pendiente)
-                    } else {
-                        oStatusControl.setText("Aprobado");
-                        oStatusControl.setState("Success"); // Verde (aprobado)
-                    }
-                    
-                    // Modelos JSON
-                    const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    });
-            
-                    const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosPendientes,
-                        Count: aProyectosPendientes.length
-                    });
-            
-                    const oJsonModelTotal = new sap.ui.model.json.JSONModel({
-                        Count: aProyectosConEstado.length
-                    });
-            
-                    // Asignar modelos
-                    this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                    this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-                    this.getView().setModel(oJsonModelTotal, "modelTotal");
-            
-                    // Verificar los nombres en consola
-                    console.log(aProyectosPendientes[0]?.NombreArea);
-                    console.log(aProyectosPendientes[0]?.NombreJefe);
-            
-                } catch (error) {
-                    console.error("Error al cargar los proyectos con estado:", error);
-                }
-            },*/
-            
     
+
+            /*
+                       filterEstado: async function () {
+                            try {
+                                // Cargar proyectos con relaciones expand
             
+                                const userModel = this.getView().getModel("userModel");
+                                if (!userModel) {
+                                  console.error("userModel no está definido aún.");
+                                  return;
+                                }
+                        
+                                const userId = userModel.getProperty("/ID");
+                                console.log("Usuario ID: " + userId);
+                        
+                               
+            
+                                const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
+                                const data = await response.json();
+                                const aProjects = data.value;
+                        
+                                const aProyectosConEstado = await Promise.all(
+                                    aProjects.map(async (proyecto) => {
+                                        const projectId = proyecto.ID;
+                        
+                                        // Formateo de fechas
+                                        const formatearFecha = (fechaStr) => {
+                                            if (!fechaStr) return null;
+                                            const fecha = new Date(fechaStr);
+                                            return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                                        };
+                        
+                                        proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
+                                        proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
+                        
+                                        // Obtener los nombres relacionados
+                                        proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
+                                        proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
+                        
+                                        // Si ya tiene estado "Borrador", no buscamos en WorkflowInstancias
+                                        if (proyecto.Estado === "Borrador") {
+                                            proyecto.workflowId = null;
+                                            proyecto.actualizadoEn = null;
+                                            proyecto.actualizadoEnFormateada = "No aplica";
+                                            return proyecto;
+                                        }
+                        
+                                        // Buscar última instancia de workflow solo si no es Borrador
+                                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+                                        const wfData = await wfResponse.json();
+                                        const wfItem = wfData.value[0];
+                        
+                                        // Estado del proyecto
+                                        proyecto.Estado = wfItem?.estado || "Pendiente";
+                                        proyecto.workflowId = wfItem?.workflowId || null;
+                                        proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
+                                        proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
+                        
+                                        return proyecto;
+                                    })
+                                );
+                        
+                                // Separar por estado
+                                const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
+                                const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
+                                const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
+                        
+                                // Control de estado visual
+                                const oStatusControl = this.byId("status0");
+                                if (aProyectosPendientes.length > 0) {
+                                    oStatusControl.setText("Pendiente");
+                                    oStatusControl.setState("Warning");
+                                } else if (aProyectosBorrador.length > 0) {
+                                    oStatusControl.setText("Borrador");
+                                    oStatusControl.setState("None");
+                                } else {
+                                    oStatusControl.setText("Aprobado");
+                                    oStatusControl.setState("Success");
+                                }
+                        
+                                // Modelos JSON
+                                const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                                    DatosProyect: aProyectosAprobados,
+                                    Count: aProyectosAprobados.length
+                                });
+                        
+                                const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                                    DatosProyect: aProyectosPendientes,
+                                    Count: aProyectosPendientes.length
+                                });
+                        
+                                const oJsonModelBorrador = new sap.ui.model.json.JSONModel({
+                                    DatosProyect: aProyectosBorrador,
+                                    Count: aProyectosBorrador.length
+                                });
+                        
+                                const oJsonModelTotal = new sap.ui.model.json.JSONModel({
+                                    Count: aProyectosConEstado.length
+                                });
+                        
+                                // Asignar modelos
+                                this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                                this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+                                this.getView().setModel(oJsonModelBorrador, "modelBorrador");
+                                this.getView().setModel(oJsonModelTotal, "modelTotal");
+                        
+                                // Verificar en consola
+                            //    console.log(aProyectosPendientes[0]?.NombreArea);
+                            //    console.log(aProyectosPendientes[0]?.NombreJefe);
+                        
+                            } catch (error) {
+                                console.error("Error al cargar los proyectos con estado:", error);
+                            }
+                        },*/
+
+
+
+            /*   filterEstado: async function () {
+                   try {
+                       // Cargar proyectos con relaciones expand
+                       const response = await fetch("/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID");
+                       const data = await response.json();
+                       const aProjects = data.value;
+               
+                       const aProyectosConEstado = await Promise.all(
+                           aProjects.map(async (proyecto) => {
+                               const projectId = proyecto.ID;
+               
+                               // Buscar última instancia de workflow
+                               const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
+                               const wfData = await wfResponse.json();
+                               const wfItem = wfData.value[0];
+               
+                               // Estado del proyecto
+                               proyecto.Estado = wfItem?.estado || "Pendiente";
+                               proyecto.workflowId = wfItem?.workflowId || null;
+                               proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
+               
+                               // Formateo de fechas
+                               const formatearFecha = (fechaStr) => {
+                                   if (!fechaStr) return null;
+                                   const fecha = new Date(fechaStr);
+                                   return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                               };
+               
+                               proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
+                               proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
+                               proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
+               
+                               // Obtener los nombres relacionados
+                               proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
+                               proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
+               
+                               return proyecto;
+                           })
+                       );
+               
+                       // Separar por estado
+                       const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
+                       const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
+                    
+                    
+                       const oStatusControl = this.byId("status0");
+      
+                       if (aProyectosPendientes.length > 0) {
+                           oStatusControl.setText("Pendiente");
+                           oStatusControl.setState("Warning"); // Amarillo (pendiente)
+                       } else {
+                           oStatusControl.setText("Aprobado");
+                           oStatusControl.setState("Success"); // Verde (aprobado)
+                       }
+                       
+                       // Modelos JSON
+                       const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
+                           DatosProyect: aProyectosAprobados,
+                           Count: aProyectosAprobados.length
+                       });
+               
+                       const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
+                           DatosProyect: aProyectosPendientes,
+                           Count: aProyectosPendientes.length
+                       });
+               
+                       const oJsonModelTotal = new sap.ui.model.json.JSONModel({
+                           Count: aProyectosConEstado.length
+                       });
+               
+                       // Asignar modelos
+                       this.getView().setModel(oJsonModelAprobados, "modelAprobados");
+                       this.getView().setModel(oJsonModelPendientes, "modelPendientes");
+                       this.getView().setModel(oJsonModelTotal, "modelTotal");
+               
+                       // Verificar los nombres en consola
+                       console.log(aProyectosPendientes[0]?.NombreArea);
+                       console.log(aProyectosPendientes[0]?.NombreJefe);
+               
+                   } catch (error) {
+                       console.error("Error al cargar los proyectos con estado:", error);
+                   }
+               },*/
+
+
+
 
 
 
@@ -294,7 +498,7 @@ sap.ui.define(
                     const workflowId = oItem.workflowId;
 
                     if (!workflowId) {
-                   //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                        //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
                         return;
                     }
 
@@ -310,7 +514,7 @@ sap.ui.define(
 
 
                     await this.onActivityPress(oEvent, result);
-                 //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                    //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
                     console.error(" Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
@@ -340,7 +544,85 @@ sap.ui.define(
 
 
                 //  SOLO esta línea para crear nodos
-                this.createProcessFlowNodes(eventos, oProcessFlow , sNameProyect);
+                this.createProcessFlowNodes(eventos, oProcessFlow, sNameProyect);
+
+                //  Solo una vez, fuera del bucle
+                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
+
+                this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
+                this.byId("text1881").setText("PEP de solicitud: " + sID);
+                this.byId("itb1").setSelectedKey("people");
+            },
+            onVerHistorial: async function (oEvent) {
+                try {
+                    const oSource = oEvent.getSource();
+
+                    // Intenta obtener el contexto desde modelPendientes
+                    let oContext = oSource.getBindingContext("modelPendientes");
+                    let modelo = "modelPendientes";
+
+                    // Si no lo encuentra en modelPendientes, intenta con modelAprobados
+                    if (!oContext) {
+                        oContext = oSource.getBindingContext("modelAprobados");
+                        modelo = "modelAprobados";
+                    }
+
+                    if (!oContext) {
+                        sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
+                        return;
+                    }
+
+                    const oItem = oContext.getObject();
+                    const workflowId = oItem.workflowId;
+
+                    if (!workflowId) {
+                        //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                        return;
+                    }
+
+                    const oModel = this.getOwnerComponent().getModel(); // OData Model principal
+                    const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
+
+                    oBoundContext.setParameter("ID", workflowId);
+                    await oBoundContext.execute();
+
+                    const result = oBoundContext.getBoundContext().getObject();
+                    console.log(` Historial del workflow (${modelo}):`, result);
+
+
+
+                    await this.onActivityPress(oEvent, result);
+                    //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                } catch (error) {
+                    console.error(" Error al obtener el historial del workflow:", error);
+                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                }
+            },
+
+
+
+            onActivityPress: function (oEvent, result) {
+
+                this.byId("ma77").setVisible(true); // Para ocultar
+
+                var oButton = oEvent.getSource();
+                var sNameProyect = oButton.getCustomData()[0].getValue();
+                var sID = oButton.getCustomData()[1].getValue();
+
+                const eventos = result.value;
+
+                var oProcessFlow = this.byId("processflow1");
+                if (!oProcessFlow) {
+                    console.error("No se encontró el ProcessFlow con ID 'processflow1'");
+                    return;
+                }
+
+
+                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+
+
+                //  SOLO esta línea para crear nodos
+                this.createProcessFlowNodes(eventos, oProcessFlow, sNameProyect);
 
                 //  Solo una vez, fuera del bucle
                 oProcessFlow.attachNodePress(this.onNodePress.bind(this));
@@ -350,66 +632,39 @@ sap.ui.define(
                 this.byId("itb1").setSelectedKey("people");
             },
 
+            
             createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
                 const laneMap = {
-                    "CDO": "0",
+                    "SOLICITUD CDO": "0",
                     "APROBACIÓN": "1",
-                    "NOTIFICACIÓN": "1",
-                    "CONFIRMAR ENTRADAS": "2",
                     "BASIS": "2",
-                    "LEER ENTRADAS": "3",
-                    "REVISION PMO": "3",
+                    "PMO": "3",  // tanto revision como aprobado PMO
                     "APROBADO PMO": "4",
-                    "APROBADO": "4",
                     "CONTROL": "5",
-                    "GESTION": "6",
-                    "REVISION DIRECCION": "8",
-                    "DIRECCION": "8",
+                    "GESTIÓN": "6",
+                    "DIRECCIÓN": "8",
                     "APROBACIÓN DIRECCIÓN": "9",
                     "RECHAZO": "99",
                     "FINALIZADO": "99"
                 };
-            
+
                 const stateMap = {
                     "COMPLETED": "Positive",
                     "APPROVED": "Positive",
                     "RECHAZO": "Negative",
                     "REJECTED": "Negative",
                     "PENDIENTE": "Critical",
-                    "EMAIL": "Neutral",
                     "CREATED": "Neutral",
-                    "TRIGGERED": "Neutral",
-                    "REACHED": "Neutral"
+                    "TRIGGERED": "Neutral"
                 };
-            
-                const pasosExcluidos = [
-                    "Condición de Espera",
-                    "Esperar a terminar el flujo",
-                    "Espera respuesta",
-                    "Leer entradas",
-                    "Confirmar entradas" ,
-                    "Esperar antes de avanzar",
-                    "Iniciar Variable",
-                    "Condición 3",
-                    "Espera 1",
-                    "Tarea de script 12",
-                    "Condición 5",
-                    "Wait 1 minute 10",
-                    "Condición",
-                    "Esperar Rechazo",
-                    "Tarea de script",
-                    "Wait 1 minute 11",
-                    "Condición",
-                    "Condición 2",
-                    "Condición 8",
 
-                ];
-            
+                const pasosExcluidos = [ /*... tu array ...*/];
+
                 const eventosFiltrados = eventos.filter(e => {
                     const paso = (e.paso || "").trim().toUpperCase();
                     return !pasosExcluidos.some(ex => paso.includes(ex.toUpperCase()));
                 });
-            
+
                 const eventoMap = new Map();
                 eventosFiltrados.forEach(e => {
                     const clave = `${e.instancia}-${(e.paso || "").trim()}`;
@@ -418,113 +673,292 @@ sap.ui.define(
                         eventoMap.set(clave, e);
                     }
                 });
-            
-                const listaEventos = Array.from(eventoMap.values()).sort((a, b) =>
-                    new Date(a.timestamp) - new Date(b.timestamp)
-                );
-            
 
-                if (listaEventos.length === 0) {
-                    console.warn("No hay eventos válidos para mostrar en el flujo.");
-                    return;
-                }
-            
-                // Crear nodos (sin nodo inicial)
+                const listaEventos = Array.from(eventoMap.values()).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                oProcessFlow.removeAllNodes();
+
                 listaEventos.forEach((evento, index) => {
                     if (!evento.id) evento.id = "evento_" + index;
-                
-                    if (index === 0 && (evento.paso || "").toUpperCase().includes("INICIALIZAR VARIABLE")) {
-                        evento.paso = "Solicitud enviada correctamente " + sNameProyect;
-                    }
-                    
 
+                    let pasoRaw = evento.paso || "Paso desconocido";
 
+                    // Asignar laneId según palabras clave específicas en el paso (pasoRaw)
+                    let laneId = this.obtenerLaneIdDesdePaso(pasoRaw);
 
+                    const pasoUpper = pasoRaw.toUpperCase();
 
-                    let pasoRaw = (evento.paso || "Paso desconocido").trim();
-
-                    if (
-                        index === listaEventos.length - 1 &&
-                        pasoRaw === "Paso desconocido" &&
-                        (evento.descripcion || "").toUpperCase().includes("FINALIZACIÓN DEL WORKFLOW")
+                    // Mapeo más específico:
+                    if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
+                        laneId = "0";
+                    } else if (pasoUpper.includes("APROBACIÓN")) {
+                        laneId = "1";
+                    } else if (
+                        pasoUpper.includes("PENDIENTE") ||
+                        pasoUpper.includes("BASIS") ||
+                        pasoUpper.includes("TQ") ||
+                        pasoUpper.includes("FACTORIA") ||
+                        pasoUpper.includes("EMAIL DE APROBACIÓN")
                     ) {
-                        pasoRaw = "Fin del proceso de aprobación";
-                    }
-                    
+                        laneId = "2";
 
 
-                    const paso = pasoRaw.toUpperCase();
-
-
-          
-                    const descripcion = evento.descripcion || "";
-                
-                    let laneId = "0";
-                    for (let key in laneMap) {
-                        if (paso.includes(key)) {
-                            laneId = laneMap[key];
-                            break;
+                    } else if (pasoUpper.includes("PMO") || pasoUpper.includes("NOTIFICACIÓN") || pasoUpper.includes("PENDIENTE")) {
+                        if (pasoUpper.includes("APROBACIÓN")) {
+                            laneId = "4";
+                        } else {
+                            laneId = "3";  // revision PMO
                         }
+                    } else if (pasoUpper.includes("CONTROL") || pasoUpper.includes("GESTIÓN")) {
+                        if (pasoUpper.includes("APROBADO")) {
+                            laneId = "6";
+                        } else {
+                            laneId = "5";  // revisión control de gestión
+                        }
+                    } else if (pasoUpper.includes("DIRECCIÓN") || pasoUpper.includes("REVISION")) {
+                        if (pasoUpper.includes("APROBACIÓN")) {
+                            laneId = "9";
+                        } else {
+                            laneId = "8";
+                        }
+                    } else if (pasoUpper.includes("RECHAZO") || pasoUpper.includes("FINALIZADO")) {
+                        laneId = "99";
                     }
-                
+
+                    // Estado del nodo
                     let state = "Neutral";
+                    const estadoEvento = (evento.estado || evento.tipo || "").toUpperCase();
                     for (let key in stateMap) {
-                        if ((evento.tipo || "").toUpperCase().includes(key)) {
+                        if (estadoEvento.includes(key)) {
                             state = stateMap[key];
                             break;
                         }
                     }
 
-                    if ((evento.tipo || "").toUpperCase() === "INTERMEDIATE_TIMER_EVENT_TRIGGERED") {
-                        state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
-                    }
-                    
-                    
-                    if ((evento.tipo || "").toUpperCase() === "EXCLUSIVE_GATEWAY_REACHED") {
-                        state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
-                    }
                     const siguiente = listaEventos[index + 1];
                     const children = siguiente ? [siguiente.id] : [];
-                
+
                     const node = new sap.suite.ui.commons.ProcessFlowNode({
                         nodeId: evento.id,
                         laneId: laneId,
                         title: pasoRaw,
                         titleAbbreviation: pasoRaw.substring(0, 3),
                         state: state,
-                        stateText: descripcion,
+                        stateText: evento.descripcion || "",
                         children: children,
                         isTitleClickable: true,
                         focused: false,
                         highlighted: false,
-                        texts: [pasoRaw, descripcion]
+                        texts: [pasoRaw, evento.descripcion || ""]
                     });
-                
+
                     node.addCustomData(new sap.ui.core.CustomData({
                         key: "eventoOriginal",
                         value: JSON.stringify(evento)
                     }));
-                
+
                     node.data("eventoOriginal", evento);
                     oProcessFlow.addNode(node);
                 });
-                
             },
-            
+
+
+            obtenerLaneIdDesdePaso: function (pasoRaw) {
+                const texto = (pasoRaw || "").toUpperCase();
+
+                if (texto.includes("CDO") || texto.includes("SOLICITUD")) return "0";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("APROBACIÓN")) return "1";
+                if (texto.includes("BASIS") || texto.includes("TQ") || texto.includes("FACTORIA")) return "2";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("PMO")) return "3";
+                if (texto.includes("PMO") && !texto.includes("NOTIFICACIÓN")) return "4";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("CONTROL")) return "5";
+                if (texto.includes("CONTROL") && !texto.includes("NOTIFICACIÓN")) return "6";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("DIRECCIÓN")) return "8";
+                if (texto.includes("DIRECCIÓN") && !texto.includes("NOTIFICACIÓN")) return "9";
+                if (texto.includes("FINALIZADO") || texto.includes("RECHAZO") || texto.includes("RECHAZADO")) return "99";
+
+                return "0"; // fallback
+            },
+
+
+
+
+            /// este es el ultimo activi 
+            /* createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
+                 const laneMap = {
+                     "CDO": "0",
+                     "APROBACIÓN": "1",
+                     "NOTIFICACIÓN": "1",
+                     "CONFIRMAR ENTRADAS": "2",
+                     "BASIS": "2",
+                     "LEER ENTRADAS": "3",
+                     "REVISION PMO": "3",
+                     "APROBADO PMO": "4",
+                     "APROBADO": "4",
+                     "CONTROL": "5",
+                     "GESTION": "6",
+                     "REVISION DIRECCION": "8",
+                     "DIRECCION": "8",
+                     "APROBACIÓN DIRECCIÓN": "9",
+                     "RECHAZO": "99",
+                     "FINALIZADO": "99"
+                 };
+             
+                 const stateMap = {
+                     "COMPLETED": "Positive",
+                     "APPROVED": "Positive",
+                     "RECHAZO": "Negative",
+                     "REJECTED": "Negative",
+                     "PENDIENTE": "Critical",
+                     "EMAIL": "Neutral",
+                     "CREATED": "Neutral",
+                     "TRIGGERED": "Neutral",
+                     "REACHED": "Neutral"
+                 };
+             
+                 const pasosExcluidos = [
+                     "Condición de Espera",
+                     "Esperar a terminar el flujo",
+                     "Espera respuesta",
+                     "Leer entradas",
+                     "Confirmar entradas" ,
+                     "Esperar antes de avanzar",
+                     "Iniciar Variable",
+                     "Condición 3",
+                     "Espera 1",
+                     "Tarea de script 12",
+                     "Condición 5",
+                     "Wait 1 minute 10",
+                     "Condición",
+                     "Esperar Rechazo",
+                     "Tarea de script",
+                     "Wait 1 minute 11",
+                     "Condición",
+                     "Condición 2",
+                     "Condición 8",
+ 
+                 ];
+             
+                 const eventosFiltrados = eventos.filter(e => {
+                     const paso = (e.paso || "").trim().toUpperCase();
+                     return !pasosExcluidos.some(ex => paso.includes(ex.toUpperCase()));
+                 });
+             
+                 const eventoMap = new Map();
+                 eventosFiltrados.forEach(e => {
+                     const clave = `${e.instancia}-${(e.paso || "").trim()}`;
+                     const existente = eventoMap.get(clave);
+                     if (!existente || new Date(e.timestamp) > new Date(existente.timestamp)) {
+                         eventoMap.set(clave, e);
+                     }
+                 });
+             
+                 const listaEventos = Array.from(eventoMap.values()).sort((a, b) =>
+                     new Date(a.timestamp) - new Date(b.timestamp)
+                 );
+             
+ 
+                 if (listaEventos.length === 0) {
+                     console.warn("No hay eventos válidos para mostrar en el flujo.");
+                     return;
+                 }
+             
+                 // Crear nodos (sin nodo inicial)
+                 listaEventos.forEach((evento, index) => {
+                     if (!evento.id) evento.id = "evento_" + index;
+                 
+                     if (index === 0 && (evento.paso || "").toUpperCase().includes("INICIALIZAR VARIABLE")) {
+                         evento.paso = "Solicitud enviada correctamente " + sNameProyect;
+                     }
+                     
+ 
+ 
+ 
+ 
+                     let pasoRaw = (evento.paso || "Paso desconocido").trim();
+ 
+                     if (
+                         index === listaEventos.length - 1 &&
+                         pasoRaw === "Paso desconocido" &&
+                         (evento.descripcion || "").toUpperCase().includes("FINALIZACIÓN DEL WORKFLOW")
+                     ) {
+                         pasoRaw = "Fin del proceso de aprobación";
+                     }
+                     
+ 
+ 
+                     const paso = pasoRaw.toUpperCase();
+ 
+ 
+           
+                     const descripcion = evento.descripcion || "";
+                 
+                     let laneId = "0";
+                     for (let key in laneMap) {
+                         if (paso.includes(key)) {
+                             laneId = laneMap[key];
+                             break;
+                         }
+                     }
+                 
+                     let state = "Neutral";
+                     for (let key in stateMap) {
+                         if ((evento.tipo || "").toUpperCase().includes(key)) {
+                             state = stateMap[key];
+                             break;
+                         }
+                     }
+ 
+                     if ((evento.tipo || "").toUpperCase() === "INTERMEDIATE_TIMER_EVENT_TRIGGERED") {
+                         state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
+                     }
+                     
+                     
+                     if ((evento.tipo || "").toUpperCase() === "EXCLUSIVE_GATEWAY_REACHED") {
+                         state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
+                     }
+                     const siguiente = listaEventos[index + 1];
+                     const children = siguiente ? [siguiente.id] : [];
+                 
+                     const node = new sap.suite.ui.commons.ProcessFlowNode({
+                         nodeId: evento.id,
+                         laneId: laneId,
+                         title: pasoRaw,
+                         titleAbbreviation: pasoRaw.substring(0, 3),
+                         state: state,
+                         stateText: descripcion,
+                         children: children,
+                         isTitleClickable: true,
+                         focused: false,
+                         highlighted: false,
+                         texts: [pasoRaw, descripcion]
+                     });
+                 
+                     node.addCustomData(new sap.ui.core.CustomData({
+                         key: "eventoOriginal",
+                         value: JSON.stringify(evento)
+                     }));
+                 
+                     node.data("eventoOriginal", evento);
+                     oProcessFlow.addNode(node);
+                 });
+                 
+             },*/
+
             onNodePress: function (oEvent) {
                 const node = oEvent.getParameters();
-            
+
                 if (!node) {
                     console.warn("Nodo no encontrado (evento vacío)");
                     return;
                 }
-            
+
                 const evento = node.data("eventoOriginal");
                 if (!evento) {
                     console.warn("El nodo no tiene data 'eventoOriginal'");
                     return;
                 }
-            
+
                 if (!this._oPopover) {
                     this._oPopover = new sap.m.Popover({
                         title: "Detalles del Paso",
@@ -581,19 +1015,19 @@ sap.ui.define(
                         ]
                     });
                 }
-            
+
                 // Actualizar datos en los ObjectStatus
                 sap.ui.getCore().byId("statusPaso").setText(evento.paso);
                 sap.ui.getCore().byId("statusDescripcion").setText(evento.descripcion);
                 sap.ui.getCore().byId("statusFecha").setText(evento.timestamp);
-            
+
                 this._oPopover.openBy(node);
             },
-            
-            
-            
-            
-            
+
+
+
+
+
 
 
             /*          onVerHistorial: async function (oEvent) {
@@ -662,10 +1096,10 @@ sap.ui.define(
 
                             if (token) {
                                 this._startSessionWatcher(token);
-                             ///   console.log("Token recibido y watcher iniciado.");
-                              } else {
+                                ///   console.log("Token recibido y watcher iniciado.");
+                            } else {
                                 console.warn("Token no recibido en la respuesta.");
-                              }
+                            }
 
 
                             // console.log(" Datos seteados en la vista:", userInfo);
@@ -684,92 +1118,92 @@ sap.ui.define(
                 const expiresAt = decoded.exp * 1000; // Expiración en milisegundos
                 const now = Date.now();
                 const timeUntilWarning = expiresAt - now - (1 * 60 * 1000); // 1 minuto antes
-              
+
                 if (timeUntilWarning > 0) {
-                  setTimeout(() => {
-                    this._showSessionWarning(expiresAt);
-                  }, timeUntilWarning);
+                    setTimeout(() => {
+                        this._showSessionWarning(expiresAt);
+                    }, timeUntilWarning);
                 } else {
-                  this._showSessionWarning(expiresAt);
+                    this._showSessionWarning(expiresAt);
                 }
-              },
-              
-        
-              _showSessionWarning: function (expiresAt) {
+            },
+
+
+            _showSessionWarning: function (expiresAt) {
                 let secondsLeft = Math.floor((expiresAt - Date.now()) / 1000);
-              
+
                 const interval = setInterval(() => {
-                  if (secondsLeft <= 0) {
-                    clearInterval(interval);
-                    MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
-                    return;
-                  }
-              
-                  // Actualiza el texto del diálogo dinámicamente
-                  if (dialog && dialog.getContent && dialog.getContent()[0]) {
-                    dialog.getContent()[0].setText(`Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?`);
-                  }
-              
-                  secondsLeft--;
+                    if (secondsLeft <= 0) {
+                        clearInterval(interval);
+                        MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
+                        return;
+                    }
+
+                    // Actualiza el texto del diálogo dinámicamente
+                    if (dialog && dialog.getContent && dialog.getContent()[0]) {
+                        dialog.getContent()[0].setText(`Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?`);
+                    }
+
+                    secondsLeft--;
                 }, 1000);
-              
+
                 const dialog = new sap.m.Dialog({
-                  title: "⚠️ Sesión a punto de expirar",
-                  content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
-                  beginButton: new sap.m.Button({
-                    text: "Sí, mantener sesión",
-                    press: () => {
-                      clearInterval(interval);
-                      dialog.close();
-                      this._refreshToken(); // 🔁 Simula renovación de sesión
+                    title: "⚠️ Sesión a punto de expirar",
+                    content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
+                    beginButton: new sap.m.Button({
+                        text: "Sí, mantener sesión",
+                        press: () => {
+                            clearInterval(interval);
+                            dialog.close();
+                            this._refreshToken(); // 🔁 Simula renovación de sesión
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "No",
+                        press: () => {
+                            clearInterval(interval);
+                            dialog.close();
+                            // 🔕 No hay logout en pruebas
+                        }
+                    }),
+                    afterClose: () => {
+                        dialog.destroy();
                     }
-                  }),
-                  endButton: new sap.m.Button({
-                    text: "No",
-                    press: () => {
-                      clearInterval(interval);
-                      dialog.close();
-                      // 🔕 No hay logout en pruebas
-                    }
-                  }),
-                  afterClose: () => {
-                    dialog.destroy();
-                  }
                 });
-              
+
                 dialog.open();
-              },
-              
-              
-        
-              _parseJwt: function (token) {
+            },
+
+
+
+            _parseJwt: function (token) {
                 const base64Url = token.split('.')[1];
                 const base64 = atob(base64Url.replace(/-/g, '+').replace(/_/g, '/'));
                 return JSON.parse(decodeURIComponent(escape(base64)));
-              },
-              
-              _refreshToken: async function () {
+            },
+
+            _refreshToken: async function () {
                 try {
-                  const response = await fetch("/odata/v4/datos-cdo/getUserInfo", {
-                    method: "GET"
-                  });
-                  const data = await response.json();
-              
-                  console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
-              
-                  const token = data.token || (data.value && data.value.token);
-              
-                  if (token) {
-                    this._startSessionWatcher(token);
-                    MessageBox.success("Sesión renovada.");
-                  } else {
-                    throw new Error("Token no recibido.");
-                  }
+                    const response = await fetch("/odata/v4/datos-cdo/getUserInfo", {
+                        method: "GET"
+                    });
+                    const data = await response.json();
+
+                    console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
+
+                    const token = data.token || (data.value && data.value.token);
+
+                    if (token) {
+                        this._startSessionWatcher(token);
+                        MessageBox.success("Sesión renovada.");
+                    } else {
+                        throw new Error("Token no recibido.");
+                    }
                 } catch (err) {
-                  MessageBox.error("No se pudo renovar la sesión: " + err.message);
+                    MessageBox.error("No se pudo renovar la sesión: " + err.message);
                 }
-              },
-              
+            },
+
 
 
 
@@ -849,36 +1283,64 @@ sap.ui.define(
             },
 
             onSearch: function (oEvent) {
-                // Obtener el valor ingresado en el SearchField
-                var sQuery = oEvent.getParameter("newValue");
-                var oTable = this.byId("idPendientes"); // Obtener la tabla
-                var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+                const sQuery = oEvent.getParameter("newValue") || oEvent.getParameter("query") || "";
+                const oTable = this.byId("newId_tablePendientes"); // Cambia por el id real de la tabla
+                const oBinding = oTable.getBinding("items");
 
-                // Crear el filtro de estado "Pendiente"
-                var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
-
-                // Crear el filtro de búsqueda para el nombre del proyecto
-                var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
-                if (sQuery && sQuery.length > 0) {
-                    // Crear un filtro que sea insensible al caso (case insensitive)
-                    var oSearchFilter = new sap.ui.model.Filter({
-                        path: "nameProyect",
-                        operator: sap.ui.model.FilterOperator.Contains,
-                        value1: sQuery.toLowerCase(),  // Convertir a minúsculas el valor de búsqueda
-                        caseSensitive: false           // Configurar el filtro para que no sea sensible al caso
-                    });
-                    aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                if (oBinding) {
+                    if (sQuery.length > 0) {
+                        const oFilter = new sap.ui.model.Filter({
+                            filters: [
+                                // Filtros en los campos de tu modelo
+                                new sap.ui.model.Filter("FechaCreacionFormateada", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("nameProyect", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("descripcion", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("NombreArea", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("NombreJefe", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("FechaModificacionFormateada", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.Contains, sQuery)
+                            ],
+                            and: false
+                        });
+                        oBinding.filter(oFilter);
+                    } else {
+                        oBinding.filter([]);
+                    }
                 }
-
-                // Combinar ambos filtros usando un filtro AND
-                var oCombinedFilter = new sap.ui.model.Filter({
-                    filters: aFilters,
-                    and: true
-                });
-
-                // Aplicar el filtro combinado
-                oBinding.filter(oCombinedFilter);
             },
+
+
+            /*  onSearch: function (oEvent) {
+                 // Obtener el valor ingresado en el SearchField
+                 var sQuery = oEvent.getParameter("newValue");
+                 var oTable = this.byId("idPendientes"); // Obtener la tabla
+                 var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
+ 
+                 // Crear el filtro de estado "Pendiente"
+                 var oStatusFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Pendiente");
+ 
+                 // Crear el filtro de búsqueda para el nombre del proyecto
+                 var aFilters = [oStatusFilter]; // Incluir el filtro de estado por defecto
+                 if (sQuery && sQuery.length > 0) {
+                     // Crear un filtro que sea insensible al caso (case insensitive)
+                     var oSearchFilter = new sap.ui.model.Filter({
+                         path: "nameProyect",
+                         operator: sap.ui.model.FilterOperator.Contains,
+                         value1: sQuery.toLowerCase(),  // Convertir a minúsculas el valor de búsqueda
+                         caseSensitive: false           // Configurar el filtro para que no sea sensible al caso
+                     });
+                     aFilters.push(oSearchFilter); // Agregar el filtro de búsqueda al array de filtros
+                 }
+ 
+                 // Combinar ambos filtros usando un filtro AND
+                 var oCombinedFilter = new sap.ui.model.Filter({
+                     filters: aFilters,
+                     and: true
+                 });
+ 
+                 // Aplicar el filtro combinado
+                 oBinding.filter(oCombinedFilter);
+             },*/
 
 
 
@@ -912,6 +1374,32 @@ sap.ui.define(
 
                 // Aplicar el filtro combinado
                 oBinding.filter(oCombinedFilter);
+            },
+
+
+
+            onSearchAprobadores: function (oEvent) {
+                const sQuery = oEvent.getParameter("newValue") || oEvent.getParameter("query") || "";
+                const oTable = this.byId("tabla_Aprobadores");
+                const oBinding = oTable.getBinding("items");
+
+                if (oBinding) {
+                    if (sQuery.length > 0) {
+                        const oFilter = new sap.ui.model.Filter({
+                            filters: [
+                                new sap.ui.model.Filter("nombreEtapa", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("nameProyect", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("descripcion", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("asignadoA", sap.ui.model.FilterOperator.Contains, sQuery),
+                                new sap.ui.model.Filter("comentario", sap.ui.model.FilterOperator.Contains, sQuery)
+                            ],
+                            and: false  // OR entre filtros para buscar en varios campos
+                        });
+                        oBinding.filter(oFilter);
+                    } else {
+                        oBinding.filter([]);  // Quitar filtros si no hay texto
+                    }
+                }
             },
 
             /*    onActivityPress: function (oEvent, result) {
@@ -1118,7 +1606,7 @@ sap.ui.define(
             },
 
 
-         
+
 
 
             _refreshTableData: function () {
@@ -1134,7 +1622,7 @@ sap.ui.define(
             },
 
 
-       
+
 
 
 
@@ -1162,81 +1650,172 @@ sap.ui.define(
                 return oDateFormat.format(dateValue);
             },
 
-
-
             onEditPress: function (oEvent) {
                 var oButton = oEvent.getSource();
-              
+
                 var oContextPendientes = oButton.getBindingContext("modelPendientes");
                 var oContextAprobados = oButton.getBindingContext("modelAprobados");
                 var oContextBorradores = oButton.getBindingContext("modelBorrador");
-              
-                var oContext = oContextPendientes || oContextAprobados || oContextBorradores;
-              
+                var oContextAprobadores = oButton.getBindingContext("modelEtapasAsignadas");
+
+                var oContext = oContextPendientes || oContextAprobados || oContextBorradores || oContextAprobadores;
+
                 if (!oContext) {
-                  console.error("No se pudo obtener el contexto del ítem.");
-                  return;
+                    console.error("No se pudo obtener el contexto del ítem.");
+                    return;
                 }
-              
-                var sProjectID = oContext.getProperty("ID");
+
+                var sProjectID = oContext.getProperty("ID") || oContext.getProperty("projectId");
                 if (!sProjectID) {
-                  console.error("El ID del proyecto es nulo o indefinido");
-                  return;
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
                 }
-              
+
                 var sNameProyect = oContext.getProperty("nameProyect");
-              
+
                 var that = this;
-              
+
                 var oModel = this.getView().getModel("mainService");
                 if (oModel) {
-                  oModel.setData({});
-                  oModel.refresh(true);
+                    oModel.setData({});
+                    oModel.refresh(true);
                 }
-              
+
+                // Determinar el modelo de origen
                 var sourceModelName = oContextPendientes
-                  ? "modelPendientes"
-                  : (oContextAprobados ? "modelAprobados" : "modelBorrador");
-              
-                // 👇 Aquí se decide el modo dinámicamente
-                var mode = (sourceModelName === "modelAprobados") ? "display" : "edit";
-              
+                    ? "modelPendientes"
+                    : (oContextAprobados
+                        ? "modelAprobados"
+                        : (oContextBorradores
+                            ? "modelBorrador"
+                            : "modelEtapasAsignadas"));
+
+                // Modo: si es del modelo de etapas asignadas => siempre display
+                var mode = (sourceModelName === "modelEtapasAsignadas" || sourceModelName === "modelAprobados")
+                    ? "display"
+                    : "edit";
+
                 var dialogTitle = (mode === "edit") ? "Confirmar Edición" : "Ver Solicitud";
                 var dialogText = (mode === "edit")
-                  ? "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
-                  : "¿Quieres ver el contenido de esta solicitud?";
-              
+                    ? "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                    : "¿Quieres ver el contenido de esta solicitud?";
+
                 var oDialog = new sap.m.Dialog({
-                  title: dialogTitle,
-                  type: "Message",
-                  state: "Warning",
-                  content: new sap.m.Text({ text: dialogText }),
-                  beginButton: new sap.m.Button({
-                    text: "Confirmar",
-                    press: function () {
-                      oDialog.close();
-              
-                      var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
-                      oRouter.navTo("viewWithMode", {
-                        sourceModel: sourceModelName,
-                        mode: mode,
-                        sProjectID: sProjectID,
-                 
-                      }, true);
-                    }
-                  }),
-                  endButton: new sap.m.Button({
-                    text: "Cancelar",
-                    press: function () {
-                      oDialog.close();
-                    }
-                  })
+                    title: dialogTitle,
+                    type: "Message",
+                    state: "Warning",
+                    content: new sap.m.Text({ text: dialogText }),
+                    beginButton: new sap.m.Button({
+                        text: "Confirmar",
+                        press: function () {
+                            oDialog.close();
+
+                            var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+
+                            // 🚀 Navegación especial si es del modelo de aprobadores
+                            if (sourceModelName === "modelEtapasAsignadas") {
+                                oRouter.navTo("viewWithAprobacion", {
+                                    sourceModel: sourceModelName,
+                                    mode: mode,
+                                    sProjectID: sProjectID,
+                                    aprobacion: "true"
+                                });
+                            } else {
+                                // Ruta estándar con modo
+                                oRouter.navTo("viewWithMode", {
+                                    sourceModel: sourceModelName,
+                                    mode: mode,
+                                    sProjectID: sProjectID
+                                }, true);
+                            }
+                        }
+                    }),
+                    endButton: new sap.m.Button({
+                        text: "Cancelar",
+                        press: function () {
+                            oDialog.close();
+                        }
+                    })
                 });
-              
+
                 oDialog.open();
-              },
-              
-            
+            },
+
+
+            /*  onEditPress: function (oEvent) {
+                  var oButton = oEvent.getSource();
+                
+                  var oContextPendientes = oButton.getBindingContext("modelPendientes");
+                  var oContextAprobados = oButton.getBindingContext("modelAprobados");
+                  var oContextBorradores = oButton.getBindingContext("modelBorrador");
+                  var oContextAprobadores = oButton.getBindingContext("modelEtapasAsignadas");
+                
+                  var oContext = oContextPendientes || oContextAprobados || oContextBorradores  || oContextAprobadores;
+                
+                  if (!oContext) {
+                    console.error("No se pudo obtener el contexto del ítem.");
+                    return;
+                  }
+                
+                  var sProjectID = oContext.getProperty("ID") || oContext.getProperty("projectId");
+                  if (!sProjectID) {
+                    console.error("El ID del proyecto es nulo o indefinido");
+                    return;
+                  }
+                
+                  var sNameProyect = oContext.getProperty("nameProyect");
+                
+                  var that = this;
+                
+                  var oModel = this.getView().getModel("mainService");
+                  if (oModel) {
+                    oModel.setData({});
+                    oModel.refresh(true);
+                  }
+                
+                  var sourceModelName = oContextPendientes
+                    ? "modelPendientes"
+                    : (oContextAprobados ? "modelAprobados" : "modelBorrador");
+                
+                  // 👇 Aquí se decide el modo dinámicamente
+                  var mode = (sourceModelName === "modelAprobados") ? "display" : "edit";
+                
+                  var dialogTitle = (mode === "edit") ? "Confirmar Edición" : "Ver Solicitud";
+                  var dialogText = (mode === "edit")
+                    ? "¿Estás seguro de que quieres editar el proyecto '" + sNameProyect + "'?"
+                    : "¿Quieres ver el contenido de esta solicitud?";
+                
+                  var oDialog = new sap.m.Dialog({
+                    title: dialogTitle,
+                    type: "Message",
+                    state: "Warning",
+                    content: new sap.m.Text({ text: dialogText }),
+                    beginButton: new sap.m.Button({
+                      text: "Confirmar",
+                      press: function () {
+                        oDialog.close();
+                
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                        oRouter.navTo("viewWithMode", {
+                          sourceModel: sourceModelName,
+                          mode: mode,
+                          sProjectID: sProjectID,
+                   
+                        }, true);
+                      }
+                    }),
+                    endButton: new sap.m.Button({
+                      text: "Cancelar",
+                      press: function () {
+                        oDialog.close();
+                      }
+                    })
+                  });
+                
+                  oDialog.open();
+                },*/
+
+
 
 
 
@@ -1518,28 +2097,28 @@ sap.ui.define(
 
 
 
-               onNavToView1: function () {
+            onNavToView1: function () {
                 var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                 var oComponent = this.getOwnerComponent();
-              
-                var oTargetView = oComponent.byId("view"); // ID de la view destino
-              
-                if (oTargetView && oTargetView.getController && typeof oTargetView.getController === "function") {
-                  var oController = oTargetView.getController();
-              
-                  if (oController._clearAllInputs) {
-                    oController._clearAllInputs(); // Limpieza manual
-                  }
-                }
-              
-         
 
+                // Limpieza en paralelo (no bloquea la navegación)
+                Promise.resolve().then(() => {
+                    var oTargetView = oComponent.byId("view");
+                    if (oTargetView && oTargetView.getController && typeof oTargetView.getController === "function") {
+                        var oController = oTargetView.getController();
+                        if (oController._clearAllInputs) {
+                            oController._clearAllInputs();
+                        }
+                    }
+                });
+
+                // Navegar inmediatamente
                 oRouter.navTo("viewNoParam", {
-                    mode: "create",
-                  });
+                    mode: "create"
+                });
+            },
 
-              },
-              
+
 
 
         });

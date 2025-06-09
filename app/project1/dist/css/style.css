@@ -18,6 +18,23 @@
     font-weight: bold;
 }
 
+.statusText {
+    font-weight: bold;
+  }
+  
+  .statusText.Aprobado {
+    color: green;
+  }
+  
+  .statusText.Rechazado {
+    color: red;
+  }
+  
+  .statusText.Pendiente {
+    color: orange;
+  }
+  
+
 .color{
 
     color: hsl(226, 100%, 60%);

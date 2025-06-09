@@ -561,7 +561,7 @@
                                                                 <ObjectStatus
                                                                     id="status02"
                                                                     text="{modelAprobados>Estado}"
-                                                                                     state="None"/>
+                                                                                     state="Success"/>
                                                                 
                                                                 
                                           

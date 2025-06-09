@@ -39,6 +39,8 @@ sap.ui.define(
 
                 // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
+
+
             },
 
 
@@ -49,7 +51,7 @@ sap.ui.define(
 
 
 
-     
+
             _cargarDatosUsuario: async function () {
                 try {
                     const userResponse = await fetch("/odata/v4/datos-cdo/userdata");
@@ -64,6 +66,7 @@ sap.ui.define(
                     this.getView().setModel(userModel, "userModel");
 
                     await this.filterEstado();
+
 
                 } catch (error) {
                     console.error("Error al cargar el usuario:", error);
@@ -130,9 +133,17 @@ sap.ui.define(
                                 etapas = etapasData.value || [];
                             }
 
-
                             const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
-                            proyecto.Estado = hayEtapasPendientes ? "Pendiente" : (wfItem?.estado || "Aprobado");
+
+                            if (hayEtapasPendientes) {
+                                proyecto.Estado = "Pendiente";
+                            } else if (wfItem?.estado) {
+                                proyecto.Estado = wfItem.estado;
+                            } else {
+                                // No hay workflow ni etapas: mantenemos el estado original de la base de datos
+                                proyecto.Estado = proyecto.Estado || "Borrador";
+                            }
+                            
 
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
@@ -143,9 +154,7 @@ sap.ui.define(
                         })
                     );
 
-                    const aProyectosAprobados = aProyectosConEstado.filter(p =>
-                        p.Estado === "Aprobado" || p.Estado === "Rechazado"
-                    );
+                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
                     const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
                     const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
@@ -221,7 +230,11 @@ sap.ui.define(
 
                     }), "modelEtapasAsignadas");
 
-
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosRechazados,
+                        Count: aProyectosRechazados.length
+                    }), "modelRechazados");
+                    
                     console.log("Etapas asignadas:", aEtapasAsignadas); // ← debería estar vacío si no hay nada asignado
                     console.log("Cantidad:", aEtapasAsignadas.length);
 
@@ -232,7 +245,7 @@ sap.ui.define(
                     }
 
 
-                    console.log("Etapas asignadas al usuario:", aEtapasAsignadas);
+                    console.log("Etapas asignadas al usuario:", aProyectosAprobados);
                     console.log("Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario);
 
                     const oStatusControl = this.byId("status0");
@@ -252,9 +265,7 @@ sap.ui.define(
                 }
             },
 
-
-
-
+    
 
             /*
                        filterEstado: async function () {
@@ -620,6 +631,8 @@ sap.ui.define(
                 this.byId("text1881").setText("PEP de solicitud: " + sID);
                 this.byId("itb1").setSelectedKey("people");
             },
+
+            
             createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
                 const laneMap = {
                     "SOLICITUD CDO": "0",
@@ -1589,6 +1602,9 @@ sap.ui.define(
                     console.error("No se recibió un ID válido");
                     return;
                 }
+
+                this.filterEstado();
+
 
             },
 
