@@ -472,7 +472,7 @@ sap.ui.define([
         btnBorrado.attachPress(this.onBorrador, this);
         if (
           sMode === "display" &&
-          (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas")
+          (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas" || sSourceModel === "modelRechazados")
         ) {
           this._Visualizar(sProjectID, sSourceModel);
           return;
@@ -1171,7 +1171,10 @@ sap.ui.define([
 
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
+        const idProject = this._sProjectID;
         const usuario = "Carolina Falen";
+
+        console.log("ID DEL PROYECTO "   +  idProject );
 
         if (!workflowInstanceId) {
           sap.m.MessageBox.error("No se encontró el ID del flujo de trabajo.");
@@ -1184,6 +1187,8 @@ sap.ui.define([
         oContext.setParameter("workflowInstanceId", workflowInstanceId);
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
+        oContext.setParameter("idProject", idProject);
+
 
         try {
           await oContext.execute();
@@ -4237,7 +4242,7 @@ sap.ui.define([
                   const workflowInstanceId = result.workflowInstanceId;
 
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
-                  //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                  sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
 
 
                 } else {

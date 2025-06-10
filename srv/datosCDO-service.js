@@ -122,9 +122,19 @@ module.exports = cds.service.impl(async function () {
 
 
   this.on('completeWorkflow', async (req) => {
-    const { workflowInstanceId, decision, comentario = '' } = req.data;
+    const { workflowInstanceId, decision, comentario = '', idProject } = req.data;
     const userEmail = req.user.email;
     const token = await getWorkflowToken();
+
+    console.log("🧪 req.data:", req.data);
+
+    
+    if (!idProject) {
+      console.warn("⚠️ idProject no recibido. Verifica el payload.");
+    }
+    
+
+    console.log("ID DEL PROYECTO " + idProject );
 
     // Función para esperar y reintentar obtener nuevas tareas
     async function waitForNextTasks(workflowInstanceId, token, maxRetries = 5, delayMs = 1500) {
@@ -194,6 +204,9 @@ module.exports = cds.service.impl(async function () {
         })
         .where({ taskInstanceId: taskId });
 
+
+
+
       // Paso 5: Reintentar obtener tareas nuevas con espera
       const newActiveTasks = await waitForNextTasks(workflowInstanceId, token);
 
@@ -230,6 +243,17 @@ module.exports = cds.service.impl(async function () {
         })
         .where({ ID: workflowInstanceId });
 
+      // ** Aquí agrego el UPDATE para DatosProyect solo estado **
+        if (idProject) {
+          await UPDATE('DatosProyect')
+            .set({
+              estado: estadoFinal
+            })
+            .where({ ID: idProject });
+          console.log(`✅ Estado actualizado en DatosProyect para ID: ${idProject}`);
+        }
+
+
       return { message: `✅ Workflow completado. Estado final: ${estadoFinal}` };
 
     } catch (err) {
@@ -258,7 +282,7 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-  /* this.on('cancelWorkflow', async (req) => {
+   this.on('cancelWorkflow', async (req) => {
      const workflowInstanceId = req.data.workflowInstanceId; // Recibes el ID directamente
  
      console.log("id recibido " + workflowInstanceId);
@@ -282,7 +306,7 @@ module.exports = cds.service.impl(async function () {
        console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
        req.reject(500, `Error al cancelar workflow: ${err.message}`);
      }
-   });*/
+   });
 
 
 

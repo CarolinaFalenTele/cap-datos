@@ -129,6 +129,9 @@ sap.ui.define([
 
 
         this.enviarID();
+
+
+        console.log("ID ANTES DE ACTUALIZAR   OINIT "  + this._idWorkflowInstancias);
       },
 
 
@@ -472,7 +475,7 @@ sap.ui.define([
         btnBorrado.attachPress(this.onBorrador, this);
         if (
           sMode === "display" &&
-          (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas")
+          (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas" || sSourceModel === "modelRechazados")
         ) {
           this._Visualizar(sProjectID, sSourceModel);
           return;
@@ -691,7 +694,7 @@ sap.ui.define([
         const oView = this.getView();
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
-
+        this._idWorkflowInstancias = null; // o undefined
 
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
@@ -1171,7 +1174,10 @@ sap.ui.define([
 
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
+        const idProject = this._sProjectID;
         const usuario = "Carolina Falen";
+
+        console.log("ID DEL PROYECTO "   +  idProject );
 
         if (!workflowInstanceId) {
           sap.m.MessageBox.error("No se encontró el ID del flujo de trabajo.");
@@ -1184,6 +1190,8 @@ sap.ui.define([
         oContext.setParameter("workflowInstanceId", workflowInstanceId);
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
+        oContext.setParameter("idProject", idProject);
+
 
         try {
           await oContext.execute();
@@ -3898,6 +3906,15 @@ sap.ui.define([
         console.log("Entre al ONSAVE ");
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
+
+        if (!this._oBusyDialog) {
+          this._oBusyDialog = new sap.m.BusyDialog({
+            title: "Procesando",
+            text: "Procesando su solicitud, por favor espere un momento...",
+          });
+        }
+      
+
         // Si no está en el modelo, usa la propiedad interna
         if (!sMode) {
           sMode = this._mode || "";
@@ -4074,6 +4091,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
+          this._oBusyDialog.open(); // Mostrar cargando
 
 
           if (this._mode === "edit") {
@@ -4169,7 +4187,7 @@ sap.ui.define([
 
 
 
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+          //    this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
 
               // Llamadas en paralelo para mejorar rendimiento
               const insertAllResults = await Promise.all([
@@ -4237,13 +4255,15 @@ sap.ui.define([
                   const workflowInstanceId = result.workflowInstanceId;
 
                   this.insertWorkflow(workflowInstanceId, sEmpleado, generatedId, sCsrfToken);
-                  //sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                //  sap.m.MessageToast.show("Workflow iniciado correctamente con ID: " + workflowInstanceId);
+                  this._oBusyDialog.close();
 
 
                 } else {
                   sap.m.MessageBox.error("No se recibió el ID del flujo de trabajo.");
                 }
 
+                this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
 
 
               } catch (err) {
@@ -4573,6 +4593,8 @@ sap.ui.define([
       insertWorkflow: async function (workflowInstanceId, sEmpleado, generatedId, sCsrfToken) {
 
         var idWork = this._idWorkflowInstancias;
+
+        console.log("ID ANTES DE ACTUALIZAR"  + idWork);
 
         var payload = {
           workflowId: workflowInstanceId,

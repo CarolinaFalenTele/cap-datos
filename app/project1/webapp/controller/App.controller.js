@@ -19,9 +19,6 @@ sap.ui.define(
 
 
 
-                //   var oProcessFlow = this.byId("processflow1");
-                //oProcessFlow.attachNodePress(this.onNodePress, this);
-
                 this._loadProjectData();
                 const oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("app").attachPatternMatched(this._onObjectMatched, this);
@@ -39,7 +36,6 @@ sap.ui.define(
 
                 // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
-
 
             },
 
@@ -73,8 +69,208 @@ sap.ui.define(
                 }
             },
 
-
             filterEstado: async function () {
+                try {
+                    const userModel = this.getView().getModel("userModel");
+                    if (!userModel) {
+                        console.error("❌ userModel no está definido aún.");
+                        return;
+                    }
+            
+                    const userId = userModel.getProperty("/ID");
+                    const userEmail = userModel.getProperty("/email");
+                    console.log("👤 Usuario ID:", userId);
+                    console.log("📧 Usuario Email:", userEmail);
+            
+                    const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
+                    const data = await response.json();
+                    const aProjects = data.value;
+                    console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
+            
+                    const aProyectosConEstado = await Promise.all(
+                        aProjects.map(async (proyecto) => {
+                            const projectId = proyecto.ID;
+            
+                            const formatearFecha = (fechaStr) => {
+                                if (!fechaStr) return null;
+                                const fecha = new Date(fechaStr);
+                                return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
+                            };
+            
+                            proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
+                            proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
+                            proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
+                            proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
+            
+                            console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
+                            console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
+            
+                            if (proyecto.Estado === "Borrador") {
+                                console.log("➡️ Estado Borrador detectado, saltando lógica de workflow.");
+                                proyecto.workflowId = null;
+                                proyecto.actualizadoEn = null;
+                                proyecto.actualizadoEnFormateada = "No aplica";
+                                proyecto.Etapas = [];
+                                return proyecto;
+                            }
+            
+                            const wfResponse = await fetch(
+                                `/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq ${projectId}&$orderby=creadoEn desc&$top=1`
+                            );
+                            const wfData = await wfResponse.json();
+                            const wfItem = wfData.value[0];
+            
+                            console.log("📄 Workflow encontrado:", wfItem);
+            
+                            let etapas = [];
+                            if (wfItem?.ID) {
+                                const etapasResponse = await fetch(
+                                    `/odata/v4/datos-cdo/WorkflowEtapas?$filter=workflow_ID eq ${wfItem.workflowId}`
+                                );
+
+                                this._workID = wfItem.workflowId;
+                                console.log("✅ ID DEL WORKFLOW asignado:", this._workID);
+
+                                const etapasData = await etapasResponse.json();
+                                etapas = etapasData.value || [];
+                                console.log(`🪜 Etapas obtenidas: ${etapas.length}`);
+                            }
+
+
+            
+                            const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
+            
+                            if (hayEtapasPendientes) {
+                                proyecto.Estado = "Pendiente";
+                            } else if (wfItem?.estado) {
+                                proyecto.Estado = wfItem.estado;
+                            } else {
+                                proyecto.Estado = proyecto.Estado || "Borrador";
+                            }
+            
+                            console.log("✅ Estado FINAL asignado:", proyecto.Estado);
+            
+                            proyecto.workflowId = wfItem?.workflowId || null;
+                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
+                            proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
+                            proyecto.Etapas = etapas;
+            
+                            return proyecto;
+                        })
+                    );
+            
+                    // Separar por estado
+                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
+                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
+                    const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
+                    const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
+            
+                    console.log("📌 Clasificación de proyectos:");
+                    console.log("✅ Aprobados:", aProyectosAprobados.length);
+                    console.log("🕒 Pendientes:", aProyectosPendientes.length);
+                    console.log("📝 Borrador:", aProyectosBorrador.length);
+                    console.log("❌ Rechazados:", aProyectosRechazados.length);
+            
+                    // Etapas asignadas al usuario
+                    const aEtapasAsignadas = [];
+                    const aProyectosAsignadosAlUsuario = [];
+            
+                    aProyectosPendientes.forEach((proyecto) => {
+                        let tieneEtapaAsignada = false;
+            
+                        proyecto.Etapas.forEach((etapa) => {
+                            if (
+                                etapa.estado === "Pendiente" &&
+                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
+                            ) {
+                                console.log(`📥 Etapa asignada encontrada:`, etapa);
+                                tieneEtapaAsignada = true;
+            
+                                aEtapasAsignadas.push({
+                                    nombreEtapa: etapa.nombreEtapa,
+                                    asignadoA: etapa.asignadoA,
+                                    aprobadoPor: etapa.aprobadoPor,
+                                    estado: etapa.estado,
+                                    comentario: etapa.comentario,
+                                    fechaAprobado: etapa.fechaAprobado,
+                                    nameProyect: proyecto.nameProyect,
+                                    creadoPor: proyecto.creadoPor,
+                                    descripcion: proyecto.descripcion,
+                                    projectId: proyecto.ID
+                                });
+                            }
+                        });
+            
+                        if (tieneEtapaAsignada) {
+                            aProyectosAsignadosAlUsuario.push(proyecto);
+                        }
+                    });
+            
+                    // Modelos JSON para la vista
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobados,
+                        Count: aProyectosAprobados.length
+                    }), "modelAprobados");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosPendientes,
+                        Count: aProyectosPendientes.length
+                    }), "modelPendientes");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosBorrador,
+                        Count: aProyectosBorrador.length
+                    }), "modelBorrador");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosRechazados,
+                        Count: aProyectosRechazados.length
+                    }), "modelRechazados");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Count: aProyectosConEstado.length
+                    }), "modelTotal");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Etapas: aEtapasAsignadas,
+                        Count: aEtapasAsignadas.length
+                    }), "modelEtapasAsignadas");
+            
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAsignadosAlUsuario,
+                        Count: aProyectosAsignadosAlUsuario.length
+                    }), "modelAsignados");
+            
+                    console.log("📌 Etapas asignadas al usuario:", aEtapasAsignadas.length);
+                    console.log("📌 Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario.length);
+            
+                    const oIconTab = this.byId("id34");
+                    if (oIconTab) {
+                        oIconTab.setVisible(aEtapasAsignadas.length > 0);
+                    }
+            
+                    // Actualizar texto de estado general
+                    const oStatusControl = this.byId("status0");
+                    if (aProyectosPendientes.length > 0) {
+                        oStatusControl.setText("Pendiente");
+                        oStatusControl.setState("Warning");
+                    } else if (aProyectosRechazados.length > 0) {
+                        oStatusControl.setText("Rechazado");
+                        oStatusControl.setState("None");
+                    } else if (aProyectosBorrador.length > 0) {
+                        oStatusControl.setText("Borrador");
+                        oStatusControl.setState("None");
+                    } else {
+                        oStatusControl.setText("Aprobado");
+                        oStatusControl.setState("Success");
+                    }
+            
+                } catch (error) {
+                    console.error("❌ Error al cargar los proyectos con estado:", error);
+                }
+            },
+            
+         /*   filterEstado: async function () {
                 try {
                     const userModel = this.getView().getModel("userModel");
                     if (!userModel) {
@@ -170,7 +366,12 @@ sap.ui.define(
                             if (
                                 etapa.estado === "Pendiente" &&
                                 etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
-                            ) {
+                            )
+                            
+                             {
+
+                                console.log("Etapa evaluada:", etapa, "Email usuario:", userEmail);
+
                                 tieneEtapaAsignada = true;
 
                                 aEtapasAsignadas.push({
@@ -235,7 +436,7 @@ sap.ui.define(
                         Count: aProyectosRechazados.length
                     }), "modelRechazados");
                     
-                    console.log("Etapas asignadas:", aEtapasAsignadas); // ← debería estar vacío si no hay nada asignado
+                    console.log("Etapas asignadas:", aProyectosRechazados); // ← debería estar vacío si no hay nada asignado
                     console.log("Cantidad:", aEtapasAsignadas.length);
 
                     // Mostrar la pestaña solo si hay etapas asignadas
@@ -245,14 +446,19 @@ sap.ui.define(
                     }
 
 
-                    console.log("Etapas asignadas al usuario:", aProyectosAprobados);
+                    console.log("Etapas asignadas al usuario:", aProyectosPendientes);
                     console.log("Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario);
 
                     const oStatusControl = this.byId("status0");
                     if (aProyectosPendientes.length > 0) {
                         oStatusControl.setText("Pendiente");
                         oStatusControl.setState("Warning");
-                    } else if (aProyectosBorrador.length > 0) {
+                    } else if (aProyectosRechazados.length > 0) {
+                        oStatusControl.setText("Rechazado");
+                        oStatusControl.setState("None");
+                    } 
+                    
+                    else if (aProyectosBorrador.length > 0) {
                         oStatusControl.setText("Borrador");
                         oStatusControl.setState("None");
                     } else {
@@ -263,7 +469,7 @@ sap.ui.define(
                 } catch (error) {
                     console.error("Error al cargar los proyectos con estado:", error);
                 }
-            },
+            },*/
 
     
 
@@ -553,6 +759,9 @@ sap.ui.define(
                 this.byId("text1881").setText("PEP de solicitud: " + sID);
                 this.byId("itb1").setSelectedKey("people");
             },
+
+
+
             onVerHistorial: async function (oEvent) {
                 try {
                     const oSource = oEvent.getSource();
@@ -781,169 +990,6 @@ sap.ui.define(
             },
 
 
-
-
-            /// este es el ultimo activi 
-            /* createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
-                 const laneMap = {
-                     "CDO": "0",
-                     "APROBACIÓN": "1",
-                     "NOTIFICACIÓN": "1",
-                     "CONFIRMAR ENTRADAS": "2",
-                     "BASIS": "2",
-                     "LEER ENTRADAS": "3",
-                     "REVISION PMO": "3",
-                     "APROBADO PMO": "4",
-                     "APROBADO": "4",
-                     "CONTROL": "5",
-                     "GESTION": "6",
-                     "REVISION DIRECCION": "8",
-                     "DIRECCION": "8",
-                     "APROBACIÓN DIRECCIÓN": "9",
-                     "RECHAZO": "99",
-                     "FINALIZADO": "99"
-                 };
-             
-                 const stateMap = {
-                     "COMPLETED": "Positive",
-                     "APPROVED": "Positive",
-                     "RECHAZO": "Negative",
-                     "REJECTED": "Negative",
-                     "PENDIENTE": "Critical",
-                     "EMAIL": "Neutral",
-                     "CREATED": "Neutral",
-                     "TRIGGERED": "Neutral",
-                     "REACHED": "Neutral"
-                 };
-             
-                 const pasosExcluidos = [
-                     "Condición de Espera",
-                     "Esperar a terminar el flujo",
-                     "Espera respuesta",
-                     "Leer entradas",
-                     "Confirmar entradas" ,
-                     "Esperar antes de avanzar",
-                     "Iniciar Variable",
-                     "Condición 3",
-                     "Espera 1",
-                     "Tarea de script 12",
-                     "Condición 5",
-                     "Wait 1 minute 10",
-                     "Condición",
-                     "Esperar Rechazo",
-                     "Tarea de script",
-                     "Wait 1 minute 11",
-                     "Condición",
-                     "Condición 2",
-                     "Condición 8",
- 
-                 ];
-             
-                 const eventosFiltrados = eventos.filter(e => {
-                     const paso = (e.paso || "").trim().toUpperCase();
-                     return !pasosExcluidos.some(ex => paso.includes(ex.toUpperCase()));
-                 });
-             
-                 const eventoMap = new Map();
-                 eventosFiltrados.forEach(e => {
-                     const clave = `${e.instancia}-${(e.paso || "").trim()}`;
-                     const existente = eventoMap.get(clave);
-                     if (!existente || new Date(e.timestamp) > new Date(existente.timestamp)) {
-                         eventoMap.set(clave, e);
-                     }
-                 });
-             
-                 const listaEventos = Array.from(eventoMap.values()).sort((a, b) =>
-                     new Date(a.timestamp) - new Date(b.timestamp)
-                 );
-             
- 
-                 if (listaEventos.length === 0) {
-                     console.warn("No hay eventos válidos para mostrar en el flujo.");
-                     return;
-                 }
-             
-                 // Crear nodos (sin nodo inicial)
-                 listaEventos.forEach((evento, index) => {
-                     if (!evento.id) evento.id = "evento_" + index;
-                 
-                     if (index === 0 && (evento.paso || "").toUpperCase().includes("INICIALIZAR VARIABLE")) {
-                         evento.paso = "Solicitud enviada correctamente " + sNameProyect;
-                     }
-                     
- 
- 
- 
- 
-                     let pasoRaw = (evento.paso || "Paso desconocido").trim();
- 
-                     if (
-                         index === listaEventos.length - 1 &&
-                         pasoRaw === "Paso desconocido" &&
-                         (evento.descripcion || "").toUpperCase().includes("FINALIZACIÓN DEL WORKFLOW")
-                     ) {
-                         pasoRaw = "Fin del proceso de aprobación";
-                     }
-                     
- 
- 
-                     const paso = pasoRaw.toUpperCase();
- 
- 
-           
-                     const descripcion = evento.descripcion || "";
-                 
-                     let laneId = "0";
-                     for (let key in laneMap) {
-                         if (paso.includes(key)) {
-                             laneId = laneMap[key];
-                             break;
-                         }
-                     }
-                 
-                     let state = "Neutral";
-                     for (let key in stateMap) {
-                         if ((evento.tipo || "").toUpperCase().includes(key)) {
-                             state = stateMap[key];
-                             break;
-                         }
-                     }
- 
-                     if ((evento.tipo || "").toUpperCase() === "INTERMEDIATE_TIMER_EVENT_TRIGGERED") {
-                         state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
-                     }
-                     
-                     
-                     if ((evento.tipo || "").toUpperCase() === "EXCLUSIVE_GATEWAY_REACHED") {
-                         state = "Critical"; // o 'Planned' si usas SAP Fiori 3 / Horizon
-                     }
-                     const siguiente = listaEventos[index + 1];
-                     const children = siguiente ? [siguiente.id] : [];
-                 
-                     const node = new sap.suite.ui.commons.ProcessFlowNode({
-                         nodeId: evento.id,
-                         laneId: laneId,
-                         title: pasoRaw,
-                         titleAbbreviation: pasoRaw.substring(0, 3),
-                         state: state,
-                         stateText: descripcion,
-                         children: children,
-                         isTitleClickable: true,
-                         focused: false,
-                         highlighted: false,
-                         texts: [pasoRaw, descripcion]
-                     });
-                 
-                     node.addCustomData(new sap.ui.core.CustomData({
-                         key: "eventoOriginal",
-                         value: JSON.stringify(evento)
-                     }));
-                 
-                     node.data("eventoOriginal", evento);
-                     oProcessFlow.addNode(node);
-                 });
-                 
-             },*/
 
             onNodePress: function (oEvent) {
                 const node = oEvent.getParameters();
@@ -1603,7 +1649,7 @@ sap.ui.define(
                     return;
                 }
 
-                this.filterEstado();
+                 this.filterEstado();
 
 
             },
@@ -1660,8 +1706,10 @@ sap.ui.define(
                 var oContextAprobados = oButton.getBindingContext("modelAprobados");
                 var oContextBorradores = oButton.getBindingContext("modelBorrador");
                 var oContextAprobadores = oButton.getBindingContext("modelEtapasAsignadas");
+                var oContextRechazados = oButton.getBindingContext("modelRechazados");
 
-                var oContext = oContextPendientes || oContextAprobados || oContextBorradores || oContextAprobadores;
+
+                var oContext = oContextPendientes || oContextAprobados || oContextBorradores || oContextAprobadores || oContextRechazados;
 
                 if (!oContext) {
                     console.error("No se pudo obtener el contexto del ítem.");
@@ -1685,16 +1733,23 @@ sap.ui.define(
                 }
 
                 // Determinar el modelo de origen
-                var sourceModelName = oContextPendientes
-                    ? "modelPendientes"
-                    : (oContextAprobados
-                        ? "modelAprobados"
-                        : (oContextBorradores
-                            ? "modelBorrador"
-                            : "modelEtapasAsignadas"));
+
+       var sourceModelName = null;
+
+if (oContextPendientes) {
+    sourceModelName = "modelPendientes";
+} else if (oContextAprobados) {
+    sourceModelName = "modelAprobados";
+} else if (oContextBorradores) {
+    sourceModelName = "modelBorrador";
+} else if (oContextAprobadores) {
+    sourceModelName = "modelEtapasAsignadas";
+} else if (oContextRechazados) {
+    sourceModelName = "modelRechazados";
+}
 
                 // Modo: si es del modelo de etapas asignadas => siempre display
-                var mode = (sourceModelName === "modelEtapasAsignadas" || sourceModelName === "modelAprobados")
+                var mode = (sourceModelName === "modelEtapasAsignadas" || sourceModelName === "modelAprobados" || sourceModelName === "modelRechazados"  )
                     ? "display"
                     : "edit";
 
@@ -1939,9 +1994,147 @@ sap.ui.define(
                 window.location.href = "mailto:" + sEmail;
             },
 
-
-
             onDeletePress: async function (oEvent) {
+                let oButton = oEvent.getSource();
+                let sProjectId = oButton.getCustomData()[0].getValue();
+            
+                if (!sProjectId) {
+                    console.error("No se encontró un ID válido para eliminar.");
+                    sap.m.MessageToast.show("Error: No se encontró un ID válido.");
+                    return;
+                }
+            
+                console.log(" Eliminando Proyecto con ID:", sProjectId);
+            
+                try {
+                    // Obtener CSRF Token
+                    let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
+                        method: "GET",
+                        headers: { "x-csrf-token": "Fetch" }
+                    });
+            
+                    if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
+            
+                    let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+                    if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
+            
+                    console.log(" CSRF Token obtenido:", sCsrfToken);
+            
+                    sap.m.MessageBox.confirm(
+                        "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
+                        {
+                            actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                            onClose: async (oAction) => {
+                                if (oAction !== sap.m.MessageBox.Action.YES) return;
+            
+                                try {
+                                    // ❗ Cancelar workflow si existe
+                                    if (this._workID) {
+                                        const oModel = this.getOwnerComponent().getModel();
+                                        const oContext = oModel.bindContext("/cancelWorkflow(...)");
+                                
+                                        oContext.setParameter("workflowInstanceId", this._workID);
+                                        await oContext.execute();
+                                    }
+            
+                                    const paths = [
+                                        "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos",
+                                        "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu",
+                                        "otrosRecursos", "otrosServiciosConsu", "GastoViajeConsumo", "serviRecurExter",
+                                        "GastoViajeRecExter", "LicenciasCon", "WorkflowInstancias", "ResumenCostesTotal",
+                                        "RecurInterTotal", "ConsuExterTotal", "RecuExterTotal", "InfraestrLicencia", "PerfilTotal"
+                                    ];
+            
+                                    // Eliminar registros relacionados
+                                    let deletePromises = paths.map(async (path) => {
+                                        let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
+                                            method: "GET",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                "x-csrf-token": sCsrfToken
+                                            },
+                                        });
+            
+                                        if (!res.ok) {
+                                            console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                            return;
+                                        }
+            
+                                        let contentType = res.headers.get("Content-Type");
+                                        let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
+                                        let records = Array.isArray(data.value) ? data.value : [data];
+            
+                                        if (records.length > 0) {
+                                            return Promise.all(
+                                                records.map(async (hijo) => {
+                                                    let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                        method: "DELETE",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "x-csrf-token": sCsrfToken
+                                                        }
+                                                    });
+            
+                                                    if (!deleteResponse.ok) {
+                                                        console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
+                                                    } else {
+                                                        console.log(` ${path} eliminado: ${hijo.ID}`);
+                                                    }
+                                                })
+                                            );
+                                        }
+                                    });
+            
+                                    await Promise.all(deletePromises);
+                                    console.log(" Registros relacionados eliminados.");
+            
+                                    // Eliminar proyecto principal
+                                    let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
+                                        method: "DELETE",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "x-csrf-token": sCsrfToken
+                                        },
+                                    });
+            
+                                    if (projectResponse.ok) {
+                                        console.log(" Proyecto eliminado correctamente.");
+                                        sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
+                                            title: "Éxito",
+                                            actions: [sap.m.MessageBox.Action.OK],
+                                            onClose: async function () {
+                                                let oTable = this.byId("idPendientes");
+                                                if (oTable) {
+                                                    let oBinding = oTable.getBinding("items");
+                                                    if (oBinding) {
+                                                        oBinding.refresh(true);
+                                                    } else {
+                                                        console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                    }
+                                                } else {
+                                                    console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                }
+                                                await this.filterEstado();
+                                            }.bind(this)
+                                        });
+                                    } else {
+                                        throw new Error("Error al eliminar el proyecto principal");
+                                    }
+                                } catch (error) {
+                                    console.error(" Error eliminando el proyecto o registros:", error);
+                                    sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
+                                }
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.error(" Error al obtener el CSRF Token:", error);
+                    sap.m.MessageToast.show("Error al obtener el CSRF Token.");
+                }
+            },
+            
+
+          /*  onDeletePress: async function (oEvent) {
                 //   let oModel = this.getView().getModel("modelPendientes");
 
                 let oButton = oEvent.getSource();
@@ -2093,7 +2286,7 @@ sap.ui.define(
                     console.error(" Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
-            },
+            },*/
 
 
 

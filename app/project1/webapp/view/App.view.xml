@@ -379,7 +379,7 @@
                                             <IconTabFilter
                                                 id="ma55"
                                                 key="notes"
-                                                icon="sap-icon://notes"
+                                                icon="sap-icon://activity-2"
                                                 tooltip="Solicitudes Aprobadas"
                                                 count="{modelAprobados>/Count}"
                                             >
@@ -390,6 +390,8 @@
                                                     items="{modelAprobados>/DatosProyect}"
                                                     class="sapFDynamicPageAlignContent customHeaderColor2"
                                                     width="auto"
+                                                    noDataText="No existen solicitudes aprobadas en este momento "
+
                                                 >
                                                     <headerToolbar>
                                                         <Toolbar id="d">
@@ -561,7 +563,7 @@
                                                                 <ObjectStatus
                                                                     id="status02"
                                                                     text="{modelAprobados>Estado}"
-                                                                                     state="Success"/>
+                                                                     state="Success"/>
                                                                 
                                                                 
                                           
@@ -634,6 +636,169 @@
                                                 </Table>
                                             </IconTabFilter>
 
+
+                                         <IconTabFilter
+                                                id="ma5578"
+                                                key="notes"
+                                                icon="sap-icon://employee-rejections"
+                                                tooltip="Solicitudes Aprobadas"
+                                                count="{modelRechazados>/Count}"
+                                            >
+<Table
+    id="RechazadosTable"
+    sticky="HeaderToolbar,ColumnHeaders"
+    inset="false"
+    items="{modelRechazados>/DatosProyect}"
+    class="sapFDynamicPageAlignContent customHeaderColor2"
+    width="auto"
+       noDataText="No existen solicitudes rechazadas en este momento "
+
+>
+    <headerToolbar>
+        <Toolbar id="aprobToolbar">
+            <Title
+                id="aprobTitle"
+                text="Lista De Solicitudes Rechazadas"
+                level="H2"
+                class="color"
+            />
+            <ToolbarSpacer />
+            <SearchField
+                id="aprobSearch"
+                liveChange="onSearchApro"
+                class="sapUiLargeMargin"
+                placeholder="Buscar por Nombre de Proyecto"
+                width="30%"
+            />
+        </Toolbar>
+    </headerToolbar>
+    <columns>
+        <Column id="aprobColFecha" width="12em">
+            <Label id="aprobLblFecha" text="Fecha Creación" />
+        </Column>
+
+        <Column id="aprobColCodigo" width="12em">
+            <Label id="aprobLblCodigo" text="Codigo Proyecto" />
+        </Column>
+
+        <Column id="aprobColNombre" minScreenWidth="Tablet" demandPopin="true">
+            <Label id="aprobLblNombre" text="Nombre Proyecto" />
+        </Column>
+
+        <Column id="aprobColDesc" minScreenWidth="Tablet" demandPopin="true">
+            <Label id="aprobLblDesc" text="Descripción" />
+        </Column>
+
+        <Column id="aprobColArea" minScreenWidth="Tablet" demandPopin="true">
+            <Label id="aprobLblArea" text="Área" />
+        </Column>
+
+        <Column id="aprobColJefe" minScreenWidth="Tablet" demandPopin="true">
+            <Label id="aprobLblJefe" text="Jefe de Proyecto" />
+        </Column>
+
+        <Column id="aprobColFechaAprob" minScreenWidth="Tablet" demandPopin="true">
+            <Label id="aprobLblFechaAprob" text="Fecha de Rechazo" />
+        </Column>
+
+        <Column id="aprobColEstado" hAlign="Center">
+            <Label id="aprobLblEstado" text="Estado" />
+        </Column>
+
+        <Column id="aprobColBotones" hAlign="Center" width="auto">
+            <Label id="aprobLblBotones" text="" />
+        </Column>
+    </columns>
+
+    <items>
+        <ColumnListItem id="aprobItem">
+            <cells>
+                <ObjectIdentifier
+                    id="aprobOIDFecha"
+                    title="{modelRechazados>FechaCreacionFormateada}"
+                    class="boldText"
+                />
+                <Text
+                    id="aprobTxtCodigo"
+                    text="{modelRechazados>codigoProyect}"
+                    class="boldText"
+                />
+                <Text
+                    id="aprobTxtNombre"
+                    text="{modelRechazados>nameProyect}"
+                    class="boldText"
+                />
+                <Text
+                    id="aprobTxtDesc"
+                    text="{modelRechazados>descripcion}"
+                    class="boldText"
+                />
+                <Text
+                    id="aprobTxtArea"
+                    text="{modelRechazados>Area/NombreArea}"
+                    class="boldText"
+                />
+                <Text
+                    id="aprobTxtJefe"
+                    text="{modelRechazados>jefeProyectID/name}"
+                    class="boldText"
+                />
+                <ObjectStatus
+                    id="aprobStatusFechaAprob"
+                    text="{modelRechazados>actualizadoEnFormateada}"
+                />
+                <ObjectStatus
+                    id="aprobStatusEstado"
+                    text="{modelRechazados>Estado}"
+                    state="Error"
+                />
+                <HBox id="aprobHBoxBtns">
+    
+
+                    <Button
+                        id="aprobBtnEdit"
+                        icon="sap-icon://show"
+                        press="onEditPress"
+                    >
+                        <customData>
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                key="nameProyect"
+                                value="{nameProyect}"
+                            />
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                key="projectId"
+                                value="{ID}"
+                            />
+                        </customData>
+                    </Button>
+
+
+                     <Button
+                        id="newId_btnEliminar2"
+                        icon="sap-icon://delete"
+                        press="onDeletePress"
+                    >
+                        <customData>
+                            <core:CustomData
+                                xmlns:core="sap.ui.core"
+                                key="projectId"
+                                value="{modelRechazados>ID}"
+                            />
+                        </customData>
+                    </Button>
+
+
+                   
+                </HBox>
+            </cells>
+        </ColumnListItem>
+    </items>
+</Table>
+
+
+                                            </IconTabFilter>
 
 
                      <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"  tooltip="Mis borradores"
@@ -946,6 +1111,21 @@
                                                                                 key="projectId"
                                                                                 value="{modelEtapasAsignadas>projectId}"
                                                                        
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
+
+                                                                        <Button
+                                                                        id="wsw"
+                                                                        icon="sap-icon://delete"
+                                                                        press="onDeletePress"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelEtapasAsignadas>ID}"
                                                                             />
                                                                         </customData>
                                                                     </Button>
