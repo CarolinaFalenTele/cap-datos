@@ -270,409 +270,22 @@ sap.ui.define(
                 }
             },
             
-         /*   filterEstado: async function () {
-                try {
-                    const userModel = this.getView().getModel("userModel");
-                    if (!userModel) {
-                        console.error("userModel no está definido aún.");
-                        return;
-                    }
-
-                    const userId = userModel.getProperty("/ID");
-                    const userEmail = userModel.getProperty("/email");
-                    console.log("Usuario ID: " + userId);
-                    console.log("Usuario Email: " + userEmail);
-
-                    const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
-                    const data = await response.json();
-                    const aProjects = data.value;
-
-                    const aProyectosConEstado = await Promise.all(
-                        aProjects.map(async (proyecto) => {
-                            const projectId = proyecto.ID;
-
-                            const formatearFecha = (fechaStr) => {
-                                if (!fechaStr) return null;
-                                const fecha = new Date(fechaStr);
-                                return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                            };
-
-                            proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
-                            proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
-                            proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
-                            proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-
-                            if (proyecto.Estado === "Borrador") {
-                                proyecto.workflowId = null;
-                                proyecto.actualizadoEn = null;
-                                proyecto.actualizadoEnFormateada = "No aplica";
-                                proyecto.Etapas = [];
-                                return proyecto;
-                            }
-
-                            const wfResponse = await fetch(
-                                `/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq ${projectId}&$orderby=creadoEn desc&$top=1`
-                            );
-                            const wfData = await wfResponse.json();
-                            const wfItem = wfData.value[0];
-
-                            console.log(wfItem);
-
-                            // Obtener etapas desde WorkflowEtapas directamente
-                            let etapas = [];
-
-                            if (wfItem?.ID) {
-                                const etapasResponse = await fetch(
-                                    `/odata/v4/datos-cdo/WorkflowEtapas?$filter=workflow_ID eq ${wfItem.workflowId}`
-                                );
-                                const etapasData = await etapasResponse.json();
-                                etapas = etapasData.value || [];
-                            }
-
-                            const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
-
-                            if (hayEtapasPendientes) {
-                                proyecto.Estado = "Pendiente";
-                            } else if (wfItem?.estado) {
-                                proyecto.Estado = wfItem.estado;
-                            } else {
-                                // No hay workflow ni etapas: mantenemos el estado original de la base de datos
-                                proyecto.Estado = proyecto.Estado || "Borrador";
-                            }
-                            
-
-                            proyecto.workflowId = wfItem?.workflowId || null;
-                            proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-                            proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
-                            proyecto.Etapas = etapas;
-
-                            return proyecto;
-                        })
-                    );
-
-                    const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
-                    const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
-                    const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
-                    const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
-
-
-                    const aEtapasAsignadas = [];
-                    const aProyectosAsignadosAlUsuario = [];
-
-                    aProyectosPendientes.forEach((proyecto) => {
-                        let tieneEtapaAsignada = false;
-
-                        proyecto.Etapas.forEach((etapa) => {
-                            if (
-                                etapa.estado === "Pendiente" &&
-                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
-                            )
-                            
-                             {
-
-                                console.log("Etapa evaluada:", etapa, "Email usuario:", userEmail);
-
-                                tieneEtapaAsignada = true;
-
-                                aEtapasAsignadas.push({
-                                    nombreEtapa: etapa.nombreEtapa,
-                                    asignadoA: etapa.asignadoA,
-                                    aprobadoPor: etapa.aprobadoPor,
-                                    estado: etapa.estado,
-                                    comentario: etapa.comentario,
-                                    fechaAprobado: etapa.fechaAprobado,
-                                    nameProyect: proyecto.nameProyect,
-                                    creadoPor: proyecto.creadoPor,
-                                    descripcion: proyecto.descripcion,
-                                    projectId: proyecto.ID // <-- AÑADE ESTO
-
-                                });
-                            }
-                        });
-
-                        if (tieneEtapaAsignada) {
-                            aProyectosAsignadosAlUsuario.push(proyecto);
-                        }
-                    });
-
-                    // Modelos JSON para la vista
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    }), "modelAprobados");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosPendientes,
-                        Count: aProyectosPendientes.length
-                    }), "modelPendientes");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosBorrador,
-                        Count: aProyectosBorrador.length
-                    }), "modelBorrador");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        Count: aProyectosConEstado.length
-                    }), "modelTotal");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        Etapas: aEtapasAsignadas,
-                        Count: aEtapasAsignadas.length
-                    }), "modelEtapasAsignadas");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAsignadosAlUsuario,
-                        Count: aProyectosAsignadosAlUsuario.length
-                    }), "modelAsignados");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        Etapas: aEtapasAsignadas, // filtrado solo para el usuario actual
-                        Count: aEtapasAsignadas.length
-
-                    }), "modelEtapasAsignadas");
-
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosRechazados,
-                        Count: aProyectosRechazados.length
-                    }), "modelRechazados");
-                    
-                    console.log("Etapas asignadas:", aProyectosRechazados); // ← debería estar vacío si no hay nada asignado
-                    console.log("Cantidad:", aEtapasAsignadas.length);
-
-                    // Mostrar la pestaña solo si hay etapas asignadas
-                    const oIconTab = this.byId("id34");
-                    if (oIconTab) {
-                        oIconTab.setVisible(aEtapasAsignadas.length > 0);
-                    }
-
-
-                    console.log("Etapas asignadas al usuario:", aProyectosPendientes);
-                    console.log("Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario);
-
-                    const oStatusControl = this.byId("status0");
-                    if (aProyectosPendientes.length > 0) {
-                        oStatusControl.setText("Pendiente");
-                        oStatusControl.setState("Warning");
-                    } else if (aProyectosRechazados.length > 0) {
-                        oStatusControl.setText("Rechazado");
-                        oStatusControl.setState("None");
-                    } 
-                    
-                    else if (aProyectosBorrador.length > 0) {
-                        oStatusControl.setText("Borrador");
-                        oStatusControl.setState("None");
-                    } else {
-                        oStatusControl.setText("Aprobado");
-                        oStatusControl.setState("Success");
-                    }
-
-                } catch (error) {
-                    console.error("Error al cargar los proyectos con estado:", error);
+            filtrarProyectosPorNombre: function (sNombre) {
+                if (typeof sNombre !== "string") {
+                    sNombre = "";
                 }
-            },*/
-
-    
-
-            /*
-                       filterEstado: async function () {
-                            try {
-                                // Cargar proyectos con relaciones expand
             
-                                const userModel = this.getView().getModel("userModel");
-                                if (!userModel) {
-                                  console.error("userModel no está definido aún.");
-                                  return;
-                                }
-                        
-                                const userId = userModel.getProperty("/ID");
-                                console.log("Usuario ID: " + userId);
-                        
-                               
+                var oModel = this.getView().getModel("modelRechazados");
+                var aTodosProyectos = oModel.getProperty("/DatosProyect") || [];
             
-                                const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
-                                const data = await response.json();
-                                const aProjects = data.value;
-                        
-                                const aProyectosConEstado = await Promise.all(
-                                    aProjects.map(async (proyecto) => {
-                                        const projectId = proyecto.ID;
-                        
-                                        // Formateo de fechas
-                                        const formatearFecha = (fechaStr) => {
-                                            if (!fechaStr) return null;
-                                            const fecha = new Date(fechaStr);
-                                            return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                                        };
-                        
-                                        proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
-                                        proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
-                        
-                                        // Obtener los nombres relacionados
-                                        proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
-                                        proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-                        
-                                        // Si ya tiene estado "Borrador", no buscamos en WorkflowInstancias
-                                        if (proyecto.Estado === "Borrador") {
-                                            proyecto.workflowId = null;
-                                            proyecto.actualizadoEn = null;
-                                            proyecto.actualizadoEnFormateada = "No aplica";
-                                            return proyecto;
-                                        }
-                        
-                                        // Buscar última instancia de workflow solo si no es Borrador
-                                        const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                                        const wfData = await wfResponse.json();
-                                        const wfItem = wfData.value[0];
-                        
-                                        // Estado del proyecto
-                                        proyecto.Estado = wfItem?.estado || "Pendiente";
-                                        proyecto.workflowId = wfItem?.workflowId || null;
-                                        proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-                                        proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
-                        
-                                        return proyecto;
-                                    })
-                                );
-                        
-                                // Separar por estado
-                                const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
-                                const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
-                                const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
-                        
-                                // Control de estado visual
-                                const oStatusControl = this.byId("status0");
-                                if (aProyectosPendientes.length > 0) {
-                                    oStatusControl.setText("Pendiente");
-                                    oStatusControl.setState("Warning");
-                                } else if (aProyectosBorrador.length > 0) {
-                                    oStatusControl.setText("Borrador");
-                                    oStatusControl.setState("None");
-                                } else {
-                                    oStatusControl.setText("Aprobado");
-                                    oStatusControl.setState("Success");
-                                }
-                        
-                                // Modelos JSON
-                                const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                                    DatosProyect: aProyectosAprobados,
-                                    Count: aProyectosAprobados.length
-                                });
-                        
-                                const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                                    DatosProyect: aProyectosPendientes,
-                                    Count: aProyectosPendientes.length
-                                });
-                        
-                                const oJsonModelBorrador = new sap.ui.model.json.JSONModel({
-                                    DatosProyect: aProyectosBorrador,
-                                    Count: aProyectosBorrador.length
-                                });
-                        
-                                const oJsonModelTotal = new sap.ui.model.json.JSONModel({
-                                    Count: aProyectosConEstado.length
-                                });
-                        
-                                // Asignar modelos
-                                this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                                this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-                                this.getView().setModel(oJsonModelBorrador, "modelBorrador");
-                                this.getView().setModel(oJsonModelTotal, "modelTotal");
-                        
-                                // Verificar en consola
-                            //    console.log(aProyectosPendientes[0]?.NombreArea);
-                            //    console.log(aProyectosPendientes[0]?.NombreJefe);
-                        
-                            } catch (error) {
-                                console.error("Error al cargar los proyectos con estado:", error);
-                            }
-                        },*/
-
-
-
-            /*   filterEstado: async function () {
-                   try {
-                       // Cargar proyectos con relaciones expand
-                       const response = await fetch("/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID");
-                       const data = await response.json();
-                       const aProjects = data.value;
-               
-                       const aProyectosConEstado = await Promise.all(
-                           aProjects.map(async (proyecto) => {
-                               const projectId = proyecto.ID;
-               
-                               // Buscar última instancia de workflow
-                               const wfResponse = await fetch(`/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq '${projectId}'&$orderby=creadoEn desc&$top=1&$select=estado,workflowId,actualizadoEn`);
-                               const wfData = await wfResponse.json();
-                               const wfItem = wfData.value[0];
-               
-                               // Estado del proyecto
-                               proyecto.Estado = wfItem?.estado || "Pendiente";
-                               proyecto.workflowId = wfItem?.workflowId || null;
-                               proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
-               
-                               // Formateo de fechas
-                               const formatearFecha = (fechaStr) => {
-                                   if (!fechaStr) return null;
-                                   const fecha = new Date(fechaStr);
-                                   return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
-                               };
-               
-                               proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
-                               proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
-                               proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
-               
-                               // Obtener los nombres relacionados
-                               proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
-                               proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-               
-                               return proyecto;
-                           })
-                       );
-               
-                       // Separar por estado
-                       const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
-                       const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado !== "Aprobado");
-                    
-                    
-                       const oStatusControl = this.byId("status0");
-      
-                       if (aProyectosPendientes.length > 0) {
-                           oStatusControl.setText("Pendiente");
-                           oStatusControl.setState("Warning"); // Amarillo (pendiente)
-                       } else {
-                           oStatusControl.setText("Aprobado");
-                           oStatusControl.setState("Success"); // Verde (aprobado)
-                       }
-                       
-                       // Modelos JSON
-                       const oJsonModelAprobados = new sap.ui.model.json.JSONModel({
-                           DatosProyect: aProyectosAprobados,
-                           Count: aProyectosAprobados.length
-                       });
-               
-                       const oJsonModelPendientes = new sap.ui.model.json.JSONModel({
-                           DatosProyect: aProyectosPendientes,
-                           Count: aProyectosPendientes.length
-                       });
-               
-                       const oJsonModelTotal = new sap.ui.model.json.JSONModel({
-                           Count: aProyectosConEstado.length
-                       });
-               
-                       // Asignar modelos
-                       this.getView().setModel(oJsonModelAprobados, "modelAprobados");
-                       this.getView().setModel(oJsonModelPendientes, "modelPendientes");
-                       this.getView().setModel(oJsonModelTotal, "modelTotal");
-               
-                       // Verificar los nombres en consola
-                       console.log(aProyectosPendientes[0]?.NombreArea);
-                       console.log(aProyectosPendientes[0]?.NombreJefe);
-               
-                   } catch (error) {
-                       console.error("Error al cargar los proyectos con estado:", error);
-                   }
-               },*/
-
+                var aFiltrados = aTodosProyectos.filter(function (proyecto) {
+                    return proyecto.name && proyecto.name.toLowerCase().includes(sNombre.toLowerCase());
+                });
+            
+                oModel.setProperty("/DatosProyect", aFiltrados);
+                oModel.setProperty("/Count", aFiltrados.length);
+            },
+            
 
 
 
@@ -1069,51 +682,6 @@ sap.ui.define(
 
                 this._oPopover.openBy(node);
             },
-
-
-
-
-
-
-
-            /*          onVerHistorial: async function (oEvent) {
-                          try {
-                              const oItem = oEvent.getSource().getBindingContext("modelPendientes").getObject();
-                              const workflowId = oItem.workflowId;
-                      
-                              if (!workflowId) {
-                                  sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
-                                  return;
-                              }
-                      
-                              const oModel = this.getOwnerComponent().getModel();
-                              const oContext = oModel.bindContext("/getWorkflowTimeline(...)");
-                      
-                              oContext.setParameter("ID", workflowId);
-                      
-                              await oContext.execute();
-                      
-                              const result = oContext.getBoundContext().getObject();
-                              console.log(" Historial del workflow:", result);
-                      
-                              sap.m.MessageBox.information(JSON.stringify(result, null, 2));
-                          } catch (error) {
-                              console.error(" Error al obtener el historial del workflow:", error);
-                              sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
-                          }
-                      },*/
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             // Método para obtener información del usuario
@@ -1649,7 +1217,13 @@ sap.ui.define(
                     return;
                 }
 
-                 this.filterEstado();
+                const oModel = this.getOwnerComponent().getModel("modelEtapasAsignadas");
+                if (oModel) {
+                   oModel.refresh(true); // true = fuerza la actualización de datos desde backend (si es OData)
+                }
+            
+
+                this.filterEstado();
 
 
             },
@@ -1997,6 +1571,12 @@ if (oContextPendientes) {
             onDeletePress: async function (oEvent) {
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
+
+
+                console.log("id seleccionado "    + sProjectId); 
+                const workflowInstanceId = oButton.data("etapaId");
+
+               console.log("🔴 Eliminar etapa", workflowInstanceId +" " +  sProjectId);
             
                 if (!sProjectId) {
                     console.error("No se encontró un ID válido para eliminar.");
@@ -2029,11 +1609,12 @@ if (oContextPendientes) {
             
                                 try {
                                     // ❗ Cancelar workflow si existe
-                                    if (this._workID) {
+                                   console.log("Cancelando el workflow con ID:", workflowInstanceId);
+                                    if (workflowInstanceId) {
                                         const oModel = this.getOwnerComponent().getModel();
                                         const oContext = oModel.bindContext("/cancelWorkflow(...)");
                                 
-                                        oContext.setParameter("workflowInstanceId", this._workID);
+                                        oContext.setParameter("workflowInstanceId", workflowInstanceId);
                                         await oContext.execute();
                                     }
             

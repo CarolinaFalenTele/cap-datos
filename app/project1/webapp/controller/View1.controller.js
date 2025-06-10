@@ -477,6 +477,7 @@ sap.ui.define([
           sMode === "display" &&
           (sSourceModel === "modelAprobados" || sSourceModel === "modelEtapasAsignadas" || sSourceModel === "modelRechazados")
         ) {
+          
           this._Visualizar(sProjectID, sSourceModel);
           return;
         }
@@ -695,6 +696,7 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
         this._idWorkflowInstancias = null; // o undefined
+        this._idWorkIniciado = null;
 
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
@@ -1646,6 +1648,10 @@ sap.ui.define([
               }
             });
           }
+          for (let i = 0; i < this._recursosIDs.length; i++) {
+            await this.leerFechas(i);
+          }
+       
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
@@ -1989,9 +1995,66 @@ sap.ui.define([
 
 
 
-      /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<
-      leerFechas: async function (recursoID) {
+      /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<+
 
+// Función principal para leer los datos de un recurso individual
+leerFechas: async function (i) {
+  const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
+  console.log("ID RECURSO INTERNO EN LEER FECHAS: " + recursoID);
+
+  if (!recursoID) {
+    console.warn("ID no válido en la posición " + i);
+    return;
+  }
+
+  const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+
+  try {
+    const response = await fetch(sUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error('Network response was not ok: ' + errorText);
+    }
+
+    const oData = await response.json();
+    console.log("Respuesta JSON completa:", oData);
+
+    if (!oData.value || oData.value.length === 0) {
+      throw new Error("No se encontraron datos para el recursoID: " + recursoID);
+    }
+
+    var idRecuIn = oData.value[0];
+    var idleerReIn = idRecuIn.ID;
+
+    let valoresPorFecha = {};
+    oData.value.forEach(item => {
+      let key = item.mesAno; // Formato esperado: "2024-Enero"
+      valoresPorFecha[key] = item.valor;
+    });
+
+    console.log("Valores por fecha antes de enviarlos RECURSO INTERNO:", valoresPorFecha);
+
+    this.fechasDinamicas(valoresPorFecha);
+    this._idleerReIn = idleerReIn;
+
+  } catch (error) {
+    console.error("Error al obtener los datos de Recursos Internos:", error);
+  }
+},
+
+
+
+
+     /* leerFechas: async function (i) {
+
+        const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
         console.log("ID RECURSO INTERNO EN  LEER FECHAS " + recursoID)
 
         var sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
@@ -2036,13 +2099,14 @@ sap.ui.define([
 
           // Llamar a fechasDinamicas pasando los datos obtenidos
           this.fechasDinamicas(valoresPorFecha);
+          
           this._idleerReIn = idleerReIn;
 
         } catch (error) {
           console.error("Error al obtener los datos de Recursos Internos:", error);
           ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
         }
-      },
+      },*/
 
 
       leerFechasServiRecInter: async function (idlSErvi) {
@@ -9173,10 +9237,127 @@ sap.ui.define([
         this.updateVizFrame();
       },
       //-------------------------------------------
+ 
+     fechasDinamicas: function (valoresPorFecha) {
+  var startDatePicker = this.getView().byId("date_inico");
+  var endDatePicker = this.getView().byId("date_fin");
 
+  if (!startDatePicker || !endDatePicker) {
+    console.error("Error: No se pudieron obtener los DatePickers.");
+    return;
+  }
 
+  var startDate = startDatePicker.getDateValue();
+  var endDate = endDatePicker.getDateValue();
 
-      fechasDinamicas: function (oEvent, fechasDinamicas) {
+  if (!startDate || !endDate) {
+    // Esperando a que se seleccionen ambas fechas.
+    return;
+  }
+
+  var diffMonths = this.getMonthsDifference(startDate, endDate);
+
+  var flexBoxIds = [
+    "box0_1714747137718",
+    "box0_1727879568594",
+    "box0_1727879817594",
+    "box0_1721815443829",
+    "box0_1727948724833",
+    "box0_1727950351451",
+    "box0_17218154429",
+    "box0_1727953252765",
+    "box1_1727953468615",
+    "box0_17254429",
+    "box0_1727955568380"
+  ];
+
+  flexBoxIds.forEach((flexBoxId) => {
+    var flexBox = this.getView().byId(flexBoxId);
+    if (flexBox) {
+      flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+    }
+  });
+
+  var tableIds = [
+    "tablaConsuExter",
+    "table_dimicFecha",
+    "tablaRecExterno",
+    "idOtroserConsu",
+    "idGastoViajeConsu",
+    "idServiExterno",
+    "idGastoRecuExter",
+    "tablaInfrestuctura",
+    "tablaLicencia",
+    "tableServicioInterno",
+    "tablGastoViajeInterno"
+  ];
+
+  tableIds.forEach((tableId) => {
+    var oTable = this.getView().byId(tableId);
+    if (!oTable) {
+      console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+      return;
+    }
+
+    // Eliminar columnas anteriores que fueron añadidas dinámicamente
+    var columnCount = oTable.getColumns().length;
+    for (var j = columnCount - 1; j >= 0; j--) {
+      var columnHeader = oTable.getColumns()[j].getHeader();
+
+      // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
+      if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+        oTable.removeColumn(oTable.getColumns()[j]);
+      }
+    }
+
+    var totalColumnIndex = this.findTotalColumnIndex(oTable);
+
+    // Añadir nuevas columnas dinámicas
+    for (var i = 0; i <= diffMonths; i++) {
+      var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+      var year = columnDate.getFullYear();
+      var month = columnDate.toLocaleString("default", { month: "long" });
+      var columnHeaderText = year + "-" + month.toLowerCase(); // Convertir a minúsculas para buscar
+
+      var oColumn = new sap.m.Column({
+        header: new sap.m.Label({ text: columnHeaderText }),
+        width: "100px"
+      });
+
+      oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+
+      // Recorrer filas para crear Inputs con valor asignado
+      for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+        var oRow = oTable.getItems()[rowIndex];
+
+        // Obtener valor para esta fecha, si no hay, poner "0.00"
+        var valorCelda = valoresPorFecha[columnHeaderText] || "0.00";
+
+        // Crear Input con valor inicial y evento change
+        var oInput = new sap.m.Input({
+          placeholder: "0.00",
+          value: valorCelda,
+          change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+        });
+
+        // Añadir Input a la fila (celda)
+        oRow.addCell(oInput);
+      }
+    }
+
+    // Ajustar scroll container
+    var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+    if (oScrollContainer) {
+      oScrollContainer.setHorizontal(true);
+      oScrollContainer.setVertical(false);
+      oScrollContainer.setWidth("100%");
+    }
+  });
+},
+
+    
+
+     /* fechasDinamicas: function (valoresPorFecha) {
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
 
@@ -9292,7 +9473,7 @@ sap.ui.define([
           //    console.log("startDate:", startDate);
           // console.log("endDate:", endDate);
         });
-      },
+      },*/
 
 
 

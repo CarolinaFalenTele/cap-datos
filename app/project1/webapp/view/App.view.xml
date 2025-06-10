@@ -341,6 +341,12 @@
                                                                                 key="projectId"
                                                                                 value="{modelPendientes>ID}"
                                                                             />
+
+                                                                              <core:CustomData
+                                                                                 xmlns:core="sap.ui.core"
+
+                                                                                            key="etapaId"
+                                                                                            value="{modelPendientes>workflowId}" />
                                                                         </customData>
                                                                     </Button>
 
@@ -665,7 +671,7 @@
             <ToolbarSpacer />
             <SearchField
                 id="aprobSearch"
-                liveChange="onSearchApro"
+                liveChange="filtrarProyectosPorNombre"
                 class="sapUiLargeMargin"
                 placeholder="Buscar por Nombre de Proyecto"
                 width="30%"
@@ -1025,6 +1031,7 @@
                                                 icon="sap-icon://pending"
                                             visible="false" 
                                              count="{modelEtapasAsignadas>/Count}"
+                                             
 
                                             >
 
@@ -1068,11 +1075,11 @@
                                         <items>
                                             <ColumnListItem>
                                             <cells>
-                                                <Text text="{modelEtapasAsignadas>nombreEtapa}" />
-                                                <Text text="{modelEtapasAsignadas>nameProyect}" />
-                                                <Text text="{modelEtapasAsignadas>descripcion}" />
-                                                <Text text="{modelEtapasAsignadas>asignadoA}" />
-                                                <Text text="{modelEtapasAsignadas>comentario}" />
+                                                <ObjectStatus text="{modelEtapasAsignadas>nombreEtapa}"   state="Information" />
+                                                <Text text="{modelEtapasAsignadas>nameProyect}"   class="boldText" />
+                                                <Text text="{modelEtapasAsignadas>descripcion}"   class="boldText"/>
+                                                <ObjectStatus text="{modelEtapasAsignadas>asignadoA}"    state="Information"    />
+                                                <Text text="{modelEtapasAsignadas>comentario}"    class="boldText" />
 
 
                                                  
@@ -1127,7 +1134,9 @@
                                                                                 key="projectId"
                                                                                 value="{modelEtapasAsignadas>ID}"
                                                                             />
-                                                                        </customData>
+
+                                                                            
+                                                                                    </customData>
                                                                     </Button>
                   
                 </HBox>

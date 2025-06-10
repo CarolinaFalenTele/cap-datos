@@ -5,8 +5,6 @@
 
   
   "routes": [
-
-    
     {
       "source": "^/(.*)$",
       "target": "$1",
@@ -14,8 +12,6 @@
       "csrfProtection": true,
       "authenticationType": "xsuaa"
     }
-
-
 
   ]
 }

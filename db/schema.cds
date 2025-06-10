@@ -578,7 +578,9 @@ entity WorkflowInstancias {
       actualizadoEn   : Timestamp;
       creadoPor       : String;
       datosProyect_ID : UUID;
-      etapas          : Association to many WorkflowEtapas on etapas.workflow_ID = ID;
+      etapas          : Association to many WorkflowEtapas on etapas.workflow_ID = ID
+              @cds.on.delete: 'cascade';
+
 
 };
 
