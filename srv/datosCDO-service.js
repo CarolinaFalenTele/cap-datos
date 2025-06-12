@@ -33,12 +33,17 @@ module.exports = cds.service.impl(async function () {
     ConsumoExternos,
     GastoViajeConsumo,
     otrosServiciosConsu,
-    WorkflowEtapas
+    WorkflowEtapas,
+    Archivos 
   } = this.entities;
 
 
 
   const { WorkflowService } = this.entities;
+
+
+ 
+
 
   this.on('startWorkflow', async (req) => {
     const input = JSON.parse(req.data.payload);
@@ -119,6 +124,44 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
+
+
+
+   // PUT /Archivos(ID)/$value para subir el contenido binario
+ this.on("PUT", "Archivos/$value", async (req) => {
+  const id = req.params[0].ID;
+  console.log("📩 Entró al handler PUT /$value");
+
+  const chunks = [];
+  for await (const chunk of req._.req) {
+    chunks.push(chunk);
+  }
+  const buffer = Buffer.concat(chunks);
+
+  const db = await cds.transaction(req);
+  await db.update(Archivos)
+    .set({ contenido: buffer })
+    .where({ ID: id });
+
+  req.reply(204);
+});
+
+// GET /Archivos(ID)/$value para devolver el archivo
+this.on("GET", "Archivos/$value", async (req) => {
+  const id = req.params[0].ID;
+
+  const db = await cds.transaction(req);
+  const archivo = await db.read(Archivos)
+    .where({ ID: id })
+    .columns("contenido", "tipoMime");
+
+  if (!archivo || !archivo.contenido) {
+    return req.reject(404, "Archivo no encontrado");
+  }
+
+  req._.res.setHeader("Content-Type", archivo.tipoMime);
+  req._.res.end(archivo.contenido);
+});
 
 
   this.on('completeWorkflow', async (req) => {

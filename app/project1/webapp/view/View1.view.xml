@@ -1,4 +1,4 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:microchart="sap.suite.ui.microchart" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" displayBlock="true">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:dnd="sap.ui.core.dnd" xmlns:microchart="sap.suite.ui.microchart" xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" xmlns:chart="sap.chart" xmlns:l="sap.ui.layout" xmlns:smartChart="sap.ui.comp.smartchart" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.data="sap.viz.ui5.data" xmlns:gantt="sap.gantt.simple" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:smartFilter="sap.ui.comp.smartfilterbar" xmlns:layout="sap.ui.layout" controllerName="project1.controller.View1" 	xmlns:u="sap.ui.unified" displayBlock="true">
     <App id="app2">
         <Page id="page" title="{i18n>title}">
             <customHeader>
@@ -4505,7 +4505,32 @@
                                                         <Text text="Información adicional considerada relevante a presentar junto con la solicitud del proyecto" class="**`sapUiTinyMargin sapUiSmallMarginBottom" id="text66_1729068544144"/>
 
                                                         <FlexBox width="100%" id="box0_1729069223752" justifyContent="Center">
+                                                        
+
                                                             <items>
+
+                                                              <VBox id="xbox" class="sapUiSmallMargin">
+   		<u:FileUploader
+
+    id="fileUploader"
+    change=".onFileSelected"
+    uploadOnChange="false"
+    sameFilenameAllowed="true"
+    width="100%"
+    name="myFileUpload"
+/>
+
+  </VBox>
+
+<List id="fileList" items="{archivosModel>/archivos}">
+  <items>
+    <StandardListItem
+      title="{archivosModel>nombre}"
+      description="{archivosModel>tipoMime}"
+      type="Active"
+      press=".onVerArchivo" />
+  </items>
+</List>
                                                                 <core:Icon src="sap-icon://customer-order-entry" class="customIconColor sapUiMediumMargin" size="3em" id="icon2"/>
 
                                                                 <TextArea xmlns="sap.m" value="" placeholder="Informacion extra..." rows="4" id="area0" width="500px"/>

@@ -18,6 +18,7 @@
     "@ui5/logger": "^4.0.1",
     "dotenv": "^16.4.5",
     "express": "^4",
+    "express-fileupload": "^1.5.1",
     "glob": "^11.0.1",
     "hdb": "^0.19.9"
   },
@@ -43,7 +44,7 @@
       "fiori_preview": true
     },
     "server": {
-      "index": true
+      "index": "srv/server.js"
     },
     "requires": {
       "db": "hana",

@@ -135,7 +135,9 @@ sap.ui.define([
       },
 
 
+      
 
+      
 
       refreshODataModel: function () {
         const oModel = this.getOwnerComponent().getModel(); // Modelo por defecto ("mainService")
@@ -661,7 +663,8 @@ sap.ui.define([
           this.leerTotalRecuExterTotal(this._sProjectID),
           this.leerWorkflowInstancias(this._sProjectID),
           this.leerTotalInfraestrLicencia(this._sProjectID),
-          this.leerTotalResumenCostesTotal(this._sProjectID)
+          this.leerTotalResumenCostesTotal(this._sProjectID),         
+          this.getArchivosByProjectId(this._sProjectID)
         ]);
 
         this.highlightControls();
@@ -689,6 +692,126 @@ sap.ui.define([
       },
 
 
+      onVerArchivo: function (oEvent) {
+        const oItem = oEvent.getSource();
+        const oContext = oItem.getBindingContext("archivosModel");
+      
+        if (!oContext) {
+          sap.m.MessageToast.show("⚠️ No se pudo obtener el contexto del archivo.");
+          return;
+        }
+      
+        const archivoID = oContext.getProperty("ID");
+        const fileName = oContext.getProperty("nombre");
+        const mimeType = oContext.getProperty("tipoMime");
+      
+        if (!archivoID || !fileName || !mimeType) {
+          sap.m.MessageToast.show("⚠️ Faltan datos para abrir o descargar el archivo.");
+          return;
+        }
+      
+        console.log("📌 ID recibido para ver archivo:", archivoID);
+        this._descargarArchivo(archivoID, fileName, mimeType);
+      },
+      
+      _descargarArchivo: async function (archivoId, fileName, mimeType) {
+        try {
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
+          });
+      
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
+          }
+      
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      
+          if (mimeType === "application/pdf") {
+            // Mostrar PDF en nueva pestaña
+            const newWindow = window.open();
+            newWindow.location.href = blobUrl;
+          } else {
+            // Descargar cualquier otro archivo con nombre y tipo correcto
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = fileName || "archivo";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        } catch (err) {
+          console.error("❌ Error en descarga:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },
+      
+      
+      
+      
+      
+   /*   onVerArchivo: function (oEvent) {
+        const archivoID = "f6d42439-0e5d-44d7-8c6a-7dd8aaf515bb";
+        const nombreArchivo = "getBackgroundReport.do2.pdf";
+        const url = `/odata/v4/datos-cdo/Archivos(${archivoID})/$value`;
+      
+        fetch(url)
+          .then(response => {
+            if (!response.ok) throw new Error("❌ Error al obtener archivo.");
+            return response.blob();
+          })
+          .then(blob => {
+            if (blob.size === 0) throw new Error("⚠️ El archivo está vacío.");
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = nombreArchivo;
+            link.click();
+          })
+          .catch(err => {
+            console.error("🚫 Error al ver archivo:", err);
+            sap.m.MessageToast.show(err.message);
+          });
+      },*/
+      
+      
+      
+      
+
+      getArchivosByProjectId: async function (projectId) {
+        console.log("📥 Entrando a getArchivosByProjectId con ID:", projectId);
+      
+        try {
+          const sUrl = `/odata/v4/datos-cdo/Archivos?$filter=datosProyect_ID eq '${projectId}'`;
+      
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+      
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Error en la respuesta de la API: ' + errorText);
+          }
+      
+          const data = await response.json();
+          const archivos = data.value || [];
+      
+          const oModel = new sap.ui.model.json.JSONModel({ archivos });
+          this.getView().setModel(oModel, "archivosModel");
+      
+          console.log("📌 Modelo cargado en la vista con archivos:", archivos.length);
+        } catch (err) {
+          console.error("❌ Error al cargar archivos:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },
+      
+      
+      
 
 
       _clearAllInputs: function () {
@@ -4633,7 +4756,8 @@ leerFechas: async function (i) {
                 this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
-
+                this.onUploadFile(generatedId, sCsrfToken),
+                
               ]);
 
 
@@ -4649,7 +4773,217 @@ leerFechas: async function (i) {
       },
 
 
+      onFileSelected: function (oEvent) {
+        const file = oEvent.getParameter("files")[0];
+        if (file) {
+          this._selectedFile = file; // Guardamos el archivo seleccionado
+          console.log("Archivo seleccionado:", file.name);
+        }
+      },
 
+
+
+
+
+
+      onUploadFile: async function (generatedId, sCsrfToken) {
+        const file = this._selectedFile;
+        if (!file) {
+          sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+          return;
+        }
+      
+        const archivoId = crypto.randomUUID(); // Nuevo UUID
+        const fileName = file.name;
+        const mimeType = file.type || "application/octet-stream"; // genérico por defecto
+      
+        console.log("📄 Archivo seleccionado:");
+        console.log("🆔 ID:", archivoId);
+        console.log("📛 Nombre:", fileName);
+        console.log("📦 Tipo MIME:", mimeType);
+        console.log("📐 Tamaño:", file.size, "bytes");
+        console.log("📂 Contenido (Blob):", file);
+      
+        try {
+          // Paso 1: Enviar metadata
+          const metadataPayload = {
+            ID: archivoId,
+            nombre: fileName,
+            tipoMime: mimeType,
+            datosProyect_ID: generatedId
+          };
+      
+          const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(metadataPayload)
+          });
+      
+          if (!postRes.ok) {
+            const errorText = await postRes.text();
+            throw new Error("❌ Error creando metadata: " + errorText);
+          }
+      
+          // Paso 2: Subir el archivo real
+          const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "PUT",
+            headers: {
+              "X-CSRF-Token": sCsrfToken,
+              "Content-Type": mimeType // 👈 Usa el tipo real
+            },
+            body: file
+          });
+      
+          if (!putRes.ok) {
+            const putText = await putRes.text();
+            throw new Error("❌ Error subiendo archivo: " + putText);
+          }
+      
+          sap.m.MessageToast.show("✅ Archivo subido con éxito.");
+        } catch (err) {
+          console.error("💥 Error total en upload:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },
+      
+
+
+
+
+
+  /*    onUploadFile: async function (generatedId, sCsrfToken) {
+        const file = this._selectedFile;
+        if (!file) {
+          sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+          return;
+        }
+      
+        const archivoId = crypto.randomUUID(); // Nuevo UUID
+        const fileName = file.name;
+        const mimeType = file.type || "application/pdf";
+      
+        // 🔍 Verificar detalles del archivo
+        console.log("📄 Archivo seleccionado:");
+        console.log("🆔 ID:", archivoId);
+        console.log("📛 Nombre:", fileName);
+        console.log("📦 Tipo MIME:", mimeType);
+        console.log("📐 Tamaño:", file.size, "bytes");
+        console.log("📂 Contenido (Blob):", file);
+      
+        try {
+          // Paso 1: Crear metadata
+          const metadataPayload = {
+            ID: archivoId,
+            nombre: fileName,
+            tipoMime: mimeType,
+            datosProyect_ID: generatedId
+          };
+      
+          console.log("📤 Enviando metadata al backend:", metadataPayload);
+      
+          const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(metadataPayload)
+          });
+      
+          if (!postRes.ok) {
+            const errorText = await postRes.text();
+            console.error("❌ Error en POST metadata:", errorText);
+            throw new Error("❌ Error creando metadata: " + errorText);
+          }
+      
+          console.log("✅ Metadata creada correctamente.");
+      
+          // Paso 2: Subir archivo
+          console.log("📤 Subiendo archivo binario con PUT...");
+          const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "PUT",
+            headers: {
+              "X-CSRF-Token": sCsrfToken,
+              "Content-Type": "application/pdf"
+
+            },
+            body: file
+          });
+      
+          if (!putRes.ok) {
+            const putText = await putRes.text();
+            console.error("❌ Error en PUT archivo:", putText);
+            throw new Error("❌ Error subiendo archivo: " + putText);
+          }
+      
+          console.log("✅ Archivo subido con éxito.");
+          sap.m.MessageToast.show("✅ Archivo subido con éxito.");
+        } catch (err) {
+          console.error("💥 Error total en upload:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },*/
+      
+      
+      
+      
+      
+      
+ /*  onUploadFile: async function (generatedId, sCsrfToken) {
+  const file = this._selectedFile;
+
+  if (!file) {
+    console.warn("No se ha seleccionado ningún archivo para subir.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64String = reader.result.split(",")[1];
+
+    try {
+      const response = await fetch("/odata/v4/datos-cdo/Archivos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": sCsrfToken
+        },
+        body: JSON.stringify({
+          ID: archivoId,
+          nombre: file.name,
+          tipoMime: file.type,
+          fechaSubida: new Date().toISOString(),
+          datosProyect_ID: generatedId
+        })
+      });
+
+
+        // Paso 2: Subir el contenido binario (PUT $value)
+  await fetch(`/odata/v4/ArchivosService/Archivos(${archivoId})/$value`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
+      "X-CSRF-Token": csrfToken
+    },
+    body: file
+  });
+
+      if (!response.ok) {
+        throw new Error(`Error del servidor: ${response.statusText}`);
+      }
+
+      sap.m.MessageToast.show("Archivo subido con éxito");
+    } catch (error) {
+      console.error("Error al subir el archivo:", error);
+      sap.m.MessageToast.show("Error al subir archivo: " + error.message);
+    }
+  };
+
+  reader.readAsDataURL(file);
+},*/
 
 
 

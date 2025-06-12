@@ -1,5 +1,10 @@
 namespace db.datos;
 
+using {
+    cuid,
+    managed
+} from '@sap/cds/common';
+
 
 entity Jefeproyect {
   key ID        : UUID @cds.auto;
@@ -20,6 +25,18 @@ entity MotivoCondi {
       tipo : String;
       valor: String;
 }
+
+entity Archivos : cuid, managed {
+  key ID       : UUID;
+  nombre       : String;
+  tipoMime     : String;  // sin @Core.IsMediaType aquí
+  @Core.MediaType : 'tipoMime'
+  @Core.ContentDisposition.Filename : 'nombre'
+  contenido    : LargeBinary;
+  datosProyect_ID : UUID;
+}
+
+
 
 
 entity DatosProyect {
@@ -63,6 +80,7 @@ entity DatosProyect {
       TipoCompra               : Association to TipoCompra;
       MotivoCondi              : Association to MotivoCondi;
       Usuarios                 : Association to Usuarios;
+      Archivos                 : Association to Archivos on Archivos.datosProyect_ID = ID;
       RecursosInternos         : Association to RecursosInternos
                                    on RecursosInternos.datosProyect_ID = ID;
       otrosGastoRecu           : Association to many otrosGastoRecu

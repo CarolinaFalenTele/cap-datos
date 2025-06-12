@@ -1572,6 +1572,8 @@ if (oContextPendientes) {
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
 
+
+                console.log("id seleccionado "    + sProjectId); 
                 const workflowInstanceId = oButton.data("etapaId");
 
                console.log("🔴 Eliminar etapa", workflowInstanceId +" " +  sProjectId);

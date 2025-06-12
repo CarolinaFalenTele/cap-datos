@@ -66,6 +66,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity MotivoCondi               as projection on datos.MotivoCondi;
   entity TipoCompra                as projection on datos.TipoCompra;
   entity Usuarios as projection on datos.Usuarios;
+  entity Archivos as projection on datos.Archivos;
 
    entity PendientesUsuario as select from WorkflowEtapas {
     ID,
@@ -140,6 +141,8 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
 
   function getUserInfo()                                                    returns String;
     action cancelWorkflow(workflowInstanceId: String) returns String;
+        action uploadFile() returns String;
+
 
 }
 
