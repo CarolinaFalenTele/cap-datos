@@ -827,7 +827,9 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item1_174747617887">
                                                                             <cells>
-                                                                                <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )">
+                                                                             
+                                                                             
+                                                      <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )">
                                                                                     <items>
                                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item0_1716637548"/>
                                                                                     </items>

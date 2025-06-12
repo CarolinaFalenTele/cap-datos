@@ -640,6 +640,8 @@ sap.ui.define([
         this.byId("idComenpVd").setEditable(iniciativaId === "223e4567-e89b-12d3-a456-426614174001");
 
         this.onInputChange();
+       
+
         // Carga de datos adicionales (en paralelo)
         await Promise.all([
           this.fetchMilestones(this._sProjectID),
@@ -1821,6 +1823,7 @@ sap.ui.define([
 
               if (index < aItems.length) {
                 var oItem = aItems[index];
+
                 var aCells = oItem.getCells();
 
                 aCells[0].setSelectedKey(Recurso.Vertical_ID || "");
@@ -1839,6 +1842,10 @@ sap.ui.define([
               }
             });
           }
+          console.log("📏 Total de recursos internos:", this._recursosIDs.length);
+          console.log("🆔 Lista completa de IDs:", this._recursosIDs);
+
+         await this.fechasDinamicas(); 
           for (let i = 0; i < this._recursosIDs.length; i++) {
             await this.leerFechas(i);
           }
@@ -2188,8 +2195,228 @@ sap.ui.define([
 
       /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<+
 
-// Función principal para leer los datos de un recurso individual
-leerFechas: async function (i) {
+      leerFechas: async function(i) {
+        const recursos = this._recursosIDs;
+      
+        console.log("🔎 IDs recibidos para consultar:", recursos);
+      
+
+        const valoresPorFecha = {};
+        const idPorFecha = {};
+
+        // Creamos un array de promesas fetch para cada recursoID
+        const promesas = recursos.map(async (recursoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+      
+          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+      
+          try {
+            const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+            const data = await response.json();
+    
+
+            // Verificamos si hay resultados o no
+            if (data.value && data.value.length > 0) {
+              console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+            } else {
+              console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+            }
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno; // Formato: "2024-Enero"
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;  // Guardamos el ID para ese mesAno
+
+
+              
+            });
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+      
+      
+      
+            this.rellenarInputsConFechas("table_dimicFecha", index, valoresPorFecha);
+      
+            return { recursoID, data: data.value || [] };
+          } catch (error) {
+            console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+            return { recursoID, error };
+          }
+        });
+      
+        // Esperamos todas las promesas y tenemos los resultados
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos:", resultados);
+      },
+
+
+/*leerFechas: async function(i) {
+  const recursos = this._recursosIDs;
+
+  console.log("🔎 IDs recibidos para consultar:", recursos);
+
+  // Creamos un array de promesas fetch para cada recursoID
+  const promesas = recursos.map(async (recursoID, index) => {
+    const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+
+    console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+
+    try {
+      const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+      const data = await response.json();
+
+      // Verificamos si hay resultados o no
+      if (data.value && data.value.length > 0) {
+        console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+      } else {
+        console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+      }
+
+      const valoresPorFecha = {};
+      data.value.forEach(item => {
+        const key = item.mesAno; // Formato: "2024-Enero"
+        valoresPorFecha[key] = item.valor;
+      });
+
+
+      console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+
+
+
+      this.rellenarInputsConFechas("table_dimicFecha", index, valoresPorFecha);
+
+      return { recursoID, data: data.value || [] };
+    } catch (error) {
+      console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+      return { recursoID, error };
+    }
+  });
+
+  // Esperamos todas las promesas y tenemos los resultados
+  const resultados = await Promise.all(promesas);
+
+  console.log("📊 Resultados completos:", resultados);
+},*/
+
+rellenarInputsConFechas: function (tableId, rowIndex, valoresPorFecha) {
+  console.log(`Intentando rellenar inputs para tabla: ${tableId}, fila: ${rowIndex}`);
+
+  const inputsFila = this._inputsDinamicos?.[tableId]?.[rowIndex];
+  if (!inputsFila) {
+    console.warn(`No existen inputs dinámicos para tabla ${tableId} fila ${rowIndex}`);
+    return;
+  }
+
+  for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
+    const oInput = inputsFila[mesAno];
+    if (oInput) {
+      const valorFormateado = Number(valor).toFixed(2);
+      console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
+      oInput.setValue(valorFormateado);
+      oInput.fireChange({ value: valorFormateado });
+    } else {
+      console.warn(`No se encontró input para la fecha ${mesAno} en tabla ${tableId}, fila ${rowIndex}`);
+    }
+  }
+},
+
+
+/*rellenarInputsConFechas: function (tableId, rowIndex, valoresPorFecha) {
+  console.log(`Intentando rellenar inputs para tabla: ${tableId}, fila: ${rowIndex}`);
+  
+  const inputsFila = this._inputsDinamicos?.[tableId]?.[rowIndex];
+  if (!inputsFila) {
+    console.warn(`No existen inputs dinámicos para tabla ${tableId} fila ${rowIndex}`);
+    return;
+  }
+
+  for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
+    const oInput = inputsFila[mesAno];
+    if (oInput) {
+      console.log(`Seteando valor ${valor} en input de fecha ${mesAno}`);
+      oInput.setValue(valor);
+    } else {
+      console.warn(`No se encontró input para la fecha ${mesAno} en tabla ${tableId}, fila ${rowIndex}`);
+    }
+  }
+
+},*/
+
+
+
+
+
+
+
+
+
+/*leerFechas: async function (i) {
+  const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
+  console.log("ID RECURSO INTERNO EN LEER FECHAS: " + recursoID);
+
+  if (!recursoID) {
+    console.warn("ID no válido en la posición " + i);
+    return;
+  }
+
+  const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+
+  try {
+    const response = await fetch(sUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error('Network response was not ok: ' + errorText);
+    }
+
+    const oData = await response.json();
+    console.log("Respuesta JSON completa:", oData);
+
+    this._recursosIDs.forEach((id, i) => {
+      console.log(`Fila ${i} corresponde a recurso: ${id}`);
+    });
+
+    if (!oData.value || oData.value.length === 0) {
+      throw new Error("No se encontraron datos para el recursoID: " + recursoID);
+    }
+
+    const valoresPorFecha = {};
+    oData.value.forEach(item => {
+      const key = item.mesAno; // Formato: "2024-Enero"
+      valoresPorFecha[key] = item.valor;
+    });
+
+    console.log("Valores por fecha obtenidos para la fila " + i + ":", valoresPorFecha);
+
+    this.rellenarInputsConFechas(valoresPorFecha, i); // <- Pasamos el índice
+
+    this._idleerReIn = oData.value[0].ID;
+
+  } catch (error) {
+    console.error("Error al obtener los datos de Recursos Internos:", error);
+  }
+},*/
+
+
+
+
+
+
+
+
+
+
+
+/*leerFechas: async function (i) {
   const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
   console.log("ID RECURSO INTERNO EN LEER FECHAS: " + recursoID);
 
@@ -2238,7 +2465,7 @@ leerFechas: async function (i) {
   } catch (error) {
     console.error("Error al obtener los datos de Recursos Internos:", error);
   }
-},
+},*/
 
 
 
@@ -4823,11 +5050,6 @@ leerFechas: async function (i) {
                 this.insertPerfilJornadas(generatedId, sCsrfToken),
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
-                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
-                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
-                this.insertResumenCostesTotal(generatedId, sCsrfToken),
-                this.onUploadFile(generatedId, sCsrfToken),
-
                 
               ]);
 
@@ -9643,126 +9865,136 @@ leerFechas: async function (i) {
       },
       //-------------------------------------------
  
-     fechasDinamicas: function (valoresPorFecha) {
-  var startDatePicker = this.getView().byId("date_inico");
-  var endDatePicker = this.getView().byId("date_fin");
+ 
+      fechasDinamicas: function () {
+        var startDatePicker = this.getView().byId("date_inico");
+        var endDatePicker = this.getView().byId("date_fin");
 
-  if (!startDatePicker || !endDatePicker) {
-    console.error("Error: No se pudieron obtener los DatePickers.");
-    return;
-  }
 
-  var startDate = startDatePicker.getDateValue();
-  var endDate = endDatePicker.getDateValue();
+        // console.log("FECHAS LEIDAS AL 100 ---- >>>  " + startDatePicker.getValue(), endDatePicker.getValue());
 
-  if (!startDate || !endDate) {
-    // Esperando a que se seleccionen ambas fechas.
-    return;
-  }
 
-  var diffMonths = this.getMonthsDifference(startDate, endDate);
+        if (!startDatePicker || !endDatePicker) {
+          console.error("Error: No se pudieron obtener los DatePickers.");
+          return;
+        }
 
-  var flexBoxIds = [
-    "box0_1714747137718",
-    "box0_1727879568594",
-    "box0_1727879817594",
-    "box0_1721815443829",
-    "box0_1727948724833",
-    "box0_1727950351451",
-    "box0_17218154429",
-    "box0_1727953252765",
-    "box1_1727953468615",
-    "box0_17254429",
-    "box0_1727955568380"
-  ];
+        var startDate = startDatePicker.getDateValue();
+        var endDate = endDatePicker.getDateValue();
 
-  flexBoxIds.forEach((flexBoxId) => {
-    var flexBox = this.getView().byId(flexBoxId);
-    if (flexBox) {
-      flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-    }
-  });
+        if (!startDate || !endDate) {
+          //    console.log("Esperando a que se seleccionen ambas fechas.");
+          return;
+        }
 
-  var tableIds = [
-    "tablaConsuExter",
-    "table_dimicFecha",
-    "tablaRecExterno",
-    "idOtroserConsu",
-    "idGastoViajeConsu",
-    "idServiExterno",
-    "idGastoRecuExter",
-    "tablaInfrestuctura",
-    "tablaLicencia",
-    "tableServicioInterno",
-    "tablGastoViajeInterno"
-  ];
+        var diffMonths = this.getMonthsDifference(startDate, endDate);
 
-  tableIds.forEach((tableId) => {
-    var oTable = this.getView().byId(tableId);
-    if (!oTable) {
-      console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-      return;
-    }
+        var flexBoxIds = [
+          "box0_1714747137718",
+          "box0_1727879568594",
+          "box0_1727879817594",
+          "box0_1721815443829",
+          "box0_1727948724833",
+          "box0_1727950351451",
+          "box0_17218154429",
+          "box0_1727953252765",
+          "box1_1727953468615",
+          "box0_17254429",
+          "box0_1727955568380"
+        ];
 
-    // Eliminar columnas anteriores que fueron añadidas dinámicamente
-    var columnCount = oTable.getColumns().length;
-    for (var j = columnCount - 1; j >= 0; j--) {
-      var columnHeader = oTable.getColumns()[j].getHeader();
-
-      // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
-      if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-        oTable.removeColumn(oTable.getColumns()[j]);
-      }
-    }
-
-    var totalColumnIndex = this.findTotalColumnIndex(oTable);
-
-    // Añadir nuevas columnas dinámicas
-    for (var i = 0; i <= diffMonths; i++) {
-      var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-      var year = columnDate.getFullYear();
-      var month = columnDate.toLocaleString("default", { month: "long" });
-      var columnHeaderText = year + "-" + month.toLowerCase(); // Convertir a minúsculas para buscar
-
-      var oColumn = new sap.m.Column({
-        header: new sap.m.Label({ text: columnHeaderText }),
-        width: "100px"
-      });
-
-      oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-
-      // Recorrer filas para crear Inputs con valor asignado
-      for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
-        var oRow = oTable.getItems()[rowIndex];
-
-        // Obtener valor para esta fecha, si no hay, poner "0.00"
-        var valorCelda = valoresPorFecha[columnHeaderText] || "0.00";
-
-        // Crear Input con valor inicial y evento change
-        var oInput = new sap.m.Input({
-          placeholder: "0.00",
-          value: valorCelda,
-          change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+        flexBoxIds.forEach((flexBoxId) => {
+          var flexBox = this.getView().byId(flexBoxId);
+          if (flexBox) {
+            flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+          }
         });
 
-        // Añadir Input a la fila (celda)
-        oRow.addCell(oInput);
-      }
-    }
+        var tableIds = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+          "idOtroserConsu",
+          "idGastoViajeConsu",
+          "idServiExterno",
+          "idGastoRecuExter",
+          "tablaInfrestuctura",
+          "tablaLicencia",
+          "tableServicioInterno",
+          "tablGastoViajeInterno"
+        ];
 
-    // Ajustar scroll container
-    var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-    if (oScrollContainer) {
-      oScrollContainer.setHorizontal(true);
-      oScrollContainer.setVertical(false);
-      oScrollContainer.setWidth("100%");
-    }
-  });
-},
+        tableIds.forEach((tableId) => {
+          var oTable = this.getView().byId(tableId);
+          if (!oTable) {
+            console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+            return;
+          }
 
+          // Eliminar columnas anteriores que fueron añadidas dinámicamente
+          var columnCount = oTable.getColumns().length;
+          for (var j = columnCount - 1; j >= 0; j--) {
+            var columnHeader = oTable.getColumns()[j].getHeader();
+
+            // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
+            if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+              oTable.removeColumn(oTable.getColumns()[j]);
+            }
+          }
+
+          var totalColumnIndex = this.findTotalColumnIndex(oTable);
+
+          // Añadir nuevas columnas dinámicas
+          for (var i = 0; i <= diffMonths; i++) {
+            var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            var year = columnDate.getFullYear();
+            var month = columnDate.toLocaleString("default", { month: "long" });
+            var columnHeaderText = year + "-" + month;
+
+            var oColumn = new sap.m.Column({
+              header: new sap.m.Label({ text: columnHeaderText }),
+              width: "100px"
+            });
+
+            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+
+            for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+              var oRow = oTable.getItems()[rowIndex];
+
+
+              this._inputsDinamicos = this._inputsDinamicos || {};
+this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
+this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+
+              // Crear el Input dinámicamente en cada celda
+              var oInput = new sap.m.Input({
+                placeholder: "0.00",
+                // Evento de cambio (change) para capturar el valor ingresado
+                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+              });
+
+
+              oRow.addCell(oInput); // Añadir el Input a la celda
+
+          this._inputsDinamicos[tableId][rowIndex][columnHeaderText] = oInput;
+
+            }
+          }
+
+          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+          if (oScrollContainer) {
+            oScrollContainer.setHorizontal(true);
+            oScrollContainer.setVertical(false);
+            oScrollContainer.setWidth("100%");
+          }
+
+          //    console.log("startDate:", startDate);
+          // console.log("endDate:", endDate);
+        });
+      },
     
 
-     /* fechasDinamicas: function (valoresPorFecha) {
+    /*  fechasDinamicas: function (valoresPorFecha) {
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
 
