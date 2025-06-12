@@ -713,8 +713,99 @@ sap.ui.define([
         console.log("📌 ID recibido para ver archivo:", archivoID);
         this._descargarArchivo(archivoID, fileName, mimeType);
       },
-      
+
+
+
+
       _descargarArchivo: async function (archivoId, fileName, mimeType) {
+        try {
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
+          });
+      
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
+          }
+      
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      
+          // Mostrar una vista previa si es imagen, texto o PDF
+          if (mimeType.startsWith("image/") || mimeType === "application/pdf" || mimeType.startsWith("text/")) {
+            const newWindow = window.open();
+            newWindow.document.write(
+              `<title>${fileName}</title><iframe src="${blobUrl}" width="100%" height="100%"></iframe>`
+            );
+          }
+      
+          // Siempre descargar con el nombre original
+          const a = document.createElement("a");
+          a.href = blobUrl;
+          a.download = fileName || "archivo";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+      
+          sap.m.MessageToast.show("✅ Archivo descargado: " + fileName);
+        } catch (err) {
+          console.error("❌ Error en descarga:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },
+      
+    /*  _descargarArchivo: async function (archivoId, fileName, mimeType) {
+        try {
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
+          });
+      
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
+          }
+      
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      
+          // Mostrar mensaje con el nombre original
+          sap.m.MessageToast.show("🗂️ Abriendo archivo: " + fileName);
+      
+          // Detectar el tipo de archivo
+          if (mimeType.startsWith("image/")) {
+            // Imagen: abrir en nueva pestaña
+            window.open(blobUrl, "_blank");
+          } else if (mimeType.startsWith("text/")) {
+            // Texto plano: mostrar en una nueva ventana como texto
+            const reader = new FileReader();
+            reader.onload = function () {
+              const textWindow = window.open("", "_blank");
+              textWindow.document.write("<pre>" + reader.result + "</pre>");
+              textWindow.document.title = fileName;
+            };
+            reader.readAsText(blob);
+          } else if (mimeType === "application/pdf" || mimeType === "application/msword" || mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+            // PDF o Word: intentar abrir en nueva pestaña
+            const newWindow = window.open();
+            newWindow.location.href = blobUrl;
+          } else {
+            // Otros: forzar descarga
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = fileName || "archivo";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+      
+        } catch (err) {
+          console.error("❌ Error en descarga:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },*/
+      
+      
+     /* _descargarArchivo: async function (archivoId, fileName, mimeType) {
         try {
           const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
             method: "GET"
@@ -745,34 +836,11 @@ sap.ui.define([
           console.error("❌ Error en descarga:", err);
           sap.m.MessageToast.show(err.message);
         }
-      },
-      
-      
-      
-      
-      
-   /*   onVerArchivo: function (oEvent) {
-        const archivoID = "f6d42439-0e5d-44d7-8c6a-7dd8aaf515bb";
-        const nombreArchivo = "getBackgroundReport.do2.pdf";
-        const url = `/odata/v4/datos-cdo/Archivos(${archivoID})/$value`;
-      
-        fetch(url)
-          .then(response => {
-            if (!response.ok) throw new Error("❌ Error al obtener archivo.");
-            return response.blob();
-          })
-          .then(blob => {
-            if (blob.size === 0) throw new Error("⚠️ El archivo está vacío.");
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = nombreArchivo;
-            link.click();
-          })
-          .catch(err => {
-            console.error("🚫 Error al ver archivo:", err);
-            sap.m.MessageToast.show(err.message);
-          });
       },*/
+      
+      
+      
+      
       
       
       
@@ -4399,6 +4467,8 @@ leerFechas: async function (i) {
                 this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
+                this.onUploadFile(generatedId, sCsrfToken),
+
 
               ]);
 
@@ -4757,6 +4827,7 @@ leerFechas: async function (i) {
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
+
                 
               ]);
 

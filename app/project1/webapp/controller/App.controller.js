@@ -1619,7 +1619,7 @@ if (oContextPendientes) {
                                     }
             
                                     const paths = [
-                                        "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos",
+                                        "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos","Archivos",
                                         "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu",
                                         "otrosRecursos", "otrosServiciosConsu", "GastoViajeConsumo", "serviRecurExter",
                                         "GastoViajeRecExter", "LicenciasCon", "WorkflowInstancias", "ResumenCostesTotal",
