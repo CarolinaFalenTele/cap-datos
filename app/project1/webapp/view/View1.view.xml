@@ -813,6 +813,12 @@
                                                         <items>
                                                             <ScrollContainer id="scroll_container" width="100%" height="auto">
                                                                
+    <Text
+        text="Por favor, asegúrese de seleccionar la Vertical, el Tipo de Servicio y el Perfil/Servicio, ya que estos tres campos son obligatorios. También debe indicar el valor correspondiente en el campo Oferta (Adicionales, Formación, Soporte). En caso de no completar los campos obligatorios, no se realizará el registro y no se registrará la información ingresada"
+        class="sapUiSmallMarginBottom"
+        wrapping="true"
+        width="100%"
+    />
 
                                                                 <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="auto" class="customHeaderColor">
                                                                     <headerToolbar>
@@ -981,9 +987,9 @@
                                                                         
                                                                             <Text xmlns="sap.m" id="text102_1749567001265"/>
                                                                         
-                                                                            <Text xmlns="sap.m" text="Text" id="text103_1749567071319" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text103_1749567071319" class="boldText"/>
                                                                         
-                                                                            <Text xmlns="sap.m" text="Text" id="text104_1749567079346"  class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text104_1749567079346"  class="boldText"/>
                                                                         
                                                                         </cells>
                                                                         

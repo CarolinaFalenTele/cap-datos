@@ -132,6 +132,9 @@ sap.ui.define([
 
 
         console.log("ID ANTES DE ACTUALIZAR   OINIT "  + this._idWorkflowInstancias);
+
+        this.byId("coste6552").setVisible(false);
+
       },
 
 
@@ -640,6 +643,8 @@ sap.ui.define([
         this.byId("idComenpVd").setEditable(iniciativaId === "223e4567-e89b-12d3-a456-426614174001");
 
         this.onInputChange();
+       
+
         // Carga de datos adicionales (en paralelo)
         await Promise.all([
           this.fetchMilestones(this._sProjectID),
@@ -692,52 +697,156 @@ sap.ui.define([
       },
 
 
-      onVerArchivo: async function (archivoID) {
-        const url = `/odata/v4/datos-cdo/Archivos(${archivoID})/contenido/$value`;
+      onVerArchivo: function (oEvent) {
+        const oItem = oEvent.getSource();
+        const oContext = oItem.getBindingContext("archivosModel");
       
+        if (!oContext) {
+          sap.m.MessageToast.show("⚠️ No se pudo obtener el contexto del archivo.");
+          return;
+        }
+      
+        const archivoID = oContext.getProperty("ID");
+        const fileName = oContext.getProperty("nombre");
+        const mimeType = oContext.getProperty("tipoMime");
+      
+        if (!archivoID || !fileName || !mimeType) {
+          sap.m.MessageToast.show("⚠️ Faltan datos para abrir o descargar el archivo.");
+          return;
+        }
+      
+        console.log("📌 ID recibido para ver archivo:", archivoID);
+        this._descargarArchivo(archivoID, fileName, mimeType);
+      },
+
+
+
+
+      _descargarArchivo: async function (archivoId, fileName, mimeType) {
+
         try {
-          const response = await fetch(url);
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
+          });
       
-          if (!response.ok) {
-            throw new Error("❌ No se pudo obtener el archivo.");
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
           }
       
-          const blob = await response.blob();
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
       
-          if (blob.size === 0) {
-            throw new Error("⚠️ El archivo está vacío.");
+          // Mostrar una vista previa si es imagen, texto o PDF
+          if (mimeType.startsWith("image/") || mimeType === "application/pdf" || mimeType.startsWith("text/")) {
+            const newWindow = window.open();
+            newWindow.document.write(
+              `<title>${fileName}</title><iframe src="${blobUrl}" width="100%" height="100%"></iframe>`
+            );
           }
       
-          const blobUrl = URL.createObjectURL(blob);
-          window.open(blobUrl, "_blank"); // 👈 Abre el PDF en una nueva pestaña
+          // Siempre descargar con el nombre original
+          const a = document.createElement("a");
+          a.href = blobUrl;
+          a.download = fileName || "archivo";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+      
+    //      sap.m.MessageToast.show("✅ Archivo descargado: " + fileName);
         } catch (err) {
-          console.error("🚫 Error al ver archivo:", err);
-          sap.m.MessageToast.show(err.message);
+          console.error("❌ Error en descarga:", err);
+       //   sap.m.MessageToast.show(err.message);
         }
       },
       
-   /*   onVerArchivo: function (oEvent) {
-        const archivoID = "f6d42439-0e5d-44d7-8c6a-7dd8aaf515bb";
-        const nombreArchivo = "getBackgroundReport.do2.pdf";
-        const url = `/odata/v4/datos-cdo/Archivos(${archivoID})/$value`;
-      
-        fetch(url)
-          .then(response => {
-            if (!response.ok) throw new Error("❌ Error al obtener archivo.");
-            return response.blob();
-          })
-          .then(blob => {
-            if (blob.size === 0) throw new Error("⚠️ El archivo está vacío.");
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = nombreArchivo;
-            link.click();
-          })
-          .catch(err => {
-            console.error("🚫 Error al ver archivo:", err);
-            sap.m.MessageToast.show(err.message);
+    /*  _descargarArchivo: async function (archivoId, fileName, mimeType) {
+        try {
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
           });
+      
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
+          }
+      
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      
+          // Mostrar mensaje con el nombre original
+          sap.m.MessageToast.show("🗂️ Abriendo archivo: " + fileName);
+      
+          // Detectar el tipo de archivo
+          if (mimeType.startsWith("image/")) {
+            // Imagen: abrir en nueva pestaña
+            window.open(blobUrl, "_blank");
+          } else if (mimeType.startsWith("text/")) {
+            // Texto plano: mostrar en una nueva ventana como texto
+            const reader = new FileReader();
+            reader.onload = function () {
+              const textWindow = window.open("", "_blank");
+              textWindow.document.write("<pre>" + reader.result + "</pre>");
+              textWindow.document.title = fileName;
+            };
+            reader.readAsText(blob);
+          } else if (mimeType === "application/pdf" || mimeType === "application/msword" || mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+            // PDF o Word: intentar abrir en nueva pestaña
+            const newWindow = window.open();
+            newWindow.location.href = blobUrl;
+          } else {
+            // Otros: forzar descarga
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = fileName || "archivo";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+      
+        } catch (err) {
+          console.error("❌ Error en descarga:", err);
+          sap.m.MessageToast.show(err.message);
+        }
       },*/
+      
+      
+     /* _descargarArchivo: async function (archivoId, fileName, mimeType) {
+        try {
+          const res = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "GET"
+          });
+      
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("❌ Error al descargar archivo: " + errorText);
+          }
+      
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      
+          if (mimeType === "application/pdf") {
+            // Mostrar PDF en nueva pestaña
+            const newWindow = window.open();
+            newWindow.location.href = blobUrl;
+          } else {
+            // Descargar cualquier otro archivo con nombre y tipo correcto
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = fileName || "archivo";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        } catch (err) {
+          console.error("❌ Error en descarga:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },*/
+      
+      
+      
+      
       
       
       
@@ -757,27 +866,24 @@ sap.ui.define([
             }
           });
       
-          console.log("📡 Respuesta fetch:", response);
-      
           if (!response.ok) {
             const errorText = await response.text();
             throw new Error('Error en la respuesta de la API: ' + errorText);
           }
       
           const data = await response.json();
-          console.log("📦 Datos recibidos:", data);
-      
-          const archivos = data.value;
-          console.log("📁 Archivos:", archivos);
+          const archivos = data.value || [];
       
           const oModel = new sap.ui.model.json.JSONModel({ archivos });
           this.getView().setModel(oModel, "archivosModel");
       
-          console.log("📌 Modelo cargado en la vista");
+          console.log("📌 Modelo cargado en la vista con archivos:", archivos.length);
         } catch (err) {
           console.error("❌ Error al cargar archivos:", err);
+          sap.m.MessageToast.show(err.message);
         }
       },
+      
       
       
 
@@ -791,12 +897,31 @@ sap.ui.define([
 
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
-        const aAlwaysReadOnlyIds = [
-          "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
-          "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
-          "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442",
-          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve, input0_1724758359"
-        ];
+   
+
+        // Limpiar textos visibles (txt_... y text...)
+          const aTextFieldsToClear = [
+            "txt_codig", "txt_nomPro", "txt_area", "txt_NomJefe", "txt_funcio",
+            "txt_feIni", "txt_feFin", "txt_ini", "text72_1731325324246", "text73_1731325328049",
+            "txt_client", "txt_cFactura", "txt_Codi2", "txt_Nombre2", "txt_area2",
+            "txt_Fe_ini2", "txt_Fe_fin2", "textClitFu3", "textCliFac3", "textCodigo3",
+            "textNatural3", "txtNombre3", "txtAre3", "txtFechInici3", "txtFechFin3"
+          ];
+
+          aTextFieldsToClear.forEach(sId => {
+            const oText = this.byId(sId);
+            if (oText && typeof oText.setText === "function") {
+              oText.setText("");
+            }
+          });
+
+
+          const aAlwaysReadOnlyIds = [
+            "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
+            "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
+            "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442", "totalInfraestruc", "input0_1724758359",
+            "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve, input0_1724758359"
+          ];
 
         // Limpieza general de campos
         controls.forEach(control => {
@@ -849,6 +974,11 @@ sap.ui.define([
           oModel.setProperty("/chartModel", []);
         }
 
+        const oArchivosModel = this.getView().getModel("archivosModel");
+        if (oArchivosModel) {
+            oArchivosModel.setProperty("/archivos", []);
+        }
+     
 
 
 
@@ -863,6 +993,26 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
 
+
+        this._FacturacionID = null;
+        this._aChartData = [];
+        this._proveedoresIDs = [];
+        this._recursosIDs = [];
+        this._consumoExternosIDs = [];
+        this._RecursoExterno = null;
+        this._OtrosConceptos = null;
+        this._idServiInterno = null;
+        this._IdGastoViajInter = null;
+        this._idConsuOtrser = null;
+        this._idGastoViajeCOnsu = null;
+        this._idOtroSerEx = null;
+        this._idGasViaReEx = null;
+        this._idLicencia = null;
+        this._idJornadas = null;
+        this._idTotalRecInter = null;
+        this._selectedFile = null;
+
+        
 
         const aAlwaysReadOnlyIds = [
           "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
@@ -1721,6 +1871,7 @@ sap.ui.define([
 
               if (index < aItems.length) {
                 var oItem = aItems[index];
+
                 var aCells = oItem.getCells();
 
                 aCells[0].setSelectedKey(Recurso.Vertical_ID || "");
@@ -1739,6 +1890,10 @@ sap.ui.define([
               }
             });
           }
+          console.log("📏 Total de recursos internos:", this._recursosIDs.length);
+          console.log("🆔 Lista completa de IDs:", this._recursosIDs);
+
+         await this.fechasDinamicas(); 
           for (let i = 0; i < this._recursosIDs.length; i++) {
             await this.leerFechas(i);
           }
@@ -2088,215 +2243,201 @@ sap.ui.define([
 
       /// >>>>>>> LEER FECHAS  RECURSO  INTERNO  <<<<<<<<<<+
 
-// Función principal para leer los datos de un recurso individual
-leerFechas: async function (i) {
-  const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
-  console.log("ID RECURSO INTERNO EN LEER FECHAS: " + recursoID);
+      leerFechas: async function(i) {
+        const recursos = this._recursosIDs;
+      
+        console.log("🔎 IDs recibidos para consultar:", recursos);
+      
 
-  if (!recursoID) {
-    console.warn("ID no válido en la posición " + i);
+        const valoresPorFecha = {};
+        const idPorFecha = {};
+
+        // Creamos un array de promesas fetch para cada recursoID
+        const promesas = recursos.map(async (recursoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+      
+          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+      
+          try {
+            const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+            const data = await response.json();
+    
+
+            // Verificamos si hay resultados o no
+            if (data.value && data.value.length > 0) {
+              console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+            } else {
+              console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+            }
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno; // Formato: "2024-Enero"
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;  // Guardamos el ID para ese mesAno
+
+
+              
+            });
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+      
+      
+      
+            this.rellenarInputsConFechas("table_dimicFecha", index, valoresPorFecha);
+      
+            return { recursoID, data: data.value || [] };
+          } catch (error) {
+            console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+            return { recursoID, error };
+          }
+        });
+      
+        // Esperamos todas las promesas y tenemos los resultados
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos:", resultados);
+      },
+
+
+
+
+rellenarInputsConFechas: function (tableId, rowIndex, valoresPorFecha) {
+  console.log(`Intentando rellenar inputs para tabla: ${tableId}, fila: ${rowIndex}`);
+
+  const inputsFila = this._inputsDinamicos?.[tableId]?.[rowIndex];
+  if (!inputsFila) {
+    console.warn(`No existen inputs dinámicos para tabla ${tableId} fila ${rowIndex}`);
     return;
   }
 
-  const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
-
-  try {
-    const response = await fetch(sUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error('Network response was not ok: ' + errorText);
+  for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
+    const oInput = inputsFila[mesAno];
+    if (oInput) {
+      const valorFormateado = Number(valor).toFixed(2);
+      console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
+      oInput.setValue(valorFormateado);
+      oInput.fireChange({ value: valorFormateado });
+    } else {
+      console.warn(`No se encontró input para la fecha ${mesAno} en tabla ${tableId}, fila ${rowIndex}`);
     }
-
-    const oData = await response.json();
-    console.log("Respuesta JSON completa:", oData);
-
-    if (!oData.value || oData.value.length === 0) {
-      throw new Error("No se encontraron datos para el recursoID: " + recursoID);
-    }
-
-    var idRecuIn = oData.value[0];
-    var idleerReIn = idRecuIn.ID;
-
-    let valoresPorFecha = {};
-    oData.value.forEach(item => {
-      let key = item.mesAno; // Formato esperado: "2024-Enero"
-      valoresPorFecha[key] = item.valor;
-    });
-
-    console.log("Valores por fecha antes de enviarlos RECURSO INTERNO:", valoresPorFecha);
-
-    this.fechasDinamicas(valoresPorFecha);
-    this._idleerReIn = idleerReIn;
-
-  } catch (error) {
-    console.error("Error al obtener los datos de Recursos Internos:", error);
   }
 },
 
 
 
+leerFechasServiRecInter: async function () {
+  const servicios = this._idServiInterno;
 
-     /* leerFechas: async function (i) {
+  console.log("🔎 IDs de servicios internos para consultar:", servicios);
 
-        const recursoID = this._recursosIDs && this._recursosIDs[i] ? this._recursosIDs[i] : null;
-        console.log("ID RECURSO INTERNO EN  LEER FECHAS " + recursoID)
+  const valoresPorFecha = {};
+  const idPorFecha = {};
 
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
+  const promesas = servicios.map(async (servicioID, index) => {
+    const sUrl = `/odata/v4/datos-cdo/ValorMensuServReInter?$filter=otrosGastoRecu_ID eq '${servicioID}'`;
 
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          });
+    console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
 
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
+    try {
+      const response = await fetch(sUrl, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
 
-          const oData = await response.json();
-          console.log("Respuesta JSON completa:", oData);
+      const data = await response.json();
 
-          // Verificar si hay datos antes de acceder a ellos
-          if (!oData.value || oData.value.length === 0) {
-            throw new Error("No se encontraron datos para el recursoID: " + recursoID);
-          }
+      if (data.value && data.value.length > 0) {
+        console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+      } else {
+        console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
+      }
 
-          var idRecuIn = oData.value[0]; // Ahora es seguro acceder
-          var idleerReIn = idRecuIn.ID;
+      const valoresPorFecha = {};
+      data.value.forEach(item => {
+        const key = item.mesAno; // Ejemplo: "2024-Enero"
+        valoresPorFecha[key] = item.valor;
+        idPorFecha[key] = item.ID;  // Guardamos el ID para ese mesAno
+      });
 
-          console.log(" ID LEERFECHAS ODATA   " + oData);
+      this._IdFechasPorMes = idPorFecha;
 
-          // console.log("Datos obtenidos de la API : ", oData);
+      console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
+      this.rellenarInputsConFechas("tableServicioInterno", index, valoresPorFecha);
 
-          console.log("Valores por fecha antes de enviarlos RECURSO INTERNO:", valoresPorFecha);
+      return { servicioID, data: data.value || [] };
+    } catch (error) {
+      console.error(`❌ Error en consulta para servicioID ${servicioID}:`, error);
+      return { servicioID, error };
+    }
+  });
 
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-          
-          this._idleerReIn = idleerReIn;
+  const resultados = await Promise.all(promesas);
 
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
-      },*/
+  console.log("📊 Resultados completos:", resultados);
+},
 
 
-      leerFechasServiRecInter: async function (idlSErvi) {
-
-        console.log("  ID DE LEER SERVI INTER <>>>>>")
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuServReInter?$filter=otrosGastoRecu_ID eq ${idlSErvi}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
-
-          const oData = await response.json();
-          console.log("Datos obtenidos de la API:", oData); // Verifica la estructura de la respuesta
-          var idSev = oData.value[0]; // Toma solo el primer recurso
-          var idleerSerInter = idSev.ID;
-
-          console.log("ID SERVICIO INTERNO:", oData);
-
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos RECURSO INTERNO:", valoresPorFecha);
-
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-          this._idleerSerInter = idleerSerInter;
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          ////sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
-      },
 
 
-      leerFechasGastoViajeRecInter: async function (idleerOR) {
+leerFechasGastoViajeRecInter: async function () {
+  const recursos = this._idOtrosRecu;
 
-        console.log("id GASTO VIAJE PASADO A MES AÑO <<<< " + idleerOR);
+  console.log("🔎 ID de gasto de viaje interno para consultar:", recursos);
 
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuGastViaReInter?$filter=otrosRecursos_ID eq '${idleerOR}'`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          });
+  const valoresPorFecha = {};
+  const idPorFecha = {};
 
-          console.log("Response completo:", response);
+  // Si solo es un ID (no un array), lo transformamos a array para mantener la estructura como en leerFechas
+  const recursosArray = Array.isArray(recursos) ? recursos : [recursos];
 
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
+  const promesas = recursosArray.map(async (recursoID, index) => {
+    const sUrl = `/odata/v4/datos-cdo/ValorMensuGastViaReInter?$filter=otrosRecursos_ID eq '${recursoID}'`;
 
-          const oData = await response.json();
-          console.log("Respuesta JSON completa:", oData);
+    console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
 
-          if (!oData.value || oData.value.length === 0) {
-            throw new Error("No se encontraron datos en la respuesta de la API.");
-          }
+    try {
+      const response = await fetch(sUrl, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
 
-          var idRecI = oData.value[0]; // Toma solo el primer recurso
-          var idGastInterno = idRecI.ID; // Ahora es seguro acceder a .ID
+      const data = await response.json();
 
+      if (data.value && data.value.length > 0) {
+        console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+      } else {
+        console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+      }
 
-          //   console.log("ID SERVICIO INTERNO:", oData);
+      const valoresPorFecha = {};
+      data.value.forEach(item => {
+        const key = item.mesAno;
+        valoresPorFecha[key] = item.valor;
+        idPorFecha[key] = item.ID;
+      });
 
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
+      this._IdFechasPorMes = idPorFecha;
+      this._idGastInterno = data.value[0]?.ID || null;
 
-          //   console.log("Valores por fecha antes de enviarlos Gasto viaje Servi INterno :", valoresPorFecha);
+      console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-          this._idGastInterno = idGastInterno;
+      this.rellenarInputsConFechas("tablGastoViajeInterno", index, valoresPorFecha);
 
-        } catch (error) {
-          console.error("Error al obtener los datos de FECHAS DE GASTOS DE VIAJE :", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
-      },
+      return { recursoID, data: data.value || [] };
+    } catch (error) {
+      console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+      return { recursoID, error };
+    }
+  });
+
+  const resultados = await Promise.all(promesas);
+
+  console.log("📊 Resultados completos:", resultados);
+},
+
       //---------------------------------------------------------------------------------
 
 
@@ -2305,142 +2446,184 @@ leerFechas: async function (i) {
       // -------------- LEER FECHAS CONSUMO EXTERNO -----------------------
 
 
-      leerFechasConsumoExterno: async function (ConsumoRecuID) {
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuConsuEx?$filter=ConsumoExternos_ID eq ${ConsumoRecuID}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      leerFechasConsumoExterno: async function () {
+        const consumos = this._consumoExternosIDs;
+      
+        console.log("🔎 IDs de Consumo Externo para consultar:", consumos);
+      
+        const valoresPorFecha = {};
+        const idPorFecha = {};
+      
+        const promesas = consumos.map(async (consumoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuConsuEx?$filter=ConsumoExternos_ID eq '${consumoID}'`;
+      
+          console.log(`🔗 Consultando URL para consumoID: ${consumoID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: { 'Accept': 'application/json' }
+            });
+      
+            const data = await response.json();
+      
+            if (data.value && data.value.length > 0) {
+              console.log(`✅ Resultado para consumoID ${consumoID}:`, data.value);
+            } else {
+              console.warn(`⚠️ Sin resultados para consumoID ${consumoID}`);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno;
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("VALORES POR FECHAS CONSUMO EXTERNO:", JSON.stringify(valoresPorFecha));
+      
+            this.rellenarInputsConFechas("tablaConsuExter", index, valoresPorFecha);
+      
+            return { consumoID, data: data.value || [] };
+          } catch (error) {
+            console.error(`❌ Error en consulta para consumoID ${consumoID}:`, error);
+            return { consumoID, error };
           }
-
-          const oData = await response.json();
-          var idLeerCon = oData.value[0]; // Toma solo el primer recurso
-          var idleeConsu = idLeerCon.ID;
-          //   console.log("Datos obtenidos de la API: ", oData);
-
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          //          console.log("Valores por fecha antes de enviarlos  CONSUMO EXTERNO:", valoresPorFecha);
-
-          this._idleeConsu = idleeConsu;
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de FECHAS DE Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos consumo externo:", resultados);
       },
+      
 
-      leerFechasServConsumoExterno: async function (idCOtroServi) {
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuServConsuEx?$filter=otrosServiciosConsu_ID eq ${idCOtroServi}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+
+
+
+
+      leerFechasServConsumoExterno: async function () {
+        const otrosServiciosIDs = this._idConsuOtrser; // Debe ser un array
+      
+        console.log("🔎 IDs de Servicios de Consumo Externo para consultar:", otrosServiciosIDs);
+      
+        const valoresPorFecha = {};
+        const idPorFecha = {};
+      
+        const promesas = otrosServiciosIDs.map(async (servicioID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuServConsuEx?$filter=otrosServiciosConsu_ID eq '${servicioID}'`;
+      
+          console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: { 'Accept': 'application/json' }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error al consultar el servicio: ' + errorText);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
-
-          const oData = await response.json();
-          var idLeerCon = oData.value[0]; // Toma solo el primer recurso
-          var idleeConsu = idLeerCon.ID;
-          //   console.log("Datos obtenidos de la API: ", oData);
-
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos  CONSUMO SERVI FECHAS :", valoresPorFecha);
-
-          this._idleeConsu = idleeConsu;
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de FECHAS DE Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
-      },
-
-
-
-
-      leerFechasGastoConsumoExterno: async function (idGasVi) {
-
-        console.log("ID RECURSO INTERNO EN  LEER FECHAS " + recursoID)
-
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx?$filter=GastoViajeConsumo_ID eq '${idGasVi}'`;
-
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      
+            const data = await response.json();
+      
+            if (data.value && data.value.length > 0) {
+              console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+            } else {
+              console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno; // Formato: "2024-Enero"
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
+      
+            this.rellenarInputsConFechas("idOtroserConsu", index, valoresPorFecha);
+      
+            return { servicioID, data: data.value || [] };
+          } catch (error) {
+            console.error(`❌ Error en consulta para servicioID ${servicioID}:`, error);
+            return { servicioID, error };
           }
-
-          const oData = await response.json();
-          console.log("Respuesta JSON completa:", oData);
-
-          // Verificar si hay datos antes de acceder a ellos
-          if (!oData.value || oData.value.length === 0) {
-            throw new Error("No se encontraron datos para el recursoID: " + recursoID);
-          }
-
-          var idRecuIn = oData.value[0]; // Ahora es seguro acceder
-          var idleerReIn = idRecuIn.ID;
-
-          console.log(" ID LEERFECHAS ODATA   " + oData);
-
-          // console.log("Datos obtenidos de la API : ", oData);
-
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos RECURSO INTERNO:", valoresPorFecha);
-
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-          this._idleerReIn = idleerReIn;
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de servicios consumo externo:", resultados);
       },
+      
+
+
+
+
+      leerFechasGastoConsumoExterno: async function () {
+        const gastosIDs = this._idGastoViajeCOnsu; // Asegúrate de que sea un array
+      
+        console.log("🔎 IDs de Gasto de Viaje Consumo Externo a consultar:", gastosIDs);
+      
+        const valoresPorFecha = {};
+        const idPorFecha = {};
+      
+        const promesas = gastosIDs.map(async (gastoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx?$filter=GastoViajeConsumo_ID eq '${gastoID}'`;
+      
+          console.log(`🔗 Consultando URL para gastoID: ${gastoID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
+            }
+      
+            const data = await response.json();
+            console.log("📦 Respuesta JSON completa:", data);
+      
+            if (!data.value || data.value.length === 0) {
+              console.warn(`⚠️ Sin datos encontrados para gastoID: ${gastoID}`);
+              return { gastoID, data: [] };
+            }
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno; // Ejemplo: "2024-Enero"
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para gastoID:", gastoID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("idGastoViajeConsu", index, valoresPorFecha);
+      
+            return { gastoID, data: data.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar gastoID ${gastoID}:`, error);
+            return { gastoID, error };
+          }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Gasto Consumo Externo:", resultados);
+      },
+      
 
 
       //---------------------------------------------------------------------------
@@ -2450,152 +2633,186 @@ leerFechas: async function (i) {
 
 
 
-      leerFechasRecursoExterno: async function (RecursoExterID) {
-        console.log("ID de recursos recibido:", RecursoExterID);
-
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuRecuExter?$filter=RecursosExternos_ID eq ${RecursoExterID}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      leerFechasRecursoExterno: async function () {
+        const recursosExternosIDs = this._RecursoExterno; // Debe ser un array de IDs
+      
+        console.log("🔎 IDs de Recursos Externos a consultar:", recursosExternosIDs);
+      
+        const idPorFecha = {};
+      
+        const promesas = recursosExternosIDs.map(async (recursoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuRecuExter?$filter=RecursosExternos_ID eq ${recursoID}`;
+      
+          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
-
-          const oData = await response.json();
-
-          if (!oData.value || oData.value.length === 0) {
-            console.warn("No se encontraron datos para el recurso externo con ID:", RecursoExterID);
-            //sap.m.MessageToast.show("No se encontraron datos de recursos externos");
-            return; // salimos de la función
-          }
-
-          var idLeerRecuEx = oData.value[0]; // ahora seguro existe
-          var idleeRExt = idLeerRecuEx.ID;
-
-          // Mapeo correcto de valores para cada fecha
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos  CONSUMO EXTERNO:", valoresPorFecha);
-
-          this._idleeRExt = idleeRExt;
-
-          console.log("ID DEL ERROR  " + this._idleeRExt);
-
-          // Llamar a fechasDinamicas pasando los datos obtenidos
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
-      },
-
-
-      leerFechasServRecursoExterno: async function (idExterno) {
-
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuSerExter?$filter=ServiRecurExterno_ID eq ${idExterno}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      
+            const data = await response.json();
+            console.log("📦 Respuesta JSON completa:", data);
+      
+            if (!data.value || data.value.length === 0) {
+              console.warn(`⚠️ Sin datos encontrados para recurso externo ID: ${recursoID}`);
+              return { recursoID, data: [] };
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+      
+            const valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno; // Ejemplo: "2024-Enero"
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            // Guardar IDs por fecha si se requiere luego
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para recurso externo ID:", recursoID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("tablaRecExterno", index, valoresPorFecha);
+      
+            return { recursoID, data: data.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar recurso externo ID ${recursoID}:`, error);
+            return { recursoID, error };
           }
-
-          const oData = await response.json();
-
-          // Verifica que hay datos antes de continuar
-          if (!oData.value || oData.value.length === 0) {
-            console.warn("No hay datos de ValorMensuSerExter para el ID:", idExterno);
-            //sap.m.MessageToast.show("No hay valores mensuales para este recurso externo.");
-            return;
-          }
-
-          var idLeerRecuEx = oData.value[0];
-          var idleeRExt = idLeerRecuEx.ID;
-
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos CONSUMO EXTERNO:", valoresPorFecha);
-
-          this._idleeSerRExt = idleeRExt;
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Recursos Externos:", resultados);
       },
+      
 
 
-
-
-      leerFechasGastoRecursoExterno: async function (idExterno) {
-
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViExter?$filter=GastoViajeRecExter_ID eq ${idExterno}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+ /*     leerFechasServRecursoExterno: async function () {
+        const serviciosExternosIDs = this._idOtroSerExv; // Asegúrate que sea un array
+        console.log("🔍 IDs de Servicios Recurso Externo a consultar:", serviciosExternosIDs);
+      
+        const idPorFecha = {};
+      
+        const promesas = serviciosExternosIDs.map(async (servID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuSerExter?$filter=ServiRecurExterno_ID eq ${servID}`;
+          console.log(`🔗 URL consultada para ServiRecurExterno_ID: ${servID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+      
+            const data = await response.json();
+            console.log("📦 Respuesta JSON completa:", data);
+      
+            if (!data.value || data.value.length === 0) {
+              console.warn(`⚠️ No hay datos de ValorMensuSerExter para el ID: ${servID}`);
+              return { servID, data: [] };
+            }
+      
+            let valoresPorFecha = {};
+            data.value.forEach(item => {
+              const key = item.mesAno;
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha; // Si necesitas los IDs luego
+      
+            console.log("📅 Valores por fecha para servicio externo:", servID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("idServiExterno", index, valoresPorFecha);
+      
+            return { servID, data: data.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar ServiRecurExterno_ID ${servID}:`, error);
+            return { servID, error };
           }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Servicios Recurso Externo:", resultados);
+      },*/
+      
 
-          const oData = await response.json();
 
-          // Validar que hay datos
-          if (!oData.value || oData.value.length === 0) {
-            console.warn("No hay datos de ValorMensuGastoViExter para el ID:", idExterno);
-            //sap.m.MessageToast.show("No hay valores mensuales para este gasto externo.");
-            return;
+
+
+      leerFechasGastoRecursoExterno: async function () {
+        const gastosExternosIDs = this._idGasViaReEx; // Asegúrate que sea un array
+        console.log("🔍 IDs de Gastos de Viaje Recurso Externo a consultar:", gastosExternosIDs);
+      
+        const idPorFecha = {};
+      
+        const promesas = gastosExternosIDs.map(async (gastoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViExter?$filter=GastoViajeRecExter_ID eq ${gastoID}`;
+          console.log(`🔗 URL consultada para GastoViajeRecExter_ID: ${gastoID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
+            }
+      
+            const oData = await response.json();
+            console.log("📦 Respuesta JSON completa:", oData);
+      
+            if (!oData.value || oData.value.length === 0) {
+              console.warn(`⚠️ No hay datos de ValorMensuGastoViExter para el ID: ${gastoID}`);
+              return { gastoID, data: [] };
+            }
+      
+            let valoresPorFecha = {};
+            oData.value.forEach(item => {
+              const key = item.mesAno;
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para gasto externo:", gastoID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("idGastoRecuExter", index, valoresPorFecha);
+      
+            return { gastoID, data: oData.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar GastoViajeRecExter_ID ${gastoID}:`, error);
+            return { gastoID, error };
           }
-
-          var idLeerRecuEx = oData.value[0];
-          var idleeRExt = idLeerRecuEx.ID;
-
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno; // Formato esperado: "2024-Enero"
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos CONSUMO EXTERNO:", valoresPorFecha);
-
-          this._idleeGasRExt = idleeRExt;
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Recursos Internos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Recursos Internos");
-        }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Gastos Recurso Externo:", resultados);
       },
+      
 
 
 
@@ -2657,6 +2874,8 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
+
+          //  this.fechasDinamicas();
             for (let id of this._IdGastoViajInter) {
               await this.leerFechasGastoViajeRecInter(id);
             }
@@ -2729,9 +2948,10 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
-            for (let id of this._idServiInterno) {
-              await this.leerFechasServiRecInter(id);
-            }
+         //   this.fechasDinamicas();
+
+              await this.leerFechasServiRecInter();
+   
           } else {
             // console.log("No hay datos de recursos internos disponibles.");
           }
@@ -2812,6 +3032,8 @@ leerFechas: async function (i) {
             });
 
             // Si quieres llamar a leerFechasConsumoExterno para el primero, por ejemplo:
+
+       //     this.fechasDinamicas();
             for (let i = 0; i < this._consumoExternosIDs.length; i++) {
               const ConsumoRecuID = this._consumoExternosIDs[i];
               await this.leerFechasConsumoExterno(ConsumoRecuID);
@@ -2884,8 +3106,11 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
+
+      //     this.fechasDinamicas();
             for (let id of this._idConsuOtrser) {
-              await this.leerFechasServRecursoExterno(id);
+              await this.leerFechasServConsumoExterno(id);
+
             }
           } else {
             //   console.log("No hay datos de recursos internos disponibles.");
@@ -2950,8 +3175,8 @@ leerFechas: async function (i) {
               }
             });
 
-
-
+              this.fechasDinamicas();
+              this.leerFechasGastoConsumoExterno();
 
 
           } else {
@@ -3024,6 +3249,8 @@ leerFechas: async function (i) {
             });
 
             // Por ejemplo, si quieres usar el ID del primer recurso para llamar otra función:
+
+           // this.fechasDinamicas();
             var primerRecursoID = oData.value[0].ID;
             await this.leerFechasRecursoExterno(primerRecursoID);
 
@@ -3170,6 +3397,8 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
+
+       //     this.fechasDinamicas();
             for (let id of this._idGasViaReEx) {
 
               await this.leerFechasGastoRecursoExterno(id);
@@ -3243,6 +3472,9 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
+
+            
+          //  this.fechasDinamicas();
             for (let id of this._OtrosConceptos) {
               await this.leerFechasOtrosConcetos(id);
 
@@ -3259,89 +3491,123 @@ leerFechas: async function (i) {
 
 
 
-      leerFechasOtrosConcetos: async function (otrosConceptosID) {
-        var sUrl = `/odata/v4/datos-cdo/ValorMensuOtrConcep?$filter=otrosConceptos_ID eq ${otrosConceptosID}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      leerFechasOtrosConcetos: async function () {
+        const otrosConceptosIDs = this._OtrosConceptos; // Asegúrate que sea un array de IDs
+        console.log("🔍 IDs de Otros Conceptos a consultar:", otrosConceptosIDs);
+      
+        const idPorFecha = {};
+      
+        const promesas = otrosConceptosIDs.map(async (conceptoID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensuOtrConcep?$filter=otrosConceptos_ID eq ${conceptoID}`;
+          console.log(`🔗 URL consultada para otrosConceptos_ID: ${conceptoID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
-          }
-
-          const oData = await response.json();
-          if (!oData.value || oData.value.length === 0) {
-            console.warn("No hay datos de otros conceptos.");
-            return;
-          }
-
-          var idleeRExt = oData.value[0].ID;
-
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno;
-            valoresPorFecha[key] = item.valor;
-          });
-
-          //  console.log("Valores por fecha antes de enviarlos OTROS CONCEPTOS:", valoresPorFecha);
-
-          this._otroConcep = idleeRExt;
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Otros Conceptos:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Otros Conceptos");
-        }
-      },
-
-
-
-      leerFechasLicencia: async function (LincenciaiD) {
-        var sUrl = `/odata/v4/datos-cdo/ValorMensulicencia?$filter=licencia_ID eq ${LincenciaiD}`;
-        try {
-          const response = await fetch(sUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+      
+            const oData = await response.json();
+            console.log("📦 Respuesta JSON completa:", oData);
+      
+            if (!oData.value || oData.value.length === 0) {
+              console.warn(`⚠️ No hay datos de ValorMensuOtrConcep para el ID: ${conceptoID}`);
+              return { conceptoID, data: [] };
             }
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Network response was not ok: ' + errorText);
+      
+            let valoresPorFecha = {};
+            oData.value.forEach(item => {
+              const key = item.mesAno;
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para concepto:", conceptoID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("tablaInfrestuctura", index, valoresPorFecha);
+      
+            return { conceptoID, data: oData.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar otrosConceptos_ID ${conceptoID}:`, error);
+            return { conceptoID, error };
           }
-
-          const oData = await response.json();
-          if (!oData.value || oData.value.length === 0) {
-            console.warn("No hay datos de licencias.");
-            return;
-          }
-
-          var idleeRExt = oData.value[0].ID;
-
-          let valoresPorFecha = {};
-          oData.value.forEach(item => {
-            let key = item.mesAno;
-            valoresPorFecha[key] = item.valor;
-          });
-
-          console.log("Valores por fecha antes de enviarlos LICENCIA:", valoresPorFecha);
-
-          this._LicenciaId = idleeRExt;
-          this.fechasDinamicas(valoresPorFecha);
-
-        } catch (error) {
-          console.error("Error al obtener los datos de Licencias:", error);
-          //sap.m.MessageToast.show("Error al cargar los datos de Licencias");
-        }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Otros Conceptos:", resultados);
       },
+      
+
+
+
+      leerFechasLicencia: async function () {
+        const licenciasIDs = this._idLicencia; // Esperamos un array de IDs
+        console.log("🔍 IDs de Licencias a consultar:", licenciasIDs);
+      
+        const idPorFecha = {};
+      
+        const promesas = licenciasIDs.map(async (licenciaID, index) => {
+          const sUrl = `/odata/v4/datos-cdo/ValorMensulicencia?$filter=licencia_ID eq ${licenciaID}`;
+          console.log(`🔗 URL consultada para licencia_ID: ${licenciaID}`);
+      
+          try {
+            const response = await fetch(sUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            });
+      
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error('❌ Error en respuesta de red: ' + errorText);
+            }
+      
+            const oData = await response.json();
+            console.log("📦 Respuesta JSON completa:", oData);
+      
+            if (!oData.value || oData.value.length === 0) {
+              console.warn(`⚠️ No hay datos de ValorMensulicencia para el ID: ${licenciaID}`);
+              return { licenciaID, data: [] };
+            }
+      
+            let valoresPorFecha = {};
+            oData.value.forEach(item => {
+              const key = item.mesAno;
+              valoresPorFecha[key] = item.valor;
+              idPorFecha[key] = item.ID;
+            });
+      
+            this._IdFechasPorMes = idPorFecha;
+      
+            console.log("📅 Valores por fecha para licencia:", licenciaID, valoresPorFecha);
+      
+            this.rellenarInputsConFechas("tablaLicencia", index, valoresPorFecha);
+      
+            return { licenciaID, data: oData.value };
+          } catch (error) {
+            console.error(`❌ Error al consultar licencia_ID ${licenciaID}:`, error);
+            return { licenciaID, error };
+          }
+        });
+      
+        const resultados = await Promise.all(promesas);
+      
+        console.log("📊 Resultados completos de Licencias:", resultados);
+      },
+      
 
 
 
@@ -3400,6 +3666,8 @@ leerFechas: async function (i) {
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
+
+            this.fechasDinamicas();
             for (let id of this._idLicencia) {
               await this.leerFechasLicencia(id);
             }
@@ -4367,6 +4635,8 @@ leerFechas: async function (i) {
                 this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
+                this.onUploadFile(generatedId, sCsrfToken),
+
 
               ]);
 
@@ -4721,11 +4991,7 @@ leerFechas: async function (i) {
                 this.insertPerfilJornadas(generatedId, sCsrfToken),
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
-                this.insertTotalRecuExterTotal(generatedId, sCsrfToken),
-                this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
-                this.insertResumenCostesTotal(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
-                
               ]);
 
 
@@ -4750,7 +5016,79 @@ leerFechas: async function (i) {
       },
 
 
+
+
+
+
       onUploadFile: async function (generatedId, sCsrfToken) {
+        const file = this._selectedFile;
+        if (!file) {
+          sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+          return;
+        }
+      
+        const archivoId = crypto.randomUUID(); // Nuevo UUID
+        const fileName = file.name;
+        const mimeType = file.type || "application/octet-stream"; // genérico por defecto
+      
+        /*console.log("📄 Archivo seleccionado:");
+        console.log("🆔 ID:", archivoId);
+        console.log("📛 Nombre:", fileName);
+        console.log("📦 Tipo MIME:", mimeType);
+        console.log("📐 Tamaño:", file.size, "bytes");
+        console.log("📂 Contenido (Blob):", file);
+      */
+        try {
+          // Paso 1: Enviar metadata
+          const metadataPayload = {
+            ID: archivoId,
+            nombre: fileName,
+            tipoMime: mimeType,
+            datosProyect_ID: generatedId
+          };
+      
+          const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": sCsrfToken
+            },
+            body: JSON.stringify(metadataPayload)
+          });
+      
+          if (!postRes.ok) {
+            const errorText = await postRes.text();
+            throw new Error("❌ Error creando metadata: " + errorText);
+          }
+      
+          // Paso 2: Subir el archivo real
+          const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+            method: "PUT",
+            headers: {
+              "X-CSRF-Token": sCsrfToken,
+              "Content-Type": mimeType // 👈 Usa el tipo real
+            },
+            body: file
+          });
+      
+          if (!putRes.ok) {
+            const putText = await putRes.text();
+            throw new Error("❌ Error subiendo archivo: " + putText);
+          }
+      
+      //    sap.m.MessageToast.show("✅ Archivo subido con éxito.");
+        } catch (err) {
+          console.error("💥 Error total en upload:", err);
+          sap.m.MessageToast.show(err.message);
+        }
+      },
+      
+
+
+
+
+
+  /*    onUploadFile: async function (generatedId, sCsrfToken) {
         const file = this._selectedFile;
         if (!file) {
           sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
@@ -4803,7 +5141,7 @@ leerFechas: async function (i) {
             method: "PUT",
             headers: {
               "X-CSRF-Token": sCsrfToken,
-"Content-Type": "application/octet-stream"
+              "Content-Type": "application/pdf"
 
             },
             body: file
@@ -4821,7 +5159,7 @@ leerFechas: async function (i) {
           console.error("💥 Error total en upload:", err);
           sap.m.MessageToast.show(err.message);
         }
-      },
+      },*/
       
       
       
@@ -9468,126 +9806,136 @@ leerFechas: async function (i) {
       },
       //-------------------------------------------
  
-     fechasDinamicas: function (valoresPorFecha) {
-  var startDatePicker = this.getView().byId("date_inico");
-  var endDatePicker = this.getView().byId("date_fin");
+ 
+      fechasDinamicas: function () {
+        var startDatePicker = this.getView().byId("date_inico");
+        var endDatePicker = this.getView().byId("date_fin");
 
-  if (!startDatePicker || !endDatePicker) {
-    console.error("Error: No se pudieron obtener los DatePickers.");
-    return;
-  }
 
-  var startDate = startDatePicker.getDateValue();
-  var endDate = endDatePicker.getDateValue();
+        // console.log("FECHAS LEIDAS AL 100 ---- >>>  " + startDatePicker.getValue(), endDatePicker.getValue());
 
-  if (!startDate || !endDate) {
-    // Esperando a que se seleccionen ambas fechas.
-    return;
-  }
 
-  var diffMonths = this.getMonthsDifference(startDate, endDate);
+        if (!startDatePicker || !endDatePicker) {
+          console.error("Error: No se pudieron obtener los DatePickers.");
+          return;
+        }
 
-  var flexBoxIds = [
-    "box0_1714747137718",
-    "box0_1727879568594",
-    "box0_1727879817594",
-    "box0_1721815443829",
-    "box0_1727948724833",
-    "box0_1727950351451",
-    "box0_17218154429",
-    "box0_1727953252765",
-    "box1_1727953468615",
-    "box0_17254429",
-    "box0_1727955568380"
-  ];
+        var startDate = startDatePicker.getDateValue();
+        var endDate = endDatePicker.getDateValue();
 
-  flexBoxIds.forEach((flexBoxId) => {
-    var flexBox = this.getView().byId(flexBoxId);
-    if (flexBox) {
-      flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-    }
-  });
+        if (!startDate || !endDate) {
+          //    console.log("Esperando a que se seleccionen ambas fechas.");
+          return;
+        }
 
-  var tableIds = [
-    "tablaConsuExter",
-    "table_dimicFecha",
-    "tablaRecExterno",
-    "idOtroserConsu",
-    "idGastoViajeConsu",
-    "idServiExterno",
-    "idGastoRecuExter",
-    "tablaInfrestuctura",
-    "tablaLicencia",
-    "tableServicioInterno",
-    "tablGastoViajeInterno"
-  ];
+        var diffMonths = this.getMonthsDifference(startDate, endDate);
 
-  tableIds.forEach((tableId) => {
-    var oTable = this.getView().byId(tableId);
-    if (!oTable) {
-      console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-      return;
-    }
+        var flexBoxIds = [
+          "box0_1714747137718",
+          "box0_1727879568594",
+          "box0_1727879817594",
+          "box0_1721815443829",
+          "box0_1727948724833",
+          "box0_1727950351451",
+          "box0_17218154429",
+          "box0_1727953252765",
+          "box1_1727953468615",
+          "box0_17254429",
+          "box0_1727955568380"
+        ];
 
-    // Eliminar columnas anteriores que fueron añadidas dinámicamente
-    var columnCount = oTable.getColumns().length;
-    for (var j = columnCount - 1; j >= 0; j--) {
-      var columnHeader = oTable.getColumns()[j].getHeader();
-
-      // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
-      if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-        oTable.removeColumn(oTable.getColumns()[j]);
-      }
-    }
-
-    var totalColumnIndex = this.findTotalColumnIndex(oTable);
-
-    // Añadir nuevas columnas dinámicas
-    for (var i = 0; i <= diffMonths; i++) {
-      var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-      var year = columnDate.getFullYear();
-      var month = columnDate.toLocaleString("default", { month: "long" });
-      var columnHeaderText = year + "-" + month.toLowerCase(); // Convertir a minúsculas para buscar
-
-      var oColumn = new sap.m.Column({
-        header: new sap.m.Label({ text: columnHeaderText }),
-        width: "100px"
-      });
-
-      oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-
-      // Recorrer filas para crear Inputs con valor asignado
-      for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
-        var oRow = oTable.getItems()[rowIndex];
-
-        // Obtener valor para esta fecha, si no hay, poner "0.00"
-        var valorCelda = valoresPorFecha[columnHeaderText] || "0.00";
-
-        // Crear Input con valor inicial y evento change
-        var oInput = new sap.m.Input({
-          placeholder: "0.00",
-          value: valorCelda,
-          change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+        flexBoxIds.forEach((flexBoxId) => {
+          var flexBox = this.getView().byId(flexBoxId);
+          if (flexBox) {
+            flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+          }
         });
 
-        // Añadir Input a la fila (celda)
-        oRow.addCell(oInput);
-      }
-    }
+        var tableIds = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+          "idOtroserConsu",
+          "idGastoViajeConsu",
+          "idServiExterno",
+          "idGastoRecuExter",
+          "tablaInfrestuctura",
+          "tablaLicencia",
+          "tableServicioInterno",
+          "tablGastoViajeInterno"
+        ];
 
-    // Ajustar scroll container
-    var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-    if (oScrollContainer) {
-      oScrollContainer.setHorizontal(true);
-      oScrollContainer.setVertical(false);
-      oScrollContainer.setWidth("100%");
-    }
-  });
-},
+        tableIds.forEach((tableId) => {
+          var oTable = this.getView().byId(tableId);
+          if (!oTable) {
+            console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+            return;
+          }
 
+          // Eliminar columnas anteriores que fueron añadidas dinámicamente
+          var columnCount = oTable.getColumns().length;
+          for (var j = columnCount - 1; j >= 0; j--) {
+            var columnHeader = oTable.getColumns()[j].getHeader();
+
+            // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
+            if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+              oTable.removeColumn(oTable.getColumns()[j]);
+            }
+          }
+
+          var totalColumnIndex = this.findTotalColumnIndex(oTable);
+
+          // Añadir nuevas columnas dinámicas
+          for (var i = 0; i <= diffMonths; i++) {
+            var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            var year = columnDate.getFullYear();
+            var month = columnDate.toLocaleString("default", { month: "long" });
+            var columnHeaderText = year + "-" + month;
+
+            var oColumn = new sap.m.Column({
+              header: new sap.m.Label({ text: columnHeaderText }),
+              width: "100px"
+            });
+
+            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+
+            for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+              var oRow = oTable.getItems()[rowIndex];
+
+
+              this._inputsDinamicos = this._inputsDinamicos || {};
+this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
+this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+
+              // Crear el Input dinámicamente en cada celda
+              var oInput = new sap.m.Input({
+                placeholder: "0.00",
+                // Evento de cambio (change) para capturar el valor ingresado
+                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+              });
+
+
+              oRow.addCell(oInput); // Añadir el Input a la celda
+
+          this._inputsDinamicos[tableId][rowIndex][columnHeaderText] = oInput;
+
+            }
+          }
+
+          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+          if (oScrollContainer) {
+            oScrollContainer.setHorizontal(true);
+            oScrollContainer.setVertical(false);
+            oScrollContainer.setWidth("100%");
+          }
+
+          //    console.log("startDate:", startDate);
+          // console.log("endDate:", endDate);
+        });
+      },
     
 
-     /* fechasDinamicas: function (valoresPorFecha) {
+    /*  fechasDinamicas: function (valoresPorFecha) {
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
 
@@ -11176,50 +11524,47 @@ leerFechas: async function (i) {
 
         var oTable = this.getView().byId("table0");
 
-        if (selectedText === "Opex Servicios") {
-
-
-          this.byId("input2_172475612").setValue(parseFloat("0.00%".replace("%", "")).toFixed(2));
+        if (selectedText === "Opex Servicios" || selectedText === "Proyecto/Servicio de Inversión") {
+          this.byId("input2_172475612").setValue("0.00");
           this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
-
-        } else if (selectedText === "Opex Servicios") {
-
-
-        } else {
-
-          this.byId("input2_172475612").setValue(parseFloat("5.00%".replace("%", "")).toFixed(2));
-        }
+      } else {
+          this.byId("input2_172475612").setValue("3.50");
+          this.byId("text67_1728582763477").setText("");  // Opcional: limpiar texto si no es Opex
+      }
 
 
 
 
-        if (selectedText === "Proyecto/Servicio a Cliente Externo") {
-          oTable.setVisible(true);
-          this.byId("idCheckMensual").setVisible(true);
-          this.byId("idComentarioTipo").setVisible(true);
-          this.byId("TextoCon").setVisible(true);
-          this.byId("input2_17221205").setValue(parseFloat("20.00".replace(",", ".")).toFixed(2));
-          this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
-
-        } else if (selectedText === "Proyecto/Servicio Interno PdV") {
-          this.byId("idComenpVd").setEditable(true);
-
-          this.byId("input2_17221205").setValue(parseFloat("10.00".replace(",", ".")).toFixed(2));
-          this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
-
-
-        } else if (selectedText === "Proyecto/Servicio de Inversion") {
-          this.byId("input2_17221205").setValue(parseFloat("0.00".replace(",", ".")).toFixed(2));
-          this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
-
-        } else {
-          oTable.setVisible(false);
-          this.byId("idComenpVd").setEditable(false);
-          this.byId("idComentarioTipo").setVisible(false);
-          this.byId("TextoCon").setVisible(false);
-          this.byId("idCheckMensual").setVisible(false);
-          this.byId("input2_17221205").setValue("");
-        }
+      if (selectedText === "Proyecto/Servicio a Cliente Externo") {
+        oTable.setVisible(true);
+        this.byId("idCheckMensual").setVisible(true);
+        this.byId("idComentarioTipo").setVisible(true);
+        this.byId("TextoCon").setVisible(true);
+        this.byId("input2_17221205").setValue(parseFloat("20.00").toFixed(2));
+        this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
+      
+      } else if (selectedText === "Proyecto/Servicio Interno PdV") {
+        this.byId("idComenpVd").setEditable(true);
+        this.byId("input2_17221205").setValue(parseFloat("10.00").toFixed(2));
+        this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
+      
+      } else if (selectedText === "Proyecto/Servicio de Inversión") {
+        this.byId("input2_17221205").setValue(parseFloat("0.00").toFixed(2));
+        this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
+      
+      } else if (selectedText === "Opex Servicios") {
+        this.byId("input2_17221205").setValue(parseFloat("0.00").toFixed(2));
+        this.byId("text67_1728582763477").setText("Opex Servicios - El Margen debe ser establecido al 0%");
+      
+      } else {
+        oTable.setVisible(false);
+        this.byId("idComenpVd").setEditable(false);
+        this.byId("idComentarioTipo").setVisible(false);
+        this.byId("TextoCon").setVisible(false);
+        this.byId("idCheckMensual").setVisible(false);
+        this.byId("input2_17221205").setValue("");
+      }
+      
 
 
       },

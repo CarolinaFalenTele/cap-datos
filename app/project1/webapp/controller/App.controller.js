@@ -79,13 +79,13 @@ sap.ui.define(
             
                     const userId = userModel.getProperty("/ID");
                     const userEmail = userModel.getProperty("/email");
-                    console.log("👤 Usuario ID:", userId);
-                    console.log("📧 Usuario Email:", userEmail);
+                //    console.log("👤 Usuario ID:", userId);
+                  //  console.log("📧 Usuario Email:", userEmail);
             
                     const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
                     const data = await response.json();
                     const aProjects = data.value;
-                    console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
+              //      console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
             
                     const aProyectosConEstado = await Promise.all(
                         aProjects.map(async (proyecto) => {
@@ -102,11 +102,11 @@ sap.ui.define(
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
             
-                            console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
-                            console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
+                          //  console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
+                        //    console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
             
                             if (proyecto.Estado === "Borrador") {
-                                console.log("➡️ Estado Borrador detectado, saltando lógica de workflow.");
+                             //   console.log(" Estado Borrador detectado, saltando lógica de workflow.");
                                 proyecto.workflowId = null;
                                 proyecto.actualizadoEn = null;
                                 proyecto.actualizadoEnFormateada = "No aplica";
@@ -129,11 +129,11 @@ sap.ui.define(
                                 );
 
                                 this._workID = wfItem.workflowId;
-                                console.log("✅ ID DEL WORKFLOW asignado:", this._workID);
+                              //  console.log(" ID DEL WORKFLOW asignado:", this._workID);
 
                                 const etapasData = await etapasResponse.json();
                                 etapas = etapasData.value || [];
-                                console.log(`🪜 Etapas obtenidas: ${etapas.length}`);
+                             //   console.log(` Etapas obtenidas: ${etapas.length}`);
                             }
 
 
@@ -148,7 +148,7 @@ sap.ui.define(
                                 proyecto.Estado = proyecto.Estado || "Borrador";
                             }
             
-                            console.log("✅ Estado FINAL asignado:", proyecto.Estado);
+                        //    console.log(" Estado FINAL asignado:", proyecto.Estado);
             
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
@@ -165,11 +165,11 @@ sap.ui.define(
                     const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
                     const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
             
-                    console.log("📌 Clasificación de proyectos:");
-                    console.log("✅ Aprobados:", aProyectosAprobados.length);
-                    console.log("🕒 Pendientes:", aProyectosPendientes.length);
-                    console.log("📝 Borrador:", aProyectosBorrador.length);
-                    console.log("❌ Rechazados:", aProyectosRechazados.length);
+                /*    console.log(" Clasificación de proyectos:");
+                    console.log(" Aprobados:", aProyectosAprobados.length);
+                    console.log(" Pendientes:", aProyectosPendientes.length);
+                    console.log(" Borrador:", aProyectosBorrador.length);
+                    console.log(" Rechazados:", aProyectosRechazados.length);*/
             
                     // Etapas asignadas al usuario
                     const aEtapasAsignadas = [];
@@ -183,7 +183,7 @@ sap.ui.define(
                                 etapa.estado === "Pendiente" &&
                                 etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
                             ) {
-                                console.log(`📥 Etapa asignada encontrada:`, etapa);
+                                console.log(` Etapa asignada encontrada:`, etapa);
                                 tieneEtapaAsignada = true;
             
                                 aEtapasAsignadas.push({
@@ -266,7 +266,7 @@ sap.ui.define(
                     }
             
                 } catch (error) {
-                    console.error("❌ Error al cargar los proyectos con estado:", error);
+                    console.error(" Error al cargar los proyectos con estado:", error);
                 }
             },
             
@@ -1620,7 +1620,7 @@ if (oContextPendientes) {
             
                                     const paths = [
                                         "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos","Archivos",
-                                        "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu",
+                                        "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu", 
                                         "otrosRecursos", "otrosServiciosConsu", "GastoViajeConsumo", "serviRecurExter",
                                         "GastoViajeRecExter", "LicenciasCon", "WorkflowInstancias", "ResumenCostesTotal",
                                         "RecurInterTotal", "ConsuExterTotal", "RecuExterTotal", "InfraestrLicencia", "PerfilTotal"

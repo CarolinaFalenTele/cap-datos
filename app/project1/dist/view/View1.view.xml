@@ -813,6 +813,12 @@
                                                         <items>
                                                             <ScrollContainer id="scroll_container" width="100%" height="auto">
                                                                
+    <Text
+        text="Por favor, asegúrese de seleccionar la Vertical, el Tipo de Servicio y el Perfil/Servicio, ya que estos tres campos son obligatorios. También debe indicar el valor correspondiente en el campo Oferta (Adicionales, Formación, Soporte). En caso de no completar los campos obligatorios, no se realizará el registro y no se registrará la información ingresada"
+        class="sapUiSmallMarginBottom"
+        wrapping="true"
+        width="100%"
+    />
 
                                                                 <Table noDataText="Drop column list items here and columns in the area above" id="table_dimicFecha" width="auto" class="customHeaderColor">
                                                                     <headerToolbar>
@@ -827,7 +833,9 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item1_174747617887">
                                                                             <cells>
-                                                                                <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )">
+                                                                             
+                                                                             
+                                                      <Select xmlns="sap.m" id="selec0" selectedKey="{Vertical>valueVertical}" forceSelection="false" items="{/Vertical}" tooltip="En todas las secciones Seleccionar la Vertical, Tipo de Servicio, Perfil / Servicio (Estos tres campos son obligatorios) e indicar el Concepto de Oferta (adicionales, formacion, soporte... )">
                                                                                     <items>
                                                                                         <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreVertical}" id="item0_1716637548"/>
                                                                                     </items>
@@ -4503,39 +4511,72 @@
 
                                                     <content>
                                                         <Text text="Información adicional considerada relevante a presentar junto con la solicitud del proyecto" class="**`sapUiTinyMargin sapUiSmallMarginBottom" id="text66_1729068544144"/>
-
-                                                        <FlexBox width="100%" id="box0_1729069223752" justifyContent="Center">
-                                                        
-
-                                                            <items>
-
-                                                              <VBox id="xbox" class="sapUiSmallMargin">
-   		<u:FileUploader
-
-    id="fileUploader"
-    change=".onFileSelected"
-    uploadOnChange="false"
-    sameFilenameAllowed="true"
+<FlexBox
     width="100%"
-    name="myFileUpload"
-/>
+    justifyContent="Center"
+    direction="Column"
+    class="sapUiSmallMargin"
+    wrap="Wrap"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core">
 
-  </VBox>
+    <!-- Información adicional -->
+    <VBox width="80%" class="sapUiSmallMargin"     justifyContent="Center" >
+   
+          <Title text="📝 Información adicional" level="H5" class="sapUiSmallMarginBottom" />  
+        <TextArea
+            id="area0"
+            width="100%"
+            rows="8"
+            placeholder="Añade comentarios o detalles relevantes..."
+            growing="true"
+            growingMaxLines="10"
+        />
+    </VBox>
 
-<List id="fileList" items="{archivosModel>/archivos}">
-  <items>
-    <StandardListItem
-      title="{archivosModel>nombre}"
-      description="{archivosModel>tipoMime}"
-      type="Active"
-      press=".onVerArchivo" />
-  </items>
-</List>
-                                                                <core:Icon src="sap-icon://customer-order-entry" class="customIconColor sapUiMediumMargin" size="3em" id="icon2"/>
+    <!-- Subida de archivos -->
+ <VBox width="50%" class="sapUiSmallMarginTop sapUiSmallMargin" justifyContent="Center">
+    <Title text="📁 Subir archivos" level="H5" class="sapUiSmallMarginBottom" />
 
-                                                                <TextArea xmlns="sap.m" value="" placeholder="Informacion extra..." rows="4" id="area0" width="500px"/>
-                                                            </items>
-                                                        </FlexBox>
+    <!-- Mensaje informativo para el usuario -->
+    <Text
+        text="Puedes subir archivos hasta 20 MB. Tipos permitidos: PDF, Word, Excel, Imágenes (JPG, PNG), Texto."
+        class="sapUiSmallMarginBottom"
+        wrapping="true"
+        width="100%"
+    />
+
+    <u:FileUploader
+        id="fileUploader"
+        change=".onFileSelected"
+        uploadOnChange="false"
+        sameFilenameAllowed="true"
+        width="450px"
+        name="myFileUpload"
+        tooltip="Selecciona un archivo para subir"
+       
+    />
+
+    <List
+        id="fileList"
+        width="100%"
+        items="{archivosModel>/archivos}"
+        noDataText="No hay archivos subidos aún"
+    >
+        <items>
+            <StandardListItem
+                title="{archivosModel>nombre}"
+                description="{archivosModel>tipoMime}"
+                type="Active"
+                press=".onVerArchivo"
+            />
+        </items>
+    </List>
+</VBox>
+</FlexBox>
+
+
                                                     </content>
                                                 </Panel>
                                             </content>
