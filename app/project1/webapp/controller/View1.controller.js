@@ -125,16 +125,16 @@ sap.ui.define([
           oRouter.getRoute(routeName).attachPatternMatched(this._onObjectMatched, this);
         }, this);
 
-        console.log("MODELO TRAIDO " + this._mode);
+      //  console.log("MODELO TRAIDO " + this._mode);
 
 
         this.enviarID();
 
 
-        console.log("ID ANTES DE ACTUALIZAR   OINIT " + this._idWorkflowInstancias);
+    //    console.log("ID ANTES DE ACTUALIZAR   OINIT " + this._idWorkflowInstancias);
 
         this.byId("coste6552").setVisible(false);
-
+        
       },
 
 
@@ -255,7 +255,7 @@ sap.ui.define([
       },
 
 
-      getUserInfo: function () {
+      getUserInfo: async function () {
         fetch('/odata/v4/datos-cdo/getUserInfo')
           .then(response => {
             if (!response.ok) {
@@ -274,6 +274,10 @@ sap.ui.define([
               oEmailAttr?.setTooltip(userInfo.email);
               this.byId("23d3")?.setText(userInfo.fullName);
 
+
+              this._user  = userInfo.email;
+
+              this.getUsuario();
               if (token) {
                 this._startSessionWatcher(token);
                 //    console.log("Token recibido y watcher iniciado.");
@@ -460,8 +464,8 @@ sap.ui.define([
 
         this.getView().getModel("viewModel").setProperty("/mode", sMode);
 
-        console.log("MODELO GUARDADO (onObjectMatched):", sMode);
-        console.log("MODELO TRAIDO " + this._mode);
+       // console.log("MODELO GUARDADO (onObjectMatched):", sMode);
+    //    console.log("MODELO TRAIDO " + this._mode);
 
         if (sMode === "create") {
           await this._clearAllInputs();
@@ -853,7 +857,7 @@ sap.ui.define([
 
 
       getArchivosByProjectId: async function (projectId) {
-        console.log("📥 Entrando a getArchivosByProjectId con ID:", projectId);
+    //    console.log("📥 Entrando a getArchivosByProjectId con ID:", projectId);
 
         try {
           const sUrl = `/odata/v4/datos-cdo/Archivos?$filter=datosProyect_ID eq '${projectId}'`;
@@ -873,11 +877,16 @@ sap.ui.define([
 
           const data = await response.json();
           const archivos = data.value || [];
+          const archivoIds = archivos.map(archivo => archivo.ID); // Extraer los IDs
+//          console.log("🆔 IDs de los archivos:", archivoIds);
+
+          this._archivoIds = archivoIds; // Guardar en el controlador
+
 
           const oModel = new sap.ui.model.json.JSONModel({ archivos });
           this.getView().setModel(oModel, "archivosModel");
 
-          console.log("📌 Modelo cargado en la vista con archivos:", archivos.length);
+        //  console.log("📌 Modelo cargado en la vista con archivos:", archivos.length);
         } catch (err) {
           console.error("❌ Error al cargar archivos:", err);
           sap.m.MessageToast.show(err.message);
@@ -1243,7 +1252,7 @@ sap.ui.define([
       },
 
       // Función para configurar los botones en modo visualización (deshabilitados y texto original)
-      _configureButtonsForView: function () {
+      _configureButtonsForView:  function () {
         if (this._isAprobacion) {
           return;
         }
@@ -1265,7 +1274,7 @@ sap.ui.define([
       },
 
       // Función para llenar controles con datos recibidos
-      _fillControlsWithData: function (oData) {
+      _fillControlsWithData:  async  function (oData) {
         // Inputs y TextAreas
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
@@ -1305,7 +1314,7 @@ sap.ui.define([
         this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
         this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
 
-        this.onInputChange();
+      await  this.onInputChange();
         // Mostrar u ocultar controles según Iniciativa_ID
         if (oData.Iniciativa_ID === "323e4567-e89b-12d3-a456-426614174002") {
           this.byId("table0").setVisible(true);
@@ -1890,8 +1899,8 @@ sap.ui.define([
               }
             });
           }
-          console.log("📏 Total de recursos internos:", this._recursosIDs.length);
-          console.log("🆔 Lista completa de IDs:", this._recursosIDs);
+       //   console.log("📏 Total de recursos internos:", this._recursosIDs.length);
+      //    console.log("🆔 Lista completa de IDs:", this._recursosIDs);
 
           await this.fechasDinamicas();
           await this.leerFechas();
@@ -2138,17 +2147,17 @@ sap.ui.define([
             throw new Error('Network response was not ok: ' + errorText);
           }
 
-          console.log("Llamando a URL:", sUrl);
-          console.log("Project ID recibido:", projectID);
+         // console.log("Llamando a URL:", sUrl);
+         // console.log("Project ID recibido:", projectID);
 
 
 
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
+          /*console.log("Datos de DATOS TOTAL   InfraestrLicencia   TRAIDO:", oData);
           console.log("Respuesta completa:", oData);
 
-          console.log("Cantidad de registros recibidos:", oData.value.length);
+          console.log("Cantidad de registros recibidos:", oData.value.length);*/
 
           // Verificar si hay datos en oData.value
           if (oData.value && oData.value.length > 0) {
@@ -2168,7 +2177,7 @@ sap.ui.define([
             //    console.log("JORNADAS ID " + this._idInfraLicencia);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA InfraestrLicencia");
+           // console.log("NO SE ENCONTRARON DATOS PARA InfraestrLicencia");
           }
 
 
@@ -2199,7 +2208,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
+        //  console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -2220,14 +2229,14 @@ sap.ui.define([
 
             this._ResumenTotal = idResumenCoste;
 
-            console.log("JORNADAS ID " + this._ResumenTotal);
+//            console.log("JORNADAS ID " + this._ResumenTotal);
 
 
             this.onColumnTotales();
 
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA _ResumenTotal");
+           // console.log("NO SE ENCONTRARON DATOS PARA _ResumenTotal");
           }
 
 
@@ -2244,7 +2253,7 @@ sap.ui.define([
       leerFechas: async function () {
         const recursos = this._recursosIDs;
 
-        console.log("🔎 IDs recibidos para consultar:", recursos);
+      //  console.log("🔎 IDs recibidos para consultar:", recursos);
 
 
         const valoresPorFecha = {};
@@ -2254,7 +2263,7 @@ sap.ui.define([
         const promesas = recursos.map(async (recursoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
 
-          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+       //   console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
 
           try {
             const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
@@ -2263,7 +2272,7 @@ sap.ui.define([
 
             // Verificamos si hay resultados o no
             if (data.value && data.value.length > 0) {
-              console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+        //      console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
             } else {
               console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
             }
@@ -2279,7 +2288,7 @@ sap.ui.define([
             });
             this._IdFechasPorMes = idPorFecha;
 
-            console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+         //   console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
 
 
@@ -2295,7 +2304,7 @@ sap.ui.define([
         // Esperamos todas las promesas y tenemos los resultados
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos:", resultados);
+      //  console.log("📊 Resultados completos:", resultados);
       },
 
 
@@ -2328,7 +2337,7 @@ sap.ui.define([
       leerFechasServiRecInter: async function () {
         const servicios = this._idServiInterno;
 
-        console.log("🔎 IDs de servicios internos para consultar:", servicios);
+      //  console.log("🔎 IDs de servicios internos para consultar:", servicios);
 
         const valoresPorFecha = {};
         const idPorFecha = {};
@@ -2336,7 +2345,7 @@ sap.ui.define([
         const promesas = servicios.map(async (servicioID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuServReInter?$filter=otrosGastoRecu_ID eq '${servicioID}'`;
 
-          console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
+         // console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2347,7 +2356,7 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+          //    console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
             } else {
               console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
             }
@@ -2361,7 +2370,7 @@ sap.ui.define([
 
             this._IdFechasPorMes = idPorFecha;
 
-            console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+          //  console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
             this.rellenarInputsConFechas("tableServicioInterno", index, valoresPorFecha);
 
@@ -2374,7 +2383,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos:", resultados);
+        //console.log("📊 Resultados completos:", resultados);
       },
 
 
@@ -2383,7 +2392,7 @@ sap.ui.define([
       leerFechasGastoViajeRecInter: async function () {
         const recursos = this._IdGastoViajInter
 
-        console.log("🔎 ID de gasto de viaje interno para consultar:", recursos);
+      //  console.log("🔎 ID de gasto de viaje interno para consultar:", recursos);
 
         const valoresPorFecha = {};
         const idPorFecha = {};
@@ -2392,9 +2401,9 @@ sap.ui.define([
         const recursosArray = Array.isArray(recursos) ? recursos : [recursos];
 
         const promesas = recursosArray.map(async (recursoID, index) => {
-          const sUrl = `/odata/v4/datos-cdo/ValorMensuGastViaReInter?$filter=otrosRecursos_ID eq '${recursoID}'`;
+      //    const sUrl = `/odata/v4/datos-cdo/ValorMensuGastViaReInter?$filter=otrosRecursos_ID eq '${recursoID}'`;
 
-          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+        //  console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2405,7 +2414,7 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+       //       console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
             } else {
               console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
             }
@@ -2420,7 +2429,7 @@ sap.ui.define([
             this._IdFechasPorMes = idPorFecha;
             this._idGastInterno = data.value[0]?.ID || null;
 
-            console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
+        //    console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
             this.rellenarInputsConFechas("tablGastoViajeInterno", index, valoresPorFecha);
 
@@ -2433,7 +2442,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos:", resultados);
+    //    console.log("📊 Resultados completos:", resultados);
       },
 
       //---------------------------------------------------------------------------------
@@ -2447,7 +2456,7 @@ sap.ui.define([
       leerFechasConsumoExterno: async function () {
         const consumos = this._consumoExternosIDs;
 
-        console.log("🔎 IDs de Consumo Externo para consultar:", consumos);
+       // console.log("🔎 IDs de Consumo Externo para consultar:", consumos);
 
         const valoresPorFecha = {};
         const idPorFecha = {};
@@ -2455,7 +2464,7 @@ sap.ui.define([
         const promesas = consumos.map(async (consumoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuConsuEx?$filter=ConsumoExternos_ID eq '${consumoID}'`;
 
-          console.log(`🔗 Consultando URL para consumoID: ${consumoID}`);
+       //   console.log(`🔗 Consultando URL para consumoID: ${consumoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2466,7 +2475,7 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              console.log(`✅ Resultado para consumoID ${consumoID}:`, data.value);
+           //   console.log(`✅ Resultado para consumoID ${consumoID}:`, data.value);
             } else {
               console.warn(`⚠️ Sin resultados para consumoID ${consumoID}`);
             }
@@ -2480,7 +2489,7 @@ sap.ui.define([
 
             this._IdFechasPorMes = idPorFecha;
 
-            console.log("VALORES POR FECHAS CONSUMO EXTERNO:", JSON.stringify(valoresPorFecha));
+           // console.log("VALORES POR FECHAS CONSUMO EXTERNO:", JSON.stringify(valoresPorFecha));
 
             this.rellenarInputsConFechas("tablaConsuExter", index, valoresPorFecha);
 
@@ -2493,7 +2502,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos consumo externo:", resultados);
+    //    console.log("📊 Resultados completos consumo externo:", resultados);
       },
 
 
@@ -4325,6 +4334,8 @@ sap.ui.define([
       onSave: async function () {
 
         console.log("Entre al ONSAVE ");
+        const  usuarioOn  =  this._usuarioActual;
+
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
 
@@ -4469,7 +4480,7 @@ sap.ui.define([
           AmReceptor_ID: sSelectKeyAmrep,
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
-          Usuarios_ID: "",
+          Usuarios_ID: usuarioOn,
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
           CambioEuRUSD: sCambioEurUsd
@@ -4706,10 +4717,67 @@ sap.ui.define([
 
 
 
+
+      getUsuario: async function () {
+        try {
+          const sCurrentEmail = this._user;
+      
+          if (!sCurrentEmail) {
+            throw new Error("El email del usuario no está disponible. Asegúrate de haber ejecutado getUserInfo primero.");
+          }
+      
+          const sUrl = `/odata/v4/datos-cdo/Usuarios`;
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+      
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Error en la respuesta de la red: ' + errorText);
+          }
+      
+          const data = await response.json();
+      
+          // 🔁 Buscamos coincidencia exacta de email (ignorando mayúsculas)
+          const usuarioActual = data.value.find(
+            u => u.email?.toLowerCase() === sCurrentEmail.toLowerCase()
+          );
+      
+          if (usuarioActual) {
+            console.log("✅ Usuario encontrado:", usuarioActual);
+            this._usuarioActual =  usuarioActual.ID;
+            console.log("✅ Usuario encontrado2:",  this._usuarioActual);
+
+
+            return usuarioActual.ID; // Devuelve solo el ID del usuario encontrado
+
+          } else {
+            throw new Error("❌ No se encontró el usuario con el email logueado.");
+          }
+      
+        } catch (error) {
+          console.error("Error al obtener el usuario:", error);
+          return null;
+        }
+      },
+      
+      
+
+
+
+
+
+
+
       onBorrador: async function () {
 
         console.log("ENTRANDO A onBorrador");
 
+        const  usuario  =  this._usuarioActual;
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
         // Si no está en el modelo, usa la propiedad interna
@@ -4849,6 +4917,7 @@ sap.ui.define([
           Estado: "Borrador",
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
+          Usuarios_ID: usuario,
           CambioEuRUSD: sCambioEurUsd
         };
 
@@ -5019,9 +5088,11 @@ sap.ui.define([
 
 
       onUploadFile: async function (generatedId, sCsrfToken) {
+
+        const existeArchivo  = this._archivoIds;
         const file = this._selectedFile;
         if (!file) {
-          sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+         // sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
           return;
         }
 
@@ -5045,29 +5116,47 @@ sap.ui.define([
             datosProyect_ID: generatedId
           };
 
-          const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRF-Token": sCsrfToken
-            },
-            body: JSON.stringify(metadataPayload)
-          });
-
-          if (!postRes.ok) {
-            const errorText = await postRes.text();
-            throw new Error("❌ Error creando metadata: " + errorText);
+          if (existeArchivo) {
+            // El archivo ya existe → solo actualizas metadata si cambió
+           const putRes =   await fetch(`/odata/v4/datos-cdo/Archivos('${existeArchivo}')`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": sCsrfToken
+              },
+              body: JSON.stringify(metadataPayload)
+            });
+          
+            // 🔁 Subes (reemplazas) el archivo
+            putRes =  await fetch(`/odata/v4/datos-cdo/Archivos('${existeArchivo}')/contenido/$value`, {
+              method: "PUT",
+              headers: {
+                "X-CSRF-Token": sCsrfToken,
+                "Content-Type": mimeType
+              },
+              body: file
+            });
+          } else {
+            // No existe → creas metadata
+            putRes = await fetch(`/odata/v4/datos-cdo/Archivos`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": sCsrfToken
+              },
+              body: JSON.stringify(metadataPayload)
+            });
+          
+            // 🆕 Subes archivo
+            putRes  = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
+              method: "PUT",
+              headers: {
+                "X-CSRF-Token": sCsrfToken,
+                "Content-Type": mimeType
+              },
+              body: file
+            });
           }
-
-          // Paso 2: Subir el archivo real
-          const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
-            method: "PUT",
-            headers: {
-              "X-CSRF-Token": sCsrfToken,
-              "Content-Type": mimeType // 👈 Usa el tipo real
-            },
-            body: file
-          });
 
           if (!putRes.ok) {
             const putText = await putRes.text();
@@ -10412,7 +10501,7 @@ sap.ui.define([
                 var resulCon = PMJCos * totalSum1;
 
                 aCells[11].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
-                aCells[12].setText(resulCon + "€"); // Celda para Total 
+                aCells[12].setText(resulCon.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -10452,7 +10541,7 @@ sap.ui.define([
 
 
                 aCells[11].setText(totalSum2.toFixed(2)); // Celda para Total 
-                aCells[12].setText(resulDina + "€"); // Celda para Total   
+                aCells[12].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
 
               }
             }
@@ -10490,7 +10579,7 @@ sap.ui.define([
                 aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
 
                 var resulRec = PMJRe * totalSum3
-                aCells[12].setText(resulRec + "€"); // Celda para Total 
+                aCells[12].setText(resulRec.toFixed(2) + "€"); // Celda para Total 
 
               }
             }
@@ -11779,7 +11868,9 @@ sap.ui.define([
         return v.toString(16);
       });
     }
+  },
+  function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
   }
-
 
 );

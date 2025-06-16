@@ -987,9 +987,9 @@
                                                                         
                                                                             <Text xmlns="sap.m" id="text102_1749567001265"/>
                                                                         
-                                                                            <Text xmlns="sap.m" text="Text" id="text103_1749567071319" class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text103_1749567071319" class="boldText"/>
                                                                         
-                                                                            <Text xmlns="sap.m" text="Text" id="text104_1749567079346"  class="boldText"/>
+                                                                            <Text xmlns="sap.m" text="" id="text104_1749567079346"  class="boldText"/>
                                                                         
                                                                         </cells>
                                                                         

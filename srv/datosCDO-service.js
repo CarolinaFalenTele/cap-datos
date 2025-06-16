@@ -824,13 +824,27 @@ this.on("GET", "Archivos/$value", async (req) => {
     } = req.data;
 
 
+
+    
+  if (!req.user || !req.user.id) {
+    return req.reject(401, "Usuario no autenticado");
+  }
+ 
+
+
     const userEmail = req.user.id;
 
     console.log("ID DEL USUARIO -->>> " + userEmail);
-    const user = await SELECT.one.from(Usuarios).where({ email: userEmail });
+    let user = await SELECT.one.from(Usuarios).where({ email: userEmail });
 
-
-
+    if (!user) {
+      // Crear usuario si no existe
+      await INSERT.into(Usuarios).entries({
+        email: userEmail,
+        // otros campos si los tienes
+      });
+      user = await SELECT.one.from(Usuarios).where({ email: userEmail });
+    }
 
     try {
       console.log(" Insertando en la base de datos...");
