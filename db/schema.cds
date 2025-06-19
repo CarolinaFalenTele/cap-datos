@@ -675,5 +675,3 @@ entity ResumenCostesTotal {
 
 
 }
-
-
