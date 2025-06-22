@@ -908,8 +908,18 @@ sap.ui.define([
         // Lista de campos que deben quedarse como no editables
 
 
-        
-        
+        this._IdFechasPorMesLicencia = null;
+        this._IdFechasPorMesOtConp = null;
+        this._IdFechasPorMesReEx = null;
+        this._IdFechasPorMesSerReEx = null;
+        this._IdFechasPorMesREExt = null;
+        this._IdFechasPorMesGasViaConsuEx = null;
+        this._IdFechasPorMesServiConsu = null;
+        this._IdFechasPorMesConsuEx = null;
+        this._IdFechasPorMesGVinter = null;
+        this._IdFechasPorMesServInt = null;
+
+        this._IdFechasPorMesGasViaConsuEx = [];
         this._IdFechasPorMes = [];
         this._RecursoInt = []; 
         this._FacturacionID = null;
@@ -990,9 +1000,9 @@ sap.ui.define([
 
         const aAlwaysReadOnlyIds = [
           "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
-          "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
-          "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442", "totalInfraestruc", "input0_1724758359",
-          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve, input0_1724758359"
+          "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2", "input2_1756121205",
+          "inptGastoVi2", "inputServi", "input10_1724757017406", "input9_1724757015442", "totalInfraestruc", "input0_1724758359",  "input0_1725625161348", "input0_1725625132423424361348",
+          "totaRecurExterno", "input0", "totalConsuExternot", "idComenpVd", "idTextComProve", "input0_1724758359" , "totalSubtotal", "input2_1724756105"
         ];
 
         // Limpieza general de campos
@@ -1065,8 +1075,36 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
 
-
-
+        this._IdFechasPorMesLicencia = null;
+        this._IdFechasPorMesOtConp = null;
+        this._IdFechasPorMesReEx = null;
+        this._IdFechasPorMesSerReEx = null;
+        this._IdFechasPorMesREExt = null;
+        this._IdFechasPorMesGasViaConsuEx = null;
+        this._IdFechasPorMesServiConsu = null;
+        this._IdFechasPorMesConsuEx = null;
+        this._IdFechasPorMesGVinter = null;
+        this._IdFechasPorMesServInt = null;
+        this._IdFechasPorMesGasViaConsuEx = [];
+        this._IdFechasPorMes = [];
+        this._RecursoInt = []; 
+        this._FacturacionID = null;
+        this._aChartData = [];
+        this._proveedoresIDs = [];
+        this._recursosIDs = [];
+        this._consumoExternosIDs = [];
+        this._RecursoExterno = null;
+        this._OtrosConceptos = null;
+        this._idServiInterno = null;
+        this._IdGastoViajInter = null;
+        this._idConsuOtrser = null;
+        this._idGastoViajeCOnsu = null;
+        this._idOtroSerEx = null;
+        this._idGasViaReEx = null;
+        this._idLicencia = null;
+        this._idJornadas = null;
+        this._idTotalRecInter = null;
+        this._selectedFile = null;
 
 
         const aAlwaysReadOnlyIds = [
@@ -2596,7 +2634,7 @@ sap.ui.define([
               idPorFecha[key] = item.ID;
             });
 
-            this._IdFechasPorMesServConsu = idPorFecha;
+            this._IdFechasPorMesConsuEx = idPorFecha;
 
            // console.log("VALORES POR FECHAS CONSUMO EXTERNO:", JSON.stringify(valoresPorFecha));
 
@@ -2658,7 +2696,7 @@ sap.ui.define([
               idPorFecha[key] = item.ID;
             });
 
-            this._IdFechasPorMesGasConsu = idPorFecha;
+            this._IdFechasPorMesServiConsu = idPorFecha;
 
             console.log("📅 Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
 
@@ -2722,7 +2760,7 @@ sap.ui.define([
               idPorFecha[key] = item.ID;
             });
 
-            this._IdFechasPorMesConsuEx = idPorFecha;
+            this._IdFechasPorMesGasViaConsuEx = idPorFecha;
 
             console.log("📅 Valores por fecha para gastoID:", gastoID, valoresPorFecha);
 
@@ -3784,9 +3822,9 @@ sap.ui.define([
             // Puedes hacerlo aquí si necesitas, por ejemplo:
 
             //   this.fechasDinamicas();
-            for (let id of this._idLicencia) {
-              await this.leerFechasLicencia(id);
-            }
+          
+              await this.leerFechasLicencia();
+        
 
           } else {
             //   console.log("No hay datos de LicenciasCon disponibles.");
@@ -4134,6 +4172,8 @@ sap.ui.define([
             "2028": 0.00,
             "2029": 0.00,
           }
+
+          
         };
 
         // Lógica para actualizar datos basados en la selección del Select
@@ -4158,7 +4198,7 @@ sap.ui.define([
           console.log(total1);
 
 
-
+          
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
@@ -7140,13 +7180,11 @@ sap.ui.define([
         const idMesañoConsu = this._idleeConsu;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
+    
         for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+    
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
@@ -7155,14 +7193,14 @@ sap.ui.define([
             console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
             continue;
           }
-
+    
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
             console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
             continue;
           }
-
+    
           let columnHeader = `Columna_${j}`;
-
+    
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
@@ -7173,44 +7211,71 @@ sap.ui.define([
           } else {
             console.warn(`No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+    
+          // Filtro para evitar enviar la columna 'Total'
           if (columnHeader.toLowerCase().includes("total")) {
             console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
             continue;
           }
-
+    
           console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
           console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+    
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
+    
         console.log("Datos a enviar:", dynamicColumnsData);
-
+    
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
             console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
             continue;
           }
+    
+          // Verificar si ya existe registro para mes y recurso, para obtener ID y decidir PATCH o POST
+          const claveCompuesta = `${mes}_${idRecursos}`;
 
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+          let idFecha = null;
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuConsuEx?$filter=mesAno eq '${mes}' and ConsumoExternos_ID eq '${idRecursos}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+    
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+    
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesConsuEx[claveCompuesta] = idFecha; 
+              }
+            } else {
+              console.warn(`No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("Error al verificar existencia del registro:", e);
+          }
+    
+          // Payload con los nombres y IDs correctos
           const payload = {
             ConsumoExternos_ID: idRecursos,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
-          let response;
-
-
+    
+          console.log(`Payload preparado para enviar para mes '${mes}' con idFecha: ${idFecha}`, payload);
+    
           try {
-            if (idMesañoConsu) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuConsuEx(${idMesañoConsu})`, {
+            let response;
+            if (idFecha) {
+              console.log(`Haciendo PATCH a ValorMensuConsuEx(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7218,8 +7283,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuConsuEx", {
                 method: "POST",
                 headers: {
@@ -7228,9 +7293,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+    
             if (!response.ok) {
               const errorDetails = await response.text();
               throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
@@ -7242,86 +7306,103 @@ sap.ui.define([
           }
         }
       },
-
-
-
-      InsertmesAñoServConExterno: async function (oItem, idSerConsu) {
-
+    
+      InsertmesAñoServConExterno: async function (oItem) {
+        const idSerConsu = this._idSerConsu;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoConsu = this._idConOS;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-
-
-        for (let j = 12; j < oItem.getCells().length; j++) {
+      
+        for (let j = 13; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
-        for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
+      
+        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+      
+        for (const [mesAno, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mesAno}', se omite.`);
             continue;
           }
+      
+          const claveCompuesta = `${mesAno}_${idSerConsu}`;
 
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+          let idFecha = null;
+      
+          // 🔍 Verificar si ya existe el registro para este mesAño y servicio consumo externo
+          try {
+            const filterQuery = `/odata/v4/datos-cdo/ValorMensuServConsuEx?$filter=mesAno eq '${mesAno}' and otrosServiciosConsu_ID eq '${idSerConsu}'`;
+            const checkResponse = await fetch(filterQuery, {
+              headers: {
+                "Accept": "application/json",
+                "x-csrf-token": sTokenMe
+              }
+            });
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              if (data.value.length > 0) {
+                idFecha = data.value[0].ID;
+                this._IdFechasPorMesServiConsu =    this._IdFechasPorMesServiConsu || {};
+                this._IdFechasPorMesServiConsu[claveCompuesta] = idFecha; 
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
+          // 📦 Construir payload
           const payload = {
             otrosServiciosConsu_ID: idSerConsu,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mesAno,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mesAño '${mesAno}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
           let response;
-
-
           try {
-            if (idMesañoConsu) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuServConsuEx(${idMesañoConsu})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuServConsuEx(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuServConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7329,8 +7410,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mesAño:", mesAno);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuServConsuEx", {
                 method: "POST",
                 headers: {
@@ -7339,101 +7420,129 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log(`✅ Datos enviados con éxito para el mesAño: ${mesAno}`);
             }
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
+      
 
 
 
 
-      InsertmesAñoGViajeConExterno: async function (oItem, idGasViaConsu) {
 
+      InsertmesAñoGViajeConExterno: async function (oItem) {
+        const idGasViaConsu = this._idGasViaConsu;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoConsu = this._idCviajO;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-
-
-        for (let j = 12; j < oItem.getCells().length; j++) {
+      
+        for (let j = 13; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
+      
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en la columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Se omite la columna ${columnHeader} porque es un total.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
+          console.log(`✅ Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
+      
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos a enviar:", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ No se puede enviar un valor nulo para mes ${mes}.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idGasViaConsu}`;
+          let idFecha = null;
+      
+          // Paso 1: Verificar si ya existe registro para mes y gasto viaje
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx?$filter=mesAno eq '${mes}' and GastoViajeConsumo_ID eq '${idGasViaConsu}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesGasViaConsuEx  = this._IdFechasPorMesGasViaConsuEx  || {};
+                this._IdFechasPorMesGasViaConsuEx [claveCompuesta] = idFecha; // almacenar en caché si quieres
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
+          // Paso 2: Armar payload
           const payload = {
             GastoViajeConsumo_ID: idGasViaConsu,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
+          // Paso 3: Enviar PATCH o POST según si existe o no
           let response;
-
-
           try {
-            if (idMesañoConsu) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx(${idMesañoConsu})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuGastoViaConsuEx(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7441,8 +7550,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx", {
                 method: "POST",
                 headers: {
@@ -7451,21 +7560,21 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log("✅ Datos enviados con éxito para el mes:", mes);
             }
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
-
+      
 
       //-----------------------------------------------------------------------------------
 
@@ -7476,83 +7585,105 @@ sap.ui.define([
 
 
       //ERROR DE  UPDATE 
-      InsertMesAñoRecursoExterno: async function (oItem, idRecursos) {
-
+      InsertMesAñoRecursoExterno: async function (oItem) {
+        const idRecursos = this._idRecursoEx;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoEx = this._idleeRExt;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
+      
         for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, se omite.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idRecursos}`;
+          let idFecha = null;
+      
+          // 🔍 Verificar si ya existe un registro para este mes y recurso externo
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuRecuExter?$filter=mesAno eq '${mes}' and RecursosExternos_ID eq '${idRecursos}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesREExt[claveCompuesta] = idFecha; // guardar id para futuras operaciones si quieres
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
+          // 📦 Armar payload
           const payload = {
             RecursosExternos_ID: idRecursos,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
+          // 🚀 PATCH o POST según si existe
           let response;
-
-
           try {
-            if (idMesañoEx) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuRecuExter(${idMesañoEx})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuRecuExter(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuRecuExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7560,8 +7691,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuRecuExter", {
                 method: "POST",
                 headers: {
@@ -7570,99 +7701,121 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log(`✅ Datos enviados correctamente para el mes: ${mes}`);
             }
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
+      
 
 
-      InsertMesAñosSerRecursoExterno: async function (oItem, idServiExterno) {
-
+      InsertMesAñosSerRecursoExterno: async function (oItem) {
+        console.log("ids recibidos  " + JSON.stringify(this._idleeSerRExt));
+        const idServiExterno = this._idServiExterno;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoEx = this._idleeSerRExt;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
-        for (let j = 12; j < oItem.getCells().length; j++) {
+      
+        for (let j = 13; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idServiExterno}`;
+          let idFecha = null;
+      
+          // 🔍 Verificar si ya existe el registro
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuSerExter?$filter=mesAno eq '${mes}' and ServiRecurExterno_ID eq '${idServiExterno}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesSerReEx[claveCompuesta] = idFecha; // Cache opcional
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
           const payload = {
             ServiRecurExterno_ID: idServiExterno,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
           let response;
-
-
           try {
-            if (idMesañoEx) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuSerExter(${idMesañoEx})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuSerExter(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuSerExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7670,8 +7823,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuSerExter", {
                 method: "POST",
                 headers: {
@@ -7680,99 +7833,124 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log("✅ Datos enviados con éxito para el mes:", mes);
             }
+      
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
+      
 
-
-      InsertMesAñosGastoRecursoExterno: async function (oItem, idGasRecuExter) {
-
+      InsertMesAñosGastoRecursoExterno: async function (oItem) {
+    //    console.log("IDs recibidos para gasto recurso externo:", JSON.stringify(this._idleeGasRExt));
+      
+        const idGasRecuExter = this._idGastoRecuExter;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoEx = this._idleeGasRExt;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
+      
         for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idGasRecuExter}`;
+          let idFecha = null;
+      
+          // 🔍 Verificar si ya existe el registro para este mes y gasto externo
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuGastoViExter?$filter=mesAno eq '${mes}' and GastoViajeRecExter_ID eq '${idGasRecuExter}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesReEx [claveCompuesta] = idFecha; // opcional: guardar en caché
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
+          // 📦 Armar payload
           const payload = {
             GastoViajeRecExter_ID: idGasRecuExter,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
+          // 🚀 Enviar PATCH o POST según si existe o no
           let response;
-
-
           try {
-            if (idMesañoEx) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViExter(${idMesañoEx})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuGastoViExter(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7780,8 +7958,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuGastoViExter", {
                 method: "POST",
                 headers: {
@@ -7790,20 +7968,22 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log(`✅ Datos enviados con éxito para '${mes}'`);
             }
+      
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
+      
 
       //------------------------------------------------------------------------------------
 
@@ -7815,83 +7995,107 @@ sap.ui.define([
       //---------------------- INSERT MES AÑO OTROS CONCEPTOS ---------
 
 
-      InsertMesAñosOtrosConceptos: async function (oItem, idOtrosConcep) {
-
+      InsertMesAñosOtrosConceptos: async function (oItem) {
+      
+        const idOtrosConcep = this._idOtrosConcep;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoEx = this._otroConcep;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
+      
         for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idOtrosConcep}`;
+          let idFecha = null;
+      
+          // 🔍 Paso 1: Verificar si ya existe el registro para este mes y concepto
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensuOtrConcep?$filter=mesAno eq '${mes}' and otrosConceptos_ID eq '${idOtrosConcep}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesOtConp = this._IdFechasPorMesOtConp || {};
+                this._IdFechasPorMesOtConp[claveCompuesta] = idFecha;
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
+          // 📦 Paso 2: Preparar payload
           const payload = {
             otrosConceptos_ID: idOtrosConcep,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar:", payload);
+      
+          // 🚀 Paso 3: Enviar PATCH o POST
           let response;
-
-
           try {
-            if (idMesañoEx) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensuOtrConcep(${idMesañoEx})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensuOtrConcep(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensuOtrConcep(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -7899,8 +8103,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuOtrConcep", {
                 method: "POST",
                 headers: {
@@ -7909,104 +8113,125 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
-            } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             }
+      
+            console.log(`✅ Enviado con éxito para mes: ${mes}`);
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos:", error);
           }
         }
       },
-
+      
 
 
 
 
       //---------------------------INSERTAR MES AÑO LICENCIA ----------
 
-      InsertMesAñosLicencia: async function (oItem, idLicencia) {
-
+      InsertMesAñosLicencia: async function (oItem) {
+        const idLicencia = this._idLicencia;
         const sTokenMe = this._sCsrfToken;
-        const idMesañoEx = this._LicenciaId;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
-
-        //  console.log("Columnas obtenidas:", columns);
-
+      
         for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
-
+      
           if (typeof cell.getValue === "function") {
             dynamicValue = cell.getValue();
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
-
+      
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
-
+      
           let columnHeader = `Columna_${j}`;
-
           if (columns[j]) {
             const header = columns[j].getHeader();
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`No se puede acceder a la columna en índice ${j}`);
+            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
           }
-
-          // 🔴 **Filtro para evitar enviar la columna 'Total'**
+      
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
-
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-
+      
+          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
-
-        console.log("Datos a enviar:", dynamicColumnsData);
-
+      
+        console.log("📦 Datos recolectados para enviar (Licencias):", dynamicColumnsData);
+      
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
-
-          // Usa el encabezado de la columna (mes) como valor para `mesAño`
+      
+          const claveCompuesta = `${mes}_${idLicencia}`;
+          let idFecha = null;
+      
+          // 🔍 Verificar si ya existe el registro
+          try {
+            const checkResponse = await fetch(
+              `/odata/v4/datos-cdo/ValorMensulicencia?$filter=mesAno eq '${mes}' and licencia_ID eq '${idLicencia}'`,
+              {
+                headers: {
+                  "Accept": "application/json",
+                  "x-csrf-token": sTokenMe
+                }
+              }
+            );
+      
+            if (checkResponse.ok) {
+              const data = await checkResponse.json();
+              const results = data.value;
+      
+              if (results.length > 0) {
+                idFecha = results[0].ID;
+                this._IdFechasPorMesLicencia= this._IdFechasPorMesLicencia || {};
+                this._IdFechasPorMesLicencia[claveCompuesta] = idFecha;
+              }
+            } else {
+              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+            }
+          } catch (e) {
+            console.error("🚨 Error al verificar existencia del registro:", e);
+          }
+      
           const payload = {
             licencia_ID: idLicencia,
-            mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
+            mesAno: mes,
             valor: valor
           };
-
-          console.log("Payload preparado para enviar:", payload);
-
-
+      
+          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          console.log("📤 Payload a enviar (Licencia):", payload);
+      
           let response;
-
-
           try {
-            if (idMesañoEx) {
-
-              response = await fetch(`/odata/v4/datos-cdo/ValorMensulicencia(${idMesañoEx})`, {
+            if (idFecha) {
+              console.log(`🔁 Haciendo PATCH a ValorMensulicencia(${idFecha})`);
+              response = await fetch(`/odata/v4/datos-cdo/ValorMensulicencia(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
                   "Content-Type": "application/json",
@@ -8014,8 +8239,8 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
             } else {
+              console.log("🆕 Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensulicencia", {
                 method: "POST",
                 headers: {
@@ -8024,20 +8249,21 @@ sap.ui.define([
                 },
                 body: JSON.stringify(payload)
               });
-
-
             }
+      
             if (!response.ok) {
               const errorDetails = await response.text();
-              throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
+              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              console.log("✅ Datos enviados con éxito para el mes:", mes);
             }
           } catch (error) {
-            console.error("Error al enviar los datos:", error);
+            console.error("🚨 Error durante envío de datos (Licencia):", error);
           }
         }
       },
+      
 
 
 
@@ -8665,7 +8891,7 @@ sap.ui.define([
               this._idSerConsu = idSerConsu;
 
 
-              await this.InsertmesAñoServConExterno(oItem, idSerConsu);
+              await this.InsertmesAñoServConExterno(oItem);
 
 
               console.log("Fila " + (i + 1) + " guardada con éxito: INSERT SERVI ", result);
@@ -8774,7 +9000,7 @@ sap.ui.define([
 
               this._idGasViaConsu = idGasViaConsu;
 
-              await this.InsertmesAñoGViajeConExterno(oItem, idGasViaConsu);
+              await this.InsertmesAñoGViajeConExterno(oItem);
 
 
               console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES CONSUMO ", result);
@@ -8898,10 +9124,10 @@ sap.ui.define([
 
               //      await this.insertServicioRecuExter(idRecursos);
 
-              await this.InsertMesAñoRecursoExterno(oItem, idRecursos);
-
-
               this._idRecursoEx = idRecursos
+              await this.InsertMesAñoRecursoExterno(oItem);
+
+
               console.log("Fila " + (i + 1) + " guardada con éxito:RECURSO EXTERNO", result);
 
 
@@ -9014,7 +9240,7 @@ sap.ui.define([
             this._idServiExterno = idServiExterno;
 
 
-            await this.InsertMesAñosSerRecursoExterno(oItem, idServiExterno);
+            await this.InsertMesAñosSerRecursoExterno(oItem);
 
             console.log("Fila " + (i + 1) + " guardada con éxito: SERVICIO EXTERNO  ", result);
           } else {
@@ -9121,7 +9347,7 @@ sap.ui.define([
 
             this._idGastoRecuExter = idGasRecuExter;
 
-            await this.InsertMesAñosGastoRecursoExterno(oItem, idGasRecuExter);
+            await this.InsertMesAñosGastoRecursoExterno(oItem);
 
             console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
           } else {
@@ -9222,7 +9448,7 @@ sap.ui.define([
               this._idOtrosConcep = idOtrosConcep;
 
 
-              await this.InsertMesAñosOtrosConceptos(oItem, idOtrosConcep);
+              await this.InsertMesAñosOtrosConceptos(oItem);
 
               console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
             } else {
@@ -9263,7 +9489,7 @@ sap.ui.define([
 
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-          const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta
+          const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta 
           const sPMJ = parseFloat(oItem.getCells()[3]?.getText()); // Text de PMJ
           const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
           const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
@@ -9327,11 +9553,12 @@ sap.ui.define([
               const result = await response.json();
               const idLicencia = result.ID;
 
+              this._idLicencia = idLicencia;
 
               //  this._idLicencia = idLicencia;
 
 
-              await this.InsertMesAñosLicencia(oItem, idLicencia);
+              await this.InsertMesAñosLicencia(oItem);
 
               console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
             } else {
@@ -10427,7 +10654,9 @@ sap.ui.define([
               var oInput = new sap.m.Input({
                 placeholder: "0.00",
                 // Evento de cambio (change) para capturar el valor ingresado
-                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year),
+                liveChange: this.handleLiveChange.bind(this)
+
               });
 
 
@@ -10450,6 +10679,21 @@ sap.ui.define([
         });
       },
 
+
+      handleLiveChange: function(oEvent) {
+        var oInput = oEvent.getSource();
+      
+        // Si el valor no ha cambiado, no hacemos nada
+        if (oInput._lastValue === oEvent.getParameter("value")) {
+          return;
+        }
+      
+        oInput._lastValue = oEvent.getParameter("value");
+      
+        // Disparar manualmente el evento 'change' para que se ejecute tu lógica
+        oInput.fireChange({ value: oInput.getValue() });
+      },
+      
 
       /*  fechasDinamicas: function (valoresPorFecha) {
           var startDatePicker = this.getView().byId("date_inico");
@@ -10994,8 +11238,13 @@ sap.ui.define([
             if (oItem) {
               var aCells = oItem.getCells();
 
-              if (aCells && aCells.length >= 11) {
-                var PMJRe = aCells[4].getValue();
+              
+        if (aCells && aCells.length >= 13) {
+          // Obtener valor actual inicialmente
+          var PMJReValue = parseFloat(aCells[4].getValue().replace(",", "."));
+          if (isNaN(PMJReValue)) {
+              PMJReValue = 0;
+          }
 
                 aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
                 aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
@@ -11007,10 +11256,22 @@ sap.ui.define([
                 totalSum3 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
                 aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
 
-                var resulRec = PMJRe * totalSum3
-                aCells[12].setText(resulRec.toFixed(2) + "€"); // Celda para Total 
+                
+                  // Calcular resultado inicial para celda 12
+            var initialResult = PMJReValue * totalSum3;
+            aCells[12].setText(initialResult.toFixed(2) + "€");
 
-              }
+            // Agregar listener para recalcular si cambia el valor de la celda 4
+            aCells[4].attachLiveChange(function (oEvent) {
+                var newValue = parseFloat(oEvent.getSource().getValue().replace(",", "."));
+                if (!isNaN(newValue)) {
+                    var newResult = newValue * totalSum3;
+                    aCells[12].setText(newResult.toFixed(2) + "€");
+                } else {
+                    aCells[12].setText("0.00€");
+                }
+            });
+        }
             }
           });
           this.onSumarColumna(tableId);
@@ -12044,8 +12305,8 @@ sap.ui.define([
           this.byId("input2_172475612").setValue("0.00");
           this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
         } else {
-          this.byId("input2_172475612").setValue("3.50");
-          this.byId("text67_1728582763477").setText("");  // Opcional: limpiar texto si no es Opex
+          this.byId("input2_172475612").setValue("0.00");
+          this.byId("text67_1728582763477").setText("0.00");  // Opcional: limpiar texto si no es Opex
         }
 
 

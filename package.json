@@ -49,6 +49,7 @@
     "requires": {
       "db": "hana",
       "auth": "xsuaa",
+      "roles": true,
       "html5-repo": true
     },
     "hana": {

@@ -11,6 +11,7 @@ console.log("HOLAAAAAAAAAAAAA");
 getTokenUser();
 
 module.exports = cds.service.impl(async function () {
+  
 
   console.log("Servicio cargado correctamente");
 
@@ -42,8 +43,8 @@ module.exports = cds.service.impl(async function () {
   const { WorkflowService } = this.entities;
 
 
- 
-
+  
+  
 
   this.on('startWorkflow', async (req) => {
     const input = JSON.parse(req.data.payload);
@@ -777,6 +778,8 @@ this.on("GET", "Archivos/$value", async (req) => {
       familyName: attr.familyName || "No disponible",
       fullName: `${attr.givenName || ''} ${attr.familyName || ''}`.trim() || "No disponible",
       phoneNumber: attr.phoneNumber || "No disponible",
+      roles: req.user.roles || [],
+      scopes: req.user.scopes || [],
       token: token // ✅ aquí lo agregas
     };
 
@@ -1354,3 +1357,4 @@ async function getTokenUser() {
 
 
 }
+
