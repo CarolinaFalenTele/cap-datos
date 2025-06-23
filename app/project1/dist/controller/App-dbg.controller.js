@@ -37,6 +37,8 @@ sap.ui.define(
                 // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
 
+
+
             },
 
 
@@ -684,47 +686,239 @@ sap.ui.define(
             },
 
 
-            // Método para obtener información del usuario
+
+
             getUserInfo: function () {
+                console.log("🔍 Iniciando getUserInfo...");
+            
                 fetch('/odata/v4/datos-cdo/getUserInfo')
                     .then(response => {
+                        console.log("📥 Respuesta recibida del backend:", response);
                         if (!response.ok) {
-                            throw new Error("No se pudo obtener la información del usuario.");
+                            throw new Error(" No se pudo obtener la información del usuario.");
                         }
                         return response.json();
                     })
                     .then(data => {
+                        console.log("📦 Datos parseados:", data);
+            
                         const userInfo = data.value;
-                        const token = data.token || (userInfo && userInfo.token);
-
-                        if (userInfo) {
-                            // Asignar datos a los controles en la vista
-                            //this.byId("dddtg")?.setText(userInfo.name);
-                            this.byId("dddtg")?.setText(userInfo.email);
-
-
-                            this.byId("233")?.setText(userInfo.fullName);
-                            //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
-                            //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
-
-
-                            if (token) {
-                                this._startSessionWatcher(token);
-                                ///   console.log("Token recibido y watcher iniciado.");
+                        const token = data.token || userInfo?.token;
+            
+                        if (!userInfo) {
+                            console.error(" No se encontró la información del usuario.");
+                            return;
+                        }
+            
+                        console.log("👤 Información del usuario:", userInfo);
+            
+                        // Actualizar controles de email y nombre con chequeo
+                        const setControlText = (id, text, fallback) => {
+                            const ctrl = this.byId(id);
+                            if (ctrl) {
+                                ctrl.setText(text || fallback);
+                                console.log(` Control '${id}' seteado a:`, text || fallback);
                             } else {
-                                console.warn("Token no recibido en la respuesta.");
+                                console.warn(` Control no encontrado: id '${id}'`);
                             }
-
-
-                            // console.log(" Datos seteados en la vista:", userInfo);
+                        };
+            
+                        setControlText("dddtg", userInfo.email, "Sin email");
+                        setControlText("233", userInfo.fullName, "Sin nombre");
+            
+                        // Roles
+                        const rolesObject = userInfo.roles || {};
+                        const roleKeys = Object.keys(rolesObject);
+            
+                        const rolesEsperadosVisualizador = ["", "Visualizador", "user", "DatosProyect.Read"];
+                        // Ordenar para comparar sin importar orden
+                        const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
+                            roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
+            
+                        console.log("Roles del usuario:", roleKeys);
+                        console.log(" ¿Es solo Visualizador?", isVisualizadorSolo);
+            
+                        // Botones a controlar
+                        const botonesEditarIDs = ["newId_btnEditar", "aprobBtnEdit", "butn34"];
+                        const botonesEliminarIDs = ["ww", "wsw", "newId_btnEliminar", "newId_btnEliminar2"];
+                        const btnCrear = this.byId("33");
+            
+                        // Función para toggle de botones con logs
+                        const toggleBotones = (ids, estado, tipo) => {
+                            ids.forEach(id => {
+                                const btn = this.byId(id);
+                                if (!btn) {
+                                    console.warn(` Botón de ${tipo} no encontrado:`, id);
+                                } else {
+                                    btn.setEnabled(estado);
+                                  
+                                }
+                            });
+                        };
+            
+                        if (isVisualizadorSolo) {
+                           
+                            toggleBotones(botonesEditarIDs, false, "editar");
+                            toggleBotones(botonesEliminarIDs, false, "eliminar");
+            
+                            if (btnCrear) {
+                                btnCrear.setEnabled(false);
+                                console.log(" Botón de creación deshabilitado.");
+                            } else {
+                                console.warn(" Botón de creación no encontrado: id '33'");
+                            }
+            
+                            sap.m.MessageBox.warning(
+                                "Solo tiene permisos de visualizador. No puede crear, editar ni borrar.",
+                                { title: "Permisos insuficientes" }
+                            );
                         } else {
-                            console.error("No se encontró la información del usuario.");
+                            console.log("Usuario con más permisos: habilitando botones...");
+                            toggleBotones(botonesEditarIDs, true, "editar");
+                            toggleBotones(botonesEliminarIDs, true, "eliminar");
+            
+                            if (btnCrear) {
+                                btnCrear.setEnabled(true);
+                                console.log(" Botón de creación habilitado.");
+                            } else {
+                                console.warn(" Botón de creación no encontrado: id '33'");
+                            }
+                        }
+            
+                        if (token) {
+                    
+                            this._startSessionWatcher(token);
+                        } else {
+                            console.warn("Token no recibido en la respuesta.");
                         }
                     })
                     .catch(error => {
-                        console.error(" Error obteniendo datos del usuario:", error);
+                        console.error("Error obteniendo datos del usuario:", error);
                     });
             },
+            
+            // Método para obtener información del usuario
+          /*  getUserInfo: function () {
+                console.log("🔍 Iniciando getUserInfo...");
+            
+                fetch('/odata/v4/datos-cdo/getUserInfo')
+                    .then(response => {
+                        console.log("📥 Respuesta recibida del backend:", response);
+                        if (!response.ok) {
+                            throw new Error("❌ No se pudo obtener la información del usuario.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("📦 Datos parseados:", data);
+            
+                        const userInfo = data.value;
+                        const token = data.token || (userInfo && userInfo.token);
+            
+                        if (!userInfo) {
+                            console.error("❌ No se encontró la información del usuario.");
+                            return;
+                        }
+            
+                        console.log("👤 Información del usuario:", userInfo);
+            
+                        // Mostrar datos del usuario
+                        const emailCtrl = this.byId("dddtg");
+                        const nameCtrl = this.byId("233");
+            
+                        if (emailCtrl) {
+                            emailCtrl.setText(userInfo.email || "Sin email");
+                            console.log("📧 Email seteado:", userInfo.email || "Sin email");
+                        } else {
+                            console.warn("⚠️ Control de email no encontrado (id 'dddtg')");
+                        }
+            
+                        if (nameCtrl) {
+                            nameCtrl.setText(userInfo.fullName || "Sin nombre");
+                            console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
+                        } else {
+                            console.warn("⚠️ Control de nombre no encontrado (id '233')");
+                        }
+            
+                        // Roles
+                        const roles = userInfo.roles || [];
+                        console.log("🧩 Roles del usuario:", roles);
+
+                        const rolesObject = userInfo.roles || {};
+                        const rolesEsperadosVisualizador = ["", "Visualizador", "user", "DatosProyect.Read"];
+                        const roleKeys = Object.keys(userInfo.roles || {});
+                        
+                        // Ordenamos para evitar diferencias por el orden
+                        const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
+                            roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
+                        
+                        console.log("✅ ¿Es solo Visualizador?", isVisualizadorSolo);
+                        
+
+                        console.log("🔐 ¿Es solo Visualizador?", isVisualizadorSolo);
+                        
+            
+                        // Botones a controlar
+                        const botonesEditarIDs = ["newId_btnEditar", "aprobBtnEdit", "butn34"];
+                        const botonesEliminarIDs = ["ww", "wsw", "newId_btnEliminar", "newId_btnEliminar2"];
+                        const btnCrear = this.byId("33");
+            
+                        // Toggle de botones con logs
+                        const toggleBotones = (ids, estado, tipo) => {
+                            ids.forEach(id => {
+                                const btn = this.byId(id);
+                                if (!btn) {
+                                    console.warn(`⚠️ Botón de ${tipo} no encontrado:`, id);
+                                } else {
+                                    btn.setEnabled(estado);
+                                    console.log(`🔘 Botón ${id} (${tipo}) seteado a:`, estado);
+                                }
+                            });
+                        };
+            
+                        if (isVisualizadorSolo) {
+                            console.log("🔒 Usuario es solo visualizador: deshabilitando botones...");
+                            toggleBotones(botonesEditarIDs, false, "editar");
+                            toggleBotones(botonesEliminarIDs, false, "eliminar");
+            
+                            if (btnCrear) {
+                                btnCrear.setEnabled(false);
+                                console.log("⛔ Botón de creación deshabilitado.");
+                            } else {
+                                console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                            }
+            
+                            sap.m.MessageBox.warning(
+                                "Solo tiene permisos de visualizador. No puede crear, editar ni borrar.",
+                                { title: "Permisos insuficientes" }
+                            );
+                        } else {
+                            console.log("✅ Usuario con más permisos: habilitando botones...");
+                            toggleBotones(botonesEditarIDs, true, "editar");
+                            toggleBotones(botonesEliminarIDs, true, "eliminar");
+            
+                            if (btnCrear) {
+                                btnCrear.setEnabled(true);
+                                console.log("✅ Botón de creación habilitado.");
+                            } else {
+                                console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                            }
+                        }
+            
+                        if (token) {
+                            console.log("🔐 Token recibido:", token);
+                            console.log("▶️ Iniciando watcher de sesión...");
+                            this._startSessionWatcher(token);
+                        } else {
+                            console.warn("⚠️ Token no recibido en la respuesta.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("🚨 Error obteniendo datos del usuario:", error);
+                    });
+            },*/
+            
+            
 
 
             _startSessionWatcher: function (token) {

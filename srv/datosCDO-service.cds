@@ -3,19 +3,16 @@ using {db.datos as datos} from '../db/schema';
 service DatosCDOService @(path: '/odata/v4/datos-cdo') {
  // @odata.draft.enabled
 
- @requires: 'authenticated-user'
+@restrict: [
+  { grant: 'READ', to: ['Visualizador', 'Admin', 'Comite'] },
+  { grant: 'CREATE', to: ['Admin'] },
+  { grant: 'UPDATE', to: ['Admin', 'Comite'] },
+  { grant: 'DELETE', to: ['Admin'] }
+]
+
+ //@requires: 'authenticated-user'
 
   entity DatosProyect              as projection on datos.DatosProyect;
-
-  @restrict: [{
-    grant: [
-      'CREATE',
-      'READ',
-      'UPDATE',
-      'DELETE'
-    ],
-    to   : 'authenticated-user'
-  }]
   entity Jefeproyect               as projection on datos.Jefeproyect;
 
   entity Area                      as projection on datos.Area;

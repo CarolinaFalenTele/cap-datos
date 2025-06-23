@@ -8,7 +8,7 @@ const xsenv = require('@sap/xsenv');
 console.log("HOLAAAAAAAAAAAAA");
 
 
-getTokenUser();
+//getTokenUser();
 
 module.exports = cds.service.impl(async function () {
   
@@ -765,11 +765,16 @@ this.on("GET", "Archivos/$value", async (req) => {
       return {};
     }
 
+    const jwt = req._.req.headers.authorization?.split(' ')[1];
+   // console.log("Token JWT:", jwt);
+
+    this._Token = jwt;
+
     console.log("🧾 req.user completo:", req.user);
     const attr = req.user.attr || {};
 
     // 🔐 Obtener el token
-    const token = await getTokenUser();
+  ///  const token = await getTokenUser();
 
     const userInfo = {
       id: req.user.id,
@@ -780,7 +785,8 @@ this.on("GET", "Archivos/$value", async (req) => {
       phoneNumber: attr.phoneNumber || "No disponible",
       roles: req.user.roles || [],
       scopes: req.user.scopes || [],
-      token: token // ✅ aquí lo agregas
+
+      token: jwt // ✅ aquí lo agregas
     };
 
     console.log("✅ Datos del usuario:", userInfo);
@@ -1327,9 +1333,9 @@ this.on("GET", "Archivos/$value", async (req) => {
 
 
 
-async function getTokenUser() {
+/*async function getTokenUser() {
   const clientid = "sb-datoscdo!t46439";
-  const clientsecret = "fOR9SpEx2do3y43ETrQtJFmk+gk=";
+  const clientsecret = "60d01bf3-8de2-4879-88f8-05398ab2e16b$SJ31raLfmSWb2d7LWSW2UlNajajn6bmJ25ItSEDFNKc=";
   const url = "https://j8z80lwx.authentication.eu20.hana.ondemand.com/oauth/token";
 
   try {
@@ -1356,5 +1362,5 @@ async function getTokenUser() {
   }
 
 
-}
+}*/
 

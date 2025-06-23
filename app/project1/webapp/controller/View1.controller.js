@@ -1074,17 +1074,6 @@ sap.ui.define([
         const oView = this.getView();
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
-
-        this._IdFechasPorMesLicencia = null;
-        this._IdFechasPorMesOtConp = null;
-        this._IdFechasPorMesReEx = null;
-        this._IdFechasPorMesSerReEx = null;
-        this._IdFechasPorMesREExt = null;
-        this._IdFechasPorMesGasViaConsuEx = null;
-        this._IdFechasPorMesServiConsu = null;
-        this._IdFechasPorMesConsuEx = null;
-        this._IdFechasPorMesGVinter = null;
-        this._IdFechasPorMesServInt = null;
         this._IdFechasPorMesGasViaConsuEx = [];
         this._IdFechasPorMes = [];
         this._RecursoInt = []; 
@@ -1130,6 +1119,7 @@ sap.ui.define([
             }
           }
         });
+
 
       },
 
@@ -2374,7 +2364,7 @@ sap.ui.define([
             this._IdFechasPorMes = idPorFecha;
 
 
-            console.log("FECHAS TRAIDAS "  +  JSON.stringify(this._IdFechasPorMes));
+         //   console.log("FECHAS TRAIDAS "  +  JSON.stringify(this._IdFechasPorMes));
          //   console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
 
 
@@ -2458,7 +2448,7 @@ sap.ui.define([
 
 
       rellenarInputsConFechas: function (tableId, rowIndex, valoresPorFecha) {
-        console.log(`Intentando rellenar inputs para tabla: ${tableId}, fila: ${rowIndex}`);
+      //  console.log(`Intentando rellenar inputs para tabla: ${tableId}, fila: ${rowIndex}`);
 
         const inputsFila = this._inputsDinamicos?.[tableId]?.[rowIndex];
         if (!inputsFila) {
@@ -2470,7 +2460,7 @@ sap.ui.define([
           const oInput = inputsFila[mesAno];
           if (oInput) {
             const valorFormateado = Number(valor).toFixed(2);
-            console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
+          //  console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
             oInput.setValue(valorFormateado);
             oInput.fireChange({ value: valorFormateado });
           } else {
@@ -2660,7 +2650,7 @@ sap.ui.define([
       leerFechasServConsumoExterno: async function () {
         const otrosServiciosIDs = this._idConsuOtrser; // Debe ser un array
 
-        console.log("🔎 IDs de Servicios de Consumo Externo para consultar:", otrosServiciosIDs);
+       // console.log("🔎 IDs de Servicios de Consumo Externo para consultar:", otrosServiciosIDs);
 
         const valoresPorFecha = {};
         const idPorFecha = {};
@@ -2684,7 +2674,7 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+          //    console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
             } else {
               console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
             }
@@ -2698,7 +2688,7 @@ sap.ui.define([
 
             this._IdFechasPorMesServiConsu = idPorFecha;
 
-            console.log("📅 Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
+           // console.log("📅 Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
 
             this.rellenarInputsConFechas("idOtroserConsu", index, valoresPorFecha);
 
@@ -2711,7 +2701,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de servicios consumo externo:", resultados);
+       // console.log("📊 Resultados completos de servicios consumo externo:", resultados);
       },
 
 
@@ -2719,7 +2709,7 @@ sap.ui.define([
 
 
       leerFechasGastoConsumoExterno: async function () {
-        const gastosIDs = this._idGastoViajeCOnsu; // Asegúrate de que sea un array
+      //  const gastosIDs = this._idGastoViajeCOnsu; // Asegúrate de que sea un array
 
         console.log("🔎 IDs de Gasto de Viaje Consumo Externo a consultar:", gastosIDs);
 
@@ -2746,7 +2736,7 @@ sap.ui.define([
             }
 
             const data = await response.json();
-            console.log("📦 Respuesta JSON completa:", data);
+        //    console.log("📦 Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
               console.warn(`⚠️ Sin datos encontrados para gastoID: ${gastoID}`);
@@ -2775,7 +2765,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Gasto Consumo Externo:", resultados);
+     //   console.log("📊 Resultados completos de Gasto Consumo Externo:", resultados);
       },
 
 
@@ -2790,7 +2780,7 @@ sap.ui.define([
       leerFechasRecursoExterno: async function () {
         const recursosExternosIDs = this._RecursoExterno; // Debe ser un array de IDs
 
-        console.log("🔎 IDs de Recursos Externos a consultar:", recursosExternosIDs);
+      //  console.log("🔎 IDs de Recursos Externos a consultar:", recursosExternosIDs);
 
         const idPorFecha = {};
 
@@ -2814,7 +2804,7 @@ sap.ui.define([
             }
 
             const data = await response.json();
-            console.log("📦 Respuesta JSON completa:", data);
+        //    console.log("📦 Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
               console.warn(`⚠️ Sin datos encontrados para recurso externo ID: ${recursoID}`);
@@ -2831,7 +2821,7 @@ sap.ui.define([
             // Guardar IDs por fecha si se requiere luego
             this._IdFechasPorMesREExt = idPorFecha;
 
-            console.log("📅 Valores por fecha para recurso externo ID:", recursoID, valoresPorFecha);
+          //  console.log("📅 Valores por fecha para recurso externo ID:", recursoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("tablaRecExterno", index, valoresPorFecha);
 
@@ -2844,7 +2834,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Recursos Externos:", resultados);
+      //  console.log("📊 Resultados completos de Recursos Externos:", resultados);
       },
 
 
@@ -2852,7 +2842,7 @@ sap.ui.define([
 
       leerFechasServRecursoExterno: async function () {
         const serviciosExternosIDs = this._idOtroSerEx; // Asegúrate que sea un array
-        console.log("🔍 IDs de Servicios Recurso Externo a consultar:", serviciosExternosIDs);
+    //    console.log("🔍 IDs de Servicios Recurso Externo a consultar:", serviciosExternosIDs);
 
         const idPorFecha = {};
 
@@ -2875,7 +2865,7 @@ sap.ui.define([
             }
 
             const data = await response.json();
-            console.log("📦 Respuesta JSON completa:", data);
+//            console.log("📦 Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
               console.warn(`⚠️ No hay datos de ValorMensuSerExter para el ID: ${servID}`);
@@ -2904,7 +2894,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Servicios Recurso Externo:", resultados);
+    //    console.log("📊 Resultados completos de Servicios Recurso Externo:", resultados);
       },
 
 
@@ -2913,7 +2903,7 @@ sap.ui.define([
 
       leerFechasGastoRecursoExterno: async function () {
         const gastosExternosIDs = this._idGasViaReEx; // Asegúrate que sea un array
-        console.log("🔍 IDs de Gastos de Viaje Recurso Externo a consultar:", gastosExternosIDs);
+    //    console.log("🔍 IDs de Gastos de Viaje Recurso Externo a consultar:", gastosExternosIDs);
 
         const idPorFecha = {};
 
@@ -2936,7 +2926,7 @@ sap.ui.define([
             }
 
             const oData = await response.json();
-            console.log("📦 Respuesta JSON completa:", oData);
+        //    console.log("📦 Respuesta JSON completa:", oData);
 
             if (!oData.value || oData.value.length === 0) {
               console.warn(`⚠️ No hay datos de ValorMensuGastoViExter para el ID: ${gastoID}`);
@@ -2965,7 +2955,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Gastos Recurso Externo:", resultados);
+     //   console.log("📊 Resultados completos de Gastos Recurso Externo:", resultados);
       },
 
 
@@ -3647,7 +3637,7 @@ sap.ui.define([
 
       leerFechasOtrosConcetos: async function () {
         const otrosConceptosIDs = this._OtrosConceptos; // Asegúrate que sea un array de IDs
-        console.log("🔍 IDs de Otros Conceptos a consultar:", otrosConceptosIDs);
+      //  console.log("🔍 IDs de Otros Conceptos a consultar:", otrosConceptosIDs);
 
         const idPorFecha = {};
 
@@ -3670,7 +3660,7 @@ sap.ui.define([
             }
 
             const oData = await response.json();
-            console.log("📦 Respuesta JSON completa:", oData);
+          //  console.log("📦 Respuesta JSON completa:", oData);
 
             if (!oData.value || oData.value.length === 0) {
               console.warn(`⚠️ No hay datos de ValorMensuOtrConcep para el ID: ${conceptoID}`);
@@ -3686,7 +3676,7 @@ sap.ui.define([
 
             this._IdFechasPorMesOtConp = idPorFecha;
 
-            console.log("📅 Valores por fecha para concepto:", conceptoID, valoresPorFecha);
+          //  console.log("📅 Valores por fecha para concepto:", conceptoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("tablaInfrestuctura", index, valoresPorFecha);
 
@@ -3699,7 +3689,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Otros Conceptos:", resultados);
+        //console.log("📊 Resultados completos de Otros Conceptos:", resultados);
       },
 
 
@@ -3707,7 +3697,7 @@ sap.ui.define([
 
       leerFechasLicencia: async function () {
         const licenciasIDs = this._idLicencia; // Esperamos un array de IDs
-        console.log("🔍 IDs de Licencias a consultar:", licenciasIDs);
+       // console.log("🔍 IDs de Licencias a consultar:", licenciasIDs);
 
         const idPorFecha = {};
 
@@ -3759,7 +3749,7 @@ sap.ui.define([
 
         const resultados = await Promise.all(promesas);
 
-        console.log("📊 Resultados completos de Licencias:", resultados);
+       // console.log("📊 Resultados completos de Licencias:", resultados);
       },
 
 
@@ -4897,9 +4887,9 @@ sap.ui.define([
           );
       
           if (usuarioActual) {
-            console.log("✅ Usuario encontrado:", usuarioActual);
+            //console.log("✅ Usuario encontrado:", usuarioActual);
             this._usuarioActual =  usuarioActual.ID;
-            console.log("✅ Usuario encontrado2:",  this._usuarioActual);
+           // console.log("✅ Usuario encontrado2:",  this._usuarioActual);
 
 
             return usuarioActual.ID; // Devuelve solo el ID del usuario encontrado
@@ -12287,65 +12277,57 @@ sap.ui.define([
 
       //--------------Visible table Facturacion------------
       onSelectOpx: function (oEvent) {
-
         var selectedItem = this.byId("slct_inic").getSelectedItem();
-        var selectNatu = this.byId("idNatu");
-
-
-
+    
+        if (!selectedItem) {
+            console.warn("No se ha seleccionado ningún item en slct_inic");
+            return;
+        }
+    
         var selectedText = selectedItem.getText();
-
-
         console.log("Valor seleccionado:", selectedText);
-
-
+    
         var oTable = this.getView().byId("table0");
-
+    
         if (selectedText === "Opex Servicios" || selectedText === "Proyecto/Servicio de Inversión") {
-          this.byId("input2_172475612").setValue("0.00");
-          this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
+            this.byId("input2_172475612").setValue("0.00");
+            this.byId("text67_1728582763477").setText("Opex Servicios  - El Margen debe ser establecido al 0%");
         } else {
-          this.byId("input2_172475612").setValue("0.00");
-          this.byId("text67_1728582763477").setText("0.00");  // Opcional: limpiar texto si no es Opex
+            this.byId("input2_172475612").setValue("0.00");
+            this.byId("text67_1728582763477").setText("0.00");
         }
-
-
-
-
+    
         if (selectedText === "Proyecto/Servicio a Cliente Externo") {
-          oTable.setVisible(true);
-          this.byId("idCheckMensual").setVisible(true);
-          this.byId("idComentarioTipo").setVisible(true);
-          this.byId("TextoCon").setVisible(true);
-          this.byId("input2_17221205").setValue(parseFloat("20.00").toFixed(2));
-          this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
-
+            oTable.setVisible(true);
+            this.byId("idCheckMensual").setVisible(true);
+            this.byId("idComentarioTipo").setVisible(true);
+            this.byId("TextoCon").setVisible(true);
+            this.byId("input2_17221205").setValue("20.00");
+            this.byId("text67_1728582763477").setText("Margen por defecto 20%, si es inferior al 14,29% la propuesta debe pasar por comité");
+    
         } else if (selectedText === "Proyecto/Servicio Interno PdV") {
-          this.byId("idComenpVd").setEditable(true);
-          this.byId("input2_17221205").setValue(parseFloat("10.00").toFixed(2));
-          this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
-
+            this.byId("idComenpVd").setEditable(true);
+            this.byId("input2_17221205").setValue("10.00");
+            this.byId("text67_1728582763477").setText("Margen por defecto 10%, si el Margen es inferior al 5% la propuesta debe pasar por comité");
+    
         } else if (selectedText === "Proyecto/Servicio de Inversión") {
-          this.byId("input2_17221205").setValue(parseFloat("0.00").toFixed(2));
-          this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
-
+            this.byId("input2_17221205").setValue("0.00");
+            this.byId("text67_1728582763477").setText("Proyecto/Servicio de Inversión - El Margen debe ser establecido al 0%");
+    
         } else if (selectedText === "Opex Servicios") {
-          this.byId("input2_17221205").setValue(parseFloat("0.00").toFixed(2));
-          this.byId("text67_1728582763477").setText("Opex Servicios - El Margen debe ser establecido al 0%");
-
+            this.byId("input2_17221205").setValue("0.00");
+            this.byId("text67_1728582763477").setText("Opex Servicios - El Margen debe ser establecido al 0%");
+    
         } else {
-          oTable.setVisible(false);
-          this.byId("idComenpVd").setEditable(false);
-          this.byId("idComentarioTipo").setVisible(false);
-          this.byId("TextoCon").setVisible(false);
-          this.byId("idCheckMensual").setVisible(false);
-          this.byId("input2_17221205").setValue("");
+            oTable.setVisible(false);
+            this.byId("idComenpVd").setEditable(false);
+            this.byId("idComentarioTipo").setVisible(false);
+            this.byId("TextoCon").setVisible(false);
+            this.byId("idCheckMensual").setVisible(false);
+            this.byId("input2_17221205").setValue("");
         }
-
-
-
-      },
-
+    },
+    
 
 
 

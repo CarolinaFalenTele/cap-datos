@@ -312,6 +312,7 @@
                                                                         id="butn34"
                                                                         icon="sap-icon://edit"
                                                                         press="onEditPress"
+                                                                        enabled="true"
                                                                     >
                                                                         <customData
                                                                         >
@@ -333,6 +334,7 @@
                                                                         id="ww"
                                                                         icon="sap-icon://delete"
                                                                         press="onDeletePress"
+                                                                        enabled="true"
                                                                     >
                                                                         <customData
                                                                         >
@@ -596,6 +598,7 @@
                                                                         id="butn346"
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
+                                                                        enabled="true"
                                                                     >
                                                                         <customData
                                                                         >
@@ -765,6 +768,7 @@
                         id="aprobBtnEdit"
                         icon="sap-icon://show"
                         press="onEditPress"
+                        enabled="true"
                     >
                         <customData>
                             <core:CustomData
@@ -785,6 +789,7 @@
                         id="newId_btnEliminar2"
                         icon="sap-icon://delete"
                         press="onDeletePress"
+                        enabled="true"
                     >
                         <customData>
                             <core:CustomData
@@ -923,6 +928,8 @@
                                                                 id="newId_btnEliminar"
                                                                 icon="sap-icon://delete"
                                                                 press="onDeletePress"
+
+                                                               enabled="true"
                                                             >
                                                                 <customData>
                                                                     <core:CustomData
@@ -1104,6 +1111,7 @@
                                                                         id="butn3462"
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
+                                                                        enabled="true"
                                                                     >
                                                                         <customData
                                                                         >
@@ -1126,6 +1134,8 @@
                                                                         id="wsw"
                                                                         icon="sap-icon://delete"
                                                                         press="onDeletePress"
+                                                                        enabled="true"
+                                                                        
                                                                     >
                                                                         <customData
                                                                         >
@@ -1167,6 +1177,7 @@
                         <Button
                             id="33"
                             type="Accept"
+                            enabled="true"
                             text="Nueva Solicitud"
                             press="onNavToView1"
                         />

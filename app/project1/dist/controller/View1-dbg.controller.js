@@ -34,7 +34,7 @@ sap.ui.define([
           ],
           chartData: [], // Inicializamos el chartData
         });
-        this.getView().setModel(oModel, "planning");
+         this.getView().setModel(oModel, "planning");
 
         var oVizframe1 = this.byId("idVizFrame");
         oVizframe1.setVizProperties({ "title": { "text": "Planificacion" } });
@@ -131,7 +131,7 @@ sap.ui.define([
         this.enviarID();
 
 
-    //    console.log("ID ANTES DE ACTUALIZAR   OINIT " + this._idWorkflowInstancias);
+    //    console.log("ID ANTES DE ACTUALIZAR folsdf  OINIT " + this._idWorkflowInstancias);
 
         this.byId("coste6552").setVisible(false);
         

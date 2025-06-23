@@ -4,57 +4,71 @@
   "description": "Security profile of called application",
 
   "scopes": [
-    { "name": "uaa.user", "description": "Usuario autenticado" },
-    { "name": "DatosProyect.Read", "description": "Leer proyectos" },
-    { "name": "DatosProyect.Create", "description": "Crear proyectos" },
-    { "name": "DatosProyect.Update", "description": "Actualizar proyectos" },
-    { "name": "DatosProyect.Delete", "description": "Borrar proyectos" },
-    { "name": "DatosProyect.Revisar", "description": "Acceso sección comité" },
+    { "name": "$XSAPPNAME.user", "description": "Usuario autenticado" },
+    { "name": "$XSAPPNAME.DatosProyect.Read", "description": "Leer proyectos" },
+    { "name": "$XSAPPNAME.DatosProyect.Create", "description": "Crear proyectos" },
+    { "name": "$XSAPPNAME.DatosProyect.Update", "description": "Actualizar proyectos" },
+    { "name": "$XSAPPNAME.DatosProyect.Delete", "description": "Borrar proyectos" },
+    { "name": "$XSAPPNAME.DatosProyect.Revisar", "description": "Acceso sección comité" },
+    { "name": "$XSAPPNAME.DatosProyect.Aprobar", "description": "Permiso para aprobar solicitudes" },
+    { "name": "$XSAPPNAME.DatosProyect.Rechazar", "description": "Permiso para rechazar solicitudes" },
+    { "name": "$XSAPPNAME.Viewer", "description": "Access viewer data" },
 
-    { "name": "DatosProyect.Aprobar", "description": "Permiso para aprobar solicitudes" },
-    { "name": "DatosProyect.Rechazar", "description": "Permiso para rechazar solicitudes" },
-      {
-    "name": "$XSAPPNAME.Viewer",
-    "description": "Access viewer data"
-  }
+
+    { "name": "$XSAPPNAME.Admin", "description": "Rol de administrador para CAP" },
+    { "name": "$XSAPPNAME.Visualizador", "description": "Rol de solo lectura para CAP" },
+    { "name": "$XSAPPNAME.Comite", "description": "Rol de comité para CAP" }
   ],
 
   "role-templates": [
     {
       "name": "Token_Exchange",
       "description": "Intercambio de token",
-      "scope-references": ["uaa.user"]
+      "scope-references": [
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read"
+      ]
+    },
+    {
+      "name": "Viewer",
+      "description": "Can view data",
+      "scope-references": [
+        "$XSAPPNAME.Viewer"
+      ]
     },
     {
       "name": "Admin",
       "description": "Acceso completo a proyectos",
       "scope-references": [
-        "uaa.user",
-        "DatosProyect.Read",
-        "DatosProyect.Create",
-        "DatosProyect.Update",
-        "DatosProyect.Delete",
-        "DatosProyect.Aprobar",
-        "DatosProyect.Rechazar"
+        "$XSAPPNAME.Admin", 
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read",
+        "$XSAPPNAME.DatosProyect.Create",
+        "$XSAPPNAME.DatosProyect.Update",
+        "$XSAPPNAME.DatosProyect.Delete",
+        "$XSAPPNAME.DatosProyect.Aprobar",
+        "$XSAPPNAME.DatosProyect.Rechazar"
       ]
     },
     {
       "name": "Visualizador",
       "description": "Solo lectura de proyectos",
       "scope-references": [
-        "uaa.user",
-        "DatosProyect.Read"
+        "$XSAPPNAME.Visualizador",  
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read"
       ]
     },
     {
       "name": "Comite",
       "description": "Rol para comité de revisión",
       "scope-references": [
-        "uaa.user",
-        "DatosProyect.Read",
-        "DatosProyect.Revisar",
-        "DatosProyect.Aprobar",
-        "DatosProyect.Rechazar"
+        "$XSAPPNAME.Comite", 
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read",
+        "$XSAPPNAME.DatosProyect.Revisar",
+        "$XSAPPNAME.DatosProyect.Aprobar",
+        "$XSAPPNAME.DatosProyect.Rechazar"
       ]
     }
   ],
@@ -82,12 +96,12 @@
     }
   ],
 
- "oauth2-configuration": {
-  "token-validity": 86400,
-  "refresh-token-validity": 604800,
-  "redirect-uris": [
-    "https://*.hana.ondemand.com/**",
-    "https://*.applicationstudio.cloud.sap/**"
-  ]
-}
+  "oauth2-configuration": {
+    "token-validity": 86400,
+    "refresh-token-validity": 604800,
+    "redirect-uris": [
+      "https://*.hana.ondemand.com/**",
+      "https://*.applicationstudio.cloud.sap/**"
+    ]
+  }
 }

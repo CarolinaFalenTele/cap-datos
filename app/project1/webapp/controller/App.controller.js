@@ -37,6 +37,8 @@ sap.ui.define(
                 // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
 
+
+
             },
 
 
@@ -76,52 +78,52 @@ sap.ui.define(
                         console.error("❌ userModel no está definido aún.");
                         return;
                     }
-            
+
                     const userId = userModel.getProperty("/ID");
                     const userEmail = userModel.getProperty("/email");
-                //    console.log("👤 Usuario ID:", userId);
-                  //  console.log("📧 Usuario Email:", userEmail);
-            
+                    //    console.log("👤 Usuario ID:", userId);
+                    //  console.log("📧 Usuario Email:", userEmail);
+
                     const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
                     const data = await response.json();
                     const aProjects = data.value;
-              //      console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
-            
+                    //      console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
+
                     const aProyectosConEstado = await Promise.all(
                         aProjects.map(async (proyecto) => {
                             const projectId = proyecto.ID;
-            
+
                             const formatearFecha = (fechaStr) => {
                                 if (!fechaStr) return null;
                                 const fecha = new Date(fechaStr);
                                 return `${fecha.getDate().toString().padStart(2, '0')}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getFullYear()}`;
                             };
-            
+
                             proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
                             proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
-            
-                          //  console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
-                        //    console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
-            
+
+                            //  console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
+                            //    console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
+
                             if (proyecto.Estado === "Borrador") {
-                             //   console.log(" Estado Borrador detectado, saltando lógica de workflow.");
+                                //   console.log(" Estado Borrador detectado, saltando lógica de workflow.");
                                 proyecto.workflowId = null;
                                 proyecto.actualizadoEn = null;
                                 proyecto.actualizadoEnFormateada = "No aplica";
                                 proyecto.Etapas = [];
                                 return proyecto;
                             }
-            
+
                             const wfResponse = await fetch(
                                 `/odata/v4/datos-cdo/WorkflowInstancias?$filter=datosProyect_ID eq ${projectId}&$orderby=creadoEn desc&$top=1`
                             );
                             const wfData = await wfResponse.json();
                             const wfItem = wfData.value[0];
-            
-                        //    console.log("📄 Workflow encontrado:", wfItem);
-            
+
+                            //    console.log("📄 Workflow encontrado:", wfItem);
+
                             let etapas = [];
                             if (wfItem?.ID) {
                                 const etapasResponse = await fetch(
@@ -129,17 +131,17 @@ sap.ui.define(
                                 );
 
                                 this._workID = wfItem.workflowId;
-                              //  console.log(" ID DEL WORKFLOW asignado:", this._workID);
+                                //  console.log(" ID DEL WORKFLOW asignado:", this._workID);
 
                                 const etapasData = await etapasResponse.json();
                                 etapas = etapasData.value || [];
-                             //   console.log(` Etapas obtenidas: ${etapas.length}`);
+                                //   console.log(` Etapas obtenidas: ${etapas.length}`);
                             }
 
 
-            
+
                             const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
-            
+
                             if (hayEtapasPendientes) {
                                 proyecto.Estado = "Pendiente";
                             } else if (wfItem?.estado) {
@@ -147,45 +149,45 @@ sap.ui.define(
                             } else {
                                 proyecto.Estado = proyecto.Estado || "Borrador";
                             }
-            
-                        //    console.log(" Estado FINAL asignado:", proyecto.Estado);
-            
+
+                            //    console.log(" Estado FINAL asignado:", proyecto.Estado);
+
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
                             proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
                             proyecto.Etapas = etapas;
-            
+
                             return proyecto;
                         })
                     );
-            
+
                     // Separar por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
                     const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
                     const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
-            
-                /*    console.log(" Clasificación de proyectos:");
-                    console.log(" Aprobados:", aProyectosAprobados.length);
-                    console.log(" Pendientes:", aProyectosPendientes.length);
-                    console.log(" Borrador:", aProyectosBorrador.length);
-                    console.log(" Rechazados:", aProyectosRechazados.length);*/
-            
+
+                    /*    console.log(" Clasificación de proyectos:");
+                        console.log(" Aprobados:", aProyectosAprobados.length);
+                        console.log(" Pendientes:", aProyectosPendientes.length);
+                        console.log(" Borrador:", aProyectosBorrador.length);
+                        console.log(" Rechazados:", aProyectosRechazados.length);*/
+
                     // Etapas asignadas al usuario
                     const aEtapasAsignadas = [];
                     const aProyectosAsignadosAlUsuario = [];
-            
+
                     aProyectosPendientes.forEach((proyecto) => {
                         let tieneEtapaAsignada = false;
-            
+
                         proyecto.Etapas.forEach((etapa) => {
                             if (
                                 etapa.estado === "Pendiente" &&
                                 etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
                             ) {
-                               // console.log(` Etapa asignada encontrada:`, etapa);
+                                // console.log(` Etapa asignada encontrada:`, etapa);
                                 tieneEtapaAsignada = true;
-            
+
                                 aEtapasAsignadas.push({
                                     nombreEtapa: etapa.nombreEtapa,
                                     asignadoA: etapa.asignadoA,
@@ -200,55 +202,55 @@ sap.ui.define(
                                 });
                             }
                         });
-            
+
                         if (tieneEtapaAsignada) {
                             aProyectosAsignadosAlUsuario.push(proyecto);
                         }
                     });
-            
+
                     // Modelos JSON para la vista
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobados,
                         Count: aProyectosAprobados.length
                     }), "modelAprobados");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosPendientes,
                         Count: aProyectosPendientes.length
                     }), "modelPendientes");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosBorrador,
                         Count: aProyectosBorrador.length
                     }), "modelBorrador");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosRechazados,
                         Count: aProyectosRechazados.length
                     }), "modelRechazados");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         Count: aProyectosConEstado.length
                     }), "modelTotal");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         Etapas: aEtapasAsignadas,
                         Count: aEtapasAsignadas.length
                     }), "modelEtapasAsignadas");
-            
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAsignadosAlUsuario,
                         Count: aProyectosAsignadosAlUsuario.length
                     }), "modelAsignados");
-            
-                   /* console.log("📌 Etapas asignadas al usuario:", aEtapasAsignadas.length);
-                    console.log("📌 Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario.length);*/
-            
+
+                    /* console.log("📌 Etapas asignadas al usuario:", aEtapasAsignadas.length);
+                     console.log("📌 Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario.length);*/
+
                     const oIconTab = this.byId("id34");
                     if (oIconTab) {
                         oIconTab.setVisible(aEtapasAsignadas.length > 0);
                     }
-            
+
                     // Actualizar texto de estado general
                     const oStatusControl = this.byId("status0");
                     if (aProyectosPendientes.length > 0) {
@@ -264,33 +266,114 @@ sap.ui.define(
                         oStatusControl.setText("Aprobado");
                         oStatusControl.setState("Success");
                     }
-            
+
                 } catch (error) {
                     console.error(" Error al cargar los proyectos con estado:", error);
                 }
             },
-            
+
             filtrarProyectosPorNombre: function (sNombre) {
                 if (typeof sNombre !== "string") {
                     sNombre = "";
                 }
-            
+
                 var oModel = this.getView().getModel("modelRechazados");
                 var aTodosProyectos = oModel.getProperty("/DatosProyect") || [];
-            
+
                 var aFiltrados = aTodosProyectos.filter(function (proyecto) {
                     return proyecto.name && proyecto.name.toLowerCase().includes(sNombre.toLowerCase());
                 });
-            
+
                 oModel.setProperty("/DatosProyect", aFiltrados);
                 oModel.setProperty("/Count", aFiltrados.length);
             },
-            
 
 
 
 
 
+
+
+
+
+            onVerHistorial: async function (oEvent) {
+                try {
+                    const oSource = oEvent.getSource();
+
+                    // Intenta obtener el contexto desde modelPendientes
+                    let oContext = oSource.getBindingContext("modelPendientes");
+                    let modelo = "modelPendientes";
+
+                    // Si no lo encuentra en modelPendientes, intenta con modelAprobados
+                    if (!oContext) {
+                        oContext = oSource.getBindingContext("modelAprobados");
+                        modelo = "modelAprobados";
+                    }
+
+                    if (!oContext) {
+                        sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
+                        return;
+                    }
+
+                    const oItem = oContext.getObject();
+                    const workflowId = oItem.workflowId;
+
+                    if (!workflowId) {
+                        //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                        return;
+                    }
+
+                    const oModel = this.getOwnerComponent().getModel(); // OData Model principal
+                    const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
+
+                    oBoundContext.setParameter("ID", workflowId);
+                    await oBoundContext.execute();
+
+                    const result = oBoundContext.getBoundContext().getObject();
+                    console.log(` Historial del workflow (${modelo}):`, result);
+
+
+
+                    await this.onActivityPress(oEvent, result);
+                    //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                } catch (error) {
+                    console.error(" Error al obtener el historial del workflow:", error);
+                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                }
+            },
+
+
+
+            onActivityPress: function (oEvent, result) {
+
+                this.byId("ma77").setVisible(true); // Para ocultar
+
+                var oButton = oEvent.getSource();
+                var sNameProyect = oButton.getCustomData()[0].getValue();
+                var sID = oButton.getCustomData()[1].getValue();
+
+                const eventos = result.value;
+
+                var oProcessFlow = this.byId("processflow1");
+                if (!oProcessFlow) {
+                    console.error("No se encontró el ProcessFlow con ID 'processflow1'");
+                    return;
+                }
+
+
+                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
+
+
+                //  SOLO esta línea para crear nodos
+                this.createProcessFlowNodes(eventos, oProcessFlow, sNameProyect);
+
+                //  Solo una vez, fuera del bucle
+                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
+
+                this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
+                this.byId("text1881").setText("PEP de solicitud: " + sID);
+                this.byId("itb1").setSelectedKey("people");
+            },
 
 
 
@@ -374,87 +457,6 @@ sap.ui.define(
             },
 
 
-
-            onVerHistorial: async function (oEvent) {
-                try {
-                    const oSource = oEvent.getSource();
-
-                    // Intenta obtener el contexto desde modelPendientes
-                    let oContext = oSource.getBindingContext("modelPendientes");
-                    let modelo = "modelPendientes";
-
-                    // Si no lo encuentra en modelPendientes, intenta con modelAprobados
-                    if (!oContext) {
-                        oContext = oSource.getBindingContext("modelAprobados");
-                        modelo = "modelAprobados";
-                    }
-
-                    if (!oContext) {
-                        sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
-                        return;
-                    }
-
-                    const oItem = oContext.getObject();
-                    const workflowId = oItem.workflowId;
-
-                    if (!workflowId) {
-                        //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
-                        return;
-                    }
-
-                    const oModel = this.getOwnerComponent().getModel(); // OData Model principal
-                    const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
-
-                    oBoundContext.setParameter("ID", workflowId);
-                    await oBoundContext.execute();
-
-                    const result = oBoundContext.getBoundContext().getObject();
-                    console.log(` Historial del workflow (${modelo}):`, result);
-
-
-
-                    await this.onActivityPress(oEvent, result);
-                    //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
-                } catch (error) {
-                    console.error(" Error al obtener el historial del workflow:", error);
-                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
-                }
-            },
-
-
-
-            onActivityPress: function (oEvent, result) {
-
-                this.byId("ma77").setVisible(true); // Para ocultar
-
-                var oButton = oEvent.getSource();
-                var sNameProyect = oButton.getCustomData()[0].getValue();
-                var sID = oButton.getCustomData()[1].getValue();
-
-                const eventos = result.value;
-
-                var oProcessFlow = this.byId("processflow1");
-                if (!oProcessFlow) {
-                    console.error("No se encontró el ProcessFlow con ID 'processflow1'");
-                    return;
-                }
-
-
-                oProcessFlow.removeAllNodes(); // Limpiar nodos existentes
-
-
-                //  SOLO esta línea para crear nodos
-                this.createProcessFlowNodes(eventos, oProcessFlow, sNameProyect);
-
-                //  Solo una vez, fuera del bucle
-                oProcessFlow.attachNodePress(this.onNodePress.bind(this));
-
-                this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
-                this.byId("text1881").setText("PEP de solicitud: " + sID);
-                this.byId("itb1").setSelectedKey("people");
-            },
-
-            
             createProcessFlowNodes: function (eventos, oProcessFlow, sNameProyect) {
                 const laneMap = {
                     "SOLICITUD CDO": "0",
@@ -684,47 +686,238 @@ sap.ui.define(
             },
 
 
-            // Método para obtener información del usuario
+
+
             getUserInfo: function () {
+
                 fetch('/odata/v4/datos-cdo/getUserInfo')
                     .then(response => {
+                        //    console.log("📥 Respuesta recibida del backend:", response);
                         if (!response.ok) {
-                            throw new Error("No se pudo obtener la información del usuario.");
+                            throw new Error(" No se pudo obtener la información del usuario.");
                         }
                         return response.json();
                     })
                     .then(data => {
+                        //            console.log("📦 Datos parseados:", data);
+
                         const userInfo = data.value;
-                        const token = data.token || (userInfo && userInfo.token);
+                        const token = data.token || userInfo?.token;
 
-                        if (userInfo) {
-                            // Asignar datos a los controles en la vista
-                            //this.byId("dddtg")?.setText(userInfo.name);
-                            this.byId("dddtg")?.setText(userInfo.email);
+                        if (!userInfo) {
+                            console.error(" No se encontró la información del usuario.");
+                            return;
+                        }
 
+                        // console.log("👤 Información del usuario:", userInfo);
 
-                            this.byId("233")?.setText(userInfo.fullName);
-                            //this.byId("apellidoUsuario")?.setText(userInfo.familyName);
-                            //this.byId("telefonoUsuario")?.setText(userInfo.phoneNumber);
-
-
-                            if (token) {
-                                this._startSessionWatcher(token);
-                                ///   console.log("Token recibido y watcher iniciado.");
+                        // Actualizar controles de email y nombre con chequeo
+                        const setControlText = (id, text, fallback) => {
+                            const ctrl = this.byId(id);
+                            if (ctrl) {
+                                ctrl.setText(text || fallback);
+                                console.log(` Control '${id}' seteado a:`, text || fallback);
                             } else {
-                                console.warn("Token no recibido en la respuesta.");
+                                console.warn(` Control no encontrado: id '${id}'`);
+                            }
+                        };
+
+                        setControlText("dddtg", userInfo.email, "Sin email");
+                        setControlText("233", userInfo.fullName, "Sin nombre");
+
+                        // Roles
+                        const rolesObject = userInfo.roles || {};
+                        const roleKeys = Object.keys(rolesObject);
+
+                        const rolesEsperadosVisualizador = ["", "Visualizador", "user", "DatosProyect.Read"];
+                        // Ordenar para comparar sin importar orden
+                        const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
+                            roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
+
+                        console.log("Roles del usuario:", roleKeys);
+                        //console.log(" ¿Es solo Visualizador?", isVisualizadorSolo);
+
+                        // Botones a controlar
+                        const botonesEditarIDs = ["newId_btnEditar", "aprobBtnEdit", "butn34"];
+                        const botonesEliminarIDs = ["ww", "wsw", "newId_btnEliminar", "newId_btnEliminar2"];
+                        const btnCrear = this.byId("33");
+
+                        // Función para toggle de botones con logs
+                        const toggleBotones = (ids, estado, tipo) => {
+                            ids.forEach(id => {
+                                const btn = this.byId(id);
+                                if (!btn) {
+                                    console.warn(` Botón de ${tipo} no encontrado:`, id);
+                                } else {
+                                    btn.setEnabled(estado);
+
+                                }
+                            });
+                        };
+
+                        if (isVisualizadorSolo) {
+
+                            toggleBotones(botonesEditarIDs, false, "editar");
+                            toggleBotones(botonesEliminarIDs, false, "eliminar");
+
+                            if (btnCrear) {
+                                btnCrear.setEnabled(false);
+                                //                                console.log(" Botón de creación deshabilitado.");
+                            } else {
+                                //                              console.warn(" Botón de creación no encontrado: id '33'");
                             }
 
-
-                            // console.log(" Datos seteados en la vista:", userInfo);
+                            sap.m.MessageBox.warning(
+                                "Solo tiene permisos de visualizador. No puede crear, editar ni borrar.",
+                                { title: "Permisos insuficientes" }
+                            );
                         } else {
-                            console.error("No se encontró la información del usuario.");
+                            //                        console.log("Usuario con más permisos: habilitando botones...");
+                            toggleBotones(botonesEditarIDs, true, "editar");
+                            toggleBotones(botonesEliminarIDs, true, "eliminar");
+
+                            if (btnCrear) {
+                                btnCrear.setEnabled(true);
+                                //                          console.log(" Botón de creación habilitado.");
+                            } else {
+                                console.warn(" Botón de creación no encontrado: id '33'");
+                            }
+                        }
+
+                        if (token) {
+
+                            this._startSessionWatcher(token);
+                        } else {
+                            console.warn("Token no recibido en la respuesta.");
                         }
                     })
                     .catch(error => {
-                        console.error(" Error obteniendo datos del usuario:", error);
+                        console.error("Error obteniendo datos del usuario:", error);
                     });
             },
+
+            // Método para obtener información del usuario
+            /*  getUserInfo: function () {
+                  console.log("🔍 Iniciando getUserInfo...");
+              
+                  fetch('/odata/v4/datos-cdo/getUserInfo')
+                      .then(response => {
+                          console.log("📥 Respuesta recibida del backend:", response);
+                          if (!response.ok) {
+                              throw new Error("❌ No se pudo obtener la información del usuario.");
+                          }
+                          return response.json();
+                      })
+                      .then(data => {
+                          console.log("📦 Datos parseados:", data);
+              
+                          const userInfo = data.value;
+                          const token = data.token || (userInfo && userInfo.token);
+              
+                          if (!userInfo) {
+                              console.error("❌ No se encontró la información del usuario.");
+                              return;
+                          }
+              
+                          console.log("👤 Información del usuario:", userInfo);
+              
+                          // Mostrar datos del usuario
+                          const emailCtrl = this.byId("dddtg");
+                          const nameCtrl = this.byId("233");
+              
+                          if (emailCtrl) {
+                              emailCtrl.setText(userInfo.email || "Sin email");
+                              console.log("📧 Email seteado:", userInfo.email || "Sin email");
+                          } else {
+                              console.warn("⚠️ Control de email no encontrado (id 'dddtg')");
+                          }
+              
+                          if (nameCtrl) {
+                              nameCtrl.setText(userInfo.fullName || "Sin nombre");
+                              console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
+                          } else {
+                              console.warn("⚠️ Control de nombre no encontrado (id '233')");
+                          }
+              
+                          // Roles
+                          const roles = userInfo.roles || [];
+                          console.log("🧩 Roles del usuario:", roles);
+  
+                          const rolesObject = userInfo.roles || {};
+                          const rolesEsperadosVisualizador = ["", "Visualizador", "user", "DatosProyect.Read"];
+                          const roleKeys = Object.keys(userInfo.roles || {});
+                          
+                          // Ordenamos para evitar diferencias por el orden
+                          const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
+                              roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
+                          
+                          console.log("✅ ¿Es solo Visualizador?", isVisualizadorSolo);
+                          
+  
+                          console.log("🔐 ¿Es solo Visualizador?", isVisualizadorSolo);
+                          
+              
+                          // Botones a controlar
+                          const botonesEditarIDs = ["newId_btnEditar", "aprobBtnEdit", "butn34"];
+                          const botonesEliminarIDs = ["ww", "wsw", "newId_btnEliminar", "newId_btnEliminar2"];
+                          const btnCrear = this.byId("33");
+              
+                          // Toggle de botones con logs
+                          const toggleBotones = (ids, estado, tipo) => {
+                              ids.forEach(id => {
+                                  const btn = this.byId(id);
+                                  if (!btn) {
+                                      console.warn(`⚠️ Botón de ${tipo} no encontrado:`, id);
+                                  } else {
+                                      btn.setEnabled(estado);
+                                      console.log(`🔘 Botón ${id} (${tipo}) seteado a:`, estado);
+                                  }
+                              });
+                          };
+              
+                          if (isVisualizadorSolo) {
+                              console.log("🔒 Usuario es solo visualizador: deshabilitando botones...");
+                              toggleBotones(botonesEditarIDs, false, "editar");
+                              toggleBotones(botonesEliminarIDs, false, "eliminar");
+              
+                              if (btnCrear) {
+                                  btnCrear.setEnabled(false);
+                                  console.log("⛔ Botón de creación deshabilitado.");
+                              } else {
+                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                              }
+              
+                              sap.m.MessageBox.warning(
+                                  "Solo tiene permisos de visualizador. No puede crear, editar ni borrar.",
+                                  { title: "Permisos insuficientes" }
+                              );
+                          } else {
+                              console.log("✅ Usuario con más permisos: habilitando botones...");
+                              toggleBotones(botonesEditarIDs, true, "editar");
+                              toggleBotones(botonesEliminarIDs, true, "eliminar");
+              
+                              if (btnCrear) {
+                                  btnCrear.setEnabled(true);
+                                  console.log("✅ Botón de creación habilitado.");
+                              } else {
+                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                              }
+                          }
+              
+                          if (token) {
+                              console.log("🔐 Token recibido:", token);
+                              console.log("▶️ Iniciando watcher de sesión...");
+                              this._startSessionWatcher(token);
+                          } else {
+                              console.warn("⚠️ Token no recibido en la respuesta.");
+                          }
+                      })
+                      .catch(error => {
+                          console.error("🚨 Error obteniendo datos del usuario:", error);
+                      });
+              },*/
+
+
 
 
             _startSessionWatcher: function (token) {
@@ -868,7 +1061,7 @@ sap.ui.define(
                     oBinding.filter([oFilter]);
                     var aFilteredContexts = oBinding.getContexts();
                     var aFilteredData = aFilteredContexts.map(ctx => ctx.getObject());
-                 //   console.log("Datos filtrados (Pendientes):", aFilteredData);
+                    //   console.log("Datos filtrados (Pendientes):", aFilteredData);
                     this.updateIconTabFilterCountPen(oBinding);
                 } else {
                     oTable.attachEventOnce("updateFinished", function () {
@@ -877,7 +1070,7 @@ sap.ui.define(
                         oBinding.filter([oFilter]);
                         var aFilteredContexts = oBinding.getContexts();
                         var aFilteredData = aFilteredContexts.map(ctx => ctx.getObject());
-                    //    console.log("Datos filtrados (Pendientes):", aFilteredData);
+                        //    console.log("Datos filtrados (Pendientes):", aFilteredData);
 
                         this.updateIconTabFilterCountPen(oBinding);
                     }.bind(this));
@@ -1219,9 +1412,9 @@ sap.ui.define(
 
                 const oModel = this.getOwnerComponent().getModel("modelEtapasAsignadas");
                 if (oModel) {
-                   oModel.refresh(true); // true = fuerza la actualización de datos desde backend (si es OData)
+                    oModel.refresh(true); // true = fuerza la actualización de datos desde backend (si es OData)
                 }
-            
+
 
                 this.filterEstado();
 
@@ -1308,22 +1501,22 @@ sap.ui.define(
 
                 // Determinar el modelo de origen
 
-       var sourceModelName = null;
+                var sourceModelName = null;
 
-if (oContextPendientes) {
-    sourceModelName = "modelPendientes";
-} else if (oContextAprobados) {
-    sourceModelName = "modelAprobados";
-} else if (oContextBorradores) {
-    sourceModelName = "modelBorrador";
-} else if (oContextAprobadores) {
-    sourceModelName = "modelEtapasAsignadas";
-} else if (oContextRechazados) {
-    sourceModelName = "modelRechazados";
-}
+                if (oContextPendientes) {
+                    sourceModelName = "modelPendientes";
+                } else if (oContextAprobados) {
+                    sourceModelName = "modelAprobados";
+                } else if (oContextBorradores) {
+                    sourceModelName = "modelBorrador";
+                } else if (oContextAprobadores) {
+                    sourceModelName = "modelEtapasAsignadas";
+                } else if (oContextRechazados) {
+                    sourceModelName = "modelRechazados";
+                }
 
                 // Modo: si es del modelo de etapas asignadas => siempre display
-                var mode = (sourceModelName === "modelEtapasAsignadas" || sourceModelName === "modelAprobados" || sourceModelName === "modelRechazados"  )
+                var mode = (sourceModelName === "modelEtapasAsignadas" || sourceModelName === "modelAprobados" || sourceModelName === "modelRechazados")
                     ? "display"
                     : "edit";
 
@@ -1558,7 +1751,7 @@ if (oContextPendientes) {
 
                 } catch (error) {
                     console.error("Error al obtener los datos del proyecto:", error);
-                    sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+                    //     sap.m.MessageToast.show("Error al cargar los datos del proyecto");
                 }
             },
 
@@ -1567,496 +1760,113 @@ if (oContextPendientes) {
                 const sEmail = oEvent.getSource().getText();
                 window.location.href = "mailto:" + sEmail;
             },
-      
-
-
-
-
-// Define un objeto con las propiedades hijas que quieres eliminar
-
-onDeletePress: async function (oEvent) {
-    let oButton = oEvent.getSource();
-    const workflowInstanceId = oButton.data("etapaId");
-    let sProjectId = oButton.getCustomData()[0].getValue();
-
-    if (!sProjectId) {
-        console.error("No se encontró un ID válido para eliminar.");
-        sap.m.MessageToast.show("Error: No se encontró un ID válido.");
-        return;
-    }
-
-    console.log("Eliminando Proyecto con ID:", sProjectId);
-
-    const hijosAnidados = {
-        otrosGastoRecu: ["ValorMensuServReInter"],
-        RecursosInternos: ["ValorMensuReInter"],
-        otrosRecursos: ["ValorMensuGastViaReInter"],
-        ConsumoExternos: ["ValorMensuConsuEx"],
-        otrosServiciosConsu: ["ValorMensuServConsuEx"],
-        GastoViajeConsumo: ["ValorMensuGastoViaConsuEx"],
-        RecursosExternos: ["ValorMensuRecuExter"],
-        serviRecurExter: ["ValorMensuSerExter"],
-        GastoViajeRecExter: ["ValorMensuGastoViExter"],
-        otrosConceptos: ["ValorMensuOtrConcep"],
-        LicenciasCon: ["ValorMensulicencia"]
-    };
-
-    try {
-        // 1️⃣ Obtener CSRF Token
-        let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
-            method: "GET",
-            headers: { "x-csrf-token": "Fetch" }
-        });
-
-        if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
-
-        let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-        if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
-
-        console.log("CSRF Token obtenido:", sCsrfToken);
-
-        sap.m.MessageBox.confirm(
-            "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
-            {
-                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-                onClose: async (oAction) => {
-                    if (oAction !== sap.m.MessageBox.Action.YES) return;
-
-                    try {
-                        // ❗ Cancelar workflow si existe
-                        const workflowRes = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})?$expand=WorkflowInstancias`, {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "x-csrf-token": sCsrfToken
-                            }
-                        });
-
-                        if (workflowRes.ok) {
-            
-
-                            console.log("Cancelando el workflow con ID:", workflowInstanceId);
-                            if (workflowInstanceId) {
-                                const oModel = this.getOwnerComponent().getModel();
-                                const oContext = oModel.bindContext("/cancelWorkflow(...)");
-                        
-                                oContext.setParameter("workflowInstanceId", workflowInstanceId);
-                                await oContext.execute();
-                            }
-                        } else {
-                            console.warn("No se pudo obtener la instancia de workflow.");
-                        }
-
-                        const paths = [
-                            "planificacion",
-                            "Facturacion",
-                            "ClientFactura",
-                            "ProveedoresC",
-                            "RecursosInternos",
-                            "ConsumoExternos",
-                            "RecursosExternos",
-                            "otrosConceptos",
-                            "otrosGastoRecu",
-                            "otrosRecursos",
-                            "otrosServiciosConsu",
-                            "GastoViajeConsumo",
-                            "serviRecurExter",
-                            "GastoViajeRecExter",
-                            "LicenciasCon",
-                            "WorkflowInstancias",
-                            "ResumenCostesTotal",
-                            "RecurInterTotal",
-                            "ConsuExterTotal",
-                            "RecuExterTotal",
-                            "InfraestrLicencia",
-                            "PerfilTotal"
-                        ];
-
-                        // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
-                        for (const path of paths) {
-                            let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
-                                method: "GET",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "x-csrf-token": sCsrfToken
-                                },
-                            });
-
-                            if (!res.ok) {
-                                console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
-                                continue;
-                            }
-
-                            let contentType = res.headers.get("Content-Type");
-                            let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
-                            let records = Array.isArray(data.value) ? data.value : [data];
-
-                            if (records.length > 0) {
-                                for (const hijo of records) {
-                                    // Eliminar hijos anidados
-                                    if (hijosAnidados[path]) {
-                                        let subPaths = hijosAnidados[path];
-                                        for (const hijoAnidado of subPaths) {
-                                            let subRes = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})/${hijoAnidado}`, {
-                                                method: "GET",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                    "x-csrf-token": sCsrfToken
-                                                }
-                                            });
-
-                                            if (subRes.ok) {
-                                                let subData = await subRes.json();
-                                                let subRecords = subData.value || [];
-
-                                                await Promise.all(subRecords.map(async (subRegistro) => {
-                                                    let deleteSubRes = await fetch(`/odata/v4/datos-cdo/${hijoAnidado}(${subRegistro.ID})`, {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                            "x-csrf-token": sCsrfToken
-                                                        }
-                                                    });
-                                                    if (!deleteSubRes.ok) {
-                                                        console.error(`Error eliminando hijo anidado ${hijoAnidado} con ID ${subRegistro.ID}`);
-                                                    } else {
-                                                        console.log(`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
-                                                    }
-                                                }));
-                                            } else {
-                                                console.warn(`No se pudieron obtener registros para hijo anidado ${hijoAnidado} de ${path}(${hijo.ID})`);
-                                            }
-                                        }
-                                    }
-
-                                    // Eliminar registro principal
-                                    let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                        method: "DELETE",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                            "x-csrf-token": sCsrfToken
-                                        }
-                                    });
-
-                                    if (!deleteResponse.ok) {
-                                        console.error(`Error eliminando ${path} con ID ${hijo.ID}`);
-                                    } else {
-                                        console.log(`${path} eliminado: ${hijo.ID}`);
-                                    }
-                                }
-                            }
-                        }
-
-                        console.log("Registros relacionados eliminados.");
-
-                        // 3️⃣ Eliminar el proyecto principal
-                        let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
-                            method: "DELETE",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "x-csrf-token": sCsrfToken
-                            },
-                        });
-
-                        if (projectResponse.ok) {
-                            console.log("Proyecto eliminado correctamente.");
-                            sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
-                                title: "Éxito",
-                                actions: [sap.m.MessageBox.Action.OK],
-                                onClose: async function () {
-                                    let oTable = this.byId("idPendientes");
-                                    if (oTable) {
-                                        let oBinding = oTable.getBinding("items");
-                                        if (oBinding) {
-                                            oBinding.refresh(true);  // Forzar actualización desde backend
-                                        } else {
-                                            console.warn("⚠️ No se encontró el binding de la tabla.");
-                                        }
-                                    } else {
-                                        console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
-                                    }
-                                    await this.filterEstado();
-                                }.bind(this)
-                            });
-                        } else {
-                            throw new Error("Error al eliminar el proyecto principal");
-                        }
-                    } catch (error) {
-                        console.error("Error eliminando el proyecto o registros:", error);
-                        sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
-                    }
-                }
-            }
-        );
-    } catch (error) {
-        console.error("Error al obtener el CSRF Token:", error);
-        sap.m.MessageToast.show("Error al obtener el CSRF Token.");
-    }
-},
-
-/*onDeletePress: async function (oEvent) {
-    let oButton = oEvent.getSource();
-    let sProjectId = oButton.getCustomData()[0].getValue();
-
-    if (!sProjectId) {
-        console.error("No se encontró un ID válido para eliminar.");
-        sap.m.MessageToast.show("Error: No se encontró un ID válido.");
-        return;
-    }
-
-    console.log("Eliminando Proyecto con ID:", sProjectId);
-
-    const hijosAnidados = {
-        otrosGastoRecu: ["ValorMensuServReInter"],
-        RecursosInternos: ["ValorMensuReInter"],
-        otrosRecursos: ["ValorMensuGastViaReInter"],
-        ConsumoExternos: ["ValorMensuConsuEx"],
-        otrosServiciosConsu: ["ValorMensuServConsuEx"],
-        GastoViajeConsumo: ["ValorMensuGastoViaConsuEx"],
-        RecursosExternos: ["ValorMensuRecuExter"],
-        serviRecurExter: ["ValorMensuSerExter"],
-        GastoViajeRecExter: ["ValorMensuGastoViExter"],
-        otrosConceptos: ["ValorMensuOtrConcep"],
-        LicenciasCon: ["ValorMensulicencia"]
-    };
-
-    try {
-        // 1️⃣ Obtener CSRF Token
-        let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
-            method: "GET",
-            headers: { "x-csrf-token": "Fetch" }
-        });
-
-        if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
-
-        let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
-        if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
-
-        console.log("CSRF Token obtenido:", sCsrfToken);
-
-        sap.m.MessageBox.confirm(
-            "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
-            {
-                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-                onClose: async (oAction) => {
-                    if (oAction !== sap.m.MessageBox.Action.YES) return;
-
-                    try {
-                        const paths = [
-                            "planificacion",
-                            "Facturacion",
-                            "ClientFactura",
-                            "ProveedoresC",
-                            "RecursosInternos",
-                            "ConsumoExternos",
-                            "RecursosExternos",
-                            "otrosConceptos",
-                            "otrosGastoRecu",
-                            "otrosRecursos",
-                            "otrosServiciosConsu",
-                            "GastoViajeConsumo",
-                            "serviRecurExter",
-                            "GastoViajeRecExter",
-                            "LicenciasCon",
-                            "WorkflowInstancias",
-                            "ResumenCostesTotal",
-                            "RecurInterTotal",
-                            "ConsuExterTotal",
-                            "RecuExterTotal",
-                            "InfraestrLicencia",
-                            "PerfilTotal"
-                        ];
-
-                        // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
-                        for (const path of paths) {
-                            // Obtener registros relacionados
-                            let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
-                                method: "GET",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "x-csrf-token": sCsrfToken
-                                },
-                            });
-
-                            if (!res.ok) {
-                                console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
-                                continue;
-                            }
-
-                            let contentType = res.headers.get("Content-Type");
-                            let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
-                            let records = Array.isArray(data.value) ? data.value : [data];
-
-                            if (records.length > 0) {
-                                for (const hijo of records) {
-                                    // Primero eliminar hijos anidados (si existen)
-                                    if (hijosAnidados[path]) {
-                                        let subPaths = hijosAnidados[path];
-                                        for (const hijoAnidado of subPaths) {
-                                            let subRes = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})/${hijoAnidado}`, {
-                                                method: "GET",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                    "x-csrf-token": sCsrfToken
-                                                }
-                                            });
-
-                                            if (subRes.ok) {
-                                                let subData = await subRes.json();
-                                                let subRecords = subData.value || [];
-
-                                                await Promise.all(subRecords.map(async (subRegistro) => {
-                                                    let deleteSubRes = await fetch(`/odata/v4/datos-cdo/${hijoAnidado}(${subRegistro.ID})`, {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                            "x-csrf-token": sCsrfToken
-                                                        }
-                                                    });
-                                                    if (!deleteSubRes.ok) {
-                                                        console.error(`Error eliminando hijo anidado ${hijoAnidado} con ID ${subRegistro.ID}`);
-                                                    } else {
-                                                        console.log(`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
-                                                    }
-                                                }));
-                                            } else {
-                                                console.warn(`No se pudieron obtener registros para hijo anidado ${hijoAnidado} de ${path}(${hijo.ID})`);
-                                            }
-                                        }
-                                    }
-
-                                    // Ahora eliminar el registro principal
-                                    let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                        method: "DELETE",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                            "x-csrf-token": sCsrfToken
-                                        }
-                                    });
-
-                                    if (!deleteResponse.ok) {
-                                        console.error(`Error eliminando ${path} con ID ${hijo.ID}`);
-                                    } else {
-                                        console.log(`${path} eliminado: ${hijo.ID}`);
-                                    }
-                                }
-                            }
-                        }
-
-                        console.log("Registros relacionados eliminados.");
-
-                        // 3️⃣ Eliminar el proyecto principal
-                        let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
-                            method: "DELETE",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "x-csrf-token": sCsrfToken
-                            },
-                        });
-
-                        if (projectResponse.ok) {
-                            console.log("Proyecto eliminado correctamente.");
-                            sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
-                                title: "Éxito",
-                                actions: [sap.m.MessageBox.Action.OK],
-                                onClose: async function () {
-                                    let oTable = this.byId("idPendientes");
-                                    if (oTable) {
-                                        let oBinding = oTable.getBinding("items");
-                                        if (oBinding) {
-                                            oBinding.refresh(true);  // Forzar actualización desde el backend
-                                        } else {
-                                            console.warn("⚠️ No se encontró el binding de la tabla.");
-                                        }
-                                    } else {
-                                        console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
-                                    }
-                                    await this.filterEstado();
-                                }.bind(this)
-                            });
-                        } else {
-                            throw new Error("Error al eliminar el proyecto principal");
-                        }
-                    } catch (error) {
-                        console.error("Error eliminando el proyecto o registros:", error);
-                        sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
-                    }
-                }
-            }
-        );
-    } catch (error) {
-        console.error("Error al obtener el CSRF Token:", error);
-        sap.m.MessageToast.show("Error al obtener el CSRF Token.");
-    }
-},*/
 
 
 
 
 
+            // Define un objeto con las propiedades hijas que quieres eliminar
 
-
-            
-          /*  onDeletePress: async function (oEvent) {
+            onDeletePress: async function (oEvent) {
                 let oButton = oEvent.getSource();
+                const workflowInstanceId = oButton.data("etapaId");
                 let sProjectId = oButton.getCustomData()[0].getValue();
 
-
-                console.log("id seleccionado "    + sProjectId); 
-                const workflowInstanceId = oButton.data("etapaId");
-
-               console.log("🔴 Eliminar etapa", workflowInstanceId +" " +  sProjectId);
-            
                 if (!sProjectId) {
                     console.error("No se encontró un ID válido para eliminar.");
                     sap.m.MessageToast.show("Error: No se encontró un ID válido.");
                     return;
                 }
-            
-                console.log(" Eliminando Proyecto con ID:", sProjectId);
-            
+
+                console.log("Eliminando Proyecto con ID:", sProjectId);
+
+                const hijosAnidados = {
+                    otrosGastoRecu: ["ValorMensuServReInter"],
+                    RecursosInternos: ["ValorMensuReInter"],
+                    otrosRecursos: ["ValorMensuGastViaReInter"],
+                    ConsumoExternos: ["ValorMensuConsuEx"],
+                    otrosServiciosConsu: ["ValorMensuServConsuEx"],
+                    GastoViajeConsumo: ["ValorMensuGastoViaConsuEx"],
+                    RecursosExternos: ["ValorMensuRecuExter"],
+                    serviRecurExter: ["ValorMensuSerExter"],
+                    GastoViajeRecExter: ["ValorMensuGastoViExter"],
+                    otrosConceptos: ["ValorMensuOtrConcep"],
+                    LicenciasCon: ["ValorMensulicencia"]
+                };
+
                 try {
-                    // Obtener CSRF Token
+                    // 1️⃣ Obtener CSRF Token
                     let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
                         method: "GET",
                         headers: { "x-csrf-token": "Fetch" }
                     });
-            
+
                     if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
-            
+
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
-            
-                    console.log(" CSRF Token obtenido:", sCsrfToken);
-            
+
+                    console.log("CSRF Token obtenido:", sCsrfToken);
+
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
                         {
                             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                             onClose: async (oAction) => {
                                 if (oAction !== sap.m.MessageBox.Action.YES) return;
-            
+
                                 try {
                                     // ❗ Cancelar workflow si existe
-                                   console.log("Cancelando el workflow con ID:", workflowInstanceId);
-                                    if (workflowInstanceId) {
-                                        const oModel = this.getOwnerComponent().getModel();
-                                        const oContext = oModel.bindContext("/cancelWorkflow(...)");
-                                
-                                        oContext.setParameter("workflowInstanceId", workflowInstanceId);
-                                        await oContext.execute();
+                                    const workflowRes = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})?$expand=WorkflowInstancias`, {
+                                        method: "GET",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "x-csrf-token": sCsrfToken
+                                        }
+                                    });
+
+                                    if (workflowRes.ok) {
+
+
+                                        console.log("Cancelando el workflow con ID:", workflowInstanceId);
+                                        if (workflowInstanceId) {
+                                            const oModel = this.getOwnerComponent().getModel();
+                                            const oContext = oModel.bindContext("/cancelWorkflow(...)");
+
+                                            oContext.setParameter("workflowInstanceId", workflowInstanceId);
+                                            await oContext.execute();
+                                        }
+                                    } else {
+                                        console.warn("No se pudo obtener la instancia de workflow.");
                                     }
-            
+
                                     const paths = [
-                                        "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos","Archivos",
-                                        "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu", 
-                                        "otrosRecursos", "otrosServiciosConsu", "GastoViajeConsumo", "serviRecurExter",
-                                        "GastoViajeRecExter", "LicenciasCon", "WorkflowInstancias", "ResumenCostesTotal",
-                                        "RecurInterTotal", "ConsuExterTotal", "RecuExterTotal", "InfraestrLicencia", "PerfilTotal"
+                                        "planificacion",
+                                        "Facturacion",
+                                        "ClientFactura",
+                                        "ProveedoresC",
+                                        "RecursosInternos",
+                                        "ConsumoExternos",
+                                        "RecursosExternos",
+                                        "otrosConceptos",
+                                        "otrosGastoRecu",
+                                        "otrosRecursos",
+                                        "otrosServiciosConsu",
+                                        "GastoViajeConsumo",
+                                        "serviRecurExter",
+                                        "GastoViajeRecExter",
+                                        "LicenciasCon",
+                                        "WorkflowInstancias",
+                                        "ResumenCostesTotal",
+                                        "RecurInterTotal",
+                                        "ConsuExterTotal",
+                                        "RecuExterTotal",
+                                        "InfraestrLicencia",
+                                        "PerfilTotal"
                                     ];
-            
-                                    // Eliminar registros relacionados
-                                    let deletePromises = paths.map(async (path) => {
+
+                                    // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
+                                    for (const path of paths) {
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
                                             method: "GET",
                                             headers: {
@@ -2064,41 +1874,75 @@ onDeletePress: async function (oEvent) {
                                                 "x-csrf-token": sCsrfToken
                                             },
                                         });
-            
+
                                         if (!res.ok) {
                                             console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
-                                            return;
+                                            continue;
                                         }
-            
+
                                         let contentType = res.headers.get("Content-Type");
                                         let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
                                         let records = Array.isArray(data.value) ? data.value : [data];
-            
+
                                         if (records.length > 0) {
-                                            return Promise.all(
-                                                records.map(async (hijo) => {
-                                                    let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                            "x-csrf-token": sCsrfToken
+                                            for (const hijo of records) {
+                                                // Eliminar hijos anidados
+                                                if (hijosAnidados[path]) {
+                                                    let subPaths = hijosAnidados[path];
+                                                    for (const hijoAnidado of subPaths) {
+                                                        let subRes = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})/${hijoAnidado}`, {
+                                                            method: "GET",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                                "x-csrf-token": sCsrfToken
+                                                            }
+                                                        });
+
+                                                        if (subRes.ok) {
+                                                            let subData = await subRes.json();
+                                                            let subRecords = subData.value || [];
+
+                                                            await Promise.all(subRecords.map(async (subRegistro) => {
+                                                                let deleteSubRes = await fetch(`/odata/v4/datos-cdo/${hijoAnidado}(${subRegistro.ID})`, {
+                                                                    method: "DELETE",
+                                                                    headers: {
+                                                                        "Content-Type": "application/json",
+                                                                        "x-csrf-token": sCsrfToken
+                                                                    }
+                                                                });
+                                                                if (!deleteSubRes.ok) {
+                                                                    console.error(`Error eliminando hijo anidado ${hijoAnidado} con ID ${subRegistro.ID}`);
+                                                                } else {
+                                                                    console.log(`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
+                                                                }
+                                                            }));
+                                                        } else {
+                                                            console.warn(`No se pudieron obtener registros para hijo anidado ${hijoAnidado} de ${path}(${hijo.ID})`);
                                                         }
-                                                    });
-            
-                                                    if (!deleteResponse.ok) {
-                                                        console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
-                                                    } else {
-                                                        console.log(` ${path} eliminado: ${hijo.ID}`);
                                                     }
-                                                })
-                                            );
+                                                }
+
+                                                // Eliminar registro principal
+                                                let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "x-csrf-token": sCsrfToken
+                                                    }
+                                                });
+
+                                                if (!deleteResponse.ok) {
+                                                    console.error(`Error eliminando ${path} con ID ${hijo.ID}`);
+                                                } else {
+                                                    console.log(`${path} eliminado: ${hijo.ID}`);
+                                                }
+                                            }
                                         }
-                                    });
-            
-                                    await Promise.all(deletePromises);
-                                    console.log(" Registros relacionados eliminados.");
-            
-                                    // Eliminar proyecto principal
+                                    }
+
+                                    console.log("Registros relacionados eliminados.");
+
+                                    // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                         method: "DELETE",
                                         headers: {
@@ -2106,9 +1950,9 @@ onDeletePress: async function (oEvent) {
                                             "x-csrf-token": sCsrfToken
                                         },
                                     });
-            
+
                                     if (projectResponse.ok) {
-                                        console.log(" Proyecto eliminado correctamente.");
+                                        console.log("Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
@@ -2117,7 +1961,7 @@ onDeletePress: async function (oEvent) {
                                                 if (oTable) {
                                                     let oBinding = oTable.getBinding("items");
                                                     if (oBinding) {
-                                                        oBinding.refresh(true);
+                                                        oBinding.refresh(true);  // Forzar actualización desde backend
                                                     } else {
                                                         console.warn("⚠️ No se encontró el binding de la tabla.");
                                                     }
@@ -2131,55 +1975,65 @@ onDeletePress: async function (oEvent) {
                                         throw new Error("Error al eliminar el proyecto principal");
                                     }
                                 } catch (error) {
-                                    console.error(" Error eliminando el proyecto o registros:", error);
+                                    console.error("Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
                                 }
                             }
                         }
                     );
                 } catch (error) {
-                    console.error(" Error al obtener el CSRF Token:", error);
+                    console.error("Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
-            },*/
-            
+            },
 
-          /*  onDeletePress: async function (oEvent) {
-                //   let oModel = this.getView().getModel("modelPendientes");
-
+            /*onDeletePress: async function (oEvent) {
                 let oButton = oEvent.getSource();
                 let sProjectId = oButton.getCustomData()[0].getValue();
-
+            
                 if (!sProjectId) {
                     console.error("No se encontró un ID válido para eliminar.");
                     sap.m.MessageToast.show("Error: No se encontró un ID válido.");
                     return;
                 }
-
-                console.log(" Eliminando Proyecto con ID:", sProjectId);
-
+            
+                console.log("Eliminando Proyecto con ID:", sProjectId);
+            
+                const hijosAnidados = {
+                    otrosGastoRecu: ["ValorMensuServReInter"],
+                    RecursosInternos: ["ValorMensuReInter"],
+                    otrosRecursos: ["ValorMensuGastViaReInter"],
+                    ConsumoExternos: ["ValorMensuConsuEx"],
+                    otrosServiciosConsu: ["ValorMensuServConsuEx"],
+                    GastoViajeConsumo: ["ValorMensuGastoViaConsuEx"],
+                    RecursosExternos: ["ValorMensuRecuExter"],
+                    serviRecurExter: ["ValorMensuSerExter"],
+                    GastoViajeRecExter: ["ValorMensuGastoViExter"],
+                    otrosConceptos: ["ValorMensuOtrConcep"],
+                    LicenciasCon: ["ValorMensulicencia"]
+                };
+            
                 try {
-                    // 1️⃣ Obtener el CSRF Token
+                    // 1️⃣ Obtener CSRF Token
                     let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
                         method: "GET",
                         headers: { "x-csrf-token": "Fetch" }
                     });
-
-
+            
                     if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
-
+            
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
-
-                    console.log(" CSRF Token obtenido:", sCsrfToken);
-
+            
+                    console.log("CSRF Token obtenido:", sCsrfToken);
+            
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
                         {
                             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                             onClose: async (oAction) => {
                                 if (oAction !== sap.m.MessageBox.Action.YES) return;
-
+            
                                 try {
                                     const paths = [
                                         "planificacion",
@@ -2204,11 +2058,11 @@ onDeletePress: async function (oEvent) {
                                         "RecuExterTotal",
                                         "InfraestrLicencia",
                                         "PerfilTotal"
-
                                     ];
-
-                                    // 2️ Obtener y eliminar registros relacionados
-                                    let deletePromises = paths.map(async (path) => {
+            
+                                    // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
+                                    for (const path of paths) {
+                                        // Obtener registros relacionados
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
                                             method: "GET",
                                             headers: {
@@ -2216,40 +2070,74 @@ onDeletePress: async function (oEvent) {
                                                 "x-csrf-token": sCsrfToken
                                             },
                                         });
-
+            
                                         if (!res.ok) {
                                             console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
-                                            return;
+                                            continue;
                                         }
-
+            
                                         let contentType = res.headers.get("Content-Type");
                                         let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
                                         let records = Array.isArray(data.value) ? data.value : [data];
-
+            
                                         if (records.length > 0) {
-                                            return Promise.all(
-                                                records.map(async (hijo) => {
-                                                    let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
-                                                        method: "DELETE",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                            "x-csrf-token": sCsrfToken
+                                            for (const hijo of records) {
+                                                // Primero eliminar hijos anidados (si existen)
+                                                if (hijosAnidados[path]) {
+                                                    let subPaths = hijosAnidados[path];
+                                                    for (const hijoAnidado of subPaths) {
+                                                        let subRes = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})/${hijoAnidado}`, {
+                                                            method: "GET",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                                "x-csrf-token": sCsrfToken
+                                                            }
+                                                        });
+            
+                                                        if (subRes.ok) {
+                                                            let subData = await subRes.json();
+                                                            let subRecords = subData.value || [];
+            
+                                                            await Promise.all(subRecords.map(async (subRegistro) => {
+                                                                let deleteSubRes = await fetch(`/odata/v4/datos-cdo/${hijoAnidado}(${subRegistro.ID})`, {
+                                                                    method: "DELETE",
+                                                                    headers: {
+                                                                        "Content-Type": "application/json",
+                                                                        "x-csrf-token": sCsrfToken
+                                                                    }
+                                                                });
+                                                                if (!deleteSubRes.ok) {
+                                                                    console.error(`Error eliminando hijo anidado ${hijoAnidado} con ID ${subRegistro.ID}`);
+                                                                } else {
+                                                                    console.log(`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
+                                                                }
+                                                            }));
+                                                        } else {
+                                                            console.warn(`No se pudieron obtener registros para hijo anidado ${hijoAnidado} de ${path}(${hijo.ID})`);
                                                         }
-                                                    });
-
-                                                    if (!deleteResponse.ok) {
-                                                        console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
-                                                    } else {
-                                                        console.log(` ${path} eliminado: ${hijo.ID}`);
                                                     }
-                                                })
-                                            );
+                                                }
+            
+                                                // Ahora eliminar el registro principal
+                                                let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                    method: "DELETE",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "x-csrf-token": sCsrfToken
+                                                    }
+                                                });
+            
+                                                if (!deleteResponse.ok) {
+                                                    console.error(`Error eliminando ${path} con ID ${hijo.ID}`);
+                                                } else {
+                                                    console.log(`${path} eliminado: ${hijo.ID}`);
+                                                }
+                                            }
                                         }
-                                    });
-
-                                    await Promise.all(deletePromises);
-                                    console.log(" Registros relacionados eliminados.");
-
+                                    }
+            
+                                    console.log("Registros relacionados eliminados.");
+            
                                     // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                         method: "DELETE",
@@ -2258,9 +2146,9 @@ onDeletePress: async function (oEvent) {
                                             "x-csrf-token": sCsrfToken
                                         },
                                     });
-
+            
                                     if (projectResponse.ok) {
-                                        console.log(" Proyecto eliminado correctamente.");
+                                        console.log("Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
@@ -2278,25 +2166,330 @@ onDeletePress: async function (oEvent) {
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
-                                            // Asegura que "this" siga apuntando al controlador
                                         });
-
-
                                     } else {
                                         throw new Error("Error al eliminar el proyecto principal");
                                     }
                                 } catch (error) {
-                                    console.error(" Error eliminando el proyecto o registros:", error);
+                                    console.error("Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
                                 }
                             }
                         }
                     );
                 } catch (error) {
-                    console.error(" Error al obtener el CSRF Token:", error);
+                    console.error("Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
             },*/
+
+
+
+
+
+
+
+
+            /*  onDeletePress: async function (oEvent) {
+                  let oButton = oEvent.getSource();
+                  let sProjectId = oButton.getCustomData()[0].getValue();
+  
+  
+                  console.log("id seleccionado "    + sProjectId); 
+                  const workflowInstanceId = oButton.data("etapaId");
+  
+                 console.log("🔴 Eliminar etapa", workflowInstanceId +" " +  sProjectId);
+              
+                  if (!sProjectId) {
+                      console.error("No se encontró un ID válido para eliminar.");
+                      sap.m.MessageToast.show("Error: No se encontró un ID válido.");
+                      return;
+                  }
+              
+                  console.log(" Eliminando Proyecto con ID:", sProjectId);
+              
+                  try {
+                      // Obtener CSRF Token
+                      let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
+                          method: "GET",
+                          headers: { "x-csrf-token": "Fetch" }
+                      });
+              
+                      if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
+              
+                      let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+                      if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
+              
+                      console.log(" CSRF Token obtenido:", sCsrfToken);
+              
+                      sap.m.MessageBox.confirm(
+                          "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
+                          {
+                              actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                              onClose: async (oAction) => {
+                                  if (oAction !== sap.m.MessageBox.Action.YES) return;
+              
+                                  try {
+                                      // ❗ Cancelar workflow si existe
+                                     console.log("Cancelando el workflow con ID:", workflowInstanceId);
+                                      if (workflowInstanceId) {
+                                          const oModel = this.getOwnerComponent().getModel();
+                                          const oContext = oModel.bindContext("/cancelWorkflow(...)");
+                                  
+                                          oContext.setParameter("workflowInstanceId", workflowInstanceId);
+                                          await oContext.execute();
+                                      }
+              
+                                      const paths = [
+                                          "planificacion", "Facturacion", "ClientFactura", "ProveedoresC", "RecursosInternos","Archivos",
+                                          "ConsumoExternos", "RecursosExternos", "otrosConceptos", "otrosGastoRecu", 
+                                          "otrosRecursos", "otrosServiciosConsu", "GastoViajeConsumo", "serviRecurExter",
+                                          "GastoViajeRecExter", "LicenciasCon", "WorkflowInstancias", "ResumenCostesTotal",
+                                          "RecurInterTotal", "ConsuExterTotal", "RecuExterTotal", "InfraestrLicencia", "PerfilTotal"
+                                      ];
+              
+                                      // Eliminar registros relacionados
+                                      let deletePromises = paths.map(async (path) => {
+                                          let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
+                                              method: "GET",
+                                              headers: {
+                                                  "Content-Type": "application/json",
+                                                  "x-csrf-token": sCsrfToken
+                                              },
+                                          });
+              
+                                          if (!res.ok) {
+                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                              return;
+                                          }
+              
+                                          let contentType = res.headers.get("Content-Type");
+                                          let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
+                                          let records = Array.isArray(data.value) ? data.value : [data];
+              
+                                          if (records.length > 0) {
+                                              return Promise.all(
+                                                  records.map(async (hijo) => {
+                                                      let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                          method: "DELETE",
+                                                          headers: {
+                                                              "Content-Type": "application/json",
+                                                              "x-csrf-token": sCsrfToken
+                                                          }
+                                                      });
+              
+                                                      if (!deleteResponse.ok) {
+                                                          console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
+                                                      } else {
+                                                          console.log(` ${path} eliminado: ${hijo.ID}`);
+                                                      }
+                                                  })
+                                              );
+                                          }
+                                      });
+              
+                                      await Promise.all(deletePromises);
+                                      console.log(" Registros relacionados eliminados.");
+              
+                                      // Eliminar proyecto principal
+                                      let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
+                                          method: "DELETE",
+                                          headers: {
+                                              "Content-Type": "application/json",
+                                              "x-csrf-token": sCsrfToken
+                                          },
+                                      });
+              
+                                      if (projectResponse.ok) {
+                                          console.log(" Proyecto eliminado correctamente.");
+                                          sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
+                                              title: "Éxito",
+                                              actions: [sap.m.MessageBox.Action.OK],
+                                              onClose: async function () {
+                                                  let oTable = this.byId("idPendientes");
+                                                  if (oTable) {
+                                                      let oBinding = oTable.getBinding("items");
+                                                      if (oBinding) {
+                                                          oBinding.refresh(true);
+                                                      } else {
+                                                          console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                      }
+                                                  } else {
+                                                      console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                  }
+                                                  await this.filterEstado();
+                                              }.bind(this)
+                                          });
+                                      } else {
+                                          throw new Error("Error al eliminar el proyecto principal");
+                                      }
+                                  } catch (error) {
+                                      console.error(" Error eliminando el proyecto o registros:", error);
+                                      sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
+                                  }
+                              }
+                          }
+                      );
+                  } catch (error) {
+                      console.error(" Error al obtener el CSRF Token:", error);
+                      sap.m.MessageToast.show("Error al obtener el CSRF Token.");
+                  }
+              },*/
+
+
+            /*  onDeletePress: async function (oEvent) {
+                  //   let oModel = this.getView().getModel("modelPendientes");
+  
+                  let oButton = oEvent.getSource();
+                  let sProjectId = oButton.getCustomData()[0].getValue();
+  
+                  if (!sProjectId) {
+                      console.error("No se encontró un ID válido para eliminar.");
+                      sap.m.MessageToast.show("Error: No se encontró un ID válido.");
+                      return;
+                  }
+  
+                  console.log(" Eliminando Proyecto con ID:", sProjectId);
+  
+                  try {
+                      // 1️⃣ Obtener el CSRF Token
+                      let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
+                          method: "GET",
+                          headers: { "x-csrf-token": "Fetch" }
+                      });
+  
+  
+                      if (!oTokenResponse.ok) throw new Error("Error al obtener el CSRF Token");
+  
+                      let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
+                      if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
+  
+                      console.log(" CSRF Token obtenido:", sCsrfToken);
+  
+                      sap.m.MessageBox.confirm(
+                          "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
+                          {
+                              actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                              onClose: async (oAction) => {
+                                  if (oAction !== sap.m.MessageBox.Action.YES) return;
+  
+                                  try {
+                                      const paths = [
+                                          "planificacion",
+                                          "Facturacion",
+                                          "ClientFactura",
+                                          "ProveedoresC",
+                                          "RecursosInternos",
+                                          "ConsumoExternos",
+                                          "RecursosExternos",
+                                          "otrosConceptos",
+                                          "otrosGastoRecu",
+                                          "otrosRecursos",
+                                          "otrosServiciosConsu",
+                                          "GastoViajeConsumo",
+                                          "serviRecurExter",
+                                          "GastoViajeRecExter",
+                                          "LicenciasCon",
+                                          "WorkflowInstancias",
+                                          "ResumenCostesTotal",
+                                          "RecurInterTotal",
+                                          "ConsuExterTotal",
+                                          "RecuExterTotal",
+                                          "InfraestrLicencia",
+                                          "PerfilTotal"
+  
+                                      ];
+  
+                                      // 2️ Obtener y eliminar registros relacionados
+                                      let deletePromises = paths.map(async (path) => {
+                                          let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
+                                              method: "GET",
+                                              headers: {
+                                                  "Content-Type": "application/json",
+                                                  "x-csrf-token": sCsrfToken
+                                              },
+                                          });
+  
+                                          if (!res.ok) {
+                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                              return;
+                                          }
+  
+                                          let contentType = res.headers.get("Content-Type");
+                                          let data = contentType && contentType.includes("application/json") ? await res.json() : { value: [] };
+                                          let records = Array.isArray(data.value) ? data.value : [data];
+  
+                                          if (records.length > 0) {
+                                              return Promise.all(
+                                                  records.map(async (hijo) => {
+                                                      let deleteResponse = await fetch(`/odata/v4/datos-cdo/${path}(${hijo.ID})`, {
+                                                          method: "DELETE",
+                                                          headers: {
+                                                              "Content-Type": "application/json",
+                                                              "x-csrf-token": sCsrfToken
+                                                          }
+                                                      });
+  
+                                                      if (!deleteResponse.ok) {
+                                                          console.error(` Error eliminando ${path} con ID ${hijo.ID}`);
+                                                      } else {
+                                                          console.log(` ${path} eliminado: ${hijo.ID}`);
+                                                      }
+                                                  })
+                                              );
+                                          }
+                                      });
+  
+                                      await Promise.all(deletePromises);
+                                      console.log(" Registros relacionados eliminados.");
+  
+                                      // 3️⃣ Eliminar el proyecto principal
+                                      let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
+                                          method: "DELETE",
+                                          headers: {
+                                              "Content-Type": "application/json",
+                                              "x-csrf-token": sCsrfToken
+                                          },
+                                      });
+  
+                                      if (projectResponse.ok) {
+                                          console.log(" Proyecto eliminado correctamente.");
+                                          sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
+                                              title: "Éxito",
+                                              actions: [sap.m.MessageBox.Action.OK],
+                                              onClose: async function () {
+                                                  let oTable = this.byId("idPendientes");
+                                                  if (oTable) {
+                                                      let oBinding = oTable.getBinding("items");
+                                                      if (oBinding) {
+                                                          oBinding.refresh(true);  // Forzar actualización desde el backend
+                                                      } else {
+                                                          console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                      }
+                                                  } else {
+                                                      console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                  }
+                                                  await this.filterEstado();
+                                              }.bind(this)
+                                              // Asegura que "this" siga apuntando al controlador
+                                          });
+  
+  
+                                      } else {
+                                          throw new Error("Error al eliminar el proyecto principal");
+                                      }
+                                  } catch (error) {
+                                      console.error(" Error eliminando el proyecto o registros:", error);
+                                      sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
+                                  }
+                              }
+                          }
+                      );
+                  } catch (error) {
+                      console.error(" Error al obtener el CSRF Token:", error);
+                      sap.m.MessageToast.show("Error al obtener el CSRF Token.");
+                  }
+              },*/
 
 
 
