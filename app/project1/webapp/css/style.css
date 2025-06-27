@@ -1,7 +1,7 @@
 /* Enter your custom styles here */
 
 .customTextColor {
-    color: hsl(226, 100%, 60%); /* Cambia este valor por el color que desees */
+    color: 	#0066FF; /* Cambia este valor por el color que desees */
     font-weight: bold; /* Opcional: puedes añadir otras propiedades de estilo */
 }
 .boldText {
@@ -38,7 +38,7 @@
 
 .color{
 
-    color: hsl(226, 100%, 60%);
+    color: 	#0066FF;
     font-weight: bold;
 }
 
@@ -56,8 +56,8 @@
 }
 
 .highlight-border2  .sapMLabel{
-    border: 1px solid hsl(226, 100%, 60%) !important;
-    background-color: hsl(226, 100%, 60%) !important;
+    border: 1px solid 	#0066FF !important;
+    background-color: 	#0066FF !important;
     color: #FFFFFF !important; 
 
 }
@@ -76,14 +76,14 @@
 }
 
 .customHeaderColor2 .sapMListTblHeader .sapMLabel {
-    color: hsl(226, 100%, 60%)!important; 
+    color: 	#0066FF!important; 
     font-weight: bold;
 }
 
 
 .customHeaderColor2 .sapMListTblHeader .sapMListTblCell  {
     background-color: #f4f8fc ; 
-    color:  hsl(226, 100%, 60%) !important; 
+    color:  	#0066FF !important; 
    font-weight: bold; 
 
 }
@@ -110,7 +110,7 @@
   
 
   .customIconColor {
-    color:  hsl(226, 100%, 60%) !important; 
+    color:  	#0066FF !important; 
 }
   
 .customIconColor .sapUiIcon {
@@ -132,14 +132,14 @@
 
 .customColumnListItem .sapMListTblCell {
      background-color: #f8fcfe ; 
-    color:  hsl(226, 100%, 60%) !important; 
+    color: 	#0066FF !important; 
     font-weight: bold;
 }
 
 
 .miHeader {
     background-color: hsl(226, 100%, 60%)!important;
-    color: hsl(226, 100%, 60%) !important;
+    color:	#0066FF !important;
 }
 
 
@@ -164,7 +164,7 @@
 }
 
 .miTabla .sapMListTbl {
-    border: 1px solid hsl(226, 100%, 60%) !important; ; /* Borde general */
+    border: 1px solid 	#0066FF !important; ; /* Borde general */
 }
 
 
@@ -184,7 +184,7 @@
 
 
 .customCheck .sapMCbLabel {
-    color: #0070f3; /* Azul, puedes cambiarlo */
+    color: 	#0066FF; /* Azul, puedes cambiarlo */
     font-size: 16px; /* Texto más grande */
     font-weight: bold;
 }
@@ -192,13 +192,13 @@
 
 /* Cambia el color del borde del checkbox */
 .customCheck .sapMCbBg {
-    border-color: #0070f3; /* Borde azul */
+    border-color: 	#0066FF; /* Borde azul */
 }
 
 /* Cambia el color de fondo del checkbox marcado */
 .customCheck .sapMCbBg.sapMCbMarkChecked {
-    background-color: #0070f3;
-    border-color: #0070f3;
+    background-color: 	#0066FF;
+    border-color: 	#0066FF;
 }
 
 

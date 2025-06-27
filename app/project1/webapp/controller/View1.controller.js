@@ -4102,8 +4102,6 @@ sap.ui.define([
 
         };
 
-    
-
         // Lógica para actualizar datos basados en la selección del Select
         var oUpdate = oConfig[sSelectedText];
 
@@ -4111,7 +4109,17 @@ sap.ui.define([
           oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
 
 
-
+  // 🔥 Asegura que _editedRows tenga el índice actualizado
+  var tableId = "table_dimicFecha";
+  if (!this._editedRows[tableId]) {
+    this._editedRows[tableId] = new Set();
+  }
+  if (!this._editedRows[tableId].has(iIndex)) {
+    this._editedRows[tableId].add(iIndex);
+  }
+  
+  // 🔥 Llama a updateTotalField inmediatamente
+  this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
           /*oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
              oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
              oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
@@ -4127,21 +4135,7 @@ sap.ui.define([
              var total1 = 0;
              oRowData[12].setText(total1); */ // Coloca la suma en 'Total1'
 
-             if (!this._editedRows) {
-              this._editedRows = {};
-            }
-            if (!this._editedRows["table_dimicFecha"]) {
-              this._editedRows["table_dimicFecha"] = [];
-            }
-            
-            // Agrega el índice actual si no está en la lista
-            if (!this._editedRows["table_dimicFecha"].includes(iIndex)) {
-              this._editedRows["table_dimicFecha"].push(iIndex);
-            }
 
-
-            
-             this.updateTotalField("table_dimicFecha", iIndex, null, oEvent, null);
 
           //console.log(total1);
 
@@ -4262,6 +4256,17 @@ sap.ui.define([
            console.log(total1);*/
 
 
+
+           var tableId = "tablaConsuExter";
+           if (!this._editedRows[tableId]) {
+             this._editedRows[tableId] = new Set();
+           }
+           if (!this._editedRows[tableId].has(iIndex)) {
+             this._editedRows[tableId].add(iIndex);
+           }
+           
+           // 🔥 Llama a updateTotalField inmediatamente
+           this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
@@ -11618,8 +11623,17 @@ sap.ui.define([
         //this.onSumarColumna();
 
         // Limpiar las filas editadas para que no se actualicen más de una vez
-        this._editedRows[tableId].clear();
-      },
+     //   this._editedRows[tableId].clear();
+     if (this._editedRows && this._editedRows[tableId] && typeof this._editedRows[tableId].clear === 'function') {
+      this._editedRows[tableId].clear();
+    } else {
+      console.warn("No es un Set, se reinicia correctamente");
+      this._editedRows[tableId] = new Set();
+    }
+    
+  
+    
+    },
 
       getTotalForYear: function (year, rowIndex, tableId) {
         //  console.log("1. AÑO GETTOTAL ----->>>", year, "Fila actual:", rowIndex, "Tabla actual:", tableId, "Datos actuales:", JSON.stringify(this._yearlySums, null, 2));
