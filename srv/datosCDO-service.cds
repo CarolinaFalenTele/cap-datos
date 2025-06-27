@@ -4,11 +4,12 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
  // @odata.draft.enabled
 
 @restrict: [
-  { grant: 'READ', to: ['Visualizador', 'Admin', 'Comite'] },
-  { grant: 'CREATE', to: ['Admin'] },
-  { grant: 'UPDATE', to: ['Admin', 'Comite'] },
-  { grant: 'DELETE', to: ['Admin'] }
+  { grant: 'READ', to: ['Visualizador', 'Usuario', 'Control', 'PMO', 'BasisTQFac', 'Direccion'] },
+  { grant: 'CREATE', to: ['Usuario' , 'Control', 'PMO'] },
+  { grant: 'UPDATE', to: ['Usuario', 'Control', 'PMO'] },
+  { grant: 'DELETE', to: ['Usuario', 'Control', 'PMO'] }
 ]
+
 
  //@requires: 'authenticated-user'
 

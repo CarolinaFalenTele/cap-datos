@@ -15,9 +15,17 @@
     { "name": "$XSAPPNAME.Viewer", "description": "Access viewer data" },
 
 
-    { "name": "$XSAPPNAME.Admin", "description": "Rol de administrador para CAP" },
-    { "name": "$XSAPPNAME.Visualizador", "description": "Rol de solo lectura para CAP" },
-    { "name": "$XSAPPNAME.Comite", "description": "Rol de comité para CAP" }
+    { "name": "$XSAPPNAME.Admin", "description": "Rol de administrador para CDO" },
+    { "name": "$XSAPPNAME.Visualizador", "description": "Rol de solo lectura para CDO" },
+    { "name": "$XSAPPNAME.Comite", "description": "Rol de comité para CDO" },
+    { "name": "$XSAPPNAME.Usuario", "description": "Rol de usuario estándar para acceder a la aplicación CDO" },
+    { "name": "$XSAPPNAME.PMO", "description": "Rol de PMO con permisos de aprobación y modificación" },
+    { "name": "$XSAPPNAME.Control", "description": "Rol de Control con permisos para aprobar, rechazar y modificar" },
+    { "name": "$XSAPPNAME.Direccion", "description": "Rol Dirección con  permisos para aprobar, rechazar" },
+    { "name": "$XSAPPNAME.BasisTQFac", "description": "Rol funcional BasisTQFac con permisos para aprobar y rechazar" }
+
+
+
   ],
 
   "role-templates": [
@@ -37,17 +45,15 @@
       ]
     },
     {
-      "name": "Admin",
-      "description": "Acceso completo a proyectos",
+      "name": "Usuario",
+      "description": "Acceso completo a la aplicación CDO ",
       "scope-references": [
-        "$XSAPPNAME.Admin", 
+        "$XSAPPNAME.Usuario", 
         "$XSAPPNAME.user",
         "$XSAPPNAME.DatosProyect.Read",
         "$XSAPPNAME.DatosProyect.Create",
         "$XSAPPNAME.DatosProyect.Update",
-        "$XSAPPNAME.DatosProyect.Delete",
-        "$XSAPPNAME.DatosProyect.Aprobar",
-        "$XSAPPNAME.DatosProyect.Rechazar"
+        "$XSAPPNAME.DatosProyect.Delete"
       ]
     },
     {
@@ -60,17 +66,56 @@
       ]
     },
     {
-      "name": "Comite",
-      "description": "Rol para comité de revisión",
+      "name": "Control",
+      "description": "Rol de Control con permisos de revisión y modificación",
       "scope-references": [
-        "$XSAPPNAME.Comite", 
+        "$XSAPPNAME.Control",
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read",
+        "$XSAPPNAME.DatosProyect.Update",
+        "$XSAPPNAME.DatosProyect.Delete",
+        "$XSAPPNAME.DatosProyect.Aprobar",
+        "$XSAPPNAME.DatosProyect.Rechazar"
+      ]
+    },
+    {
+      "name": "PMO",
+      "description": "Rol de PMO con permisos de aprobación y modificación",
+      "scope-references": [
+        "$XSAPPNAME.PMO",
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read",
+        "$XSAPPNAME.DatosProyect.Update",
+        "$XSAPPNAME.DatosProyect.Delete",
+        "$XSAPPNAME.DatosProyect.Aprobar",
+        "$XSAPPNAME.DatosProyect.Rechazar"
+      ]
+    },
+    {
+      "name": "BasisTQFac",
+      "description": "Rol funcional con permisos de comité",
+      "scope-references": [
+        "$XSAPPNAME.BasisTQFac",
         "$XSAPPNAME.user",
         "$XSAPPNAME.DatosProyect.Read",
         "$XSAPPNAME.DatosProyect.Revisar",
         "$XSAPPNAME.DatosProyect.Aprobar",
         "$XSAPPNAME.DatosProyect.Rechazar"
       ]
+    },
+    {
+      "name": "Direccion",
+      "description": "Rol Dirección con permisos para aprobar y rechazar",
+      "scope-references": [
+        "$XSAPPNAME.Direccion",
+        "$XSAPPNAME.user",
+        "$XSAPPNAME.DatosProyect.Read",
+        "$XSAPPNAME.DatosProyect.Aprobar",
+        "$XSAPPNAME.DatosProyect.Rechazar"
+      ]
     }
+    
+    
   ],
 
   "attributes": [

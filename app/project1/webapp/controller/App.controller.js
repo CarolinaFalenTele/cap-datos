@@ -131,11 +131,11 @@ sap.ui.define(
                                 );
 
                                 this._workID = wfItem.workflowId;
-                                //  console.log(" ID DEL WORKFLOW asignado:", this._workID);
+                               
 
                                 const etapasData = await etapasResponse.json();
                                 etapas = etapasData.value || [];
-                                //   console.log(` Etapas obtenidas: ${etapas.length}`);
+                              
                             }
 
 
@@ -246,10 +246,10 @@ sap.ui.define(
                     /* console.log("📌 Etapas asignadas al usuario:", aEtapasAsignadas.length);
                      console.log("📌 Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario.length);*/
 
-                    const oIconTab = this.byId("id34");
+                   /* const oIconTab = this.byId("id34");
                     if (oIconTab) {
                         oIconTab.setVisible(aEtapasAsignadas.length > 0);
-                    }
+                    }*/
 
                     // Actualizar texto de estado general
                     const oStatusControl = this.byId("status0");
@@ -735,13 +735,25 @@ sap.ui.define(
                             roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
 
                         console.log("Roles del usuario:", roleKeys);
-                        //console.log(" ¿Es solo Visualizador?", isVisualizadorSolo);
 
                         // Botones a controlar
                         const botonesEditarIDs = ["newId_btnEditar", "aprobBtnEdit", "butn34"];
                         const botonesEliminarIDs = ["ww", "wsw", "newId_btnEliminar", "newId_btnEliminar2"];
                         const btnCrear = this.byId("33");
 
+
+
+                        // Mostrar IconTabFilter si el usuario tiene ciertos roles
+                            const rolesParaMostrarTab = ["Control", "Direccion", "BasisTQFac", "PMO"];
+                            const mostrarTab = rolesParaMostrarTab.some(role => roleKeys.includes(role));
+
+                            const tab = this.byId("id34");
+                            if (tab) {
+                                tab.setVisible(mostrarTab);
+                                console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
+                            } else {
+                                console.warn("IconTabFilter con ID 'id34' no encontrado.");
+                            }
                         // Función para toggle de botones con logs
                         const toggleBotones = (ids, estado, tipo) => {
                             ids.forEach(id => {
