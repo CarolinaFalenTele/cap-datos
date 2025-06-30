@@ -2996,7 +2996,6 @@ sap.ui.define([
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
 
-            //  this.fechasDinamicas();
 
             await this.leerFechasGastoViajeRecInter();
 
@@ -3069,7 +3068,6 @@ sap.ui.define([
 
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
-            //   this.fechasDinamicas();
 
             await this.leerFechasServiRecInter();
 
@@ -3154,7 +3152,6 @@ sap.ui.define([
 
             // Si quieres llamar a leerFechasConsumoExterno para el primero, por ejemplo:
 
-            //     this.fechasDinamicas();
             for (let i = 0; i < this._consumoExternosIDs.length; i++) {
               const ConsumoRecuID = this._consumoExternosIDs[i];
               await this.leerFechasConsumoExterno(ConsumoRecuID);
@@ -3228,7 +3225,6 @@ sap.ui.define([
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
 
-            //     this.fechasDinamicas();
             for (let id of this._idConsuOtrser) {
               await this.leerFechasServConsumoExterno(id);
 
@@ -3296,7 +3292,6 @@ sap.ui.define([
               }
             });
 
-            //      this.fechasDinamicas();
             this.leerFechasGastoConsumoExterno();
 
 
@@ -4464,22 +4459,45 @@ sap.ui.define([
         const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
 
-        const validateField = (control, value, fieldName) => {
-          if (!value || (typeof value === 'string' && value.trim() === "")) {
-            control.setValueState("Error");
-            control.setValueStateText("Este campo es obligatorio");
-            errorCount++;
-            if (!incompleteFields.includes(fieldName)) {
+        function validateField(oField, value, fieldName, type = "text") {
+          if (type === "boolean") {
+            if (!value) {
+              errorCount++;
               incompleteFields.push(fieldName);
             }
+          } else if (type === "date") {
+            if (!value) {
+              if (oField.setValueState) {
+                oField.setValueState("Error");
+              }
+              errorCount++;
+              incompleteFields.push(fieldName);
+            } else {
+              if (oField.setValueState) {
+                oField.setValueState("None");
+              }
+            }
           } else {
-            control.setValueState("None");
+            if (!value) {
+              if (oField.setValueState) {
+                oField.setValueState("Error");
+              }
+              errorCount++;
+              incompleteFields.push(fieldName);
+            } else {
+              if (oField.setValueState) {
+                oField.setValueState("None");
+              }
+            }
           }
-        };
+        }
+        
 
-        // Validar campos antes de hacer la llamada
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
         validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
+        validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
+        validateField(this.byId("date_inico"), sFechaIni, "Inicio", "date");
+        validateField(this.byId("date_fin"), sFechaFin, "Fin", "date");
 
         if (errorCount > 0) {
           sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
@@ -5835,89 +5853,95 @@ sap.ui.define([
 
 
 
-      /*inserChart: async function (generatedId, sCsrfToken) {
 
+      ///MEJORA DE PLANIFICACION CON VERIFICACION DE FECHAS 
+    /*  inserChart: async function (generatedId, sCsrfToken) {
+
+        // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
+        // 🔴 1. Validar fechas antes de insertar
+        const sFechaIniForm = this.byId("date_inico").getDateValue();
+        const sFechaFinForm = this.byId("date_fin").getDateValue();
+      
+        if (!sFechaIniForm || !sFechaFinForm) {
+          sap.m.MessageToast.show("Debes seleccionar las fechas Inicio y Fin en el formulario antes de guardar.");
+          return;
+        }
+      
+        let minFechaInicio = null;
+        let maxFechaFin = null;
+      
+        if (this._aChartData && this._aChartData.length > 0) {
+          this._aChartData.forEach(chart => {
+            const fechaInicio = chart.fechaInicio ? new Date(chart.fechaInicio) : null;
+            const fechaFin = chart.fechaFin ? new Date(chart.fechaFin) : null;
+      
+            if (fechaInicio) {
+              if (!minFechaInicio || fechaInicio < minFechaInicio) {
+                minFechaInicio = fechaInicio;
+              }
+            }
+      
+            if (fechaFin) {
+              if (!maxFechaFin || fechaFin > maxFechaFin) {
+                maxFechaFin = fechaFin;
+              }
+            }
+          });
+        }
+      
+        let errorFechas = [];
+      
+        if (minFechaInicio && sFechaIniForm) {
+          if (minFechaInicio.getTime() !== sFechaIniForm.getTime()) {
+            errorFechas.push(`La fecha de inicio más temprana (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha seleccionada (${sFechaIniForm.toLocaleDateString()}).`);
+          }
+        }
+      
+        if (maxFechaFin && sFechaFinForm) {
+          if (maxFechaFin.getTime() !== sFechaFinForm.getTime()) {
+            errorFechas.push(`La fecha de fin más tardía (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha seleccionada (${sFechaFinForm.toLocaleDateString()}).`);
+          }
+        }
+      
+        if (errorFechas.length > 0) {
+          sap.m.MessageBox.warning(
+            errorFechas.join("\n"),
+            { title: "Fechas no coinciden" }
+          );
+          return;
+        }
+        // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
+      
+        // 🔴 2. Luego continuas con tu lógica de insert
+      
         const saChartdata = this._aChartData;
-        const idPlan = this._idPlani; // Asegúrate de que esta variable está correctamente asignada
-
-        // Preparamos el array de payload con la estructura adecuada
+        const idPlan = this._idPlani;
+      
+        const formatDuration = function (minutes) {
+          const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+          const mins = String(minutes % 60).padStart(2, '0');
+          return `${hours}:${mins}:00`;
+        };
+      
         const payload2Array = saChartdata.map(chart => ({
           hito: chart.fase,
           fecha_inicio: chart.fechaInicio,
           fecha_fin: chart.fechaFin,
-          duracion: this.formatDuration(chart.duracion), // Llamada a la función
-          datosProyect_ID: generatedId // Usar el ID generado
+          duracion: formatDuration(chart.duracion),
+          datosProyect_ID: generatedId
         }));
-
+      
         try {
-          let response;
-
-          // Obtenemos los registros existentes en la base de datos por 'datosProyect_ID'
-          const existingRecordsResponse = await fetch(`/odata/v4/datos-cdo/planificacion?$filter=datosProyect_ID eq '${generatedId}'`, {
-            headers: {
-              "x-csrf-token": sCsrfToken
-            }
-          });
-
-          const existingRecords = await existingRecordsResponse.json();
-          const existingHitos = existingRecords.value.map(record => record.hito); // Obtenemos los 'hitos' existentes en la base de datos
-
-          // Ahora verificamos si el 'hito' ya existe para hacer PATCH o si es nuevo para hacer POST
-          for (const payload2 of payload2Array) {
-            if (existingHitos.includes(payload2.hito)) {
-              // Si el 'hito' ya existe, realizamos una actualización (PATCH)
-              const recordToUpdate = existingRecords.value.find(record => record.hito === payload2.hito);
-              console.log("TENEMOS " + JSON.stringify(recordToUpdate));
-
-              if (recordToUpdate && recordToUpdate.id) {
-                const response = await fetch(`/odata/v4/datos-cdo/planificacion(${recordToUpdate.id})`, {
-                  method: 'PATCH',
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sCsrfToken
-                  },
-                  body: JSON.stringify(payload2)
-                });
-
-                if (response.ok) {
-                  const result = await response.json();
-                  console.log("Planificación actualizada con éxito:", result);
-                } else {
-                  const errorMessage = await response.text();
-                  console.log("Error al actualizar la planificación:", errorMessage);
-                  //sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
-                }
-              } else {
-                console.log("ID no válido para el registro a actualizar:", recordToUpdate);
-                //sap.m.MessageToast.show("Error al actualizar: ID no válido.");
-              }
-            } else {
-              // Si el 'hito' no existe, realizamos una inserción (POST)
-              const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "x-csrf-token": sCsrfToken
-                },
-                body: JSON.stringify(payload2)
-              });
-
-              if (response2.ok) {
-                const result2 = await response2.json();
-                console.log("Planificación guardada con éxito:", result2);
-              } else {
-                const errorMessage = await response2.text();
-                console.log("Error al guardar la planificación:", errorMessage);
-                //sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
-              }
-            }
-          }
-
+          // Tu lógica de fetch existente aquí
+          // ...
         } catch (error) {
           console.error("Error en la operación:", error);
-          //sap.m.MessageToast.show("Ocurrió un error durante la operación.");
         }
+      
       },*/
+      
+
+    
 
 
 
