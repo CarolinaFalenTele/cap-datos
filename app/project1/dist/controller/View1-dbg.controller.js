@@ -135,6 +135,10 @@ sap.ui.define([
 
         this.byId("coste6552").setVisible(false);
 
+
+        this._handleInputChangeCounter = 0;
+
+
       },
 
 
@@ -147,13 +151,13 @@ sap.ui.define([
 
         if (oModel && typeof oModel.refresh === "function") {
           oModel.refresh(); // Esto recarga los datos desde el backend si están en uso
-          console.log("Modelo OData V4 refrescado desde el servidor.");
+       //   console.log("Modelo OData V4 refrescado desde el servidor.");
         }
 
         const oView = this.getView();
         if (oView.getElementBinding()) {
           oView.getElementBinding().refresh(true); // Refresca el binding de la vista (por si tiene contexto)
-          console.log("Binding de la vista refrescado.");
+         // console.log("Binding de la vista refrescado.");
         }
       },
 
@@ -277,6 +281,17 @@ sap.ui.define([
 
               this._user = userInfo.email;
 
+              const rolesObject = userInfo.roles || {};
+              const roleKeys = Object.keys(rolesObject);
+
+              console.log("Roles del usuario  View:", roleKeys);
+              //  Guardar los roles y si puede aprobar
+              this._userRoles = roleKeys; // <-- Aquí guardas los roles completos
+              const rolesParaMostrarTab = ["Control", "Direccion", "BasisTQFac", "PMO"];
+              this._userPuedeAprobar = rolesParaMostrarTab.some(role => roleKeys.includes(role)); // <-- Aquí la bandera
+
+
+
               this.getUsuario();
               if (token) {
                 this._startSessionWatcher(token);
@@ -374,7 +389,7 @@ sap.ui.define([
           });
           const data = await response.json();
 
-          console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
+        //  console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
 
           const token = data.token || (data.value && data.value.token);
 
@@ -414,6 +429,8 @@ sap.ui.define([
           btn2.detachPress(this.onBorrador, this);
         }
       },
+
+
 
       resetFormUI: function () {
         var aControls = this.getView().findAggregatedObjects(true, function (oControl) {
@@ -719,7 +736,7 @@ sap.ui.define([
           return;
         }
 
-        console.log("📌 ID recibido para ver archivo:", archivoID);
+      //  console.log("📌 ID recibido para ver archivo:", archivoID);
         this._descargarArchivo(archivoID, fileName, mimeType);
       },
 
@@ -974,7 +991,7 @@ sap.ui.define([
 
         this.refreshODataModel();
 
-        console.log("Todos los campos, textos y gráficos han sido limpiados.");
+   //     console.log("Todos los campos, textos y gráficos han sido limpiados.");
       },
 
 
@@ -1075,7 +1092,7 @@ sap.ui.define([
           });
         });
 
-        console.log("Texto de celdas internas de las tablas limpiado.");
+     //   console.log("Texto de celdas internas de las tablas limpiado.");
       },
 
 
@@ -1137,6 +1154,17 @@ sap.ui.define([
 
         // Solo si viene del modelo 'modelEtapasAsignadas'
         if (sSourceModel === "modelEtapasAsignadas") {
+
+
+          /*if (!this._userPuedeAprobar) {
+            sap.m.MessageBox.warning(
+              "No tiene permisos para aprobar o rechazar esta solicitud.",
+              { title: "Acceso denegado" }
+            );
+            return;
+          }*/
+
+
           this._isAprobacion = true; // << ACTIVAR BANDERA
 
           // Configurar botones para modo aprobación
@@ -1145,13 +1173,13 @@ sap.ui.define([
           btnAceptar.setText("Aprobar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnAceptar.data("valor", "approve");
-          btnAceptar.attachPress(this._onDecisionPress, this);
+          btnAceptar.attachPress(this._openDecisionDialog, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Rechazar");
           btnBorrado.setType(sap.m.ButtonType.Reject);
           btnBorrado.data("valor", "reject");
-          btnBorrado.attachPress(this._onDecisionPress, this);
+          btnBorrado.attachPress(this._openDecisionDialog, this);
         } else {
           // Si no es modelEtapasAsignadas, puedes dejar los botones deshabilitados o como estaban
           btnAceptar.setEnabled(false);
@@ -1232,6 +1260,50 @@ sap.ui.define([
           sap.m.MessageToast.show("Error al cargar los datos del proyecto");
         }
       },
+
+
+      _openDecisionDialog: function (decisionType) {
+        if (!this._oDecisionDialog) {
+          const that = this;  // Guardamos referencia al controlador
+          this._oDecisionDialog = new sap.m.Dialog({
+            title: decisionType === "approve" ? "Confirmar Aprobación" : "Confirmar Rechazo",
+            content: [
+              new sap.m.Text({ text: "¿Está seguro de que desea continuar?" }),
+              new sap.m.TextArea("commentArea", {
+                width: "100%",
+                placeholder: "Agregue un comentario (opcional)",
+                rows: 8,
+                height: "150px"
+              })
+            ],
+            beginButton: new sap.m.Button({
+              text: "Confirmar",
+              press: () => {
+                const comentario = sap.ui.getCore().byId("commentArea").getValue();
+
+                this._oDecisionDialog.close();
+
+                this._onDecisionPress(null, {
+                  getSource: () => ({ data: () => decisionType })
+                }, comentario);
+              }
+            }),
+            endButton: new sap.m.Button({
+              text: "Cancelar",
+              press: () => this._oDecisionDialog.close()
+            }),
+            afterClose: function () {
+              that._oDecisionDialog.destroy();
+              that._oDecisionDialog = null;
+            }
+          });
+        }
+        this._oDecisionDialog.open();
+      },
+
+
+
+
 
       // Función para configurar los botones en modo visualización (deshabilitados y texto original)
       _configureButtonsForView: function () {
@@ -2928,7 +3000,6 @@ sap.ui.define([
             // Si quieres leer fechas por cada recurso insertado:
             // Puedes hacerlo aquí si necesitas, por ejemplo:
 
-            //  this.fechasDinamicas();
 
             await this.leerFechasGastoViajeRecInter();
 
@@ -3228,7 +3299,6 @@ sap.ui.define([
               }
             });
 
-            //      this.fechasDinamicas();
             this.leerFechasGastoConsumoExterno();
 
 
@@ -4041,7 +4111,17 @@ sap.ui.define([
           oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
 
 
+          // 🔥 Asegura que _editedRows tenga el índice actualizado
+          var tableId = "table_dimicFecha";
+          if (!this._editedRows[tableId]) {
+            this._editedRows[tableId] = new Set();
+          }
+          if (!this._editedRows[tableId].has(iIndex)) {
+            this._editedRows[tableId].add(iIndex);
+          }
 
+          //  Llama a updateTotalField inmediatamente
+          this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
           /*oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
              oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
              oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
@@ -4178,6 +4258,17 @@ sap.ui.define([
            console.log(total1);*/
 
 
+
+          var tableId = "tablaConsuExter";
+          if (!this._editedRows[tableId]) {
+            this._editedRows[tableId] = new Set();
+          }
+          if (!this._editedRows[tableId].has(iIndex)) {
+            this._editedRows[tableId].add(iIndex);
+          }
+
+          // Llama a updateTotalField inmediatamente
+          this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
@@ -4375,22 +4466,45 @@ sap.ui.define([
         const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
 
-        const validateField = (control, value, fieldName) => {
-          if (!value || (typeof value === 'string' && value.trim() === "")) {
-            control.setValueState("Error");
-            control.setValueStateText("Este campo es obligatorio");
-            errorCount++;
-            if (!incompleteFields.includes(fieldName)) {
+        function validateField(oField, value, fieldName, type = "text") {
+          if (type === "boolean") {
+            if (!value) {
+              errorCount++;
               incompleteFields.push(fieldName);
             }
+          } else if (type === "date") {
+            if (!value) {
+              if (oField.setValueState) {
+                oField.setValueState("Error");
+              }
+              errorCount++;
+              incompleteFields.push(fieldName);
+            } else {
+              if (oField.setValueState) {
+                oField.setValueState("None");
+              }
+            }
           } else {
-            control.setValueState("None");
+            if (!value) {
+              if (oField.setValueState) {
+                oField.setValueState("Error");
+              }
+              errorCount++;
+              incompleteFields.push(fieldName);
+            } else {
+              if (oField.setValueState) {
+                oField.setValueState("None");
+              }
+            }
           }
-        };
+        }
 
-        // Validar campos antes de hacer la llamada
+
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
         validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
+        validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
+        validateField(this.byId("date_inico"), sFechaIni, "Inicio", "date");
+        validateField(this.byId("date_fin"), sFechaFin, "Fin", "date");
 
         if (errorCount > 0) {
           sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
@@ -4698,18 +4812,18 @@ sap.ui.define([
 
           const data = await response.json();
 
-          // 🔁 Buscamos coincidencia exacta de email (ignorando mayúsculas)
+          //  Buscamos coincidencia exacta de email (ignorando mayúsculas)
           const usuarioActual = data.value.find(
             u => u.email?.toLowerCase() === sCurrentEmail.toLowerCase()
           );
 
           if (usuarioActual) {
-            //console.log("✅ Usuario encontrado:", usuarioActual);
+            //
             this._usuarioActual = usuarioActual.ID;
-            // console.log("✅ Usuario encontrado2:",  this._usuarioActual);
 
 
-            return usuarioActual.ID; // Devuelve solo el ID del usuario encontrado
+
+            return usuarioActual.ID;
 
           } else {
             throw new Error("❌ No se encontró el usuario con el email logueado.");
@@ -5746,89 +5860,95 @@ sap.ui.define([
 
 
 
-      /*inserChart: async function (generatedId, sCsrfToken) {
 
-        const saChartdata = this._aChartData;
-        const idPlan = this._idPlani; // Asegúrate de que esta variable está correctamente asignada
-
-        // Preparamos el array de payload con la estructura adecuada
-        const payload2Array = saChartdata.map(chart => ({
-          hito: chart.fase,
-          fecha_inicio: chart.fechaInicio,
-          fecha_fin: chart.fechaFin,
-          duracion: this.formatDuration(chart.duracion), // Llamada a la función
-          datosProyect_ID: generatedId // Usar el ID generado
-        }));
-
-        try {
-          let response;
-
-          // Obtenemos los registros existentes en la base de datos por 'datosProyect_ID'
-          const existingRecordsResponse = await fetch(`/odata/v4/datos-cdo/planificacion?$filter=datosProyect_ID eq '${generatedId}'`, {
-            headers: {
-              "x-csrf-token": sCsrfToken
-            }
-          });
-
-          const existingRecords = await existingRecordsResponse.json();
-          const existingHitos = existingRecords.value.map(record => record.hito); // Obtenemos los 'hitos' existentes en la base de datos
-
-          // Ahora verificamos si el 'hito' ya existe para hacer PATCH o si es nuevo para hacer POST
-          for (const payload2 of payload2Array) {
-            if (existingHitos.includes(payload2.hito)) {
-              // Si el 'hito' ya existe, realizamos una actualización (PATCH)
-              const recordToUpdate = existingRecords.value.find(record => record.hito === payload2.hito);
-              console.log("TENEMOS " + JSON.stringify(recordToUpdate));
-
-              if (recordToUpdate && recordToUpdate.id) {
-                const response = await fetch(`/odata/v4/datos-cdo/planificacion(${recordToUpdate.id})`, {
-                  method: 'PATCH',
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sCsrfToken
-                  },
-                  body: JSON.stringify(payload2)
-                });
-
-                if (response.ok) {
-                  const result = await response.json();
-                  console.log("Planificación actualizada con éxito:", result);
-                } else {
-                  const errorMessage = await response.text();
-                  console.log("Error al actualizar la planificación:", errorMessage);
-                  //sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
+      ///MEJORA DE PLANIFICACION CON VERIFICACION DE FECHAS 
+      /*  inserChart: async function (generatedId, sCsrfToken) {
+  
+          // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
+          // 🔴 1. Validar fechas antes de insertar
+          const sFechaIniForm = this.byId("date_inico").getDateValue();
+          const sFechaFinForm = this.byId("date_fin").getDateValue();
+        
+          if (!sFechaIniForm || !sFechaFinForm) {
+            sap.m.MessageToast.show("Debes seleccionar las fechas Inicio y Fin en el formulario antes de guardar.");
+            return;
+          }
+        
+          let minFechaInicio = null;
+          let maxFechaFin = null;
+        
+          if (this._aChartData && this._aChartData.length > 0) {
+            this._aChartData.forEach(chart => {
+              const fechaInicio = chart.fechaInicio ? new Date(chart.fechaInicio) : null;
+              const fechaFin = chart.fechaFin ? new Date(chart.fechaFin) : null;
+        
+              if (fechaInicio) {
+                if (!minFechaInicio || fechaInicio < minFechaInicio) {
+                  minFechaInicio = fechaInicio;
                 }
-              } else {
-                console.log("ID no válido para el registro a actualizar:", recordToUpdate);
-                //sap.m.MessageToast.show("Error al actualizar: ID no válido.");
               }
-            } else {
-              // Si el 'hito' no existe, realizamos una inserción (POST)
-              const response2 = await fetch("/odata/v4/datos-cdo/planificacion", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "x-csrf-token": sCsrfToken
-                },
-                body: JSON.stringify(payload2)
-              });
-
-              if (response2.ok) {
-                const result2 = await response2.json();
-                console.log("Planificación guardada con éxito:", result2);
-              } else {
-                const errorMessage = await response2.text();
-                console.log("Error al guardar la planificación:", errorMessage);
-                //sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
+        
+              if (fechaFin) {
+                if (!maxFechaFin || fechaFin > maxFechaFin) {
+                  maxFechaFin = fechaFin;
+                }
               }
+            });
+          }
+        
+          let errorFechas = [];
+        
+          if (minFechaInicio && sFechaIniForm) {
+            if (minFechaInicio.getTime() !== sFechaIniForm.getTime()) {
+              errorFechas.push(`La fecha de inicio más temprana (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha seleccionada (${sFechaIniForm.toLocaleDateString()}).`);
             }
           }
+        
+          if (maxFechaFin && sFechaFinForm) {
+            if (maxFechaFin.getTime() !== sFechaFinForm.getTime()) {
+              errorFechas.push(`La fecha de fin más tardía (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha seleccionada (${sFechaFinForm.toLocaleDateString()}).`);
+            }
+          }
+        
+          if (errorFechas.length > 0) {
+            sap.m.MessageBox.warning(
+              errorFechas.join("\n"),
+              { title: "Fechas no coinciden" }
+            );
+            return;
+          }
+          // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
+        
+          // 🔴 2. Luego continuas con tu lógica de insert
+        
+          const saChartdata = this._aChartData;
+          const idPlan = this._idPlani;
+        
+          const formatDuration = function (minutes) {
+            const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+            const mins = String(minutes % 60).padStart(2, '0');
+            return `${hours}:${mins}:00`;
+          };
+        
+          const payload2Array = saChartdata.map(chart => ({
+            hito: chart.fase,
+            fecha_inicio: chart.fechaInicio,
+            fecha_fin: chart.fechaFin,
+            duracion: formatDuration(chart.duracion),
+            datosProyect_ID: generatedId
+          }));
+        
+          try {
+            // Tu lógica de fetch existente aquí
+            // ...
+          } catch (error) {
+            console.error("Error en la operación:", error);
+          }
+        
+        },*/
 
-        } catch (error) {
-          console.error("Error en la operación:", error);
-          //sap.m.MessageToast.show("Ocurrió un error durante la operación.");
-        }
-      },*/
+
+
 
 
 
@@ -10089,267 +10209,6 @@ sap.ui.define([
         }
       },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      //---- Añadir columnas tabla -----------------
-      // Añadir mas Columnas en tabla dinamica  
-      /*  onAddRowPress: function (sTableId) {
-          console.log(sTableId);
-  
-          var oTable = this.byId(sTableId);
-          if (oTable) {
-            var oNewItem = new sap.m.ColumnListItem({
-              cells: [
-                new sap.m.Select({
-                  selectedKey: "{Vertical>valueVertical}",
-                  forceSelection: false,
-                  items: {
-                    path: "/Vertical",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreVertical}",
-                    }),
-                  },
-                }),
-                new sap.m.Select({
-                  selectedKey: "{TipoServicio>valueTipoServ}",
-                  forceSelection: false,
-                  items: {
-                    path: "/TipoServicio",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreTipoServ}",
-                    }),
-                  },
-                }),
-                new sap.m.Select({
-                  selectedKey: "{PerfilServicio>valuePerfil}",
-                  forceSelection: false,
-                  items: {
-                    path: "/PerfilServicio",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombrePerfil}",
-                    }),
-                  },
-  
-                  change: this.updateRowData.bind(this) // Asocia el evento de cambio aquí
-  
-                }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-              ],
-            });
-  
-            oTable.addItem(oNewItem);
-            this.fechasDinamicas();
-            var oEvent = { getSource: () => oNewItem };  // Simular un evento con getSource
-            this.updateRowData(oEvent);  // Pasar el evento simulado       
-  
-  
-  
-          } else {
-            console.error("No se encontró la tabla con ID: " + sTableId);
-          }
-        },*/
-      //--------------------------------------------
-
-
-
-
-
-      /*  onAddRowPress2: function (sTableId) {
-  
-  
-          var oTable = this.byId(sTableId);
-  
-  
-          if (!oTable) {
-            // Si no funciona, intenta con sap.ui.getCore().byId y el ID completo
-            oTable = sap.ui.getCore().byId("container-project1---view--tablaConsuExter");
-          }
-  
-  
-  
-          if (oTable) {
-            var oNewItem = new sap.m.ColumnListItem({
-              cells: [
-                new sap.m.Select({
-                  selectedKey: "{Vertical>valueVertical}",
-                  forceSelection: false,
-                  items: {
-                    path: "/Vertical",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreVertical}",
-                    }),
-                  },
-                }),
-                new sap.m.Select({
-                  selectedKey: "{TipoServicio>valueTipoServ}",
-                  forceSelection: false,
-                  items: {
-                    path: "/TipoServicio",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreTipoServ}",
-                    }),
-                  },
-                }),
-                new sap.m.Select({
-                  selectedKey: "{PerfilConsumo>valuePerfilC}",
-                  forceSelection: false,
-                  items: {
-                    path: "/PerfilConsumo",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{nombrePerfilC}",
-                    }),
-                  },
-                  change: this.selectFuncionchange.bind(this) // Asocia el evento de cambio aquí
-  
-                }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-  
-              ],
-  
-            });
-            oTable.addItem(oNewItem);
-  
-            this.fechasDinamicas();
-  
-            var oEvent = { getSource: () => oNewItem };  // Simular un evento con getSource
-            this.selectFuncionchange(oEvent);  // Pasar el evento simulado       
-  
-  
-          } else {
-            console.error("No se encontró la tabla con ID: " + sTableId);
-          }
-  
-        },
-  
-        onAddRowPress4: function (sTableId) {
-          console.log(sTableId);
-  
-          var oTable = this.byId("tablaInfrestuctura");
-          if (oTable) {
-  
-  
-            var oNewItem = new sap.m.ColumnListItem({
-              cells: [
-                new sap.m.Select({
-                  selectedKey: "{Vertical>valueVertical}",
-                  forceSelection: false,
-                  items: {
-                    path: "/Vertical",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreVertical}",
-                    }),
-                  },
-                }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-              ],
-            });
-            oTable.addItem(oNewItem);
-            this.fechasDinamicas();
-  
-  
-          } else {
-            console.error("No se encontró la tabla con ID: " + sTableId);
-          }
-        },
-  
-        onAddRowPress3: function (sTableId) {
-          console.log(sTableId);
-  
-          var oTable = this.byId("tablaRecExterno");
-          if (oTable) {
-            var oNewItem = new sap.m.ColumnListItem({
-              cells: [
-                new sap.m.Select({
-                  selectedKey: "{Vertical>valueVertical}",
-                  forceSelection: false,
-                  items: {
-                    path: "/Vertical",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreVertical}",
-                    }),
-                  },
-                }),
-                new sap.m.Select({
-                  selectedKey: "{TipoServicio>valueTipoServ}",
-                  forceSelection: false,
-                  items: {
-                    path: "/TipoServicio",
-                    template: new sap.ui.core.Item({
-                      key: "{ID}",
-                      text: "{NombreTipoServ}",
-                    }),
-                  },
-                }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Input({ value: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-                new sap.m.Text({ text: "" }),
-              ],
-            });
-            oTable.addItem(oNewItem);
-            this.fechasDinamicas();
-  
-          } else {
-            console.error("No se encontró la tabla con ID: " + sTableId);
-          }
-        },*/
-
-
       // Fechas dinamicas y tabla dinamica---------  
       onDateChange: function () {
         this.updateVizFrame();
@@ -10357,29 +10216,204 @@ sap.ui.define([
       //-------------------------------------------
 
 
-      fechasDinamicas: function () {
+
+
+
+
+      fechasDinamicas: function () { 
+        var oModelDynamic = this.getView().getModel("dynamicInputs");
+        var oPreviousData = null;
+    
+        if (!oModelDynamic) {
+            oModelDynamic = new sap.ui.model.json.JSONModel();
+            this.getView().setModel(oModelDynamic, "dynamicInputs");
+        } else {
+            oPreviousData = oModelDynamic.getData(); 
+        }
+    
+
+        this._inputsDinamicos = {};
+        this._tableValues = {};
+        this._yearlySums = {};
+        this._monthlySums = {};  
+    
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
+    
+        if (!startDatePicker || !endDatePicker) {
+            console.error("Error: No se pudieron obtener los DatePickers.");
+            return;
+        }
+    
+        var startDate = startDatePicker.getDateValue();
+        var endDate = endDatePicker.getDateValue();
+    
+        if (!startDate || !endDate) {
+            return;
+        }
+    
+        var diffMonths = this.getMonthsDifference(startDate, endDate);
+    
+        var flexBoxIds = [
+            "box0_1714747137718",
+            "box0_1727879568594",
+            "box0_1727879817594",
+            "box0_1721815443829",
+            "box0_1727948724833",
+            "box0_1727950351451",
+            "box0_17218154429",
+            "box0_1727953252765",
+            "box1_1727953468615",
+            "box0_17254429",
+            "box0_1727955568380"
+        ];
+    
+        flexBoxIds.forEach((flexBoxId) => {
+            var flexBox = this.getView().byId(flexBoxId);
+            if (flexBox) {
+                flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+            }
+        });
+    
+        var tableIds = [
+            "tablaConsuExter",
+            "table_dimicFecha",
+            "tablaRecExterno",
+            "idOtroserConsu",
+            "idGastoViajeConsu",
+            "idServiExterno",
+            "idGastoRecuExter",
+            "tablaInfrestuctura",
+            "tablaLicencia",
+            "tableServicioInterno",
+            "tablGastoViajeInterno"
+        ];
+    
+        var oDynamicData = {};
+    
+        tableIds.forEach((tableId) => {
+            var oTable = this.getView().byId(tableId);
+            if (!oTable) {
+                console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+                return;
+            }
+    
+            // Eliminar columnas dinámicas previas
+            var columnCount = oTable.getColumns().length;
+            for (var j = columnCount - 1; j >= 0; j--) {
+                var columnHeader = oTable.getColumns()[j].getHeader();
+                if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+                    oTable.removeColumn(oTable.getColumns()[j]);
+                }
+            }
+            oTable.getItems().forEach((oRow) => {
+              var currentCells = oRow.getCells();
+              var staticCellCount = oTable.getColumns().filter(col => {
+                  var header = col.getHeader();
+                  return !(header && /\d{4}-\w+/.test(header.getText()));
+              }).length;
+          
+              while (oRow.getCells().length > staticCellCount) {
+                  oRow.removeCell(oRow.getCells().length - 1);
+              }
+          });  
+            var totalColumnIndex = this.findTotalColumnIndex(oTable);
+    
+            oDynamicData[tableId] = {};
+    
+            for (var i = 0; i <= diffMonths; i++) {
+                var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+                var year = dateCol.getFullYear();
+                var monthName = dateCol.toLocaleString("default", { month: "long" });
+                var keyCol = year + "-" + monthName;
+    
+                // Insertar columna
+                var oColumn = new sap.m.Column({
+                    header: new sap.m.Label({ text: keyCol }),
+                    width: "100px"
+                });
+                oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+    
+                oTable.getItems().forEach((oRow, rowIndex) => {
+                    oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
+    
+                    // Valor previo: intentamos obtener de oPreviousData si existe
+                    var prevVal = "";
+                    if (oPreviousData && oPreviousData[tableId] && oPreviousData[tableId][rowIndex]) {
+                        prevVal = oPreviousData[tableId][rowIndex][keyCol] || "";
+                    }
+    
+                    var oInput = new sap.m.Input({
+                        placeholder: "0.00",
+                        value: prevVal,
+                        change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+                    });
+                    oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
+    
+                    oRow.addCell(oInput);
+    
+                    // Guardar referencia opcional
+                    this._inputsDinamicos = this._inputsDinamicos || {};
+                    this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
+                    this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+                    this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
+    
+                    oDynamicData[tableId][rowIndex][keyCol] = prevVal;
+    
+                    // Disparar handleInputChange manualmente si hay valor previo
+                    if (prevVal !== "") {
+                        this.handleInputChange(
+                            tableId,
+                            rowIndex,
+                            i,
+                            year,
+                            { getParameter: () => prevVal }
+                        );
+                    }
+                });
+            }
+    
+            // Ajustes de scroll si tienes scroll_container
+            var sc = this.getView().byId("scroll_container_" + tableId);
+            if (sc) {
+                sc.setHorizontal(true);
+                sc.setVertical(false);
+                sc.setWidth("100%");
+            }
+        });
+    
+        oModelDynamic.setData(oDynamicData);
+        console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
+    },  
 
 
-        // console.log("FECHAS LEIDAS AL 100 ---- >>>  " + startDatePicker.getValue(), endDatePicker.getValue());
 
 
+     /* fechasDinamicas: function () { 
+
+
+        this._tableValues = {};
+this._yearlySums = {};
+this._monthlySums = {};  
+
+
+        var startDatePicker = this.getView().byId("date_inico");
+        var endDatePicker = this.getView().byId("date_fin");
+    
         if (!startDatePicker || !endDatePicker) {
           console.error("Error: No se pudieron obtener los DatePickers.");
           return;
         }
-
+    
         var startDate = startDatePicker.getDateValue();
         var endDate = endDatePicker.getDateValue();
-
+    
         if (!startDate || !endDate) {
-          //    console.log("Esperando a que se seleccionen ambas fechas.");
           return;
         }
-
+    
         var diffMonths = this.getMonthsDifference(startDate, endDate);
-
+    
         var flexBoxIds = [
           "box0_1714747137718",
           "box0_1727879568594",
@@ -10393,14 +10427,14 @@ sap.ui.define([
           "box0_17254429",
           "box0_1727955568380"
         ];
-
+    
         flexBoxIds.forEach((flexBoxId) => {
           var flexBox = this.getView().byId(flexBoxId);
           if (flexBox) {
             flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
           }
         });
-
+    
         var tableIds = [
           "tablaConsuExter",
           "table_dimicFecha",
@@ -10414,167 +10448,273 @@ sap.ui.define([
           "tableServicioInterno",
           "tablGastoViajeInterno"
         ];
-
+    
+        var oModelDynamic = this.getView().getModel("dynamicInputs");
+        var oDataPrev = oModelDynamic ? oModelDynamic.getData() : {};
+      
+        var oDynamicData = {};
+    
         tableIds.forEach((tableId) => {
           var oTable = this.getView().byId(tableId);
           if (!oTable) {
             console.error("Error: No se pudo obtener la tabla con ID " + tableId);
             return;
           }
-
-          // Eliminar columnas anteriores que fueron añadidas dinámicamente
+    
+          // Eliminar columnas dinámicas previas
           var columnCount = oTable.getColumns().length;
           for (var j = columnCount - 1; j >= 0; j--) {
             var columnHeader = oTable.getColumns()[j].getHeader();
-
-            // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
             if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
               oTable.removeColumn(oTable.getColumns()[j]);
             }
           }
-
+    
           var totalColumnIndex = this.findTotalColumnIndex(oTable);
-
-          // Añadir nuevas columnas dinámicas
+    
+      
+          // Inicializamos la estructura para esta tabla en el objeto dinámico
+          oDynamicData[tableId] = {};
+    
           for (var i = 0; i <= diffMonths; i++) {
-            var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-            var year = columnDate.getFullYear();
-            var month = columnDate.toLocaleString("default", { month: "long" });
-            var columnHeaderText = year + "-" + month;
-
+            var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            var year = dateCol.getFullYear();
+            var monthName = dateCol.toLocaleString("default", { month: "long" });
+            var keyCol = year + "-" + monthName;
+            var totalIndex = this.findTotalColumnIndex(oTable);
+      
+            // Insertar columna
             var oColumn = new sap.m.Column({
-              header: new sap.m.Label({ text: columnHeaderText }),
+              header: new sap.m.Label({ text: keyCol }),
               width: "100px"
             });
-
-            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-
-            for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
-              var oRow = oTable.getItems()[rowIndex];
-
-
+            oTable.insertColumn(oColumn, totalIndex + 1 + i);
+      
+            oDynamicData[tableId] = oDynamicData[tableId] || {};
+      
+            oTable.getItems().forEach((oRow, rowIndex) => {
+              oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
+      
+              var prevVal = "";
+              if (oDataPrev && oDataPrev[tableId] && oDataPrev[tableId][rowIndex]) {
+                prevVal = oDataPrev[tableId][rowIndex][keyCol] || "";
+              }
+      
+              var oInput = new sap.m.Input({
+                placeholder: "0.00",
+                value: prevVal,
+                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+              });
+              oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
+      
+              oRow.addCell(oInput);
+      
+              // Guardar referencia opcional
               this._inputsDinamicos = this._inputsDinamicos || {};
               this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
               this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+              this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
+      
+              oDynamicData[tableId][rowIndex][keyCol] = prevVal;
+      
 
-              // Crear el Input dinámicamente en cada celda
-              var oInput = new sap.m.Input({
-                placeholder: "0.00",
-                // Evento de cambio (change) para capturar el valor ingresado
-                change: this.handleInputChange.bind(this, tableId, rowIndex, i, year),
-                liveChange: function(oEvent) {
-                  var sValue = oEvent.getParameter("value");
-                  console.log("✍️ Valor ingresado en tiempo real:", sValue);
-              
-                  // Si quieres hacer algo con el valor, puedes agregar lógica aquí
-                  // Por ejemplo, actualizar una propiedad, validar, sumar, etc.
-                }
+              console.log("Valores " + prevVal);
+              // 🔁 Disparar handleInputChange manualmente si hay valor previo
+              if (prevVal !== "") {
 
-              });
-
-
-              oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
-
-              oRow.addCell(oInput); // Añadir el Input a la celda
-
-              this._inputsDinamicos[tableId][rowIndex][columnHeaderText] = oInput;
-
-            }
-          }
-
-          var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-          if (oScrollContainer) {
-            oScrollContainer.setHorizontal(true);
-            oScrollContainer.setVertical(false);
-            oScrollContainer.setWidth("100%");
-          }
-
-          //    console.log("startDate:", startDate);
-          // console.log("endDate:", endDate);
-        });
-      },
-
-      /*  _onPasteValues: function (oEvent) {
-          oEvent.preventDefault(); // Evita el pegado por defecto
-          var oClipboardData = oEvent.originalEvent.clipboardData;
-          if (!oClipboardData) return;
-        
-          var sPastedData = oClipboardData.getData("text"); // Datos copiados, por ejemplo: "62,00\t50,00\t62,00\t62,00"
-          console.log("📋 Datos pegados:", sPastedData);
-        
-          var aValues = sPastedData.split(/\t/); // ['62,00', '50,00', ...]
-          var inputDOM = oEvent.target;
-          console.log("➡️ DOM del input donde se pegó:", inputDOM);
-        
-          var encontrado = false;
-        
-          // Recorrer los inputs dinámicos para encontrar el que coincide con el evento
-          for (var tableId in this._inputsDinamicos) {
-            console.log("🔍 Explorando _inputsDinamicos...");
-        
-            var table = this._inputsDinamicos[tableId];
-            for (var rowIndex in table) {
-              for (var columnKey in table[rowIndex]) {
-                var input = table[rowIndex][columnKey];
-        
-                if (!input || typeof input.getDomRef !== "function") continue;
-        
-                var inputRef = input.getDomRef();
-                if (!inputRef) continue;
-        
-                // ✅ Aquí la comparación corregida:
-                if (inputRef.contains(inputDOM)) {
-                  console.log("✅ Input encontrado:", { tableId, rowIndex, columnKey });
-        
-                  // Obtener la fila y todas sus celdas
-                  var oCell = jQuery(inputDOM).closest("td");
-                  var oRow = jQuery(inputDOM).closest("tr");
-                  if (!oCell.length || !oRow.length) return;
-        
-                  var aCells = oRow.find("td");
-                  var iStartIndex = aCells.index(oCell);
-        
-                  for (var i = 0; i < aValues.length; i++) {
-                    var iCellIndex = iStartIndex + i;
-                    var oTargetCell = aCells[iCellIndex];
-                    if (!oTargetCell) continue;
-        
-                    var oTargetInputDOM = jQuery(oTargetCell).find("input")[0];
-                    if (oTargetInputDOM) {
-                      var sValue = aValues[i].trim();
-        
-                      oTargetInputDOM.value = sValue;
-                      oTargetInputDOM.dispatchEvent(new Event("input", { bubbles: true }));
-                      oTargetInputDOM.dispatchEvent(new Event("change", { bubbles: true }));
-                      oTargetInputDOM.blur(); // 🔧 Elimina el resaltado del input
-        
-                      // 🧠 Guardar también el valor en this._inputsDinamicos
-                      var oRowInputs = this._inputsDinamicos[tableId][rowIndex];
-                      for (let key in oRowInputs) {
-                        var oRef = oRowInputs[key].getDomRef?.();
-                        if (oRef === oTargetInputDOM) {
-                          oRowInputs[key].setValue(sValue);
-                        }
-                      }
-                    }
-                  }
-        
-                  encontrado = true;
-                  break;
-                }
+                console.log("Estoy entrando a metodo del handle por segunda vez "); 
+                this.handleInputChange(
+                  tableId, 
+                  rowIndex, 
+                  i, 
+                  year, 
+                  { getParameter: () => prevVal }
+                );
               }
-              if (encontrado) break;
-            }
-            if (encontrado) break;
+            });
           }
-        
-          if (!encontrado) {
-            console.warn("❌ No se pudo identificar el input en _inputsDinamicos.");
+      
+          // Ajustes de scroll si tienes scroll_container
+          var sc = this.getView().byId("scroll_container_" + tableId);
+          if (sc) {
+            sc.setHorizontal(true);
+            sc.setVertical(false);
+            sc.setWidth("100%");
           }
+        });
+      
+        // Guardar modelo
+        if (!oModelDynamic) {
+          oModelDynamic = new sap.ui.model.json.JSONModel();
+          this.getView().setModel(oModelDynamic, "dynamicInputs");
+        }
+        oModelDynamic.setData(oDynamicData);
+        console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
         
-          // 🔧 Al final: desenfocar lo que haya quedado activo (opcional extra)
-          document.activeElement.blur();
-        },*/
+      },*/
+
+
+
+
+
+
+      
+
+      
+      /*   fechasDinamicas: function () {
+           var startDatePicker = this.getView().byId("date_inico");
+           var endDatePicker = this.getView().byId("date_fin");
+       
+           if (!startDatePicker || !endDatePicker) {
+             console.error("Error: No se pudieron obtener los DatePickers.");
+             return;
+           }
+       
+           var startDate = startDatePicker.getDateValue();
+           var endDate = endDatePicker.getDateValue();
+       
+           if (!startDate || !endDate) {
+             return;
+           }
+       
+           var diffMonths = this.getMonthsDifference(startDate, endDate);
+       
+           var flexBoxIds = [
+             "box0_1714747137718",
+             "box0_1727879568594",
+             "box0_1727879817594",
+             "box0_1721815443829",
+             "box0_1727948724833",
+             "box0_1727950351451",
+             "box0_17218154429",
+             "box0_1727953252765",
+             "box1_1727953468615",
+             "box0_17254429",
+             "box0_1727955568380"
+           ];
+       
+           flexBoxIds.forEach((flexBoxId) => {
+             var flexBox = this.getView().byId(flexBoxId);
+             if (flexBox) {
+               flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+             }
+           });
+       
+           var tableIds = [
+             "tablaConsuExter",
+             "table_dimicFecha",
+             "tablaRecExterno",
+             "idOtroserConsu",
+             "idGastoViajeConsu",
+             "idServiExterno",
+             "idGastoRecuExter",
+             "tablaInfrestuctura",
+             "tablaLicencia",
+             "tableServicioInterno",
+             "tablGastoViajeInterno"
+           ];
+       
+           tableIds.forEach((tableId) => {
+             var oTable = this.getView().byId(tableId);
+             if (!oTable) {
+               console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+               return;
+             }
+       
+             // Eliminar columnas dinámicas previas
+             var columnCount = oTable.getColumns().length;
+             for (var j = columnCount - 1; j >= 0; j--) {
+               var columnHeader = oTable.getColumns()[j].getHeader();
+               if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+                 oTable.removeColumn(oTable.getColumns()[j]);
+               }
+             } 
+             
+       
+             var totalColumnIndex = this.findTotalColumnIndex(oTable);
+       
+   
+             // Construir los nuevos nombres de columnas válidas (por ejemplo, 2024-Julio)
+   var newColumnHeaders = [];
+   for (var i = 0; i <= diffMonths; i++) {
+     var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+     var year = columnDate.getFullYear();
+     var month = columnDate.toLocaleString("default", { month: "long" });
+     newColumnHeaders.push(year + "-" + month);
+   }
+   
+   // Limpiar inputs dinámicos obsoletos
+   if (this._inputsDinamicos && this._inputsDinamicos[tableId]) {
+     Object.keys(this._inputsDinamicos[tableId]).forEach((rowIndex) => {
+       var rowInputs = this._inputsDinamicos[tableId][rowIndex];
+       Object.keys(rowInputs).forEach((columnKey) => {
+         if (!newColumnHeaders.includes(columnKey)) {
+           delete this._inputsDinamicos[tableId][rowIndex][columnKey];
+         }
+       });
+     });
+   }
+   
+   
+   
+   
+   
+             // Añadir nuevas columnas dinámicas
+             for (var i = 0; i <= diffMonths; i++) {
+               var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+               var year = columnDate.getFullYear();
+               var month = columnDate.toLocaleString("default", { month: "long" });
+               var columnHeaderText = year + "-" + month;
+       
+               var oColumn = new sap.m.Column({
+                 header: new sap.m.Label({ text: columnHeaderText }),
+                 width: "100px"
+               });
+       
+               oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+       
+               // Agregar inputs dinámicos en cada fila para esta columna
+               for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
+                 var oRow = oTable.getItems()[rowIndex];
+       
+                 // Antes de añadir inputs nuevos, eliminar celdas extras para evitar acumulación
+                 var fixedCellsCount = totalColumnIndex + 1; // número de columnas fijas antes de las dinámicas
+                 while (oRow.getCells().length > fixedCellsCount + diffMonths + 1) {
+                   oRow.removeCell(oRow.getCells().length - 1);
+                 }
+       
+                 this._inputsDinamicos = this._inputsDinamicos || {};
+                 this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
+                 this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+       
+                 var oInput = new sap.m.Input({
+                   placeholder: "0.00",
+                   change: this.handleInputChange.bind(this, tableId, rowIndex, i, year),
+                   liveChange: function(oEvent) {
+                     var sValue = oEvent.getParameter("value");
+                     // Puedes agregar aquí lógica adicional si quieres
+                   }
+                 });
+       
+                 oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
+       
+                 // Inicializar valor vacío para evitar reaparecer valores viejos
+                 oInput.setValue("");
+       
+                 oRow.addCell(oInput);
+       
+                 this._inputsDinamicos[tableId][rowIndex][columnHeaderText] = oInput;
+               }
+             }
+       
+             var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
+             if (oScrollContainer) {
+               oScrollContainer.setHorizontal(true);
+               oScrollContainer.setVertical(false);
+               oScrollContainer.setWidth("100%");
+             }
+           });
+         },*/
 
 
 
@@ -10584,18 +10724,18 @@ sap.ui.define([
         if (!oClipboardData) return;
 
         var sPastedData = oClipboardData.getData("text"); // Datos copiados, por ejemplo: "62,00\t50,00\t62,00\t62,00"
-        console.log("📋 Datos pegados:", sPastedData);
+        console.log(" Datos pegados:", sPastedData);
 
         var aValues = sPastedData.split(/\t/); // ['62,00', '50,00', ...]
 
         var inputDOM = oEvent.target;
-        console.log("➡️ DOM del input donde se pegó:", inputDOM);
+        console.log(" DOM del input donde se pegó:", inputDOM);
 
         var encontrado = false;
 
         // Recorrer los inputs dinámicos para encontrar el que coincide con el evento
         for (var tableId in this._inputsDinamicos) {
-          console.log("🔍 Explorando _inputsDinamicos...");
+          console.log(" Explorando _inputsDinamicos...");
 
           var table = this._inputsDinamicos[tableId];
           for (var rowIndex in table) {
@@ -10607,9 +10747,9 @@ sap.ui.define([
               var inputRef = input.getDomRef();
               if (!inputRef) continue;
 
-              // ✅ Aquí la comparación corregida:
+              //  Aquí la comparación corregida:
               if (inputRef.contains(inputDOM)) {
-                console.log("✅ Input encontrado:", { tableId, rowIndex, columnKey });
+                console.log(" Input encontrado:", { tableId, rowIndex, columnKey });
 
                 // Obtener la fila y todas sus celdas
                 var oCell = jQuery(inputDOM).closest("td");
@@ -10650,151 +10790,12 @@ sap.ui.define([
 
 
 
-      /* handleLiveChange: function (oEvent) {
-         var oInput = oEvent.getSource();
- 
-         // Si el valor no ha cambiado, no hacemos nada
-         if (oInput._lastValue === oEvent.getParameter("value")) {
-           return;
-         }
- 
-         oInput._lastValue = oEvent.getParameter("value");
- 
-         // Disparar manualmente el evento 'change' para que se ejecute tu lógica
-         oInput.fireChange({ value: oInput.getValue() });
-       },*/
-
-
-      /*  fechasDinamicas: function (valoresPorFecha) {
-          var startDatePicker = this.getView().byId("date_inico");
-          var endDatePicker = this.getView().byId("date_fin");
-  
-  
-          // console.log("FECHAS LEIDAS AL 100 ---- >>>  " + startDatePicker.getValue(), endDatePicker.getValue());
-  
-  
-          if (!startDatePicker || !endDatePicker) {
-            console.error("Error: No se pudieron obtener los DatePickers.");
-            return;
-          }
-  
-          var startDate = startDatePicker.getDateValue();
-          var endDate = endDatePicker.getDateValue();
-  
-          if (!startDate || !endDate) {
-            //    console.log("Esperando a que se seleccionen ambas fechas.");
-            return;
-          }
-  
-          var diffMonths = this.getMonthsDifference(startDate, endDate);
-  
-          var flexBoxIds = [
-            "box0_1714747137718",
-            "box0_1727879568594",
-            "box0_1727879817594",
-            "box0_1721815443829",
-            "box0_1727948724833",
-            "box0_1727950351451",
-            "box0_17218154429",
-            "box0_1727953252765",
-            "box1_1727953468615",
-            "box0_17254429",
-            "box0_1727955568380"
-          ];
-  
-          flexBoxIds.forEach((flexBoxId) => {
-            var flexBox = this.getView().byId(flexBoxId);
-            if (flexBox) {
-              flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-            }
-          });
-  
-          var tableIds = [
-            "tablaConsuExter",
-            "table_dimicFecha",
-            "tablaRecExterno",
-            "idOtroserConsu",
-            "idGastoViajeConsu",
-            "idServiExterno",
-            "idGastoRecuExter",
-            "tablaInfrestuctura",
-            "tablaLicencia",
-            "tableServicioInterno",
-            "tablGastoViajeInterno"
-          ];
-  
-          tableIds.forEach((tableId) => {
-            var oTable = this.getView().byId(tableId);
-            if (!oTable) {
-              console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-              return;
-            }
-  
-            // Eliminar columnas anteriores que fueron añadidas dinámicamente
-            var columnCount = oTable.getColumns().length;
-            for (var j = columnCount - 1; j >= 0; j--) {
-              var columnHeader = oTable.getColumns()[j].getHeader();
-  
-              // Verificar si el header existe y si sigue el formato "año-mes" (2024-Enero, etc.)
-              if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-                oTable.removeColumn(oTable.getColumns()[j]);
-              }
-            }
-  
-            var totalColumnIndex = this.findTotalColumnIndex(oTable);
-  
-            // Añadir nuevas columnas dinámicas
-            for (var i = 0; i <= diffMonths; i++) {
-              var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-              var year = columnDate.getFullYear();
-              var month = columnDate.toLocaleString("default", { month: "long" });
-              var columnHeaderText = year + "-" + month;
-  
-              var oColumn = new sap.m.Column({
-                header: new sap.m.Label({ text: columnHeaderText }),
-                width: "100px"
-              });
-  
-              oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-  
-              for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
-                var oRow = oTable.getItems()[rowIndex];
-  
-                // Crear el Input dinámicamente en cada celda
-                var oInput = new sap.m.Input({
-                  placeholder: "0.00",
-                  // Evento de cambio (change) para capturar el valor ingresado
-                  change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
-                });
-  
-                oRow.addCell(oInput); // Añadir el Input a la celda
-              }
-            }
-  
-            var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-            if (oScrollContainer) {
-              oScrollContainer.setHorizontal(true);
-              oScrollContainer.setVertical(false);
-              oScrollContainer.setWidth("100%");
-            }
-  
-            //    console.log("startDate:", startDate);
-            // console.log("endDate:", endDate);
-          });
-        },*/
-
-
-
-
-
-
 
       resetTableAccumulations: function (tableId) {
         //   console.log(` Reiniciando acumulación para la tabla ${tableId}`);
 
         // Si la tabla no existe, la creamos
         if (!this._yearlySums[tableId]) {
-          //     console.warn(`⚠️ La tabla ${tableId} no existe en _yearlySums. Creándola.`);
           this._yearlySums[tableId] = {};
         }
 
@@ -10803,89 +10804,188 @@ sap.ui.define([
           this._yearlySums[tableId][this.currentRow] = {};  // Crear fila si no existe
         }
 
-        //  console.log(` Acumulación reiniciada correctamente para la tabla ${tableId}`);
       },
 
+
+
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
+
+        this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
+      //  console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
+       // console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
+    
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
-        // console.log(`1. Nuevo valor ingresado en la tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: ${newValue}`);
-
-        if (this.currentTable !== tableId) {
-          //  console.log(`Cambio de tabla detectado. Reiniciando acumulación para la tabla ${tableId}.`);
-          this.resetTableAccumulations(tableId);
-          this.currentTable = tableId;
-        }
-
+    
         if (!this._tableValues) this._tableValues = {};
         if (!this._tableValues[tableId]) this._tableValues[tableId] = {};
         if (!this._tableValues[tableId][rowIndex]) this._tableValues[tableId][rowIndex] = {};
-
-        // Obtener el valor anterior
+    
         var oldValue = this._tableValues[tableId][rowIndex][columnIndex] || 0;
+    
+      //  console.log(`Valores actuales para tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: oldValue=${oldValue}, newValue=${newValue}`);
+    
+        if (newValue !== oldValue) {
+        //    console.log(`Valor cambiado en tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: de ${oldValue} a ${newValue}`);
+    
+            // Guarda el nuevo valor en la estructura interna
+            this._tableValues[tableId][rowIndex][columnIndex] = newValue;
+    
+            if (!this._editedRows) this._editedRows = {};
+            if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
+            this._editedRows[tableId].add(rowIndex);
+    
+            this._tableChanged = true;
+    
+            if (!this._yearlySums) this._yearlySums = {};
+            if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
+            if (this._yearlySums[rowIndex][year] !== undefined) {
+                this._yearlySums[rowIndex][year] -= oldValue;
+            }
+            this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
+    
+            if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
+            if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
+            if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
+    
+            this._yearlySums[tableId][rowIndex][year] -= oldValue;
+            this._yearlySums[tableId][rowIndex][year] += newValue;
+    
 
-        // Guarda el nuevo valor en _tableValues
-        this._tableValues[tableId][rowIndex][columnIndex] = newValue;
+            console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
+            this.updateTotalField(tableId, rowIndex, newValue);
+    
+            if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
+            if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
+            if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
+    
+            this._insercionesPorAnoYTabla[year][tableId]++;
+    
+            console.log(`Reclutado hasta ahora en año ${year} para tabla ${tableId}:`, this._insercionesPorAnoYTabla[year][tableId]);
+    
+            if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
+            if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
+    
+            this._insercionesPorTabla[tableId]++;
+    
+            console.log("TOTAL YEAR JSON", JSON.stringify(  this._insercionesPorTabla));
 
-        if (!this._editedRows) this._editedRows = {};
-        if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
-        this._editedRows[tableId].add(rowIndex);
-
-        this._tableChanged = true;
-
-        //   console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
-
-        if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
-
-        // Restar el valor anterior antes de sumar el nuevo
-        if (this._yearlySums[rowIndex][year] !== undefined) {
-          this._yearlySums[rowIndex][year] -= oldValue;
+    
+            this.calcularPorcentajeInserciones();
+    
+            this.CaseAno(tableId);
+    
+            // ——— Actualización del modelo "dynamicInputs" ———
+            var oModelDynamic = this.getView().getModel("dynamicInputs");
+            var oData = oModelDynamic.getData();
+    
+            if (!oData[tableId]) {
+                oData[tableId] = {};
+            }
+            if (!oData[tableId][rowIndex]) {
+                oData[tableId][rowIndex] = {};
+            }
+    
+            var columnDate = new Date(this.getView().byId("date_inico").getDateValue().getFullYear(), this.getView().byId("date_inico").getDateValue().getMonth() + columnIndex, 1);
+            var yearText = columnDate.getFullYear();
+            var monthText = columnDate.toLocaleString("default", { month: "long" });
+            var columnKey = yearText + "-" + monthText;
+    
+            oData[tableId][rowIndex][columnKey] = newValue;
+    
+            oModelDynamic.setData(oData);
+            oModelDynamic.refresh();
+    
+            console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
+    
+        } else {
+            console.log("No hay cambio de valor, no actualizo nada.");
         }
-
-        this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
-
-        //  console.log(`Valor actualizado en _yearlySums[${rowIndex}][${year}]:`, this._yearlySums[rowIndex][year]);
-
-        if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
-        if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
-        if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
-
-        this._yearlySums[tableId][rowIndex][year] -= oldValue;
-        this._yearlySums[tableId][rowIndex][year] += newValue;
-
-        //console.log(`Suma acumulada para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
-
-        this.updateTotalField(tableId, rowIndex, newValue);
-
-
-        //    console.log(`Suma total para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
-
-        if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
-        if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
-        if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
-
-        this._insercionesPorAnoYTabla[year][tableId]++;
-
-
-        //    console.log("ME AÑO RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
-
-        if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
-        if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
-
-        this._insercionesPorTabla[tableId]++;
-
-
-        //  console.log("PORCEM RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
-        //  console.log("PORCEM RECOGIDO:", this._insercionesPorAnoYTabla);
-        // console.log("PORCENTAJE POR TABLA  RECOGIDO" + JSON.stringify(this._insercionesPorTabla));
+    },
+    
+    
 
 
 
-        // this._insercionesPorTabla[tableId]++;
-
-        this.calcularPorcentajeInserciones();
-
-        this.CaseAno(tableId);
-      },
+      /* handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
+         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
+         // console.log(`1. Nuevo valor ingresado en la tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: ${newValue}`);
+ 
+         if (this.currentTable !== tableId) {
+           //  console.log(`Cambio de tabla detectado. Reiniciando acumulación para la tabla ${tableId}.`);
+           this.resetTableAccumulations(tableId);
+           this.currentTable = tableId;
+         }
+ 
+         if (!this._tableValues) this._tableValues = {};
+         if (!this._tableValues[tableId]) this._tableValues[tableId] = {};
+         if (!this._tableValues[tableId][rowIndex]) this._tableValues[tableId][rowIndex] = {};
+ 
+         // Obtener el valor anterior
+         var oldValue = this._tableValues[tableId][rowIndex][columnIndex] || 0;
+ 
+         // Guarda el nuevo valor en _tableValues
+         this._tableValues[tableId][rowIndex][columnIndex] = newValue;
+ 
+         if (!this._editedRows) this._editedRows = {};
+         if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
+         this._editedRows[tableId].add(rowIndex);
+ 
+         this._tableChanged = true;
+ 
+         //   console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
+ 
+         if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
+ 
+         // Restar el valor anterior antes de sumar el nuevo
+         if (this._yearlySums[rowIndex][year] !== undefined) {
+           this._yearlySums[rowIndex][year] -= oldValue;
+         }
+ 
+         this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
+ 
+         //  console.log(`Valor actualizado en _yearlySums[${rowIndex}][${year}]:`, this._yearlySums[rowIndex][year]);
+ 
+         if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
+         if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
+         if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
+ 
+         this._yearlySums[tableId][rowIndex][year] -= oldValue;
+         this._yearlySums[tableId][rowIndex][year] += newValue;
+ 
+         //console.log(`Suma acumulada para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
+ 
+         this.updateTotalField(tableId, rowIndex, newValue);
+ 
+ 
+         //    console.log(`Suma total para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
+ 
+         if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
+         if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
+         if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
+ 
+         this._insercionesPorAnoYTabla[year][tableId]++;
+ 
+ 
+         console.log("ME AÑO RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
+ 
+         if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
+         if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
+ 
+         this._insercionesPorTabla[tableId]++;
+ 
+ 
+         //  console.log("PORCEM RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
+         //  console.log("PORCEM RECOGIDO:", this._insercionesPorAnoYTabla);
+         // console.log("PORCENTAJE POR TABLA  RECOGIDO" + JSON.stringify(this._insercionesPorTabla));
+ 
+ 
+ 
+ 
+ 
+         this.calcularPorcentajeInserciones();
+ 
+         this.CaseAno(tableId);
+       },*/
 
 
 
@@ -10903,7 +11003,7 @@ sap.ui.define([
 
         // Verificamos que haya inserciones antes de calcular porcentajes
         if (totalInserciones === 0) {
-          console.log(" No hay inserciones registradas.");
+        //  console.log(" No hay inserciones registradas.");
           return;
         }
 
@@ -11094,7 +11194,7 @@ sap.ui.define([
 
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
-
+        //  console.log("ESTOY ENTRANDO AL  updateTotalField "  );   
 
         //    console.log("1. updateTotal ---->>> " + rowIndex + newValue);
         // Obtener el total acumulado para cada año
@@ -11153,6 +11253,7 @@ sap.ui.define([
 
         } else if (tableId === "table_dimicFecha") {
 
+    //      console.log("ESTOY ENTRANDO AL  updateTotalField   PERO DE TABLAS DINAMICAS   "  );   
 
           // Obtener la tabla "table_dimicFecha"
           var oTable = this.byId("table_dimicFecha");
@@ -11194,39 +11295,39 @@ sap.ui.define([
 
         } else if (tableId === "tablaRecExterno") {
           var oTable = this.byId("tablaRecExterno");
-        
+
           if (!oTable) {
             console.error("4. La tabla 'tablaRecExterno' no fue encontrada.");
             return;
           }
-        
+
           // Obtener los índices de las filas editadas
           this._editedRows[tableId].forEach(function (rowIndex) {
             var oItem = oTable.getItems()[rowIndex];
             if (oItem) {
               var aCells = oItem.getCells();
-        
+
               if (aCells && aCells.length >= 13) {
                 // Obtener valor actual inicialmente
                 var PMJReValue = parseFloat(aCells[4].getValue().replace(",", "."));
                 if (isNaN(PMJReValue)) {
                   PMJReValue = 0;
                 }
-        
+
                 aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
                 aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
                 aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
                 aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
-        
+
                 var totalSum3 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
                 aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
-        
+
                 // Calcular resultado inicial para celda 12
                 var initialResult = PMJReValue * totalSum3;
                 aCells[12].setText(initialResult.toFixed(2) + "€");
-        
+
                 // Agregar listener para recalcular si cambia el valor de la celda 4
                 aCells[4].attachLiveChange(function (oEvent) {
                   var newValue = parseFloat(oEvent.getSource().getValue().replace(",", "."));
@@ -11236,22 +11337,22 @@ sap.ui.define([
                   } else {
                     aCells[12].setText("0.00€");
                   }
-        
+
                   // Actualizar suma general en inputs relacionados
                   this.onSumarColumna(tableId);
-        
+
                 }.bind(this));  // importante bind para usar "this" correcto
               }
             }
           }.bind(this));  // bind para que 'this' funcione en el forEach también
-        
+
           // Sumar inicial al terminar el bucle
           this.onSumarColumna(tableId);
         }
-        
 
 
-         else if (tableId === "idOtroserConsu") {
+
+        else if (tableId === "idOtroserConsu") {
           var oTable = this.byId("idOtroserConsu");
 
           if (!oTable) {
@@ -11497,7 +11598,7 @@ sap.ui.define([
             return;
           }
 
-          console.log("tabla encontrada ", tableId);
+         // console.log("tabla encontrada ", tableId);
           // Obtener los índices de las filas editadas
           this._editedRows[tableId].forEach(function (rowIndex) {
             var oItem = oTable.getItems()[rowIndex];
@@ -11534,7 +11635,16 @@ sap.ui.define([
         //this.onSumarColumna();
 
         // Limpiar las filas editadas para que no se actualicen más de una vez
-        this._editedRows[tableId].clear();
+        //   this._editedRows[tableId].clear();
+        if (this._editedRows && this._editedRows[tableId] && typeof this._editedRows[tableId].clear === 'function') {
+          this._editedRows[tableId].clear();
+        } else {
+          console.warn("No es un Set, se reinicia correctamente");
+          this._editedRows[tableId] = new Set();
+        }
+
+
+
       },
 
       getTotalForYear: function (year, rowIndex, tableId) {
@@ -11871,7 +11981,7 @@ sap.ui.define([
         }
 
         var selectedText = selectedItem.getText();
-        console.log("Valor seleccionado:", selectedText);
+      //  console.log("Valor seleccionado:", selectedText);
 
         var oTable = this.getView().byId("table0");
 

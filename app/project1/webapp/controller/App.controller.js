@@ -750,9 +750,9 @@ sap.ui.define(
                             const tab = this.byId("id34");
                             if (tab) {
                                 tab.setVisible(mostrarTab);
-                                console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
+                             //   console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
                             } else {
-                                console.warn("IconTabFilter con ID 'id34' no encontrado.");
+                             //   console.warn("IconTabFilter con ID 'id34' no encontrado.");
                             }
                         // Función para toggle de botones con logs
                         const toggleBotones = (ids, estado, tipo) => {

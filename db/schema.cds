@@ -52,6 +52,7 @@ entity DatosProyect {
       objetivoAlcance          : LargeString;
       AsuncionesyRestricciones : LargeString;
       datosExtra               : LargeString;
+      Oferta                   : Boolean;
       CambioEuRUSD             : Decimal(20,4);
       Estado                   : String;
       Email                    : String;
@@ -61,7 +62,7 @@ entity DatosProyect {
       mensual                  : Boolean;
       comentarioTipoCompra     : LargeString;
       comentarioFacturacion    : LargeString;
-      comentarioProveedor     : LargeString;
+      comentarioProveedor      : LargeString;
       comentarioPvD            : LargeString;
       Total                    : Decimal(20,4);
       Fechainicio              : DateTime;

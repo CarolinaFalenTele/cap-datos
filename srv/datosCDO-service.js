@@ -828,7 +828,7 @@ this.on("GET", "Archivos/$value", async (req) => {
     const {
       codigoProyect, nameProyect, Total, descripcion, pluriAnual, multijuridica, funcionalString, clienteFacturacion,
       sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado, comentarioProveedor, comentarioPvD, CambioEuRUSD,
-      Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual,
+      Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual, Oferta,
       AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli, costeEstructura, Fechainicio, FechaFin, TipoCompra_ID, MotivoCondi_ID, comentarioFacturacion, comentarioTipoCompra
     } = req.data;
 
@@ -864,6 +864,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         nameProyect,
         Email,
         Empleado,
+        Oferta,
         fechaCreacion,
         FechaModificacion,
         descripcion,

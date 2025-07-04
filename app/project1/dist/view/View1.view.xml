@@ -24,7 +24,10 @@
                                 <ObjectStatus id="23437" title="Approval" text="Pending" state="Warning"/>
                             </statuses>
 
+                                               
                             <headerContainer>
+
+                            
                                 <IconTabBar id="itb1333" selectedKey="key2" upperCase="true" select="onTabSelect">
                                     <items>
                                         <!--    <IconTabFilter id="234h" text="Info" count="" key="key1">
@@ -47,7 +50,25 @@
                                                 <content>
                                                     <FlexBox width="100%" id="flx_1" justifyContent="Center">
                                                         <items>
+                                                  <VBox class="sapUiSmallMarginBottom">
+    <items>
+
+
+ <!-- CheckBox encima de la tabla -->
+        <HBox justifyContent="End">
+            <items>
+                <CheckBox
+                    id="ofertaCheckBox"
+                    text="Marcar si esta solicitud es una Oferta"
+                    selected="false"
+                    select=".onOfertaSelect"
+ />
+            </items>
+        </HBox>
                                                             <Table ariaLabelledBy="__label0 __label2" noDataText="Drop column list items here and columns in the area above" id="table1" class="onAfterShow  customHeaderColor2" width="1450px" headerText="Datos Proyecto">
+                                                             
+                                                        
+
                                                                 <items>
                                                                     <ColumnListItem type="Active" id="item1">
                                                                         <cells>
@@ -121,6 +142,12 @@
                                                                     </Column>
                                                                 </columns>
                                                             </Table>
+
+
+                                      </items>
+                                 </VBox>
+
+
                                                         </items>
                                                     </FlexBox>
                                                     <FlexBox width="100%" id="box1" justifyContent="Center">

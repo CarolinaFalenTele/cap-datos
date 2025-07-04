@@ -44,7 +44,7 @@
 
 .colorTexto{
 
-    color: #f4f8fc ;
+    color: #f7f7ff;
     font-weight: bold;
 }
 
@@ -58,19 +58,19 @@
 .highlight-border2  .sapMLabel{
     border: 1px solid 	#0066FF !important;
     background-color: 	#0066FF !important;
-    color: #FFFFFF !important; 
+    color: #f7f7ff !important; 
 
 }
 
 .customHeaderColor .sapMListTblHeader .sapMLabel {
-    color: #FFFFFF !important; 
+    color: #f7f7ff    !important; 
     font-weight: bold;
 }
 
 
 .customHeaderColor .sapMListTblHeader .sapMListTblCell  {
     background-color: hsl(226, 100%, 60%); 
-    color: #FFFFFF !important; 
+    color: #f7f7ff   !important; 
    font-weight: bold; /* Texto en negrita */
 
 }
@@ -82,7 +82,7 @@
 
 
 .customHeaderColor2 .sapMListTblHeader .sapMListTblCell  {
-    background-color: #f4f8fc ; 
+    background-color: #f7f7ff; 
     color:  	#0066FF !important; 
    font-weight: bold; 
 
@@ -131,7 +131,7 @@
 }
 
 .customColumnListItem .sapMListTblCell {
-     background-color: #f8fcfe ; 
+     background-color: #f7f7ff ; 
     color: 	#0066FF !important; 
     font-weight: bold;
 }
