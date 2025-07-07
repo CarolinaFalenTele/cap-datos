@@ -34,6 +34,7 @@
   "scripts": {
     "start": "cds-serve",
     "deploy": "cf deploy mta_archives/datosCdo_1.0.0.mtar -f --delete-services || exit 1",
+    "deploy-db": "cds deploy --to hana",
     "dev": "cd app/router && node node_modules/@sap/approuter/approuter.js",
     "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy datosCdo --delete-services --delete-service-keys --delete-service-brokers",

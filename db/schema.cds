@@ -53,6 +53,8 @@ entity DatosProyect {
       AsuncionesyRestricciones : LargeString;
       datosExtra               : LargeString;
       Oferta                   : Boolean;
+      modalidad                : String;
+      fechaComite              : Date;
       CambioEuRUSD             : Decimal(20,4);
       Estado                   : String;
       Email                    : String;

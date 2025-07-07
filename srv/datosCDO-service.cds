@@ -126,7 +126,7 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
     workflowInstanceId : String
   };
 
-  action   completeWorkflow(workflowInstanceId : String, decision : String) returns String;
+  action   completeWorkflow(workflowInstanceId : String, decision : String ,     ComentarioAprobado: LargeString) returns String;
 
 
   action   getWorkflowTimeline(ID : String)                                 returns array of {

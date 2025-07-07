@@ -237,6 +237,21 @@
                                                             />
                                                         </Column>
 
+
+
+
+
+                                                            <Column
+                                                            id="colEstado13"
+                                                                minScreenWidth="Tablet"
+                                                            demandPopin="true"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="txtButtons3"
+                                                                text="Oferta"
+                                                            />
+                                                        </Column>
                                                         <!-- Columna Botones -->
                                                         <Column
                                                             id="colEstado1"
@@ -248,6 +263,7 @@
                                                                 text=""
                                                             />
                                                         </Column>
+
                                                     </columns>
 
                                                     <items>
@@ -289,6 +305,12 @@
                                                                 <ObjectStatus
                                                                     id="objStatus"
                                                                     text="{modelPendientes>Estado}"
+                                                                    state="Warning"
+                                                                />
+
+                                                                 <ObjectStatus
+                                                                    id="oferta"
+                                                                    text="{modelPendientes>Oferta}"
                                                                     state="Warning"
                                                                 />
 
@@ -645,19 +667,19 @@
                                                 </Table>
                                             </IconTabFilter>
 
-
+<!--
                                          <IconTabFilter
                                                 id="ma5578"
                                                 key="notes"
                                                 icon="sap-icon://employee-rejections"
                                                 tooltip="Solicitudes Aprobadas"
-                                                count="{modelRechazados>/Count}"
+                                                count="{modelMisSolicitudes>/Count}"
                                             >
 <Table
     id="RechazadosTable"
     sticky="HeaderToolbar,ColumnHeaders"
     inset="false"
-    items="{modelRechazados>/DatosProyect}"
+    items="{modelMisSolicitudes>/DatosProyect}"
     class="sapFDynamicPageAlignContent customHeaderColor2"
     width="auto"
        noDataText="No existen solicitudes rechazadas en este momento "
@@ -667,7 +689,7 @@
         <Toolbar id="aprobToolbar">
             <Title
                 id="aprobTitle"
-                text="Lista De Solicitudes Rechazadas"
+                text="Mis Solicitudes"
                 level="H2"
                 class="color"
             />
@@ -707,7 +729,7 @@
         </Column>
 
         <Column id="aprobColFechaAprob" minScreenWidth="Tablet" demandPopin="true">
-            <Label id="aprobLblFechaAprob" text="Fecha de Rechazo" />
+            <Label id="aprobLblFechaAprob" text="Fecha de Modificacion" />
         </Column>
 
         <Column id="aprobColEstado" hAlign="Center">
@@ -724,42 +746,42 @@
             <cells>
                 <ObjectIdentifier
                     id="aprobOIDFecha"
-                    title="{modelRechazados>FechaCreacionFormateada}"
+                    title="{modelMisSolicitudes>FechaCreacionFormateada}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtCodigo"
-                    text="{modelRechazados>codigoProyect}"
+                    text="{modelMisSolicitudes>codigoProyect}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtNombre"
-                    text="{modelRechazados>nameProyect}"
+                    text="{modelMisSolicitudes>nameProyect}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtDesc"
-                    text="{modelRechazados>descripcion}"
+                    text="{modelMisSolicitudes>descripcion}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtArea"
-                    text="{modelRechazados>Area/NombreArea}"
+                    text="{modelMisSolicitudes>Area/NombreArea}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtJefe"
-                    text="{modelRechazados>jefeProyectID/name}"
+                    text="{modelMisSolicitudes>jefeProyectID/name}"
                     class="boldText"
                 />
                 <ObjectStatus
                     id="aprobStatusFechaAprob"
-                    text="{modelRechazados>actualizadoEnFormateada}"
+                    text="{modelMisSolicitudes>FechaModificacionFormateada}"
                 />
                 <ObjectStatus
                     id="aprobStatusEstado"
-                    text="{modelRechazados>Estado}"
-                    state="Error"
+                    text="{modelMisSolicitudes>Estado}"
+                    state="Warning"
                 />
                 <HBox id="aprobHBoxBtns">
     
@@ -795,7 +817,7 @@
                             <core:CustomData
                                 xmlns:core="sap.ui.core"
                                 key="projectId"
-                                value="{modelRechazados>ID}"
+                                value="{modelMisSolicitudes>ID}"
                             />
                         </customData>
                     </Button>
@@ -809,7 +831,7 @@
 </Table>
 
 
-                                            </IconTabFilter>
+                                            </IconTabFilter> -->
 
 
                      <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"  tooltip="Mis borradores"

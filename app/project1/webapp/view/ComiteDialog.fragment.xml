@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <Dialog
+    id="dialogModalidad"
+    title="Presentar Solicitud"
+    contentWidth="400px"
+    type="Message"  >
+    <VBox>
+      <Label text="¿Cómo deseas presentar la solicitud?" />
+      <RadioButtonGroup id="radioGroupModalidad" columns="2" select="onSelectModalidad">
+        <buttons>
+          <RadioButton text="Online" selected="true" />
+          <RadioButton text="En Comité" />
+        </buttons>
+      </RadioButtonGroup>
+      <DatePicker id="datePickerComite" placeholder="Selecciona un jueves" visible="false" change="onComiteDateChange" />
+      <Text id="infoText" text="⚠️ Las solicitudes solo pueden presentarse en Comité los días jueves." visible="false" wrapping="true"/>
+    </VBox>
+    <beginButton>
+      <Button text="Confirmar" press="onConfirmModalidad" type="Emphasized"/>
+    </beginButton>
+    <endButton>
+      <Button text="Cancelar" press="onCancelModalidad"/>
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>
