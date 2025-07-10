@@ -17,8 +17,6 @@ sap.ui.define(
 
 
 
-
-
                 this._loadProjectData();
                 const oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("app").attachPatternMatched(this._onObjectMatched, this);
@@ -37,17 +35,20 @@ sap.ui.define(
                 // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
 
-
+             
 
             },
 
 
+            formatAvailableToObjectState: function(bAvailable) {
+                console.log("Valor recibido en formatter:", bAvailable);
+
+                return bAvailable ? "Success" : "Error";
+            },
 
 
-
-
-
-
+      
+            
 
 
             _cargarDatosUsuario: async function () {
@@ -75,22 +76,22 @@ sap.ui.define(
                 try {
                     const userModel = this.getView().getModel("userModel");
                     if (!userModel) {
-                        console.error("❌ userModel no está definido aún.");
+                        console.error(" userModel no está definido aún.");
                         return;
                     }
 
                     const userId = userModel.getProperty("/ID");
                     const userEmail = userModel.getProperty("/email");
 
-                    // 1️⃣ Fetch de TODOS los proyectos
+                    // 1️ Fetch de TODOS los proyectos
                     const responseAll = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID`);
                     const allData = await responseAll.json();
                     const allProjects = allData.value;
 
-                    // 2️⃣ Separar mis solicitudes
+                    // 2️ Separar mis solicitudes
                     const myProjects = allProjects.filter(p => p.Usuarios_ID === userId);
 
-                    // 3️⃣ Función para procesar cada proyecto
+                    // 3️ Función para procesar cada proyecto
                     const procesarProyectos = async (proyectos) => {
                         return await Promise.all(proyectos.map(async (proyecto) => {
                             const projectId = proyecto.ID;
@@ -153,10 +154,12 @@ sap.ui.define(
                     // Procesar todos los proyectos
                     const aProyectosConEstado = await procesarProyectos(allProjects);
 
+
+                    
                     // Separar por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
-                    const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
+                    const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador" && p.Usuarios_ID === userId);
                     const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
 
                     // Etapas asignadas al usuario
@@ -199,12 +202,19 @@ sap.ui.define(
                     // Filtrar solo las pendientes de mis solicitudes
                     const aMisSolicitudesPendientes = aMisSolicitudes.filter(p => p.Estado === "Pendiente");
 
-                    // Modelos JSON para la vista
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    }), "modelAprobados");
 
+                    const aProyectosAprobadosYRechazados = [
+                        ...aProyectosAprobados,
+                        ...aProyectosRechazados
+                    ];
+                    
+                    console.log(" modelAprobados + Rechazados:", aProyectosAprobadosYRechazados);
+                    
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobadosYRechazados,
+                        Count: aProyectosAprobadosYRechazados.length
+                    }), "modelAprobados");
+                    
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosPendientes,
                         Count: aProyectosPendientes.length
@@ -234,13 +244,13 @@ sap.ui.define(
                         Count: aProyectosAsignadosAlUsuario.length
                     }), "modelAsignados");
 
-                    // ✅ Este es el modelo que contiene solo tus solicitudes pendientes
+                    //  Este es el modelo que contiene solo tus solicitudes pendientes
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aMisSolicitudesPendientes,
                         Count: aMisSolicitudesPendientes.length
                     }), "modelMisSolicitudesPendientes");
 
-                    // ✅ Si también quieres tener el modelo con **todas** tus solicitudes (no solo pendientes)
+                    //  Si también quieres tener el modelo con **todas** tus solicitudes (no solo pendientes)
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aMisSolicitudesPendientes,
                         Count: aMisSolicitudesPendientes.length
@@ -734,7 +744,7 @@ sap.ui.define(
                         };
 
                         setControlText("dddtg", userInfo.email, "Sin email");
-                        setControlText("233", userInfo.fullName, "Sin nombre");
+                        setControlText("attrEmpleado", userInfo.fullName, "Sin nombre");
 
                         // Roles
                         const rolesObject = userInfo.roles || {};
@@ -846,7 +856,7 @@ sap.ui.define(
               
                           // Mostrar datos del usuario
                           const emailCtrl = this.byId("dddtg");
-                          const nameCtrl = this.byId("233");
+                          const nameCtrl = this.byId("attrEmpleado");
               
                           if (emailCtrl) {
                               emailCtrl.setText(userInfo.email || "Sin email");
@@ -859,7 +869,7 @@ sap.ui.define(
                               nameCtrl.setText(userInfo.fullName || "Sin nombre");
                               console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
                           } else {
-                              console.warn("⚠️ Control de nombre no encontrado (id '233')");
+                              console.warn("⚠️ Control de nombre no encontrado (id 'attrEmpleado')");
                           }
               
                           // Roles
@@ -1047,7 +1057,7 @@ sap.ui.define(
 
             loadFilteredData: function () {
                 var oFilter = new sap.ui.model.Filter("Estado", sap.ui.model.FilterOperator.EQ, "Aprobado");
-                var oTable = this.byId("idProductsTable");
+                var oTable = this.byId("tabla_Aprobadores");
                 var oBinding = oTable.getBinding("items");
 
                 if (oBinding) {
@@ -1114,7 +1124,7 @@ sap.ui.define(
 
             onSearch: function (oEvent) {
                 const sQuery = oEvent.getParameter("newValue") || oEvent.getParameter("query") || "";
-                const oTable = this.byId("newId_tablePendientes"); // Cambia por el id real de la tabla
+                const oTable = this.byId("TableBorrador"); // Cambia por el id real de la tabla
                 const oBinding = oTable.getBinding("items");
 
                 if (oBinding) {
@@ -1177,7 +1187,7 @@ sap.ui.define(
             onSearchApro: function (oEvent) {
                 // Obtener el valor ingresado en el SearchField
                 var sQuery = oEvent.getParameter("newValue");
-                var oTable = this.byId("idProductsTable"); // Obtener la tabla
+                var oTable = this.byId("tabla_Aprobadores"); // Obtener la tabla
                 var oBinding = oTable.getBinding("items"); // Obtener el binding de los items
 
                 // Crear el filtro de estado "Pendiente"
@@ -1801,6 +1811,8 @@ sap.ui.define(
                     return;
                 }
 
+
+
                 console.log("Eliminando Proyecto con ID:", sProjectId);
 
                 const hijosAnidados = {
@@ -1818,6 +1830,7 @@ sap.ui.define(
                 };
 
                 try {
+
                     // 1️⃣ Obtener CSRF Token
                     let oTokenResponse = await fetch("/odata/v4/datos-cdo/", {
                         method: "GET",
@@ -1835,10 +1848,15 @@ sap.ui.define(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
                         {
                             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+    
                             onClose: async (oAction) => {
                                 if (oAction !== sap.m.MessageBox.Action.YES) return;
-
+                                this.byId("idPendientes").setBusy(true); 
+                                this.byId("idTableAprobados").setBusy(true); 
+                                this.byId("TableBorrador").setBusy(true); 
+                                this.byId("tabla_Aprobadores").setBusy(true); 
                                 try {
+
                                     // ❗ Cancelar workflow si existe
                                     const workflowRes = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})?$expand=WorkflowInstancias`, {
                                         method: "GET",
@@ -2000,6 +2018,11 @@ sap.ui.define(
                                 } catch (error) {
                                     console.error("Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
+                                }  finally {
+                                    this.byId("TableBorrador").setBusy(false); 
+                                    this.byId("idPendientes").setBusy(false); 
+                                    this.byId("idTableAprobados").setBusy(false); 
+                                    this.byId("tabla_Aprobadores").setBusy(false); 
                                 }
                             }
                         }
@@ -2008,6 +2031,7 @@ sap.ui.define(
                     console.error("Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
+               
             },
 
             /*onDeletePress: async function (oEvent) {

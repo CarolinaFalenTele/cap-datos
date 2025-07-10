@@ -83,6 +83,7 @@ entity DatosProyect {
       TipoCompra               : Association to TipoCompra;
       MotivoCondi              : Association to MotivoCondi;
       Usuarios                 : Association to Usuarios;
+      versiones: Composition of many SolicitudesVersiones on versiones.datosProyect = $self;
       Archivos                 : Association to Archivos on Archivos.datosProyect_ID = ID;
       RecursosInternos         : Association to RecursosInternos
                                    on RecursosInternos.datosProyect_ID = ID;
@@ -141,6 +142,14 @@ entity DatosProyect {
 };
 
 
+entity SolicitudesVersiones {
+  key ID             : UUID;
+      datosProyect   : Association to DatosProyect;
+      version         : Integer;
+      nombre          : String;
+      estado          : String;
+      createdAt       : Timestamp;
+}
 
 entity Usuarios {
   key ID          : UUID @cds.auto;    

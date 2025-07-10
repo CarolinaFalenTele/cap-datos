@@ -3,6 +3,7 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
+    
 >
     <Dialog
         title="Ficha CDO"

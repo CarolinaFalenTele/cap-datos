@@ -88,6 +88,29 @@
 
 }
 
+
+.customTitle {
+    color: #0066FF !important;  /* ejemplo: azul fuerte */
+  }    
+/* Cambia el fondo completo de TODAS las columnas de header */
+.sapUiTableColHdrCell {
+    background-color: #f7f7ff !important;
+}
+
+#idTablaPendientes .sapUiTableColHdr .sapUiTableCol:nth-child(2) {
+    background-color: #f7f7ff !important;
+  }
+  
+  #idTablaPendientes .sapUiTableColHdr .sapUiTableCol:nth-child(2) .sapUiTableColCell {
+    color: #0066FF !important;
+    font-weight: bold !important;
+  }
+  
+
+  .myStyle .sapUiTableCol:nth-child(1)
+{
+background-color: bisque;
+}
 .errorCount {
     color: rgb(255, 212, 72);
     font-weight: bold;

@@ -75,24 +75,25 @@ sap.ui.define(
                 try {
                     const userModel = this.getView().getModel("userModel");
                     if (!userModel) {
-                        console.error("❌ userModel no está definido aún.");
+                        console.error(" userModel no está definido aún.");
                         return;
                     }
 
                     const userId = userModel.getProperty("/ID");
                     const userEmail = userModel.getProperty("/email");
-                    //    console.log("👤 Usuario ID:", userId);
-                    //  console.log("📧 Usuario Email:", userEmail);
 
-                    const response = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID&$filter=Usuarios_ID eq '${userId}'`);
-                    const data = await response.json();
-                    const aProjects = data.value;
-                    //      console.log(`📊 Total proyectos obtenidos: ${aProjects.length}`);
+                    // 1️ Fetch de TODOS los proyectos
+                    const responseAll = await fetch(`/odata/v4/datos-cdo/DatosProyect?$expand=Area,jefeProyectID`);
+                    const allData = await responseAll.json();
+                    const allProjects = allData.value;
 
-                    const aProyectosConEstado = await Promise.all(
-                        aProjects.map(async (proyecto) => {
+                    // 2️ Separar mis solicitudes
+                    const myProjects = allProjects.filter(p => p.Usuarios_ID === userId);
+
+                    // 3️ Función para procesar cada proyecto
+                    const procesarProyectos = async (proyectos) => {
+                        return await Promise.all(proyectos.map(async (proyecto) => {
                             const projectId = proyecto.ID;
-
                             const formatearFecha = (fechaStr) => {
                                 if (!fechaStr) return null;
                                 const fecha = new Date(fechaStr);
@@ -104,11 +105,7 @@ sap.ui.define(
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
 
-                            //  console.log(`\n📁 Proyecto "${proyecto.nameProyect}" [ID: ${projectId}]`);
-                            //    console.log("🔵 Estado ORIGINAL:", proyecto.Estado);
-
                             if (proyecto.Estado === "Borrador") {
-                                //   console.log(" Estado Borrador detectado, saltando lógica de workflow.");
                                 proyecto.workflowId = null;
                                 proyecto.actualizadoEn = null;
                                 proyecto.actualizadoEnFormateada = "No aplica";
@@ -122,8 +119,6 @@ sap.ui.define(
                             const wfData = await wfResponse.json();
                             const wfItem = wfData.value[0];
 
-                            //    console.log("📄 Workflow encontrado:", wfItem);
-
                             let etapas = [];
                             if (wfItem?.ID) {
                                 const etapasResponse = await fetch(
@@ -131,14 +126,9 @@ sap.ui.define(
                                 );
 
                                 this._workID = wfItem.workflowId;
-                               
-
                                 const etapasData = await etapasResponse.json();
                                 etapas = etapasData.value || [];
-                              
                             }
-
-
 
                             const hayEtapasPendientes = etapas.some(et => et.estado === "Pendiente");
 
@@ -150,29 +140,28 @@ sap.ui.define(
                                 proyecto.Estado = proyecto.Estado || "Borrador";
                             }
 
-                            //    console.log(" Estado FINAL asignado:", proyecto.Estado);
-
                             proyecto.workflowId = wfItem?.workflowId || null;
                             proyecto.actualizadoEn = wfItem?.actualizadoEn || null;
                             proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
                             proyecto.Etapas = etapas;
 
                             return proyecto;
-                        })
-                    );
+                        }));
+                    };
 
+                    // Procesar todos los proyectos
+                    // Procesar todos los proyectos
+                    const aProyectosConEstado = await procesarProyectos(allProjects);
+
+
+                    
                     // Separar por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
                     const aProyectosBorrador = aProyectosConEstado.filter(p => p.Estado === "Borrador");
                     const aProyectosRechazados = aProyectosConEstado.filter(p => p.Estado === "Rechazado");
 
-                    /*    console.log(" Clasificación de proyectos:");
-                        console.log(" Aprobados:", aProyectosAprobados.length);
-                        console.log(" Pendientes:", aProyectosPendientes.length);
-                        console.log(" Borrador:", aProyectosBorrador.length);
-                        console.log(" Rechazados:", aProyectosRechazados.length);*/
-
+                    console.log("rechazados "  +   aProyectosRechazados);
                     // Etapas asignadas al usuario
                     const aEtapasAsignadas = [];
                     const aProyectosAsignadosAlUsuario = [];
@@ -185,7 +174,6 @@ sap.ui.define(
                                 etapa.estado === "Pendiente" &&
                                 etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
                             ) {
-                                // console.log(` Etapa asignada encontrada:`, etapa);
                                 tieneEtapaAsignada = true;
 
                                 aEtapasAsignadas.push({
@@ -208,12 +196,25 @@ sap.ui.define(
                         }
                     });
 
-                    // Modelos JSON para la vista
-                    this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        DatosProyect: aProyectosAprobados,
-                        Count: aProyectosAprobados.length
-                    }), "modelAprobados");
+                    // Procesar mis solicitudes (solo creados por mí)
+                    const aMisSolicitudes = await procesarProyectos(myProjects);
 
+                    // Filtrar solo las pendientes de mis solicitudes
+                    const aMisSolicitudesPendientes = aMisSolicitudes.filter(p => p.Estado === "Pendiente");
+
+
+                    const aProyectosAprobadosYRechazados = [
+                        ...aProyectosAprobados,
+                        ...aProyectosRechazados
+                    ];
+                    
+                    console.log(" modelAprobados + Rechazados:", aProyectosAprobadosYRechazados);
+                    
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aProyectosAprobadosYRechazados,
+                        Count: aProyectosAprobadosYRechazados.length
+                    }), "modelAprobados");
+                    
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosPendientes,
                         Count: aProyectosPendientes.length
@@ -243,13 +244,17 @@ sap.ui.define(
                         Count: aProyectosAsignadosAlUsuario.length
                     }), "modelAsignados");
 
-                    /* console.log("📌 Etapas asignadas al usuario:", aEtapasAsignadas.length);
-                     console.log("📌 Proyectos asignados al usuario:", aProyectosAsignadosAlUsuario.length);*/
+                    //  Este es el modelo que contiene solo tus solicitudes pendientes
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aMisSolicitudesPendientes,
+                        Count: aMisSolicitudesPendientes.length
+                    }), "modelMisSolicitudesPendientes");
 
-                   /* const oIconTab = this.byId("id34");
-                    if (oIconTab) {
-                        oIconTab.setVisible(aEtapasAsignadas.length > 0);
-                    }*/
+                    //  Si también quieres tener el modelo con **todas** tus solicitudes (no solo pendientes)
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        DatosProyect: aMisSolicitudesPendientes,
+                        Count: aMisSolicitudesPendientes.length
+                    }), "modelMisSolicitudes");
 
                     // Actualizar texto de estado general
                     const oStatusControl = this.byId("status0");
@@ -268,8 +273,24 @@ sap.ui.define(
                     }
 
                 } catch (error) {
-                    console.error(" Error al cargar los proyectos con estado:", error);
+                    console.error("❌ Error al cargar los proyectos con estado:", error);
                 }
+            },
+
+            filtrarProyectosPorNombre: function (sNombre) {
+                if (typeof sNombre !== "string") {
+                    sNombre = "";
+                }
+
+                var oModel = this.getView().getModel("modelRechazados");
+                var aTodosProyectos = oModel.getProperty("/DatosProyect") || [];
+
+                var aFiltrados = aTodosProyectos.filter(function (proyecto) {
+                    return proyecto.name && proyecto.name.toLowerCase().includes(sNombre.toLowerCase());
+                });
+
+                oModel.setProperty("/DatosProyect", aFiltrados);
+                oModel.setProperty("/Count", aFiltrados.length);
             },
 
             filtrarProyectosPorNombre: function (sNombre) {
@@ -744,16 +765,16 @@ sap.ui.define(
 
 
                         // Mostrar IconTabFilter si el usuario tiene ciertos roles
-                            const rolesParaMostrarTab = ["Control", "Direccion", "BasisTQFac", "PMO"];
-                            const mostrarTab = rolesParaMostrarTab.some(role => roleKeys.includes(role));
+                        const rolesParaMostrarTab = ["Control", "Direccion", "BasisTQFac", "PMO"];
+                        const mostrarTab = rolesParaMostrarTab.some(role => roleKeys.includes(role));
 
-                            const tab = this.byId("id34");
-                            if (tab) {
-                                tab.setVisible(mostrarTab);
-                             //   console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
-                            } else {
-                             //   console.warn("IconTabFilter con ID 'id34' no encontrado.");
-                            }
+                        const tab = this.byId("id34");
+                        if (tab) {
+                            tab.setVisible(mostrarTab);
+                            //   console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
+                        } else {
+                            console.warn("IconTabFilter con ID 'id34' no encontrado.");
+                        }
                         // Función para toggle de botones con logs
                         const toggleBotones = (ids, estado, tipo) => {
                             ids.forEach(id => {

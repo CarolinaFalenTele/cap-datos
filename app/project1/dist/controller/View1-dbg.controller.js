@@ -151,13 +151,13 @@ sap.ui.define([
 
         if (oModel && typeof oModel.refresh === "function") {
           oModel.refresh(); // Esto recarga los datos desde el backend si están en uso
-       //   console.log("Modelo OData V4 refrescado desde el servidor.");
+          //   console.log("Modelo OData V4 refrescado desde el servidor.");
         }
 
         const oView = this.getView();
         if (oView.getElementBinding()) {
           oView.getElementBinding().refresh(true); // Refresca el binding de la vista (por si tiene contexto)
-         // console.log("Binding de la vista refrescado.");
+          // console.log("Binding de la vista refrescado.");
         }
       },
 
@@ -389,7 +389,7 @@ sap.ui.define([
           });
           const data = await response.json();
 
-        //  console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
+          //  console.log("Respuesta refresco token:", data); // <<<<<< Aquí para debug
 
           const token = data.token || (data.value && data.value.token);
 
@@ -625,6 +625,7 @@ sap.ui.define([
         this.byId("area0").setValue(oData.datosExtra || "");
         this.byId("inputCambioEu").setValue(oData.CambioEuRUSD || "");
         this.byId("23d3").setText(oData.Empleado || "");
+        this.byId("ofertaCheckBox").setSelected(oData.Oferta === true || oData.Oferta === "true");
         this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
         this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
         this.byId("idCheckMensual").setSelected(!!oData.mensual);
@@ -736,7 +737,7 @@ sap.ui.define([
           return;
         }
 
-      //  console.log("📌 ID recibido para ver archivo:", archivoID);
+        //  console.log("📌 ID recibido para ver archivo:", archivoID);
         this._descargarArchivo(archivoID, fileName, mimeType);
       },
 
@@ -991,7 +992,7 @@ sap.ui.define([
 
         this.refreshODataModel();
 
-   //     console.log("Todos los campos, textos y gráficos han sido limpiados.");
+        //     console.log("Todos los campos, textos y gráficos han sido limpiados.");
       },
 
 
@@ -1092,7 +1093,7 @@ sap.ui.define([
           });
         });
 
-     //   console.log("Texto de celdas internas de las tablas limpiado.");
+        //   console.log("Texto de celdas internas de las tablas limpiado.");
       },
 
 
@@ -1173,13 +1174,13 @@ sap.ui.define([
           btnAceptar.setText("Aprobar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnAceptar.data("valor", "approve");
-          btnAceptar.attachPress(this._openDecisionDialog, this);
+          btnAceptar.attachPress(this._onDecisionPress, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Rechazar");
           btnBorrado.setType(sap.m.ButtonType.Reject);
           btnBorrado.data("valor", "reject");
-          btnBorrado.attachPress(this._openDecisionDialog, this);
+          btnBorrado.attachPress(this._onDecisionPress, this);
         } else {
           // Si no es modelEtapasAsignadas, puedes dejar los botones deshabilitados o como estaban
           btnAceptar.setEnabled(false);
@@ -1262,7 +1263,7 @@ sap.ui.define([
       },
 
 
-      _openDecisionDialog: function (decisionType) {
+     /* _openDecisionDialog: function (decisionType) {
         if (!this._oDecisionDialog) {
           const that = this;  // Guardamos referencia al controlador
           this._oDecisionDialog = new sap.m.Dialog({
@@ -1299,7 +1300,7 @@ sap.ui.define([
           });
         }
         this._oDecisionDialog.open();
-      },
+      },*/
 
 
 
@@ -1334,7 +1335,7 @@ sap.ui.define([
         this.byId("input1").setValue(oData.nameProyect || "");
         this.byId("area0").setValue(oData.datosExtra || "");
         this.byId("inputCambioEu").setValue(oData.CambioEuRUSD || "");
-
+        this.byId("ofertaCheckBox").setSelected(oData.Oferta === true || oData.Oferta === "true");
         this.byId("23d3").setText(oData.Empleado || "");
         this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
         this.byId("idComentarioTipo").setValue(oData.comentarioTipoCompra || "");
@@ -4408,6 +4409,8 @@ sap.ui.define([
 
 
         let errorCount = 0;
+        let errorMessages = [];
+
         const incompleteFields = [];
 
         const sProjectID = this._sProjectID; // ID del proyecto
@@ -4421,6 +4424,7 @@ sap.ui.define([
         const spluriAnual = this.byId("box_pluriAnual").getSelected();
         const sClienteFac = this.byId("id_Cfactur").getValue();
         const sMultiJuri = this.byId("box_multiJuridica").getSelected();
+        const sOferta = this.byId("ofertaCheckBox").getSelected();
         const sMensual = this.byId("idCheckMensual").getSelected();
         const sClienteFunc = this.byId("int_clienteFun").getValue();
         const sObjetivoAlcance = this.byId("idObje").getValue();
@@ -4455,8 +4459,18 @@ sap.ui.define([
         const sFechaFinFormatted = sFechaFin ? oDateFormat.format(sFechaFin) : null;
 
         const sSelectedKey = this.byId("idNatu").getSelectedKey();
-        const sSelecKeyA = this.byId("slct_area").getSelectedKey();
-        const sSelecKeyJe = this.byId("slct_Jefe").getSelectedKey();
+
+
+        const oAreaSelect = this.byId("slct_area");
+        const sSelecKeyA = oAreaSelect.getSelectedKey();
+        const sSelecTextA = oAreaSelect.getSelectedItem() ? oAreaSelect.getSelectedItem().getText() : "";
+        
+        const oJefeSelect = this.byId("slct_Jefe");
+        const sSelecKeyJe = oJefeSelect.getSelectedKey();
+        const sSelecTextJe = oJefeSelect.getSelectedItem() ? oJefeSelect.getSelectedItem().getText() : "";
+      
+
+   //     console.log("JEFE SELECCIONADO " + sSelecTextJe    +  " "   + sSelecTextA);   
         const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
         const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
         const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
@@ -4500,21 +4514,108 @@ sap.ui.define([
         }
 
 
+
+
+
+        const recursosValidation = this.validateRecursosInternos();
+        const ServInternoValidation = this.validateServicioInterno();
+        const gastoInternoValidation = this.validateGastoViajeInterno();
+        const chartValidation = this.validateChartData();
+        const consumoValidation = this.validateConsumoExterno();
+        const ServiConsuValidation = this.validateServiConsu();
+        const GastoViConsValidation = this.validateGastoConsu();
+        const recurExterValidation = this.validateRecursoExterno();
+        const serviRecExValidation = this.validateServicioRecuExter();
+        const gastoviajeReExValidation = this.validateGastoViajeExterno();
+        const otroConcepValidation = this.validateOtrosConceptos();
+        const LicenciaValidation = this.validateLicencia();
+
+        if (!chartValidation.success) {
+          errorMessages.push(...chartValidation.errors);
+        }
+
+        if (!recursosValidation.success) {
+          errorMessages.push(...recursosValidation.errors);
+        }
+
+
+        if (!ServInternoValidation.success) {
+          errorMessages.push(...ServInternoValidation.errors);
+        }
+
+        if (!gastoInternoValidation.success) {
+          errorMessages.push(...gastoInternoValidation.errors);
+        }
+
+        if (!consumoValidation.success) {
+          errorMessages.push(...consumoValidation.errors);
+        }
+
+
+        if (!ServiConsuValidation.success) {
+          errorMessages.push(...ServiConsuValidation.errors);
+        }
+
+        if (!GastoViConsValidation.success) {
+          errorMessages.push(...GastoViConsValidation.errors);
+        }
+
+
+        if (!recurExterValidation.success) {
+          errorMessages.push(...recurExterValidation.errors);
+        }
+
+
+        if (!serviRecExValidation.success) {
+          errorMessages.push(...serviRecExValidation.errors);
+        }
+
+
+        if (!gastoviajeReExValidation.success) {
+          errorMessages.push(...gastoviajeReExValidation.errors);
+        }
+
+        if (!otroConcepValidation.success) {
+          errorMessages.push(...otroConcepValidation.errors);
+        }
+
+        if (!LicenciaValidation.success) {
+          errorMessages.push(...LicenciaValidation.errors);
+        }
+
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
         validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
         validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
         validateField(this.byId("date_inico"), sFechaIni, "Inicio", "date");
         validateField(this.byId("date_fin"), sFechaFin, "Fin", "date");
 
-        if (errorCount > 0) {
-          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
+        if (errorCount > 0 || errorMessages.length > 0) {
+          let message = "";
+
+          if (incompleteFields.length > 0) {
+            message += "Por favor, complete los siguientes campos:\n- " + incompleteFields.join("\n- ");
+          }
+
+          if (errorMessages.length > 0) {
+            if (message.length > 0) {
+              message += "\n\n";
+            }
+            message += "Errores en los datos ingresados:\n- " + errorMessages.join("\n- ");
+          }
+
+          sap.m.MessageBox.warning(message, { title: "Advertencia" });
           return;
         }
+
+
 
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
         //  console.log(localDate);
+
+        const resultadoDialogo = await this.mostrarDialogoModalidad();
+
 
 
         const payload = {
@@ -4524,6 +4625,7 @@ sap.ui.define([
           Empleado: sEmpleado,
           pluriAnual: spluriAnual,
           Total: sTotal,
+          Oferta: sOferta,
           descripcion: sdescripcion,
           mensual: sMensual,
           comentarioTipoCompra: sComentarioTipCompra,
@@ -4556,11 +4658,34 @@ sap.ui.define([
           CambioEuRUSD: sCambioEurUsd
         };
 
+
+
+
+        let sModalidad = "Online";
+        let sFechaComite = null;
+        
         // Agregar fechaCreacion solo si es nuevo (POST)
         if (!sProjectID) {
           payload.fechaCreacion = localDate;
         }
+        
+        if (resultadoDialogo.modalidad === "Comité") {
+          sModalidad = "Comité";
+          payload.modalidad = "Comité";
+        
+          if (resultadoDialogo.fechaComite) {
+            sFechaComite = resultadoDialogo.fechaComite.toISOString().split("T")[0];
+            payload.fechaComite = sFechaComite;
+          }
+        } else {
+          sModalidad = "Online";
+          payload.modalidad = "Online";
+        }
 
+        console.log("RESULTADO ----> "  + sModalidad  );
+        console.log("DEBUG resultadoDialogo.modalidad -->", resultadoDialogo.modalidad);
+
+        
         // Crear la fecha de modificación (formato yyyy-MM-dd)
         let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
           pattern: "yyyy-MM-dd"
@@ -4586,6 +4711,9 @@ sap.ui.define([
 
 
         try {
+
+
+
           let oModel = this.getView().getModel();
           let sServiceUrl = oModel.sServiceUrl;
 
@@ -4725,7 +4853,7 @@ sap.ui.define([
 
               // 1 Payload para iniciar workflow de aprobación
 
-              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+                const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
 
 
 
@@ -4733,20 +4861,28 @@ sap.ui.define([
 
               const oContext = oModel.bindContext("/startWorkflow(...)");
 
-              oContext.setParameter("payload", JSON.stringify({
+              const payload = {
                 codigoproyect: 0,
                 nameproyect: snameProyect,
                 generatedid: generatedId,
                 urlapp: urlAPP,
                 descripcion: sdescripcion,
-                jefeProyecto: "Carolina Falen",
-                clienteFuncional: "CLiente Fun",
-                clienteFacturacion: "Cliente Fact",
+                jefeProyecto: sSelecTextJe,
+                area: sSelecTextA,
+                usuario: sEmpleado,
+                Modalidad: sModalidad
+              };
+              
+              //  Agrega fechaComite solo si es Comité
+              if (sModalidad === "Comité" && sFechaComite) {
+                payload.fechaComite = sFechaComite;
+              }
+              
+              oContext.setParameter("payload", JSON.stringify(payload));
 
-                usuario: "Carolina Falen"
-              }));
 
-
+                //  Agrega fechaComite SOLO si es Comité
+             
               try {
 
                 await oContext.execute();
@@ -4782,6 +4918,945 @@ sap.ui.define([
         } catch (error) {
           console.error("Error en la llamada al servicio:", error);
           //sap.m.MessageToast.show("Error al procesar el proyecto: " + error.message);
+        }
+      },
+
+
+
+
+
+
+      /////----------------------------- VALIDACIONES ANTES DE ENVIAR  --------------------------------    
+      validateChartData: function () {
+        const errors = [];
+
+        // Función para resetear la hora a 00:00:00
+        function resetTime(date) {
+          if (!date) return null;
+          const d = new Date(date);
+          d.setHours(0, 0, 0, 0);
+          return d;
+        }
+
+        const sFechaIniForm = resetTime(this.byId("date_inico").getDateValue());
+        const sFechaFinForm = resetTime(this.byId("date_fin").getDateValue());
+
+        if (!sFechaIniForm || !sFechaFinForm) {
+          errors.push("Debes seleccionar las fechas Inicio y Fin en el formulario.");
+        }
+
+        let minFechaInicio = null;
+        let maxFechaFin = null;
+
+        if (this._aChartData && this._aChartData.length > 0) {
+          this._aChartData.forEach(chart => {
+            const fechaInicio = chart.fechaInicio ? resetTime(new Date(chart.fechaInicio)) : null;
+            const fechaFin = chart.fechaFin ? resetTime(new Date(chart.fechaFin)) : null;
+
+            if (fechaInicio) {
+              if (!minFechaInicio || fechaInicio < minFechaInicio) {
+                minFechaInicio = fechaInicio;
+              }
+            }
+
+            if (fechaFin) {
+              if (!maxFechaFin || fechaFin > maxFechaFin) {
+                maxFechaFin = fechaFin;
+              }
+            }
+          });
+        } else {
+          errors.push("El gráfico está vacío. Debes ingresar al menos un hito.");
+        }
+
+        if (minFechaInicio && sFechaIniForm) {
+          if (minFechaInicio.getTime() !== sFechaIniForm.getTime()) {
+            errors.push(`La fecha de inicio más temprana (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha seleccionada en el formulario (${sFechaIniForm.toLocaleDateString()}).`);
+          }
+        }
+
+        if (maxFechaFin && sFechaFinForm) {
+          if (maxFechaFin.getTime() !== sFechaFinForm.getTime()) {
+            errors.push(`La fecha de fin más tardía (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha seleccionada en el formulario (${sFechaFinForm.toLocaleDateString()}).`);
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+
+
+      validateRecursosInternos: function () {
+        const oTable = this.byId("table_dimicFecha");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasFilledRow = false;
+        let atLeastOneValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+          const oVertical = oItem.getCells()[0];
+          const oTipoServi = oItem.getCells()[1];
+          const oPerfil = oItem.getCells()[2];
+          const oConcepto = oItem.getCells()[3];
+
+          const sVertical = oVertical?.getSelectedKey() || "";
+          const stipoServi = oTipoServi?.getSelectedKey() || "";
+          const sPerfil = oPerfil?.getSelectedKey() || "";
+          const sConcepto = oConcepto?.getValue()?.trim() || "";
+
+          const isEmptyRow = !sVertical && !stipoServi && !sPerfil && !sConcepto;
+
+          // Limpiar estados anteriores
+          oVertical?.setValueState("None");
+          oTipoServi?.setValueState("None");
+          oPerfil?.setValueState("None");
+          oConcepto?.setValueState("None");
+
+          // Solo validar si la fila tiene algún valor
+          if (!isEmptyRow) {
+            hasFilledRow = true;
+            const rowErrors = [];
+
+            if (!sVertical) {
+              rowErrors.push("Debe seleccionar la Vertical");
+              oVertical?.setValueState("Error");
+              oVertical?.setValueStateText("Campo obligatorio");
+            }
+            if (!stipoServi) {
+              rowErrors.push("Debe seleccionar el Tipo de Servicio");
+              oTipoServi?.setValueState("Error");
+              oTipoServi?.setValueStateText("Campo obligatorio");
+            }
+            if (!sPerfil) {
+              rowErrors.push("Debe seleccionar el Perfil");
+              oPerfil?.setValueState("Error");
+              oPerfil?.setValueStateText("Campo obligatorio");
+            }
+            if (!sConcepto) {
+              rowErrors.push("El campo Concepto es obligatorio");
+              oConcepto?.setValueState("Error");
+              oConcepto?.setValueStateText("Campo obligatorio");
+            }
+
+            if (rowErrors.length > 0) {
+              errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+            } else {
+              atLeastOneValidRow = true;
+            }
+          }
+        }
+
+        // Si hay filas rellenas y alguna está incompleta => mostrar errores
+        if (hasFilledRow && !atLeastOneValidRow) {
+          errors.push("Debe completar correctamente al menos una fila de Recursos Internos.");
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+      validateServicioInterno: function () {
+        const oTable = this.byId("tableServicioInterno");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          // Obtener controles de la fila
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+          // No hay valueState para Text, si quieres puedes indicar error con estilos
+
+          // Detectar si la fila está vacía: no tiene datos clave (vertical, tipo, concepto, PMJ y Total)
+          const isEmptyRow = (!sVertical && !sTipoServi && !sConcepto && isNaN(sPMJ) && isNaN(sTotal));
+
+          if (isEmptyRow) {
+            // Ignorar esta fila
+            continue;
+          }
+
+          const rowErrors = [];
+
+          // Validar campos obligatorios si la fila tiene datos
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        // Si quieres forzar al menos una fila válida:
+        /*
+        if (!hasValidRow && aItems.length > 0) {
+          errors.push("Debe completar correctamente al menos una fila de Servicio Interno.");
+        }
+        */
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+      validateGastoViajeInterno: function () {
+        const oTable = this.byId("tablGastoViajeInterno");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          // Obtener controles de la fila
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+          const oTextTotalE = oItem.getCells()[12];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+          const sTotalE = parseInt(oTextTotalE.getText(), 10);
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+          // Los textos no tienen ValueState, si quieres puedes usar CSS para marcar errores
+
+          // Detectar si la fila está vacía (ningún dato clave)
+          const isEmptyRow = (!sVertical && !sTipoServi && !sConcepto && isNaN(sPMJ) && isNaN(sTotal) && isNaN(sTotalE));
+
+          if (isEmptyRow) {
+            continue; // Ignorar filas vacías
+          }
+
+          const rowErrors = [];
+
+          // Validar campos obligatorios
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        // Si quieres forzar que haya al menos una fila válida, descomenta:
+        /*
+        if (!hasValidRow && aItems.length > 0) {
+          errors.push("Debe completar correctamente al menos una fila de Gasto Viaje Interno.");
+        }
+        */
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+
+      validateConsumoExterno: function () {
+        const oTable = this.byId("tablaConsuExter");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasFilledRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oVertical = oItem.getCells()[0];
+          const oTipoServi = oItem.getCells()[1];
+          const oPerfil = oItem.getCells()[2];
+          const oConcepto = oItem.getCells()[3];
+          const oPMJ = oItem.getCells()[4];
+
+          const sVertical = oVertical?.getSelectedKey() || "";
+          const stipoServi = oTipoServi?.getSelectedKey() || "";
+          const sPerfil = oPerfil?.getSelectedKey() || "";
+          const sConcepto = oConcepto?.getValue()?.trim() || "";
+          const sPMJ = parseFloat(oPMJ?.getText()) || 0; // ojo que antes tenías getText() que da string no editable
+          const sTotal = parseFloat(oItem.getCells()[11]?.getText()) || 0;
+          const stotalRe = parseFloat(oItem.getCells()[12]?.getText()) || 0;
+
+          const isRowWithData = sVertical || stipoServi || sPerfil || sConcepto || sPMJ > 0 || sTotal > 0 || stotalRe > 0;
+
+          // Limpiar estados anteriores
+          oVertical?.setValueState("None");
+          oTipoServi?.setValueState("None");
+          oPerfil?.setValueState("None");
+          oConcepto?.setValueState("None");
+
+          if (isRowWithData) {
+            hasFilledRow = true;
+            const rowErrors = [];
+
+            if (!sVertical) {
+              rowErrors.push("Debe seleccionar la Vertical");
+              oVertical?.setValueState("Error");
+              oVertical?.setValueStateText("Campo obligatorio");
+            }
+            if (!stipoServi) {
+              rowErrors.push("Debe seleccionar el Tipo de Servicio");
+              oTipoServi?.setValueState("Error");
+              oTipoServi?.setValueStateText("Campo obligatorio");
+            }
+            if (!sPerfil) {
+              rowErrors.push("Debe seleccionar el Perfil");
+              oPerfil?.setValueState("Error");
+              oPerfil?.setValueStateText("Campo obligatorio");
+            }
+            if (!sConcepto) {
+              rowErrors.push("El campo Concepto es obligatorio");
+              oConcepto?.setValueState("Error");
+              oConcepto?.setValueStateText("Campo obligatorio");
+            }
+
+
+            if (rowErrors.length > 0) {
+              errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+            }
+          }
+        }
+
+        if (hasFilledRow && errors.length > 0) {
+          return { success: false, errors };
+        }
+
+        return { success: true, errors: [] };
+      },
+
+
+      validateServiConsu: function () {
+        const oTable = this.byId("idOtroserConsu");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+          const oTextTotalE = oItem.getCells()[12];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+          const sTotalE = parseInt(oTextTotalE.getText(), 10);
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Detectar fila vacía
+          const isEmptyRow = (!sVertical && !sTipoServi && !sConcepto && isNaN(sPMJ) && isNaN(sTotal) && isNaN(sTotalE));
+
+          if (isEmptyRow) {
+            continue; // Ignorar fila vacía
+          }
+
+          const rowErrors = [];
+
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+      validateGastoConsu: function () {
+        const oTable = this.byId("idGastoViajeConsu");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+          const oTextTotalE = oItem.getCells()[12];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+          const sTotalE = parseInt(oTextTotalE.getText(), 10);
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Detectar fila vacía
+          const isEmptyRow = (!sVertical && !sTipoServi && !sConcepto && isNaN(sPMJ) && isNaN(sTotal) && isNaN(sTotalE));
+
+          if (isEmptyRow) {
+            continue; // Ignorar fila vacía
+          }
+
+          const rowErrors = [];
+
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+
+      validateRecursoExterno: function () {
+        const oTable = this.byId("tablaRecExterno");
+        const aItems = oTable.getItems();
+        const errors = [];
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oVertical = oItem.getCells()[0];
+          const oTipoServi = oItem.getCells()[1];
+          const oPerfil = oItem.getCells()[2];
+          const oConcepto = oItem.getCells()[3];
+          const oPMJ = oItem.getCells()[4]; // control Input real
+
+          const sVertical = oVertical.getSelectedKey() || "";
+          const stipoServi = oTipoServi.getSelectedKey() || "";
+          const sPerfil = oPerfil.getValue() || "";
+          const sConcepto = oConcepto.getValue() || "";
+          const sPMJ = parseFloat(oPMJ.getValue());
+          const sTotal = parseFloat(oItem.getCells()[11].getText());
+          const stotalRe = parseFloat(oItem.getCells()[12].getText());
+
+          const isRowWithData =
+            sVertical || stipoServi || sPerfil || sConcepto ||
+            !isNaN(sPMJ) || !isNaN(sTotal) || !isNaN(stotalRe);
+
+          // Limpiar estados anteriores
+          oVertical.setValueState("None");
+          oTipoServi.setValueState("None");
+          oPerfil.setValueState("None");
+          oConcepto.setValueState("None");
+          oPMJ.setValueState("None");  // Aquí el control, no el valor
+
+          if (isRowWithData) {
+            const rowErrors = [];
+
+            if (!sVertical) {
+              rowErrors.push("Debe seleccionar la Vertical");
+              oVertical.setValueState("Error");
+              oVertical.setValueStateText("Campo obligatorio");
+            }
+            if (!stipoServi) {
+              rowErrors.push("Debe seleccionar el Tipo de Servicio");
+              oTipoServi.setValueState("Error");
+              oTipoServi.setValueStateText("Campo obligatorio");
+            }
+            if (!sPerfil) {
+              rowErrors.push("Debe seleccionar el Perfil");
+              oPerfil.setValueState("Error");
+              oPerfil.setValueStateText("Campo obligatorio");
+            }
+            if (!sConcepto) {
+              rowErrors.push("El campo Concepto es obligatorio");
+              oConcepto.setValueState("Error");
+              oConcepto.setValueStateText("Campo obligatorio");
+            }
+
+            if (isNaN(sPMJ)) {
+              rowErrors.push("El campo PMJ no es válido");
+              oPMJ.setValueState("Error");
+              oPMJ.setValueStateText("Debe ser un número válido");
+            }
+
+            if (rowErrors.length > 0) {
+              errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+            }
+          }
+        }
+
+        if (errors.length > 0) {
+          return {
+            success: false,
+            errors
+          };
+        }
+
+        return {
+          success: true,
+          errors: []
+        };
+      },
+
+
+      validateServicioRecuExter: function () {
+        const oTable = this.byId("idServiExterno");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+          const oTextTotalE = oItem.getCells()[12];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+          const sTotalE = parseInt(oTextTotalE.getText(), 10);
+
+          // Limpiar estados de error antes de validar
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Verificar si la fila está "vacía": todos los campos relevantes vacíos o cero
+          const isEmptyRow =
+            !sVertical &&
+            !sTipoServi &&
+            !sConcepto &&
+            (isNaN(sPMJ) || sPMJ === 0) &&
+            (isNaN(sTotal) || sTotal === 0) &&
+            (isNaN(sTotalE) || sTotalE === 0);
+
+          // Si fila vacía, saltar validación
+          if (isEmptyRow) {
+            continue;
+          }
+
+          const rowErrors = [];
+
+          // Validar solo filas con algún dato
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors,
+          hasValidRow
+        };
+      },
+
+      validateGastoViajeExterno: function () {
+        const oTable = this.byId("idGastoRecuExter");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          const oSelectVertical = oItem.getCells()[0];
+          const oSelectTipoServi = oItem.getCells()[1];
+          const oInputConcepto = oItem.getCells()[3];
+          const oTextPMJ = oItem.getCells()[4];
+          const oTextTotal = oItem.getCells()[11];
+          const oTextTotalE = oItem.getCells()[12];
+
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sTipoServi = oSelectTipoServi.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+          const sPMJ = parseInt(oTextPMJ.getText(), 10);
+          const sTotal = parseInt(oTextTotal.getText(), 10);
+          const sTotalE = parseInt(oTextTotalE.getText(), 10);
+
+          // Limpiar estados de error antes de validar
+          oSelectVertical.setValueState("None");
+          oSelectTipoServi.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Verificar si la fila está vacía
+          const isEmptyRow =
+            !sVertical &&
+            !sTipoServi &&
+            !sConcepto &&
+            (isNaN(sPMJ) || sPMJ === 0) &&
+            (isNaN(sTotal) || sTotal === 0) &&
+            (isNaN(sTotalE) || sTotalE === 0);
+
+          if (isEmptyRow) {
+            continue;
+          }
+
+          const rowErrors = [];
+
+          // Validaciones
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sTipoServi) {
+            rowErrors.push("Debe seleccionar el Tipo de Servicio");
+            oSelectTipoServi.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors,
+          hasValidRow
+        };
+      },
+
+
+
+      validateLicencia: function () {
+        const oTable = this.byId("tablaLicencia");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          // Obtener controles de la fila
+          const oSelectVertical = oItem.getCells()[0];
+          const oInputConcepto = oItem.getCells()[2];
+          // Aquí solo validamos vertical y concepto, que son obligatorios
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Detectar si la fila está vacía: ni vertical ni concepto tiene dato
+          const isEmptyRow = (!sVertical && !sConcepto);
+
+          if (isEmptyRow) {
+            // Ignorar esta fila
+            continue;
+          }
+
+          // La fila tiene datos, validar obligatorios
+          const rowErrors = [];
+
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        // Si quieres forzar que al menos una fila esté completa, puedes activar esta validación:
+        /*
+        if (!hasValidRow && aItems.length > 0) {
+          errors.push("Debe completar correctamente al menos una fila de Licencia.");
+        }
+        */
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+      validateOtrosConceptos: function () {
+        const oTable = this.byId("tablaInfrestuctura");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasValidRow = false; // Hay al menos una fila con datos completos
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+
+          // Obtengo controles de la fila
+          const oSelectVertical = oItem.getCells()[0];
+          const oInputConcepto = oItem.getCells()[2];
+          // Más campos si quieres validar, pero los obligatorios son esos dos
+          const sVertical = oSelectVertical.getSelectedKey();
+          const sConcepto = oInputConcepto.getValue()?.trim();
+
+          // Limpiar estados de error
+          oSelectVertical.setValueState("None");
+          oInputConcepto.setValueState("None");
+
+          // Detectar si la fila está "vacía": ni vertical ni concepto tiene dato
+          const isEmptyRow = (!sVertical && !sConcepto);
+
+          if (isEmptyRow) {
+            // Ignorar esta fila, no validar nada
+            continue;
+          }
+
+          // La fila tiene datos en al menos un campo, validar obligatorios
+          const rowErrors = [];
+
+          if (!sVertical) {
+            rowErrors.push("Debe seleccionar la Vertical");
+            oSelectVertical.setValueState("Error");
+          }
+          if (!sConcepto) {
+            rowErrors.push("El campo Concepto es obligatorio");
+            oInputConcepto.setValueState("Error");
+          }
+
+          if (rowErrors.length > 0) {
+            errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+          } else {
+            hasValidRow = true;
+          }
+        }
+
+        // Si no hay filas con datos válidos pero hay filas en la tabla, puede que esté bien (no obligatorio)
+        // Si quieres forzar que al menos una fila esté completa, activa esta validación, sino elimínala:
+        /*
+        if (!hasValidRow && aItems.length > 0) {
+          errors.push("Debe completar correctamente al menos una fila de Otros Conceptos.");
+        }
+        */
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+      mostrarDialogoModalidad: function () {
+        return new Promise((resolve, reject) => {
+          if (!this._oComiteDialog) {
+            this._oComiteDialog = sap.ui.xmlfragment("project1.view.ComiteDialog", this);
+            this.getView().addDependent(this._oComiteDialog);
+          }
+
+          // Reset selección y visibilidad si es necesario
+          var oRadioGroup = sap.ui.getCore().byId("radioGroupModalidad");
+          oRadioGroup.setSelectedIndex(0); // Por defecto "Online"
+
+          var oDatePicker = sap.ui.getCore().byId("datePickerComite");
+          var oInfoText = sap.ui.getCore().byId("infoText");
+          oDatePicker.setVisible(false);
+          oInfoText.setVisible(false);
+          oDatePicker.setDateValue(null); // Limpia fecha anterior
+
+          this._modalidadResolve = resolve;
+          this._modalidadReject = reject;
+          this._oComiteDialog.open();
+        });
+      },
+
+      onCancelarComiteDialog: function() {
+        if (this._oComiteDialog) {
+          this._oComiteDialog.close();
+        }
+      
+        if (this._modalidadReject) {
+          this._modalidadReject("cancelado");
+          this._modalidadReject = null;
+          this._modalidadResolve = null;
+        }
+      },
+      
+
+
+      onConfirmModalidad: function () {
+        const iSelectedIndex = sap.ui.getCore().byId("radioGroupModalidad").getSelectedIndex();
+        const modalidad = iSelectedIndex === 0 ? "Online" : "Comité";
+
+        const oDatePicker = sap.ui.getCore().byId("datePickerComite");
+        const selectedDate = oDatePicker.getDateValue();
+
+        if (modalidad === "Comité" && !selectedDate) {
+          sap.m.MessageToast.show("Por favor, selecciona una fecha para Comité.");
+          return;
+        }
+
+        this._oComiteDialog.close();
+
+        if (this._modalidadResolve) {
+          this._modalidadResolve({
+            modalidad,
+            fechaComite: selectedDate || null
+          });
+        }
+      },
+
+
+      onSelectModalidad: function (oEvent) {
+        // Obtiene el índice del botón seleccionado
+        var iSelectedIndex = oEvent.getParameter("selectedIndex");
+
+        // Obtiene el fragmento
+        var oDialog = this._oComiteDialog;
+
+        // Accede al DatePicker y al Text
+        var oDatePicker = sap.ui.getCore().byId("datePickerComite");
+        var oInfoText = sap.ui.getCore().byId("infoText");
+
+        if (iSelectedIndex === 1) { // 0 = Online, 1 = En Comité
+          oDatePicker.setVisible(true);
+          oInfoText.setVisible(true);
+        } else {
+          oDatePicker.setVisible(false);
+          oInfoText.setVisible(false);
         }
       },
 
@@ -4867,6 +5942,8 @@ sap.ui.define([
 
         const sProjectID = this._sProjectID; // ID del proyecto
         const scodigoProyect = parseFloat(this.byId("input0").getValue(), 10);
+        const sOferta = this.byId("ofertaCheckBox").getSelected();
+
         const sEmail = this.byId("dddtg").getText();
         const sEmpleado = this.byId("23d3").getText();
         const sCambioEurUsd = parseFloat(this.byId("inputCambioEu").getValue());
@@ -4957,6 +6034,7 @@ sap.ui.define([
           nameProyect: snameProyect,
           Email: sEmail,
           Empleado: sEmpleado,
+          Oferta: sOferta,
           pluriAnual: spluriAnual,
           Total: sTotal,
           descripcion: sdescripcion,
@@ -8195,7 +9273,6 @@ sap.ui.define([
 
 
       insertServicioInterno: async function (generatedId) {
-        //  console.log("insertServicioInterno llamada");
 
 
         const sTokenG = this._sCsrfToken;
@@ -9079,7 +10156,6 @@ sap.ui.define([
       insertServicioRecuExter: async function (generatedId) {
 
 
-        console.log("he entrado a SERVICIO EXT ");
         const sTokenG = this._sCsrfToken;
 
         // Obtener la tabla por su ID
@@ -9389,6 +10465,11 @@ sap.ui.define([
           }
         }
       },
+
+
+
+
+
 
 
 
@@ -10220,200 +11301,40 @@ sap.ui.define([
 
 
 
-      fechasDinamicas: function () { 
+      fechasDinamicas: function () {
         var oModelDynamic = this.getView().getModel("dynamicInputs");
         var oPreviousData = null;
-    
+
         if (!oModelDynamic) {
-            oModelDynamic = new sap.ui.model.json.JSONModel();
-            this.getView().setModel(oModelDynamic, "dynamicInputs");
+          oModelDynamic = new sap.ui.model.json.JSONModel();
+          this.getView().setModel(oModelDynamic, "dynamicInputs");
         } else {
-            oPreviousData = oModelDynamic.getData(); 
+          oPreviousData = oModelDynamic.getData();
         }
-    
+
 
         this._inputsDinamicos = {};
         this._tableValues = {};
         this._yearlySums = {};
-        this._monthlySums = {};  
-    
-        var startDatePicker = this.getView().byId("date_inico");
-        var endDatePicker = this.getView().byId("date_fin");
-    
-        if (!startDatePicker || !endDatePicker) {
-            console.error("Error: No se pudieron obtener los DatePickers.");
-            return;
-        }
-    
-        var startDate = startDatePicker.getDateValue();
-        var endDate = endDatePicker.getDateValue();
-    
-        if (!startDate || !endDate) {
-            return;
-        }
-    
-        var diffMonths = this.getMonthsDifference(startDate, endDate);
-    
-        var flexBoxIds = [
-            "box0_1714747137718",
-            "box0_1727879568594",
-            "box0_1727879817594",
-            "box0_1721815443829",
-            "box0_1727948724833",
-            "box0_1727950351451",
-            "box0_17218154429",
-            "box0_1727953252765",
-            "box1_1727953468615",
-            "box0_17254429",
-            "box0_1727955568380"
-        ];
-    
-        flexBoxIds.forEach((flexBoxId) => {
-            var flexBox = this.getView().byId(flexBoxId);
-            if (flexBox) {
-                flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-            }
-        });
-    
-        var tableIds = [
-            "tablaConsuExter",
-            "table_dimicFecha",
-            "tablaRecExterno",
-            "idOtroserConsu",
-            "idGastoViajeConsu",
-            "idServiExterno",
-            "idGastoRecuExter",
-            "tablaInfrestuctura",
-            "tablaLicencia",
-            "tableServicioInterno",
-            "tablGastoViajeInterno"
-        ];
-    
-        var oDynamicData = {};
-    
-        tableIds.forEach((tableId) => {
-            var oTable = this.getView().byId(tableId);
-            if (!oTable) {
-                console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-                return;
-            }
-    
-            // Eliminar columnas dinámicas previas
-            var columnCount = oTable.getColumns().length;
-            for (var j = columnCount - 1; j >= 0; j--) {
-                var columnHeader = oTable.getColumns()[j].getHeader();
-                if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-                    oTable.removeColumn(oTable.getColumns()[j]);
-                }
-            }
-            oTable.getItems().forEach((oRow) => {
-              var currentCells = oRow.getCells();
-              var staticCellCount = oTable.getColumns().filter(col => {
-                  var header = col.getHeader();
-                  return !(header && /\d{4}-\w+/.test(header.getText()));
-              }).length;
-          
-              while (oRow.getCells().length > staticCellCount) {
-                  oRow.removeCell(oRow.getCells().length - 1);
-              }
-          });  
-            var totalColumnIndex = this.findTotalColumnIndex(oTable);
-    
-            oDynamicData[tableId] = {};
-    
-            for (var i = 0; i <= diffMonths; i++) {
-                var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-                var year = dateCol.getFullYear();
-                var monthName = dateCol.toLocaleString("default", { month: "long" });
-                var keyCol = year + "-" + monthName;
-    
-                // Insertar columna
-                var oColumn = new sap.m.Column({
-                    header: new sap.m.Label({ text: keyCol }),
-                    width: "100px"
-                });
-                oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-    
-                oTable.getItems().forEach((oRow, rowIndex) => {
-                    oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
-    
-                    // Valor previo: intentamos obtener de oPreviousData si existe
-                    var prevVal = "";
-                    if (oPreviousData && oPreviousData[tableId] && oPreviousData[tableId][rowIndex]) {
-                        prevVal = oPreviousData[tableId][rowIndex][keyCol] || "";
-                    }
-    
-                    var oInput = new sap.m.Input({
-                        placeholder: "0.00",
-                        value: prevVal,
-                        change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
-                    });
-                    oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
-    
-                    oRow.addCell(oInput);
-    
-                    // Guardar referencia opcional
-                    this._inputsDinamicos = this._inputsDinamicos || {};
-                    this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
-                    this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
-                    this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
-    
-                    oDynamicData[tableId][rowIndex][keyCol] = prevVal;
-    
-                    // Disparar handleInputChange manualmente si hay valor previo
-                    if (prevVal !== "") {
-                        this.handleInputChange(
-                            tableId,
-                            rowIndex,
-                            i,
-                            year,
-                            { getParameter: () => prevVal }
-                        );
-                    }
-                });
-            }
-    
-            // Ajustes de scroll si tienes scroll_container
-            var sc = this.getView().byId("scroll_container_" + tableId);
-            if (sc) {
-                sc.setHorizontal(true);
-                sc.setVertical(false);
-                sc.setWidth("100%");
-            }
-        });
-    
-        oModelDynamic.setData(oDynamicData);
-        console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
-    },  
-
-
-
-
-     /* fechasDinamicas: function () { 
-
-
-        this._tableValues = {};
-this._yearlySums = {};
-this._monthlySums = {};  
-
+        this._monthlySums = {};
 
         var startDatePicker = this.getView().byId("date_inico");
         var endDatePicker = this.getView().byId("date_fin");
-    
+
         if (!startDatePicker || !endDatePicker) {
           console.error("Error: No se pudieron obtener los DatePickers.");
           return;
         }
-    
+
         var startDate = startDatePicker.getDateValue();
         var endDate = endDatePicker.getDateValue();
-    
+
         if (!startDate || !endDate) {
           return;
         }
-    
+
         var diffMonths = this.getMonthsDifference(startDate, endDate);
-    
+
         var flexBoxIds = [
           "box0_1714747137718",
           "box0_1727879568594",
@@ -10427,14 +11348,14 @@ this._monthlySums = {};
           "box0_17254429",
           "box0_1727955568380"
         ];
-    
+
         flexBoxIds.forEach((flexBoxId) => {
           var flexBox = this.getView().byId(flexBoxId);
           if (flexBox) {
             flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
           }
         });
-    
+
         var tableIds = [
           "tablaConsuExter",
           "table_dimicFecha",
@@ -10448,19 +11369,16 @@ this._monthlySums = {};
           "tableServicioInterno",
           "tablGastoViajeInterno"
         ];
-    
-        var oModelDynamic = this.getView().getModel("dynamicInputs");
-        var oDataPrev = oModelDynamic ? oModelDynamic.getData() : {};
-      
+
         var oDynamicData = {};
-    
+
         tableIds.forEach((tableId) => {
           var oTable = this.getView().byId(tableId);
           if (!oTable) {
             console.error("Error: No se pudo obtener la tabla con ID " + tableId);
             return;
           }
-    
+
           // Eliminar columnas dinámicas previas
           var columnCount = oTable.getColumns().length;
           for (var j = columnCount - 1; j >= 0; j--) {
@@ -10469,71 +11387,73 @@ this._monthlySums = {};
               oTable.removeColumn(oTable.getColumns()[j]);
             }
           }
-    
+          oTable.getItems().forEach((oRow) => {
+            var currentCells = oRow.getCells();
+            var staticCellCount = oTable.getColumns().filter(col => {
+              var header = col.getHeader();
+              return !(header && /\d{4}-\w+/.test(header.getText()));
+            }).length;
+
+            while (oRow.getCells().length > staticCellCount) {
+              oRow.removeCell(oRow.getCells().length - 1);
+            }
+          });
           var totalColumnIndex = this.findTotalColumnIndex(oTable);
-    
-      
-          // Inicializamos la estructura para esta tabla en el objeto dinámico
+
           oDynamicData[tableId] = {};
-    
+
           for (var i = 0; i <= diffMonths; i++) {
             var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
             var year = dateCol.getFullYear();
             var monthName = dateCol.toLocaleString("default", { month: "long" });
             var keyCol = year + "-" + monthName;
-            var totalIndex = this.findTotalColumnIndex(oTable);
-      
+
             // Insertar columna
             var oColumn = new sap.m.Column({
               header: new sap.m.Label({ text: keyCol }),
               width: "100px"
             });
-            oTable.insertColumn(oColumn, totalIndex + 1 + i);
-      
-            oDynamicData[tableId] = oDynamicData[tableId] || {};
-      
+            oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
+
             oTable.getItems().forEach((oRow, rowIndex) => {
               oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
-      
+
+              // Valor previo: intentamos obtener de oPreviousData si existe
               var prevVal = "";
-              if (oDataPrev && oDataPrev[tableId] && oDataPrev[tableId][rowIndex]) {
-                prevVal = oDataPrev[tableId][rowIndex][keyCol] || "";
+              if (oPreviousData && oPreviousData[tableId] && oPreviousData[tableId][rowIndex]) {
+                prevVal = oPreviousData[tableId][rowIndex][keyCol] || "";
               }
-      
+
               var oInput = new sap.m.Input({
                 placeholder: "0.00",
                 value: prevVal,
                 change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
               });
               oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
-      
+
               oRow.addCell(oInput);
-      
+
               // Guardar referencia opcional
               this._inputsDinamicos = this._inputsDinamicos || {};
               this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
               this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
               this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
-      
+
               oDynamicData[tableId][rowIndex][keyCol] = prevVal;
-      
 
-              console.log("Valores " + prevVal);
-              // 🔁 Disparar handleInputChange manualmente si hay valor previo
+              // Disparar handleInputChange manualmente si hay valor previo
               if (prevVal !== "") {
-
-                console.log("Estoy entrando a metodo del handle por segunda vez "); 
                 this.handleInputChange(
-                  tableId, 
-                  rowIndex, 
-                  i, 
-                  year, 
+                  tableId,
+                  rowIndex,
+                  i,
+                  year,
                   { getParameter: () => prevVal }
                 );
               }
             });
           }
-      
+
           // Ajustes de scroll si tienes scroll_container
           var sc = this.getView().byId("scroll_container_" + tableId);
           if (sc) {
@@ -10542,25 +11462,186 @@ this._monthlySums = {};
             sc.setWidth("100%");
           }
         });
-      
-        // Guardar modelo
-        if (!oModelDynamic) {
-          oModelDynamic = new sap.ui.model.json.JSONModel();
-          this.getView().setModel(oModelDynamic, "dynamicInputs");
-        }
+
         oModelDynamic.setData(oDynamicData);
         console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
-        
-      },*/
+      },
+
+
+
+
+      /* fechasDinamicas: function () { 
+ 
+ 
+         this._tableValues = {};
+ this._yearlySums = {};
+ this._monthlySums = {};  
+ 
+ 
+         var startDatePicker = this.getView().byId("date_inico");
+         var endDatePicker = this.getView().byId("date_fin");
+     
+         if (!startDatePicker || !endDatePicker) {
+           console.error("Error: No se pudieron obtener los DatePickers.");
+           return;
+         }
+     
+         var startDate = startDatePicker.getDateValue();
+         var endDate = endDatePicker.getDateValue();
+     
+         if (!startDate || !endDate) {
+           return;
+         }
+     
+         var diffMonths = this.getMonthsDifference(startDate, endDate);
+     
+         var flexBoxIds = [
+           "box0_1714747137718",
+           "box0_1727879568594",
+           "box0_1727879817594",
+           "box0_1721815443829",
+           "box0_1727948724833",
+           "box0_1727950351451",
+           "box0_17218154429",
+           "box0_1727953252765",
+           "box1_1727953468615",
+           "box0_17254429",
+           "box0_1727955568380"
+         ];
+     
+         flexBoxIds.forEach((flexBoxId) => {
+           var flexBox = this.getView().byId(flexBoxId);
+           if (flexBox) {
+             flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
+           }
+         });
+     
+         var tableIds = [
+           "tablaConsuExter",
+           "table_dimicFecha",
+           "tablaRecExterno",
+           "idOtroserConsu",
+           "idGastoViajeConsu",
+           "idServiExterno",
+           "idGastoRecuExter",
+           "tablaInfrestuctura",
+           "tablaLicencia",
+           "tableServicioInterno",
+           "tablGastoViajeInterno"
+         ];
+     
+         var oModelDynamic = this.getView().getModel("dynamicInputs");
+         var oDataPrev = oModelDynamic ? oModelDynamic.getData() : {};
+       
+         var oDynamicData = {};
+     
+         tableIds.forEach((tableId) => {
+           var oTable = this.getView().byId(tableId);
+           if (!oTable) {
+             console.error("Error: No se pudo obtener la tabla con ID " + tableId);
+             return;
+           }
+     
+           // Eliminar columnas dinámicas previas
+           var columnCount = oTable.getColumns().length;
+           for (var j = columnCount - 1; j >= 0; j--) {
+             var columnHeader = oTable.getColumns()[j].getHeader();
+             if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
+               oTable.removeColumn(oTable.getColumns()[j]);
+             }
+           }
+     
+           var totalColumnIndex = this.findTotalColumnIndex(oTable);
+     
+       
+           // Inicializamos la estructura para esta tabla en el objeto dinámico
+           oDynamicData[tableId] = {};
+     
+           for (var i = 0; i <= diffMonths; i++) {
+             var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+             var year = dateCol.getFullYear();
+             var monthName = dateCol.toLocaleString("default", { month: "long" });
+             var keyCol = year + "-" + monthName;
+             var totalIndex = this.findTotalColumnIndex(oTable);
+       
+             // Insertar columna
+             var oColumn = new sap.m.Column({
+               header: new sap.m.Label({ text: keyCol }),
+               width: "100px"
+             });
+             oTable.insertColumn(oColumn, totalIndex + 1 + i);
+       
+             oDynamicData[tableId] = oDynamicData[tableId] || {};
+       
+             oTable.getItems().forEach((oRow, rowIndex) => {
+               oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
+       
+               var prevVal = "";
+               if (oDataPrev && oDataPrev[tableId] && oDataPrev[tableId][rowIndex]) {
+                 prevVal = oDataPrev[tableId][rowIndex][keyCol] || "";
+               }
+       
+               var oInput = new sap.m.Input({
+                 placeholder: "0.00",
+                 value: prevVal,
+                 change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
+               });
+               oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
+       
+               oRow.addCell(oInput);
+       
+               // Guardar referencia opcional
+               this._inputsDinamicos = this._inputsDinamicos || {};
+               this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
+               this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
+               this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
+       
+               oDynamicData[tableId][rowIndex][keyCol] = prevVal;
+       
+ 
+               console.log("Valores " + prevVal);
+               // 🔁 Disparar handleInputChange manualmente si hay valor previo
+               if (prevVal !== "") {
+ 
+                 console.log("Estoy entrando a metodo del handle por segunda vez "); 
+                 this.handleInputChange(
+                   tableId, 
+                   rowIndex, 
+                   i, 
+                   year, 
+                   { getParameter: () => prevVal }
+                 );
+               }
+             });
+           }
+       
+           // Ajustes de scroll si tienes scroll_container
+           var sc = this.getView().byId("scroll_container_" + tableId);
+           if (sc) {
+             sc.setHorizontal(true);
+             sc.setVertical(false);
+             sc.setWidth("100%");
+           }
+         });
+       
+         // Guardar modelo
+         if (!oModelDynamic) {
+           oModelDynamic = new sap.ui.model.json.JSONModel();
+           this.getView().setModel(oModelDynamic, "dynamicInputs");
+         }
+         oModelDynamic.setData(oDynamicData);
+         console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
+         
+       },*/
 
 
 
 
 
 
-      
 
-      
+
+
       /*   fechasDinamicas: function () {
            var startDatePicker = this.getView().byId("date_inico");
            var endDatePicker = this.getView().byId("date_fin");
@@ -10811,98 +11892,98 @@ this._monthlySums = {};
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
 
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
-      //  console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
-       // console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
-    
+        //  console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
+        // console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
+
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
-    
+
         if (!this._tableValues) this._tableValues = {};
         if (!this._tableValues[tableId]) this._tableValues[tableId] = {};
         if (!this._tableValues[tableId][rowIndex]) this._tableValues[tableId][rowIndex] = {};
-    
+
         var oldValue = this._tableValues[tableId][rowIndex][columnIndex] || 0;
-    
-      //  console.log(`Valores actuales para tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: oldValue=${oldValue}, newValue=${newValue}`);
-    
+
+        //  console.log(`Valores actuales para tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: oldValue=${oldValue}, newValue=${newValue}`);
+
         if (newValue !== oldValue) {
-        //    console.log(`Valor cambiado en tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: de ${oldValue} a ${newValue}`);
-    
-            // Guarda el nuevo valor en la estructura interna
-            this._tableValues[tableId][rowIndex][columnIndex] = newValue;
-    
-            if (!this._editedRows) this._editedRows = {};
-            if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
-            this._editedRows[tableId].add(rowIndex);
-    
-            this._tableChanged = true;
-    
-            if (!this._yearlySums) this._yearlySums = {};
-            if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
-            if (this._yearlySums[rowIndex][year] !== undefined) {
-                this._yearlySums[rowIndex][year] -= oldValue;
-            }
-            this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
-    
-            if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
-            if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
-            if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
-    
-            this._yearlySums[tableId][rowIndex][year] -= oldValue;
-            this._yearlySums[tableId][rowIndex][year] += newValue;
-    
+          //    console.log(`Valor cambiado en tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: de ${oldValue} a ${newValue}`);
 
-            console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
-            this.updateTotalField(tableId, rowIndex, newValue);
-    
-            if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
-            if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
-            if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
-    
-            this._insercionesPorAnoYTabla[year][tableId]++;
-    
-            console.log(`Reclutado hasta ahora en año ${year} para tabla ${tableId}:`, this._insercionesPorAnoYTabla[year][tableId]);
-    
-            if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
-            if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
-    
-            this._insercionesPorTabla[tableId]++;
-    
-            console.log("TOTAL YEAR JSON", JSON.stringify(  this._insercionesPorTabla));
+          // Guarda el nuevo valor en la estructura interna
+          this._tableValues[tableId][rowIndex][columnIndex] = newValue;
 
-    
-            this.calcularPorcentajeInserciones();
-    
-            this.CaseAno(tableId);
-    
-            // ——— Actualización del modelo "dynamicInputs" ———
-            var oModelDynamic = this.getView().getModel("dynamicInputs");
-            var oData = oModelDynamic.getData();
-    
-            if (!oData[tableId]) {
-                oData[tableId] = {};
-            }
-            if (!oData[tableId][rowIndex]) {
-                oData[tableId][rowIndex] = {};
-            }
-    
-            var columnDate = new Date(this.getView().byId("date_inico").getDateValue().getFullYear(), this.getView().byId("date_inico").getDateValue().getMonth() + columnIndex, 1);
-            var yearText = columnDate.getFullYear();
-            var monthText = columnDate.toLocaleString("default", { month: "long" });
-            var columnKey = yearText + "-" + monthText;
-    
-            oData[tableId][rowIndex][columnKey] = newValue;
-    
-            oModelDynamic.setData(oData);
-            oModelDynamic.refresh();
-    
-            console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
-    
+          if (!this._editedRows) this._editedRows = {};
+          if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
+          this._editedRows[tableId].add(rowIndex);
+
+          this._tableChanged = true;
+
+          if (!this._yearlySums) this._yearlySums = {};
+          if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
+          if (this._yearlySums[rowIndex][year] !== undefined) {
+            this._yearlySums[rowIndex][year] -= oldValue;
+          }
+          this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
+
+          if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
+          if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
+          if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
+
+          this._yearlySums[tableId][rowIndex][year] -= oldValue;
+          this._yearlySums[tableId][rowIndex][year] += newValue;
+
+
+          console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
+          this.updateTotalField(tableId, rowIndex, newValue);
+
+          if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
+          if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
+          if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
+
+          this._insercionesPorAnoYTabla[year][tableId]++;
+
+          console.log(`Reclutado hasta ahora en año ${year} para tabla ${tableId}:`, this._insercionesPorAnoYTabla[year][tableId]);
+
+          if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
+          if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
+
+          this._insercionesPorTabla[tableId]++;
+
+          console.log("TOTAL YEAR JSON", JSON.stringify(this._insercionesPorTabla));
+
+
+          this.calcularPorcentajeInserciones();
+
+          this.CaseAno(tableId);
+
+          // ——— Actualización del modelo "dynamicInputs" ———
+          var oModelDynamic = this.getView().getModel("dynamicInputs");
+          var oData = oModelDynamic.getData();
+
+          if (!oData[tableId]) {
+            oData[tableId] = {};
+          }
+          if (!oData[tableId][rowIndex]) {
+            oData[tableId][rowIndex] = {};
+          }
+
+          var columnDate = new Date(this.getView().byId("date_inico").getDateValue().getFullYear(), this.getView().byId("date_inico").getDateValue().getMonth() + columnIndex, 1);
+          var yearText = columnDate.getFullYear();
+          var monthText = columnDate.toLocaleString("default", { month: "long" });
+          var columnKey = yearText + "-" + monthText;
+
+          oData[tableId][rowIndex][columnKey] = newValue;
+
+          oModelDynamic.setData(oData);
+          oModelDynamic.refresh();
+
+          console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
+
         } else {
-            console.log("No hay cambio de valor, no actualizo nada.");
+          console.log("No hay cambio de valor, no actualizo nada.");
         }
-    },
-    
-    
+      },
+
+
 
 
 
@@ -11003,7 +12084,7 @@ this._monthlySums = {};
 
         // Verificamos que haya inserciones antes de calcular porcentajes
         if (totalInserciones === 0) {
-        //  console.log(" No hay inserciones registradas.");
+          //  console.log(" No hay inserciones registradas.");
           return;
         }
 
@@ -11253,7 +12334,7 @@ this._monthlySums = {};
 
         } else if (tableId === "table_dimicFecha") {
 
-    //      console.log("ESTOY ENTRANDO AL  updateTotalField   PERO DE TABLAS DINAMICAS   "  );   
+          //      console.log("ESTOY ENTRANDO AL  updateTotalField   PERO DE TABLAS DINAMICAS   "  );   
 
           // Obtener la tabla "table_dimicFecha"
           var oTable = this.byId("table_dimicFecha");
@@ -11598,7 +12679,7 @@ this._monthlySums = {};
             return;
           }
 
-         // console.log("tabla encontrada ", tableId);
+          // console.log("tabla encontrada ", tableId);
           // Obtener los índices de las filas editadas
           this._editedRows[tableId].forEach(function (rowIndex) {
             var oItem = oTable.getItems()[rowIndex];
@@ -11981,7 +13062,7 @@ this._monthlySums = {};
         }
 
         var selectedText = selectedItem.getText();
-      //  console.log("Valor seleccionado:", selectedText);
+        //  console.log("Valor seleccionado:", selectedText);
 
         var oTable = this.getView().byId("table0");
 

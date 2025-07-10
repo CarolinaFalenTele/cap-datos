@@ -142,6 +142,7 @@
           "pattern": "Dialog",
           "target": "Dialog"
         },
+        
         {
           "name": "viewWithMode",
           "pattern": "view/{sourceModel}/{mode}/{sProjectID}",

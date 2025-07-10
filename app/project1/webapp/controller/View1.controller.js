@@ -567,18 +567,37 @@ sap.ui.define([
         }
 
         // 3️ MODO CREATE o EDIT con borrador
-        if (sSourceModel === "modelBorrador" || sMode === "edit" || sMode === "create") {
+        if (sSourceModel === "modelBorrador"  || sMode === "create") {
           this._isAprobacion = false;
 
           btnAceptar.setEnabled(true);
-          btnAceptar.setText("Guardar");
-          btnAceptar.attachPress(this.onBorrador, this);
+          btnAceptar.setText("Enviar");
+          btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnAceptar.attachPress(this.onSave, this);
 
           btnBorrado.setEnabled(true);
-          btnBorrado.setText("Enviar");
-          btnBorrado.attachPress(this.onSave, this);
+          btnBorrado.setText("Guardar como borrador");
+          btnBorrado.setType(sap.m.ButtonType.Transparent);
+
+          btnBorrado.attachPress(this.onBorrador, this);
           return;
         }
+
+        if(sSourceModel === "modelPendientes"  ||  sMode === "edit"){  
+           this._isAprobacion = false;
+
+          btnAceptar.setEnabled(true);
+          btnAceptar.setText("Enviar");
+          btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnAceptar.attachPress(this.onSave, this);
+
+          btnBorrado.setEnabled(false);
+          btnBorrado.setText("Guardar como borrador");
+          btnBorrado.setType(sap.m.ButtonType.Transparent);
+
+          btnBorrado.attachPress(this.onBorrador, this);
+          return;
+      }
 
         // 4️ MODO DEFAULT: asegurar botones habilitados con acción segura
         btnAceptar.setEnabled(true);
@@ -588,7 +607,7 @@ sap.ui.define([
 
         btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar");
-        btnBorrado.setType(sap.m.ButtonType.Emphasized);
+        btnBorrado.setType(sap.m.ButtonType.Transparent);
         btnBorrado.attachPress(this.onBorrador, this);
       },
 
@@ -1263,44 +1282,44 @@ sap.ui.define([
       },
 
 
-     /* _openDecisionDialog: function (decisionType) {
-        if (!this._oDecisionDialog) {
-          const that = this;  // Guardamos referencia al controlador
-          this._oDecisionDialog = new sap.m.Dialog({
-            title: decisionType === "approve" ? "Confirmar Aprobación" : "Confirmar Rechazo",
-            content: [
-              new sap.m.Text({ text: "¿Está seguro de que desea continuar?" }),
-              new sap.m.TextArea("commentArea", {
-                width: "100%",
-                placeholder: "Agregue un comentario (opcional)",
-                rows: 8,
-                height: "150px"
-              })
-            ],
-            beginButton: new sap.m.Button({
-              text: "Confirmar",
-              press: () => {
-                const comentario = sap.ui.getCore().byId("commentArea").getValue();
-
-                this._oDecisionDialog.close();
-
-                this._onDecisionPress(null, {
-                  getSource: () => ({ data: () => decisionType })
-                }, comentario);
-              }
-            }),
-            endButton: new sap.m.Button({
-              text: "Cancelar",
-              press: () => this._oDecisionDialog.close()
-            }),
-            afterClose: function () {
-              that._oDecisionDialog.destroy();
-              that._oDecisionDialog = null;
-            }
-          });
-        }
-        this._oDecisionDialog.open();
-      },*/
+      /* _openDecisionDialog: function (decisionType) {
+         if (!this._oDecisionDialog) {
+           const that = this;  // Guardamos referencia al controlador
+           this._oDecisionDialog = new sap.m.Dialog({
+             title: decisionType === "approve" ? "Confirmar Aprobación" : "Confirmar Rechazo",
+             content: [
+               new sap.m.Text({ text: "¿Está seguro de que desea continuar?" }),
+               new sap.m.TextArea("commentArea", {
+                 width: "100%",
+                 placeholder: "Agregue un comentario (opcional)",
+                 rows: 8,
+                 height: "150px"
+               })
+             ],
+             beginButton: new sap.m.Button({
+               text: "Confirmar",
+               press: () => {
+                 const comentario = sap.ui.getCore().byId("commentArea").getValue();
+ 
+                 this._oDecisionDialog.close();
+ 
+                 this._onDecisionPress(null, {
+                   getSource: () => ({ data: () => decisionType })
+                 }, comentario);
+               }
+             }),
+             endButton: new sap.m.Button({
+               text: "Cancelar",
+               press: () => this._oDecisionDialog.close()
+             }),
+             afterClose: function () {
+               that._oDecisionDialog.destroy();
+               that._oDecisionDialog = null;
+             }
+           });
+         }
+         this._oDecisionDialog.open();
+       },*/
 
 
 
@@ -4464,13 +4483,13 @@ sap.ui.define([
         const oAreaSelect = this.byId("slct_area");
         const sSelecKeyA = oAreaSelect.getSelectedKey();
         const sSelecTextA = oAreaSelect.getSelectedItem() ? oAreaSelect.getSelectedItem().getText() : "";
-        
+
         const oJefeSelect = this.byId("slct_Jefe");
         const sSelecKeyJe = oJefeSelect.getSelectedKey();
         const sSelecTextJe = oJefeSelect.getSelectedItem() ? oJefeSelect.getSelectedItem().getText() : "";
-      
 
-   //     console.log("JEFE SELECCIONADO " + sSelecTextJe    +  " "   + sSelecTextA);   
+
+        //     console.log("JEFE SELECCIONADO " + sSelecTextJe    +  " "   + sSelecTextA);   
         const sSelecKeyTipoCompra = this.byId("select_tipoCom").getSelectedKey();
         const sSelecKeyMotivoCondi = this.byId("selectMotivo").getSelectedKey();
         const sSelectKeyIni = this.byId("slct_inic").getSelectedKey();
@@ -4617,6 +4636,14 @@ sap.ui.define([
         const resultadoDialogo = await this.mostrarDialogoModalidad();
 
 
+        let sModalidad = "Online";
+        let sFechaComite = null;
+        
+        if (resultadoDialogo.modalidad === "Comité") {
+          sModalidad = "Comité";
+          sFechaComite = resultadoDialogo.fechaComite ? resultadoDialogo.fechaComite.toISOString().split("T")[0] : null;
+        }
+
 
         const payload = {
           codigoProyect: "1",
@@ -4652,6 +4679,7 @@ sap.ui.define([
           AmReceptor_ID: sSelectKeyAmrep,
           clienteFuncional_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
+          modalidad: sModalidad, // la defines aquí desde el inicio
           Usuarios_ID: usuarioOn,
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
@@ -4660,28 +4688,15 @@ sap.ui.define([
 
 
 
-
-        let sModalidad = "Online";
-        let sFechaComite = "";
-        
-        // Agregar fechaCreacion solo si es nuevo (POST)
         if (!sProjectID) {
           payload.fechaCreacion = localDate;
         }
-        
-        if (resultadoDialogo.modalidad === "Comité") {
-          sModalidad = "Comité";
-          payload.modalidad = "Comité";
-        
-          if (resultadoDialogo.fechaComite) {
-            sFechaComite = resultadoDialogo.fechaComite.toISOString().split("T")[0];
-            payload.fechaComite = sFechaComite;
-          }
-        } else {
-          sModalidad = "Online";
-          payload.modalidad = "Online";
-        }
-        
+
+
+        console.log("RESULTADO ----> " + sModalidad);
+        console.log("DEBUG resultadoDialogo.modalidad -->", resultadoDialogo.modalidad);
+
+
         // Crear la fecha de modificación (formato yyyy-MM-dd)
         let oDateFormat1 = sap.ui.core.format.DateFormat.getDateInstance({
           pattern: "yyyy-MM-dd"
@@ -4857,7 +4872,7 @@ sap.ui.define([
 
               const oContext = oModel.bindContext("/startWorkflow(...)");
 
-              oContext.setParameter("payload", JSON.stringify({
+              const workflowPayload = {
                 codigoproyect: 0,
                 nameproyect: snameProyect,
                 generatedid: generatedId,
@@ -4866,10 +4881,18 @@ sap.ui.define([
                 jefeProyecto: sSelecTextJe,
                 area: sSelecTextA,
                 usuario: sEmpleado,
-                Modalidad: sModalidad,
-                fechaComite: sFechaComite
-                }));
+                Modalidad: sModalidad
+              };
 
+              //  Agrega fechaComite solo si es Comité
+              if (sModalidad === "Comité" && sFechaComite) {
+  workflowPayload.fechaComite = sFechaComite;
+              }
+
+              oContext.setParameter("payload", JSON.stringify(workflowPayload));
+
+
+              //  Agrega fechaComite SOLO si es Comité
 
               try {
 
@@ -5791,6 +5814,18 @@ sap.ui.define([
         });
       },
 
+      onCancelarComiteDialog: function () {
+        if (this._oComiteDialog) {
+          this._oComiteDialog.close();
+        }
+
+        if (this._modalidadReject) {
+          this._modalidadReject("cancelado");
+          this._modalidadReject = null;
+          this._modalidadResolve = null;
+        }
+      },
+
 
 
       onConfirmModalidad: function () {
@@ -6096,8 +6131,6 @@ sap.ui.define([
             // Actualización (PATCH)
             url = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
             method = "PATCH";
-
-
 
           } else if (this._mode === "create") {
             // En modo create o sin sProjectID --> creación (POST)

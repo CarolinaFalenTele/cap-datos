@@ -2,14 +2,15 @@
     xmlns:layout="sap.ui.layout"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:table="sap.ui.table"
     xmlns:suite="sap.suite.ui.commons"
-    xmlns="sap.m"
+    xmlns:m="sap.m"
     controllerName="project1.controller.App"
     displayBlock="true"
-
 >
-    <App id="app">
-        <pages>
+    <m:App id="app">
+        <m:pages>
             <Page
                 xmlns="sap.m"
                 id="pageId"
@@ -30,7 +31,8 @@
                                 src="https://freelogopng.com/images/all_img/1682997299telefonica-icon-png.png"
                                 height="38px"
                                 id="image0"
-                            />  			                                                            <ToolbarSpacer /> 
+                            />
+                            <ToolbarSpacer />
                         </contentLeft>
                     </Bar>
                 </customHeader>
@@ -50,7 +52,6 @@
                                 numberState="Success"
                                 backgroundDesign="Translucent"
                                 class="sapUiResponsivePadding--header "
-                              
                             >
                                 <ObjectAttribute
                                     id="233"
@@ -97,7 +98,6 @@
                                         select="onIconTabSelect"
                                     >
                                         <items>
-                                        
                                             <IconTabFilter
                                                 id="ma3"
                                                 key="attachments"
@@ -105,284 +105,288 @@
                                                 tooltip="Solicitudes pendientes"
                                                 count="{modelPendientes>/Count}"
                                             >
-                                                <Table
+                                                <table:Table
                                                     id="idPendientes"
-                                                    sticky="HeaderToolbar,ColumnHeaders"
-                                                    inset="false"
-                                                    items="{modelPendientes>/DatosProyect}"
-                                                    class="sapFDynamicPageAlignContent customHeaderColor2"
+                                                    rows="{modelPendientes>/DatosProyect}"
+                                                    selectionMode="None"
+                                                    class="sapFDynamicPageAlignContent sapUiTableColHdrCell"
                                                     width="auto"
-                                                    noDataText="No existen solicitudes pendientes en este momento "
                                                 >
-                                                    <headerToolbar>
-                                                        <Toolbar
-                                                            id="headerToolbar"
-                                                        >
+                                                    <table:toolbar>
+                                                        <Toolbar>
                                                             <Title
-                                                                id="title"
-                                                                text="Pendientes a Aprobacion"
+                                                                text="Pendientes a Aprobación"
                                                                 level="H2"
-                                                                class="color"
+                                                                class="customTitle"
                                                             />
                                                             <ToolbarSpacer />
-
                                                             <SearchField
                                                                 id="searchField"
                                                                 liveChange="onSearch"
-                                                                class="sapUiLargeMargin "
                                                                 placeholder="Buscar por Nombre de Proyecto"
                                                                 width="30%"
                                                             />
                                                         </Toolbar>
-                                                    </headerToolbar>
-                                                    <columns>
-                                                        <!-- Columna Fecha -->
-                                                        <Column
-                                                            id="colFecha"
-                                                            width="12em"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtFecha"
-                                                                text="Fecha Creación "
+                                                    </table:toolbar>
+
+                                                    <!-- Columna Fecha -->
+                                                    <table:Column
+                                                        id="colFecha"
+                                                        sortProperty="FechaCreacionFormateada"
+                                                        filterProperty="FechaCreacionFormateada"
+                                                        class="myStyle"
+                                                        width="12em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Fecha Creación"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>FechaCreacionFormateada}"
+                                                                class="boldText"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Código Proyecto -->
-                                                        <Column
-                                                            id="colCodigo"
-                                                            width="12em"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtCodigo"
-                                                                text="Codigo Proyecto"
+                                                    <!-- Columna Código Proyecto -->
+                                                    <table:Column
+                                                        id="colCodigo"
+                                                        sortProperty="codigoProyecto"
+                                                        filterProperty="codigoProyecto"
+                                                        width="12em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Código Proyecto"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>codigoProyect}"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Nombre Proyecto -->
-                                                        <Column
-                                                            id="colNombreProyecto"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtNombreProyecto"
-                                                                text="Nombre Proyecto"
+                                                    <!-- Columna Nombre Proyecto -->
+                                                    <table:Column
+                                                        id="colNombreProyecto"
+                                                        sortProperty="nameProyect"
+                                                        filterProperty="nameProyect"
+                                                        width="20em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Nombre Proyecto"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>nameProyect}"
+                                                                class="boldText"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Descripción -->
-                                                        <Column
-                                                            id="colDescripcion"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtDescripcion"
-                                                                text="Descripción"
+                                                    <!-- Columna Descripción -->
+                                                    <table:Column
+                                                        id="colDescripcion"
+                                                        sortProperty="descripcion"
+                                                        filterProperty="descripcion"
+                                                        width="20em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Descripción"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>descripcion}"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Área -->
-                                                        <Column
-                                                            id="colArea"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtArea"
-                                                                text="Área"
+                                                    <!-- Columna Área -->
+                                                    <table:Column
+                                                        id="colArea"
+                                                        sortProperty="NombreArea"
+                                                        filterProperty="NombreArea"
+                                                        width="12em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Área"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>NombreArea}"
+                                                                class="boldText"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Jefe Proyecto -->
-                                                        <Column
-                                                            id="colJefeProyecto"
-                                                            width="12em"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtJefeProyecto"
-                                                                text="Jefe de Proyecto"
+                                                    <!-- Columna Jefe Proyecto -->
+                                                    <table:Column
+                                                        id="colJefeProyecto"
+                                                        sortProperty="NombreJefe"
+                                                        filterProperty="NombreJefe"
+                                                        width="12em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Jefe de Proyecto"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>NombreJefe}"
+                                                                class="boldText"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Fecha Modificación -->
-                                                        <Column
-                                                            id="idFechModi"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtFechModi"
-                                                                text="Fecha Modificacion"
+                                                    <!-- Columna Fecha Modificación -->
+                                                    <table:Column
+                                                        id="idFechModi"
+                                                        sortProperty="fechaModificacion"
+                                                        filterProperty="FechaModificacionFormateada"
+                                                        width="12em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Fecha Modificación"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>FechaModificacionFormateada}"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Estado -->
-                                                        <Column
-                                                            id="colEstado"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="txtEstado"
-                                                                text="Estado"
+                                                    <!-- Columna Estado -->
+                                                    <table:Column
+                                                        id="colEstado"
+                                                        sortProperty="estado"
+                                                        filterProperty="estado"
+                                                        hAlign="Center"
+                                                        width="12em"
+                                                    >
+                                                        <Label
+                                                            text="Estado"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <ObjectStatus
+                                                                id="status02"
+                                                                text="{modelPendientes>Estado}"
+                                                                state="Warning"
                                                             />
-                                                        </Column>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                        <!-- Columna Botones -->
-                                                        <Column
-                                                            id="colEstado1"
-                                                            hAlign="Center"
-                                                            width="10em"
-                                                        >
-                                                            <Label
-                                                                id="txtButtons"
-                                                                text=""
+                                                    <!-- Columna Oferta -->
+                                                    <table:Column
+                                                        id="colOferta"
+                                                        sortProperty="oferta"
+                                                        filterProperty="oferta"
+                                                        hAlign="Center"
+                                                        width="12em"
+                                                    >
+                                                        <Label
+                                                            text="Mod"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                text="{modelPendientes>Oferta}"
                                                             />
-                                                        </Column>
-                                                    </columns>
+                                                        </table:template>
+                                                    </table:Column>
 
-                                                    <items>
-                                                        <ColumnListItem
-                                                            id="cliItem"
-                                                        >
-                                                            <cells>
-                                                                <ObjectIdentifier
-                                                                    id="txtFechai"
-                                                                    title="{modelPendientes>FechaCreacionFormateada}"
-                                                                />
-                                                                <Text
-                                                                    id="txtCellCodigo"
-                                                                    text="{modelPendientes>codigoProyect}"
-                                                                />
-                                                                <ObjectIdentifier
-                                                                    id="nombre34"
-                                                                    title="{modelPendientes>nameProyect}"
-                                                                />
-                                                                <Text
-                                                                    id="txtCellDescripcion"
-                                                                    text="{modelPendientes>descripcion}"
-                                                                    class="boldText"
-                                                                />
-                                                                <Text
-                                                                    id="txtCellArea"
-                                                                    text="{modelPendientes>NombreArea}"
-                                                                     class="boldText"
-                                                                />
-                                                                <Text
-                                                                    id="txtCellJefeProyecto"
-                                                                    text="{modelPendientes>NombreJefe}"
-                                                                     class="boldText"
-                                                                />
-                                                                <ObjectIdentifier
-                                                                    id="txtfechamodificacion"
-                                                                    title="{modelPendientes>FechaModificacionFormateada}"
-                                                                />
-                                                                <ObjectStatus
-                                                                    id="objStatus"
-                                                                    text="{modelPendientes>Estado}"
-                                                                    state="Warning"
-                                                                />
+                                                    <!-- Columna Botones -->
+                                                    <table:Column
+                                                        id="colBotones"
+                                                        width="15em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Acciones"
+                                                            class="customTitle"
+                                                            textAlign="Center"
+                                                        />
+                                                        <table:template>
+                                                            <HBox
+                                                                justifyContent="Center"
+                                                                alignItems="Center"
+                                                            >
+                                                                <Button
+                                                                    icon="sap-icon://message-information"
+                                                                    press="DialogInfo"
+                                                                >
+                                                                    <customData>
+                                                                        <core:CustomData
+                                                                            key="projectId"
+                                                                            value="{modelPendientes>ID}"
+                                                                        />
+                                                                    </customData>
+                                                                </Button>
+                                                                <Button
+                                                                    icon="sap-icon://edit"
+                                                                    press="onEditPress"
+                                                                >
+                                                                    <customData>
+                                                                        <core:CustomData
+                                                                            key="projectId"
+                                                                            value="{modelPendientes>ID}"
+                                                                        />
+                                                                    </customData>
+                                                                </Button>
+                                                                <Button
+                                                                    icon="sap-icon://delete"
+                                                                    press="onDeletePress"
+                                                                >
+                                                                    <customData>
+                                                                        <core:CustomData
+                                                                            key="projectId"
+                                                                            value="{modelPendientes>ID}"
+                                                                        />
+                                                                        <core:CustomData
+                                                                            key="etapaId"
+                                                                            value="{modelPendientes>workflowId}"
+                                                                        />
+                                                                    </customData>
+                                                                </Button>
+                                                                <Button
+                                                                    xmlns="sap.m"
+                                                                    icon="sap-icon://activity-2"
+                                                                    text=""
+                                                                    tooltip="Proceso Solicitud"
+                                                                    id="button0"
+                                                                    press="onVerHistorial"
+                                                                >
+                                                                    <customData>
+                                                                        <core:CustomData
+                                                                            xmlns:core="sap.ui.core"
+                                                                            id="mivop"
+                                                                            key="nameProyect"
+                                                                            value="{modelPendientes>nameProyect}"
+                                                                        />
 
-                                                                <HBox id="fff">
-                                                                    <Button
-                                                                        press="DialogInfo"
-                                                                        icon="sap-icon://message-information"
-                                                                        ariaHasPopup="Dialog"
-                                                                    >
-                                                                        <customData
-                                                                        >
-                                                                            <core:CustomData
-                                                                                xmlns:core="sap.ui.core"
-                                                                                key="projectId"
-                                                                                value="{modelPendientes>ID}"
-                                                                            />
-                                                                        </customData>
-                                                                    </Button>
-
-                                                                    <Button
-                                                                        id="butn34"
-                                                                        icon="sap-icon://edit"
-                                                                        press="onEditPress"
-                                                                        enabled="true"
-                                                                    >
-                                                                        <customData
-                                                                        >
-                                                                            <core:CustomData
-                                                                                xmlns:core="sap.ui.core"
-                                                                                id="mivrf5op"
-                                                                                key="nameProyect"
-                                                                                value="{nameProyect}"
-                                                                            />
-                                                                            <core:CustomData
-                                                                                xmlns:core="sap.ui.core"
-                                                                                key="projectId"
-                                                                                value="{ID}"
-                                                                            />
-                                                                        </customData>
-                                                                    </Button>
-
-                                                                    <Button
-                                                                        id="ww"
-                                                                        icon="sap-icon://delete"
-                                                                        press="onDeletePress"
-                                                                        enabled="true"
-                                                                    >
-                                                                        <customData
-                                                                        >
-                                                                            <core:CustomData
-                                                                                xmlns:core="sap.ui.core"
-                                                                                key="projectId"
-                                                                                value="{modelPendientes>ID}"
-                                                                            />
-
-                                                                              <core:CustomData
-                                                                                 xmlns:core="sap.ui.core"
-
-                                                                                            key="etapaId"
-                                                                                            value="{modelPendientes>workflowId}" />
-                                                                        </customData>
-                                                                    </Button>
-
-                                                                    <items>
-                                                                        <Button
-                                                                            xmlns="sap.m"
-                                                                            icon="sap-icon://activity-2"
-                                                                            text=""
-                                                                            tooltip="Proceso Solicitud"
-                                                                            id="button0"
-                                                                            press="onVerHistorial"
-                                                                        >
-                                                                            <customData
-                                                                            >
-                                                                                <core:CustomData
-                                                                                    xmlns:core="sap.ui.core"
-                                                                                    id="mivop"
-                                                                                    key="nameProyect"
-                                                                                    value="{modelPendientes>nameProyect}"
-                                                                                />
-
-                                                                                <core:CustomData
-                                                                                    xmlns:core="sap.ui.core"
-                                                                                    key="projectId"
-                                                                                    value="{modelPendientes>ID}"
-                                                                                />
-                                                                            </customData>
-                                                                        </Button>
-                                                                    </items>
-                                                                </HBox>
-                                                            </cells>
-                                                        </ColumnListItem>
-                                                    </items>
-                                                </Table>
+                                                                        <core:CustomData
+                                                                            xmlns:core="sap.ui.core"
+                                                                            key="projectId"
+                                                                            value="{modelPendientes>ID}"
+                                                                        />
+                                                                    </customData>
+                                                                </Button>
+                                                            </HBox>
+                                                        </table:template>
+                                                    </table:Column>
+                                                </table:Table>
                                             </IconTabFilter>
                                             <IconTabFilter
                                                 id="ma55"
@@ -391,210 +395,205 @@
                                                 tooltip="Solicitudes Aprobadas"
                                                 count="{modelAprobados>/Count}"
                                             >
-                                                <Table
+                                                <table:Table
                                                     id="idProductsTable"
-                                                    sticky="HeaderToolbar,ColumnHeaders"
-                                                    inset="false"
-                                                    items="{modelAprobados>/DatosProyect}"
-                                                    class="sapFDynamicPageAlignContent customHeaderColor2"
+                                                    rows="{modelAprobados>/DatosProyect}"
+                                                    selectionMode="None"
+                                                    visibleRowCount="10"
                                                     width="auto"
-                                                    noDataText="No existen solicitudes aprobadas en este momento "
-
+                                                    class="sapFDynamicPageAlignContent sapUiTableColHdrCell"
                                                 >
-                                                    <headerToolbar>
-                                                        <Toolbar id="d">
+                                                    <table:toolbar>
+                                                        <Toolbar>
                                                             <Title
-                                                                id="d2"
                                                                 text="Lista De Solicitudes"
                                                                 level="H2"
                                                                 class="color"
                                                             />
-
                                                             <ToolbarSpacer />
-
                                                             <SearchField
                                                                 id="searchField2"
-                                                                liveChange="onSearchApro"
-                                                                class="sapUiLargeMargin"
+                                                                liveChange=".onSearchApro"
                                                                 placeholder="Buscar por Nombre de Proyecto"
                                                                 width="30%"
                                                             />
                                                         </Toolbar>
-                                                    </headerToolbar>
-                                                    <columns>
-                                                        <!-- Columna: Fecha Creación -->
-                                                        <Column
-                                                            id="ud"
+                                                    </table:toolbar>
+
+                                                    <table:columns>
+                                                        <table:Column
+                                                            id="colFechaCreacion"
+                                                            sortProperty="FechaCreacionFormateada"
+                                                            filterProperty="FechaCreacionFormateada"
                                                             width="12em"
+                                                            hAlign="Center"
                                                         >
                                                             <Label
-                                                                id="2d"
                                                                 text="Fecha Creación"
+                                                                class="customTitle"
                                                             />
-                                                        </Column>
-
-                                                        <!-- Columna: Codigo Proyecto -->
-                                                        <Column
-                                                            id="22d"
-                                                            width="12em"
-                                                        >
-                                                            <Label
-                                                                id="21d"
-                                                                text="Codigo Proyecto"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Nombre Proyecto -->
-                                                        <Column
-                                                            id="d87"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                        >
-                                                            <Label
-                                                                id="d00"
-                                                                text="Nombre Proyecto"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Descripción -->
-                                                        <Column
-                                                            id="d4"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                        >
-                                                            <Label
-                                                                id="dkh"
-                                                                text="Descripción"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Área -->
-                                                        <Column
-                                                            id="d34"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                        >
-                                                            <Label
-                                                                id="dh"
-                                                                text="Área"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Jefe de Proyecto -->
-                                                        <Column
-                                                            id="d34h"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                        >
-                                                            <Label
-                                                                id="dhh"
-                                                                text="Jefe de Proyecto"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Fecha de Aprobación -->
-                                                        <Column
-                                                            id="fechaAprobacion"
-                                                            minScreenWidth="Tablet"
-                                                            demandPopin="true"
-                                                        >
-                                                            <Label
-                                                                id="fechapro"
-                                                                text="Fecha de Aprobación"
-                                                            />
-                                                        </Column>
-
-                                                        <!-- Columna: Estado -->
-                                                        <Column
-                                                            id="dnn"
-                                                            hAlign="Center"
-                                                        >
-                                                            <Label
-                                                                id="dass"
-                                                                text="Estado"
-                                                            />
-                                                        </Column>
-
-                                                             <Column
-                                                            id="botones"
-                                                            hAlign="Center"
-                                                            width="auto"
-                                                        >
-                                                            <Label
-                                                                id="txtBusttons"
-                                                                text=""
-                                                            />
-                                                        </Column>
-                                                    </columns>
-
-                                                    <items>
-                                                        <ColumnListItem
-                                                            id="q111d"
-                                                        >
-                                                            <cells>
-                                                                <ObjectIdentifier
-                                                                    id="1234d"
-                                                                    title="{modelAprobados>FechaCreacionFormateada}"
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelAprobados>FechaCreacionFormateada}"
                                                                     class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colCodigoProyecto"
+                                                            sortProperty="codigoProyect"
+                                                            filterProperty="codigoProyect"
+                                                            width="12em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Código Proyecto"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <Text
-                                                                    id="2333d"
                                                                     text="{modelAprobados>codigoProyect}"
                                                                     class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colNombreProyecto1"
+                                                            sortProperty="nameProyect"
+                                                            filterProperty="nameProyect"
+                                                            width="20em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Nombre Proyecto"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <Text
-                                                                    id="00"
                                                                     text="{modelAprobados>nameProyect}"
                                                                     class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colDescripcion1"
+                                                            sortProperty="descripcion"
+                                                            filterProperty="descripcion"
+                                                            width="20em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Descripción"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <Text
-                                                                    id="0"
                                                                     text="{modelAprobados>descripcion}"
-                                                                    class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colArea1"
+                                                            sortProperty="Area/NombreArea"
+                                                            filterProperty="Area/NombreArea"
+                                                            width="15em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Área"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <Text
-                                                                    id="20"
                                                                     text="{modelAprobados>Area/NombreArea}"
                                                                     class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colJefeProyecto1"
+                                                            sortProperty="jefeProyectID/name"
+                                                            filterProperty="jefeProyectID/name"
+                                                            width="15em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Jefe de Proyecto"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <Text
-                                                                    id="210"
                                                                     text="{modelAprobados>jefeProyectID/name}"
                                                                     class="boldText"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
 
+                                                        <table:Column
+                                                            id="colFechaAprobacion"
+                                                            sortProperty="actualizadoEnFormateada"
+                                                            filterProperty="actualizadoEnFormateada"
+                                                            width="15em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Fecha de Aprobación"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <ObjectStatus
-                                                                    id="fechaaproboTxt"
                                                                     text="{modelAprobados>actualizadoEnFormateada}"
                                                                 />
+                                                            </table:template>
+                                                        </table:Column>
 
+                                                        <table:Column
+                                                            id="colEstado1"
+                                                            sortProperty="Estado"
+                                                            filterProperty="Estado"
+                                                            width="10em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Estado"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
                                                                 <ObjectStatus
-                                                                    id="status02"
                                                                     text="{modelAprobados>Estado}"
-                                                                     state="Success"/>
-                                                                
-                                                                
-                                          
+                                                                    state="Success"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
 
-
-                                                                 <HBox id="hbo2">
-                                                                    <!-- Primer botón -->
+                                                        <table:Column
+                                                            id="colAcciones"
+                                                            width="11em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Acciones"
+                                                            />
+                                                            <table:template>
+                                                                <HBox>
                                                                     <Button
-                                                                        press="DialogInfo"
                                                                         icon="sap-icon://message-information"
-                                                                        ariaHasPopup="Dialog"
+                                                                        press="DialogInfo"
                                                                     >
-                                                                        <customData>
+                                                                        <customData
+                                                                        >
                                                                             <core:CustomData
-                                                                                xmlns:core="sap.ui.core"
                                                                                 key="projectId"
                                                                                 value="{modelAprobados>ID}"
                                                                             />
                                                                         </customData>
                                                                     </Button>
-
-
-                                                        <Button
+                                                                      <Button
                                                                         id="butn346"
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
@@ -615,49 +614,51 @@
                                                                             />
                                                                         </customData>
                                                                     </Button>
-                    <!-- Tercer botón -->
-                                                                <Button
-                                                                    xmlns="sap.m"
-                                                                    icon="sap-icon://activity-2"
 
-                                                                    tooltip="Proceso Solicitud"
-                                                                    id="idButtonProcess"
-                                                                    press="onVerHistorial"
-                                                                >
-                                                                    <customData>
-                                                                        <core:CustomData
-                                                                            xmlns:core="sap.ui.core"
-                                                                            id="idproccna"
-                                                                            key="nameProyect"
-                                                                            value="{modelAprobados>nameProyect}"
-                                                                        />
-                                                                        <core:CustomData
-                                                                            xmlns:core="sap.ui.core"
-                                                                            key="projectId"
-                                                                            value="{modelAprobados>ID}"
-                                                                        />
-                                                                    </customData>
-                                                                </Button>
-                </HBox>
-                                                            </cells>
-                                                        </ColumnListItem>
-                                                    </items>
-                                                </Table>
+                                                                    <Button
+                                                                        xmlns="sap.m"
+                                                                        icon="sap-icon://activity-2"
+                                                                        text=""
+                                                                        tooltip="Proceso Solicitud"
+                                                                        id="button20"
+                                                                        press="onVerHistorial"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                id="mivop3"
+                                                                                key="nameProyect"
+                                                                                value="{modelAprobados>nameProyect}"
+                                                                            />
+
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelAprobados>ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
+                                                                </HBox>
+                                                            </table:template>
+                                                        </table:Column>
+                                                    </table:columns>
+                                                </table:Table>
                                             </IconTabFilter>
 
-
+                                            <!--
                                          <IconTabFilter
                                                 id="ma5578"
                                                 key="notes"
                                                 icon="sap-icon://employee-rejections"
                                                 tooltip="Solicitudes Aprobadas"
-                                                count="{modelRechazados>/Count}"
+                                                count="{modelMisSolicitudes>/Count}"
                                             >
 <Table
     id="RechazadosTable"
     sticky="HeaderToolbar,ColumnHeaders"
     inset="false"
-    items="{modelRechazados>/DatosProyect}"
+    items="{modelMisSolicitudes>/DatosProyect}"
     class="sapFDynamicPageAlignContent customHeaderColor2"
     width="auto"
        noDataText="No existen solicitudes rechazadas en este momento "
@@ -667,7 +668,7 @@
         <Toolbar id="aprobToolbar">
             <Title
                 id="aprobTitle"
-                text="Lista De Solicitudes Rechazadas"
+                text="Mis Solicitudes"
                 level="H2"
                 class="color"
             />
@@ -707,7 +708,7 @@
         </Column>
 
         <Column id="aprobColFechaAprob" minScreenWidth="Tablet" demandPopin="true">
-            <Label id="aprobLblFechaAprob" text="Fecha de Rechazo" />
+            <Label id="aprobLblFechaAprob" text="Fecha de Modificacion" />
         </Column>
 
         <Column id="aprobColEstado" hAlign="Center">
@@ -724,42 +725,42 @@
             <cells>
                 <ObjectIdentifier
                     id="aprobOIDFecha"
-                    title="{modelRechazados>FechaCreacionFormateada}"
+                    title="{modelMisSolicitudes>FechaCreacionFormateada}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtCodigo"
-                    text="{modelRechazados>codigoProyect}"
+                    text="{modelMisSolicitudes>codigoProyect}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtNombre"
-                    text="{modelRechazados>nameProyect}"
+                    text="{modelMisSolicitudes>nameProyect}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtDesc"
-                    text="{modelRechazados>descripcion}"
+                    text="{modelMisSolicitudes>descripcion}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtArea"
-                    text="{modelRechazados>Area/NombreArea}"
+                    text="{modelMisSolicitudes>Area/NombreArea}"
                     class="boldText"
                 />
                 <Text
                     id="aprobTxtJefe"
-                    text="{modelRechazados>jefeProyectID/name}"
+                    text="{modelMisSolicitudes>jefeProyectID/name}"
                     class="boldText"
                 />
                 <ObjectStatus
                     id="aprobStatusFechaAprob"
-                    text="{modelRechazados>actualizadoEnFormateada}"
+                    text="{modelMisSolicitudes>FechaModificacionFormateada}"
                 />
                 <ObjectStatus
                     id="aprobStatusEstado"
-                    text="{modelRechazados>Estado}"
-                    state="Error"
+                    text="{modelMisSolicitudes>Estado}"
+                    state="Warning"
                 />
                 <HBox id="aprobHBoxBtns">
     
@@ -795,7 +796,7 @@
                             <core:CustomData
                                 xmlns:core="sap.ui.core"
                                 key="projectId"
-                                value="{modelRechazados>ID}"
+                                value="{modelMisSolicitudes>ID}"
                             />
                         </customData>
                     </Button>
@@ -809,147 +810,250 @@
 </Table>
 
 
+                                            </IconTabFilter> -->
+
+                                            <IconTabFilter
+                                                id="idIconBorrador"
+                                                key="info"
+                                                icon="sap-icon://request"
+                                                tooltip="Mis borradores"
+                                                count="{modelBorrador>/Count}"
+                                            >
+                                                <table:Table
+                                                    id="newId_tablePendientes"
+                                                    rows="{modelBorrador>/DatosProyect}"
+                                                    selectionMode="None"
+                                                    visibleRowCount="10"
+                                                    width="auto"
+                                                    class="sapFDynamicPageAlignContent customHeaderColor2 sapUiTableColHdrCell"
+                                                >
+                                                    <table:toolbar>
+                                                        <Toolbar
+                                                            id="newId_headerToolbar"
+                                                        >
+                                                            <Title
+                                                                id="newId_title"
+                                                                text="Borradores"
+                                                                level="H2"
+                                                                class="color"
+                                                            />
+                                                            <ToolbarSpacer />
+                                                            <SearchField
+                                                                id="newId_searchField"
+                                                                liveChange="onSearch"
+                                                                class="sapUiLargeMargin"
+                                                                placeholder="Buscar por Nombre de Proyecto"
+                                                                width="30%"
+                                                            />
+                                                        </Toolbar>
+                                                    </table:toolbar>
+
+                                                    <table:columns>
+                                                        <table:Column
+                                                            id="newId_colFecha"
+                                                            sortProperty="FechaCreacionFormateada"
+                                                            filterProperty="FechaCreacionFormateada"
+                                                            width="12em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblFecha"
+                                                                text="Fecha Creación"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <ObjectStatus
+                                                                    text="{modelBorrador>FechaCreacionFormateada}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colNombreProyecto"
+                                                            sortProperty="nameProyect"
+                                                            filterProperty="nameProyect"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblNombreProyecto"
+                                                                text="Nombre Proyecto"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelBorrador>nameProyect}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colDescripcion"
+                                                            sortProperty="descripcion"
+                                                            filterProperty="descripcion"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblDescripcion"
+                                                                text="Descripción"
+                                                                class="customTitle"
+                                                            />
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colArea"
+                                                            sortProperty="NombreArea"
+                                                            filterProperty="NombreArea"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblArea"
+                                                                text="Área"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelBorrador>NombreArea}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colJefeProyecto"
+                                                            sortProperty="NombreJefe"
+                                                            filterProperty="NombreJefe"
+                                                            width="12em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblJefeProyecto"
+                                                                text="Jefe de Proyecto"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelBorrador>NombreJefe}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colFechModi"
+                                                            sortProperty="FechaModificacionFormateada"
+                                                            filterProperty="FechaModificacionFormateada"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblFechModi"
+                                                                text="Fecha Modificación"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelBorrador>FechaModificacionFormateada}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colEstado"
+                                                            sortProperty="Estado"
+                                                            filterProperty="Estado"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblEstado"
+                                                                text="Estado"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <ObjectStatus
+                                                                    text="{modelBorrador>Estado}"
+                                                                    state="Warning"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="newId_colAcciones"
+                                                            width="10em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                id="newId_lblAcciones"
+                                                                text="Acciones"
+                                                                class="customTitle"
+                                                            />
+
+                                                            <table:template>
+                                                                <HBox>
+                                                                    <Button
+                                                                        id="newId_btnInfo"
+                                                                        press="DialogInfo"
+                                                                        icon="sap-icon://message-information"
+                                                                        ariaHasPopup="Dialog"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelBorrador>ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
+
+                                                                    <Button
+                                                                        id="newId_btnEditar"
+                                                                        icon="sap-icon://edit"
+                                                                        press="onEditPress"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                id="newId_customName"
+                                                                                key="nameProyect"
+                                                                                value="{modelBorrador>nameProyect}"
+                                                                            />
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelBorrador>ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
+
+                                                                    <Button
+                                                                        id="newId_btnEliminar"
+                                                                        icon="sap-icon://delete"
+                                                                        press="onDeletePress"
+                                                                        enabled="true"
+                                                                    >
+                                                                        <customData
+                                                                        >
+                                                                            <core:CustomData
+                                                                                xmlns:core="sap.ui.core"
+                                                                                key="projectId"
+                                                                                value="{modelBorrador>ID}"
+                                                                            />
+                                                                        </customData>
+                                                                    </Button>
+                                                                </HBox>
+                                                            </table:template>
+                                                        </table:Column>
+                                                    </table:columns>
+                                                </table:Table>
                                             </IconTabFilter>
-
-
-                     <IconTabFilter id="idIconBorrador" key="info" icon="sap-icon://request"  tooltip="Mis borradores"
-  count="{modelBorrador>/Count}">
-                                        <Table
-                                            id="newId_tablePendientes"
-                                            sticky="HeaderToolbar,ColumnHeaders"
-                                            inset="false"
-                                            items="{modelBorrador>/DatosProyect}"
-                                            class="sapFDynamicPageAlignContent customHeaderColor2"
-                                            width="auto"
-                                            noDataText="No existen borradores disponibles "
-                                        >
-                                            <headerToolbar>
-                                                <Toolbar id="newId_headerToolbar">
-                                                    <Title
-                                                        id="newId_title"
-                                                        text="Borradores"
-                                                        level="H2"
-                                                        class="color"
-                                                    />
-                                                    <ToolbarSpacer />
-                                                    <SearchField
-                                                        id="newId_searchField"
-                                                        liveChange="onSearch"
-                                                        class="sapUiLargeMargin"
-                                                        placeholder="Buscar por Nombre de Proyecto"
-                                                        width="30%"
-                                                    />
-                                                </Toolbar>
-                                            </headerToolbar>
-
-                                            <columns>
-                                                <Column id="newId_colFecha" width="12em" hAlign="Center">
-                                                    <Label id="newId_lblFecha" text="Fecha Creación " />
-                                                </Column>
-
-
-                                                <Column id="newId_colNombreProyecto" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-                                                    <Label id="newId_lblNombreProyecto" text="Nombre Proyecto" />
-                                                </Column>
-
-                                                <Column id="newId_colDescripcion" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-                                                    <Label id="newId_lblDescripcion" text="Descripción" />
-                                                </Column>
-
-                                                <Column id="newId_colArea" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-                                                    <Label id="newId_lblArea" text="Área" />
-                                                </Column>
-
-                                                <Column id="newId_colJefeProyecto" width="12em" hAlign="Center">
-                                                    <Label id="newId_lblJefeProyecto" text="Jefe de Proyecto" />
-                                                </Column>
-
-                                                <Column id="newId_colFechModi" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-                                                    <Label id="newId_lblFechModi" text="Fecha Modificacion" />
-                                                </Column>
-
-                                                <Column id="newId_colEstado" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
-                                                    <Label id="newId_lblEstado" text="Estado" />
-                                                </Column>
-
-                                                <Column id="newId_colAcciones" hAlign="Center" width="10em">
-                                                    <Label id="newId_lblAcciones" text="" />
-                                                </Column>
-                                            </columns>
-
-                                            <items>
-                                                <ColumnListItem id="newId_itemPendiente">
-                                                    <cells>
-                                                        <ObjectIdentifier id="newId_objFechaCreacion" title="{modelBorrador>FechaCreacionFormateada}" />
-                                                        <ObjectIdentifier id="newId_objNombreProyecto" title="{modelBorrador>nameProyect}" />
-                                                        <Text id="newId_txtDescripcion" text="{modelBorrador>descripcion}" class="boldText" />
-                                                        <Text id="newId_txtArea" text="{modelBorrador>NombreArea}" class="boldText" />
-                                                        <Text id="newId_txtJefeProyecto" text="{modelBorrador>NombreJefe}" class="boldText" />
-                                                        <ObjectIdentifier id="newId_objFechaModificacion" title="{modelBorrador>FechaModificacionFormateada}" />
-                                                        <ObjectStatus id="newId_estadoProyecto" text="{modelBorrador>Estado}" state="Warning" />
-
-                                                        <HBox id="newId_hboxBotones">
-                                                            <Button
-                                                                id="newId_btnInfo"
-                                                                press="DialogInfo"
-                                                                icon="sap-icon://message-information"
-                                                                ariaHasPopup="Dialog"
-                                                            >
-                                                                <customData>
-                                                                    <core:CustomData
-                                                                        xmlns:core="sap.ui.core"
-                                                                        key="projectId"
-                                                                        value="{modelBorrador>ID}"
-                                                                    />
-                                                                </customData>
-                                                            </Button>
-
-                                                            <Button
-                                                                id="newId_btnEditar"
-                                                                icon="sap-icon://edit"
-                                                                press="onEditPress"
-                                                            >
-                                                                <customData>
-                                                                    <core:CustomData
-                                                                        xmlns:core="sap.ui.core"
-                                                                        id="newId_customName"
-                                                                        key="nameProyect"
-                                                                        value="{modelBorrador>nameProyect}"
-                                                                    />
-                                                                    <core:CustomData
-                                                                        xmlns:core="sap.ui.core"
-                                                                        key="projectId"
-                                                                        value="{modelBorrador>ID}"
-                                                                    />
-                                                                </customData>
-                                                            </Button>
-
-                                                            <Button
-                                                                id="newId_btnEliminar"
-                                                                icon="sap-icon://delete"
-                                                                press="onDeletePress"
-
-                                                               enabled="true"
-                                                            >
-                                                                <customData>
-                                                                    <core:CustomData
-                                                                        xmlns:core="sap.ui.core"
-                                                                        key="projectId"
-                                                                        value="{modelBorrador>ID}"
-                                                                    />
-                                                                </customData>
-                                                            </Button>
-
-                                                            <items>
-                                                            
-                                                            </items>
-                                                        </HBox>
-                                                    </cells>
-                                                </ColumnListItem>
-                                            </items>
-                                        </Table>
-                                 </IconTabFilter>
-
 
                                             <IconTabFilter
                                                 id="ma77"
@@ -984,120 +1088,246 @@
                                                     </headerToolbar>
 
                                                     <content>
-
-                                                         <ObjectAttribute
-                                    id="3434"
-                                    title="Flujo de Aprobación"
-                                    text="Fichas CDO"
-                                    active="true"
-                                press="pressFichas"
-                                    
-                                />
+                                                        <ObjectAttribute
+                                                            id="3434"
+                                                            title="Flujo de Aprobación"
+                                                            text="Fichas CDO"
+                                                            active="true"
+                                                            press="pressFichas"
+                                                        />
 
                                                         <ToolbarSpacer />
 
                                                         <Text
                                                             text="Proceso de Solictud"
-                                                            id="text1881" class="color"
+                                                            id="text1881"
+                                                            class="color"
                                                         />
 
-                                                    <suite:ProcessFlow
-    id="processflow1"
-    nodePress="onNodePress"
->
-    
-      <suite:lanes>
-        <suite:ProcessFlowLaneHeader id="lane0" laneId="0" iconSrc="sap-icon://crm-service-manager" text="Solicitud CDO" position="0"/>
-<suite:ProcessFlowLaneHeader id="lane1" laneId="1" iconSrc="sap-icon://approvals" text="Notificación de Aprobación" position="1"/>
-<suite:ProcessFlowLaneHeader id="lane2" laneId="2" iconSrc="sap-icon://notes" text="Aprobación Técnica (Basis/TQ/Factoría)" position="2"/>
-<suite:ProcessFlowLaneHeader id="lane3" laneId="3" iconSrc="sap-icon://activity-individual" text="Notificación a PMO" position="3"/>
-<suite:ProcessFlowLaneHeader id="lane4" laneId="4" iconSrc="sap-icon://factory" text="Aprobación PMO" position="4"/>
-<suite:ProcessFlowLaneHeader id="lane5" laneId="5" iconSrc="sap-icon://calendar" text="Notificación Control de Gestión" position="5"/>
-<suite:ProcessFlowLaneHeader id="lane6" laneId="6" iconSrc="sap-icon://accept" text="Aprobación Control de Gestión" position="6"/>
-<suite:ProcessFlowLaneHeader id="lane8" laneId="8" iconSrc="sap-icon://message-error" text="Notificación Dirección" position="7"/>
-<suite:ProcessFlowLaneHeader id="lane9" laneId="9" iconSrc="sap-icon://payment-approval" text="Aprobación Dirección" position="8"/>
-<suite:ProcessFlowLaneHeader id="lane99" laneId="99" iconSrc="sap-icon://decline" text="Finalizado / Rechazado" position="9"/>
-
-    </suite:lanes>
-</suite:ProcessFlow>
-
+                                                        <suite:ProcessFlow
+                                                            id="processflow1"
+                                                            nodePress="onNodePress"
+                                                        >
+                                                            <suite:lanes>
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane0"
+                                                                    laneId="0"
+                                                                    iconSrc="sap-icon://crm-service-manager"
+                                                                    text="Solicitud CDO"
+                                                                    position="0"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane1"
+                                                                    laneId="1"
+                                                                    iconSrc="sap-icon://approvals"
+                                                                    text="Notificación de Aprobación"
+                                                                    position="1"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane2"
+                                                                    laneId="2"
+                                                                    iconSrc="sap-icon://notes"
+                                                                    text="Aprobación Técnica (Basis/TQ/Factoría)"
+                                                                    position="2"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane3"
+                                                                    laneId="3"
+                                                                    iconSrc="sap-icon://activity-individual"
+                                                                    text="Notificación a PMO"
+                                                                    position="3"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane4"
+                                                                    laneId="4"
+                                                                    iconSrc="sap-icon://factory"
+                                                                    text="Aprobación PMO"
+                                                                    position="4"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane5"
+                                                                    laneId="5"
+                                                                    iconSrc="sap-icon://calendar"
+                                                                    text="Notificación Control de Gestión"
+                                                                    position="5"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane6"
+                                                                    laneId="6"
+                                                                    iconSrc="sap-icon://accept"
+                                                                    text="Aprobación Control de Gestión"
+                                                                    position="6"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane8"
+                                                                    laneId="8"
+                                                                    iconSrc="sap-icon://message-error"
+                                                                    text="Notificación Dirección"
+                                                                    position="7"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane9"
+                                                                    laneId="9"
+                                                                    iconSrc="sap-icon://payment-approval"
+                                                                    text="Aprobación Dirección"
+                                                                    position="8"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
+                                                                    id="lane99"
+                                                                    laneId="99"
+                                                                    iconSrc="sap-icon://decline"
+                                                                    text="Finalizado / Rechazado"
+                                                                    position="9"
+                                                                />
+                                                            </suite:lanes>
+                                                        </suite:ProcessFlow>
                                                     </content>
                                                 </Panel>
-
-
-
-                                         
                                             </IconTabFilter>
-                          
 
-
-                               <IconTabFilter
+                                            <IconTabFilter
                                                 id="id34"
                                                 key="people"
                                                 tooltip="Lista pendientes a Aprobar"
                                                 icon="sap-icon://pending"
-                                            visible="false" 
-                                             count="{modelEtapasAsignadas>/Count}"
-                                             
-
+                                                visible="false"
+                                                count="{modelEtapasAsignadas>/Count}"
                                             >
+                                                <table:Table
+                                                    rows="{modelEtapasAsignadas>/Etapas}"
+                                                    id="tabla_Aprobadores"
+                                                                                                        selectionMode="None"
 
-                                       
-                                            
-                                        <Table items="{modelEtapasAsignadas>/Etapas}"
-                                        id="tabla_Aprobadores"
-                                        noDataText="No existen solicitudes a aprobar "
-                                        class="customHeaderColor2 sapFDynamicPageAlignContent"
-                                      sticky="HeaderToolbar,ColumnHeaders"
-                                        >
+                                                    class="customHeaderColor2 sapFDynamicPageAlignContent"
+                                                >
+                                                    <table:toolbar>
+                                                        <Toolbar>
+                                                            <Title
+                                                                id="title_aprobadores"
+                                                                text="Pendientes a Aprobar"
+                                                                level="H2"
+                                                                class="color"
+                                                            />
+                                                            <ToolbarSpacer />
+                                                            <SearchField
+                                                                id="searchField_aprobadores"
+                                                                liveChange="onSearchAprobadores"
+                                                                class="sapUiLargeMargin"
+                                                                placeholder="Buscar por Nombre de Proyecto"
+                                                                width="30%"
+                                                            />
+                                                        </Toolbar>
+                                                    </table:toolbar>
 
-                                          <headerToolbar>
-                                                <Toolbar id="newId_headerToolbar2">
-                                                    <Title
-                                                        id="newId_title2"
-                                                        text="Pendientes a Aprobar"
-                                                        level="H2"
-                                                        class="color"
-                                                    />
-                                                    <ToolbarSpacer />
-                                                    <SearchField
-                                                        id="newId_searchField2"
-                                                        liveChange="onSearchAprobadores"
-                                                        class="sapUiLargeMargin"
-                                                        placeholder="Buscar por Nombre de Proyecto"
-                                                        width="30%"
-                                                    />
-                                                </Toolbar>
-                                            </headerToolbar>
-                                           
-                                        <columns>
-                                            <Column><Label text="Etapa" /></Column>
-                                            <Column><Label text="Proyecto" /></Column>
-                                            <Column><Label text="Descripcion" /></Column>
-                                            <Column><Label text="Asignado A" /></Column>
+                                                    <table:columns>
+                                                        <table:Column
+                                                            id="colEtapa"
+                                                            sortProperty="nombreEtapa"
+                                                            filterProperty="nombreEtapa"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Etapa"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <ObjectStatus
+                                                                    text="{modelEtapasAsignadas>nombreEtapa}"
+                                                                    state="Information"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
 
-                                            <Column><Label text="Comentario" /></Column>
-                                              <Column><Label text="" /></Column>
-                                        </columns>
-                                        <items>
-                                            <ColumnListItem>
-                                            <cells>
-                                                <ObjectStatus text="{modelEtapasAsignadas>nombreEtapa}"   state="Information" />
-                                                <Text text="{modelEtapasAsignadas>nameProyect}"   class="boldText" />
-                                                <Text text="{modelEtapasAsignadas>descripcion}"   class="boldText"/>
-                                                <ObjectStatus text="{modelEtapasAsignadas>asignadoA}"    state="Information"    />
-                                                <Text text="{modelEtapasAsignadas>comentario}"    class="boldText" />
+                                                        <table:Column
+                                                            id="colProyecto"
+                                                            sortProperty="nameProyect"
+                                                            filterProperty="nameProyect"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Proyecto"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelEtapasAsignadas>nameProyect}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
 
+                                                        <table:Column
+                                                            id="colDescripcion2"
+                                                            sortProperty="descripcion"
+                                                            filterProperty="descripcion"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Descripción"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelEtapasAsignadas>descripcion}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
 
-                                                 
-                                                                 <HBox id="hbo26">
-                                                                    <!-- Primer botón -->
+                                                        <table:Column
+                                                            id="colAsignadoA"
+                                                            sortProperty="asignadoA"
+                                                            filterProperty="asignadoA"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Asignado A"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <ObjectStatus
+                                                                    text="{modelEtapasAsignadas>asignadoA}"
+                                                                    state="Information"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colComentario"
+                                                            sortProperty="comentario"
+                                                            filterProperty="comentario"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Comentario"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <Text
+                                                                    text="{modelEtapasAsignadas>comentario}"
+                                                                    class="boldText"
+                                                                />
+                                                            </table:template>
+                                                        </table:Column>
+
+                                                        <table:Column
+                                                            id="colAcciones2"
+                                                            width="10em"
+                                                            hAlign="Center"
+                                                        >
+                                                            <Label
+                                                                text="Acciones"
+                                                                class="customTitle"
+                                                            />
+                                                            <table:template>
+                                                                <HBox>
                                                                     <Button
                                                                         press="DialogInfo"
                                                                         icon="sap-icon://message-information"
                                                                         ariaHasPopup="Dialog"
                                                                     >
-                                                                        <customData>
+                                                                        <customData
+                                                                        >
                                                                             <core:CustomData
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"
@@ -1106,8 +1336,7 @@
                                                                         </customData>
                                                                     </Button>
 
-
-                                                        <Button
+                                                                    <Button
                                                                         id="butn3462"
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
@@ -1125,17 +1354,15 @@
                                                                                 xmlns:core="sap.ui.core"
                                                                                 key="projectId"
                                                                                 value="{modelEtapasAsignadas>projectId}"
-                                                                       
                                                                             />
                                                                         </customData>
                                                                     </Button>
 
-                                                                        <Button
+                                                                    <Button
                                                                         id="wsw"
                                                                         icon="sap-icon://delete"
                                                                         press="onDeletePress"
                                                                         enabled="true"
-                                                                        
                                                                     >
                                                                         <customData
                                                                         >
@@ -1144,25 +1371,17 @@
                                                                                 key="projectId"
                                                                                 value="{modelEtapasAsignadas>ID}"
                                                                             />
-
-                                                                            
-                                                                                    </customData>
+                                                                        </customData>
                                                                     </Button>
-                  
-                </HBox>
-                                            </cells>
-                                            </ColumnListItem>
-                                        </items>
-
-
-
-                                        </Table>
-
-                                        </IconTabFilter>
+                                                                </HBox>
+                                                            </table:template>
+                                                        </table:Column>
+                                                    </table:columns>
+                                                </table:Table>
+                                            </IconTabFilter>
                                         </items>
 
                                         <content />
-
                                     </IconTabBar>
                                 </headerContainer>
                             </ObjectHeader>
@@ -1184,6 +1403,6 @@
                     </OverflowToolbar>
                 </footer>
             </Page>
-        </pages>
-    </App>
+        </m:pages>
+    </m:App>
 </mvc:View>

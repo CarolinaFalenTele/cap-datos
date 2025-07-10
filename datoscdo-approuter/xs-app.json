@@ -12,7 +12,6 @@
       "csrfProtection": true,
       "authenticationType": "xsuaa"
     },
-
     {
       "source": "^/user-api(.*)",
       "target": "$1",
