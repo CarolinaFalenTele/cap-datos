@@ -1,14 +1,14 @@
 namespace db.datos;
 
 using {
-    cuid,
-    managed
+  cuid,
+  managed
 } from '@sap/cds/common';
 
 
 entity Jefeproyect {
   key ID        : UUID @cds.auto;
-      matricula : Decimal(20,4);
+      matricula : Decimal(20, 4);
       name      : String;
       lastname  : String;
       valueJefe : String;
@@ -21,24 +21,24 @@ entity TipoCompra {
 }
 
 entity MotivoCondi {
-  key ID   : UUID @cds.auto;
-      tipo : String;
-      valor: String;
+  key ID    : UUID @cds.auto;
+      tipo  : String;
+      valor : String;
 }
 
 entity Archivos : cuid, managed {
-  key ID       : UUID;
-  nombre       : String;
-  tipoMime     : String;  // sin @Core.IsMediaType aquí
-  @Core.MediaType : 'tipoMime'
-  @Core.ContentDisposition.Filename : 'nombre'
-  contenido    : LargeBinary;
-  datosProyect_ID : UUID;
+  key ID              : UUID;
+      nombre          : String;
+      tipoMime        : String; // sin @Core.IsMediaType aquí
+
+      @Core.MediaType                  : 'tipoMime'
+      @Core.ContentDisposition.Filename: 'nombre'
+      contenido       : LargeBinary;
+      datosProyect_ID : UUID;
 }
 
 
-
-
+@cds.persistence.journal
 entity DatosProyect {
   key ID                       : UUID @cds.auto;
       codigoProyect            : Integer;
@@ -47,26 +47,29 @@ entity DatosProyect {
       funcionalString          : String;
       clienteFacturacion       : String;
       multijuridica            : Boolean;
-      IPC_apli                 : Decimal(20,4);
-      costeEstructura          : Decimal(20,4);
+      IPC_apli                 : Decimal(20, 4);
+      costeEstructura          : Decimal(20, 4);
       objetivoAlcance          : LargeString;
+      canto                     : String; 
+      comen                     : Integer; 
       AsuncionesyRestricciones : LargeString;
       datosExtra               : LargeString;
       Oferta                   : Boolean;
       modalidad                : String;
       fechaComite              : Date;
-      CambioEuRUSD             : Decimal(20,4);
+      CambioEuRUSD             : Decimal(20, 4);
       Estado                   : String;
       Email                    : String;
       Empleado                 : String;
       fechaCreacion            : DateTime;
       descripcion              : String;
       mensual                  : Boolean;
+      holanuevo                 :String;
       comentarioTipoCompra     : LargeString;
       comentarioFacturacion    : LargeString;
       comentarioProveedor      : LargeString;
       comentarioPvD            : LargeString;
-      Total                    : Decimal(20,4);
+      Total                    : Decimal(20, 4);
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
       FechaModificacion        : Date;
@@ -83,8 +86,10 @@ entity DatosProyect {
       TipoCompra               : Association to TipoCompra;
       MotivoCondi              : Association to MotivoCondi;
       Usuarios                 : Association to Usuarios;
-      versiones: Composition of many SolicitudesVersiones on versiones.datosProyect = $self;
-      Archivos                 : Association to Archivos on Archivos.datosProyect_ID = ID;
+      versiones                : Composition of many SolicitudesVersiones
+                                   on versiones.datosProyect = $self;
+      Archivos                 : Association to Archivos
+                                   on Archivos.datosProyect_ID = ID;
       RecursosInternos         : Association to RecursosInternos
                                    on RecursosInternos.datosProyect_ID = ID;
       otrosGastoRecu           : Association to many otrosGastoRecu
@@ -138,27 +143,26 @@ entity DatosProyect {
                                    on InfraestrLicencia.datosProyect_ID = ID;
 
       ResumenCostesTotal       : Association to many ResumenCostesTotal
-                                   on ResumenCostesTotal.datosProyect_ID = ID;
-};
+                                  on ResumenCostesTotal.datosProyect_ID = ID;
+}; 
 
 
 entity SolicitudesVersiones {
-  key ID             : UUID;
-      datosProyect   : Association to DatosProyect;
-      version         : Integer;
-      nombre          : String;
-      estado          : String;
-      createdAt       : Timestamp;
+  key ID           : UUID;
+      datosProyect : Association to DatosProyect;
+      version      : Integer;
+      nombre       : String;
+      estado       : String;
+      createdAt    : Timestamp;
 }
 
 entity Usuarios {
-  key ID          : UUID @cds.auto;    
-      nombre      : String;
-      email       : String;
-      departamento: String;
-      rol         : String;     
+  key ID           : UUID @cds.auto;
+      nombre       : String;
+      email        : String;
+      departamento : String;
+      rol          : String;
 }
-
 
 
 entity Area {
@@ -246,8 +250,8 @@ entity Facturacion {
   key ID              : UUID @cds.auto;
       descripcionHito : String;
       fechaEstimida   : Date;
-      facturacion     : Decimal(20,4);
-      total           : Decimal(20,4);
+      facturacion     : Decimal(20, 4);
+      total           : Decimal(20, 4);
       datosProyect_ID : UUID;
 };
 
@@ -256,15 +260,15 @@ entity Facturacion {
 entity RecursosInternos {
   key ID                : UUID @cds.auto;
       ConceptoOferta    : String;
-      PMJ               : Decimal(20,4);
-      year1             : Decimal(20,4);
-      year2             : Decimal(20,4);
-      year3             : Decimal(20,4);
-      year4             : Decimal(20,4);
-      year5             : Decimal(20,4);
-      year6             : Decimal(20,4);
-      total             : Decimal(20,4);
-      totalE            : Decimal(20,4);
+      PMJ               : Decimal(20, 4);
+      year1             : Decimal(20, 4);
+      year2             : Decimal(20, 4);
+      year3             : Decimal(20, 4);
+      year4             : Decimal(20, 4);
+      year5             : Decimal(20, 4);
+      year6             : Decimal(20, 4);
+      total             : Decimal(20, 4);
+      totalE            : Decimal(20, 4);
       tipoServicio      : Association to TipoServicio;
       Vertical          : Association to Vertical;
       PerfilServicio    : Association to PerfilServicio;
@@ -278,16 +282,16 @@ entity RecursosInternos {
 entity otrosGastoRecu {
   key ID                    : UUID @cds.auto;
       ConceptoOferta        : String;
-      PMJ                   : Decimal(20,4);
+      PMJ                   : Decimal(20, 4);
       mesYear               : Date;
-      year1                 : Decimal(20,4);
-      year2                 : Decimal(20,4);
-      year3                 : Decimal(20,4);
-      year4                 : Decimal(20,4);
-      year5                 : Decimal(20,4);
-      year6                 : Decimal(20,4);
-      total                 : Decimal(20,4);
-      totalE                : Decimal(20,4);
+      year1                 : Decimal(20, 4);
+      year2                 : Decimal(20, 4);
+      year3                 : Decimal(20, 4);
+      year4                 : Decimal(20, 4);
+      year5                 : Decimal(20, 4);
+      year6                 : Decimal(20, 4);
+      total                 : Decimal(20, 4);
+      totalE                : Decimal(20, 4);
       tipoServicio          : Association to TipoServicio;
       Vertical              : Association to Vertical;
       datosProyect_ID       : UUID;
@@ -303,15 +307,15 @@ entity otrosGastoRecu {
 entity otrosRecursos {
   key ID                       : UUID @cds.auto;
       ConceptoOferta           : String;
-      PMJ                      : Decimal(20,4);
-      year1                    : Decimal(20,4);
-      year2                    : Decimal(20,4);
-      year3                    : Decimal(20,4);
-      year4                    : Decimal(20,4);
-      year5                    : Decimal(20,4);
-      year6                    : Decimal(20,4);
-      total                    : Decimal(20,4);
-      totalE                   : Decimal(20,4);
+      PMJ                      : Decimal(20, 4);
+      year1                    : Decimal(20, 4);
+      year2                    : Decimal(20, 4);
+      year3                    : Decimal(20, 4);
+      year4                    : Decimal(20, 4);
+      year5                    : Decimal(20, 4);
+      year6                    : Decimal(20, 4);
+      total                    : Decimal(20, 4);
+      totalE                   : Decimal(20, 4);
       tipoServicio             : Association to TipoServicio;
       Vertical                 : Association to Vertical;
       datosProyect_ID          : UUID;
@@ -324,21 +328,21 @@ entity ValorMensuReInter {
   key ID                  : UUID @cds.auto;
       RecursosInternos_ID : UUID;
       mesAno              : String;
-      valor               : Decimal(20,4);
+      valor               : Decimal(20, 4);
 };
 
 entity ValorMensuServReInter {
   key ID                : UUID @cds.auto;
       otrosGastoRecu_ID : UUID;
       mesAno            : String;
-      valor             : Decimal(20,4);
+      valor             : Decimal(20, 4);
 };
 
 entity ValorMensuGastViaReInter {
   key ID               : UUID @cds.auto;
       otrosRecursos_ID : UUID;
       mesAno           : String;
-      valor            : Decimal(20,4);
+      valor            : Decimal(20, 4);
 };
 //************************************************ */
 
@@ -347,15 +351,15 @@ entity ValorMensuGastViaReInter {
 entity ConsumoExternos {
   key ID                : UUID @cds.auto;
       ConceptoOferta    : String;
-      PMJ               : Decimal(20,4);
-      year1             : Decimal(20,4);
-      year2             : Decimal(20,4);
-      year3             : Decimal(20,4);
-      year4             : Decimal(20,4);
-      year5             : Decimal(20,4);
-      year6             : Decimal(20,4);
-      total             : Decimal(20,4);
-      totalC            : Decimal(20,4);
+      PMJ               : Decimal(20, 4);
+      year1             : Decimal(20, 4);
+      year2             : Decimal(20, 4);
+      year3             : Decimal(20, 4);
+      year4             : Decimal(20, 4);
+      year5             : Decimal(20, 4);
+      year6             : Decimal(20, 4);
+      total             : Decimal(20, 4);
+      totalC            : Decimal(20, 4);
       tipoServicio      : Association to TipoServicio;
       Vertical          : Association to Vertical;
       PerfilConsumo     : Association to PerfilConsumo;
@@ -368,16 +372,16 @@ entity ConsumoExternos {
 entity otrosServiciosConsu {
   key ID                    : UUID @cds.auto;
       ConceptoOferta        : String;
-      PMJ                   : Decimal(20,4);
+      PMJ                   : Decimal(20, 4);
       mesYear               : Date;
-      year1                 : Decimal(20,4);
-      year2                 : Decimal(20,4);
-      year3                 : Decimal(20,4);
-      year4                 : Decimal(20,4);
-      year5                 : Decimal(20,4);
-      year6                 : Decimal(20,4);
-      total                 : Decimal(20,4);
-      totalE                : Decimal(20,4);
+      year1                 : Decimal(20, 4);
+      year2                 : Decimal(20, 4);
+      year3                 : Decimal(20, 4);
+      year4                 : Decimal(20, 4);
+      year5                 : Decimal(20, 4);
+      year6                 : Decimal(20, 4);
+      total                 : Decimal(20, 4);
+      totalE                : Decimal(20, 4);
       tipoServicio          : Association to TipoServicio;
       Vertical              : Association to Vertical;
       datosProyect_ID       : UUID;
@@ -388,16 +392,16 @@ entity otrosServiciosConsu {
 entity GastoViajeConsumo {
   key ID                        : UUID @cds.auto;
       ConceptoOferta            : String;
-      PMJ                       : Decimal(20,4);
+      PMJ                       : Decimal(20, 4);
       mesYear                   : Date;
-      year1                     : Decimal(20,4);
-      year2                     : Decimal(20,4);
-      year3                     : Decimal(20,4);
-      year4                     : Decimal(20,4);
-      year5                     : Decimal(20,4);
-      year6                     : Decimal(20,4);
-      total                     : Decimal(20,4);
-      totalE                    : Decimal(20,4);
+      year1                     : Decimal(20, 4);
+      year2                     : Decimal(20, 4);
+      year3                     : Decimal(20, 4);
+      year4                     : Decimal(20, 4);
+      year5                     : Decimal(20, 4);
+      year6                     : Decimal(20, 4);
+      total                     : Decimal(20, 4);
+      totalE                    : Decimal(20, 4);
       tipoServicio              : Association to TipoServicio;
       Vertical                  : Association to Vertical;
       datosProyect_ID           : UUID;
@@ -409,21 +413,21 @@ entity ValorMensuConsuEx {
   key ID                 : UUID @cds.auto;
       ConsumoExternos_ID : UUID;
       mesAno             : String;
-      valor              : Decimal(20,4);
+      valor              : Decimal(20, 4);
 };
 
 entity ValorMensuServConsuEx {
   key ID                     : UUID @cds.auto;
       otrosServiciosConsu_ID : UUID;
       mesAno                 : String;
-      valor                  : Decimal(20,4);
+      valor                  : Decimal(20, 4);
 };
 
 entity ValorMensuGastoViaConsuEx {
   key ID                   : UUID @cds.auto;
       GastoViajeConsumo_ID : UUID;
       mesAno               : String;
-      valor                : Decimal(20,4);
+      valor                : Decimal(20, 4);
 };
 //*********************************************** */
 
@@ -433,16 +437,16 @@ entity ValorMensuGastoViaConsuEx {
 entity RecursosExternos {
   key ID                  : UUID @cds.auto;
       ConceptoOferta      : String;
-      PMJ                 : Decimal(20,4);
+      PMJ                 : Decimal(20, 4);
       mesYear             : Date;
-      year1               : Decimal(20,4);
-      year2               : Decimal(20,4);
-      year3               : Decimal(20,4);
-      year4               : Decimal(20,4);
-      year5               : Decimal(20,4);
-      year6               : Decimal(20,4);
-      total               : Decimal(20,4);
-      totalR              : Decimal(20,4);
+      year1               : Decimal(20, 4);
+      year2               : Decimal(20, 4);
+      year3               : Decimal(20, 4);
+      year4               : Decimal(20, 4);
+      year5               : Decimal(20, 4);
+      year6               : Decimal(20, 4);
+      total               : Decimal(20, 4);
+      totalR              : Decimal(20, 4);
       tipoServicio        : Association to TipoServicio;
       Vertical            : Association to Vertical;
       PerfilServicio      : String;
@@ -456,16 +460,16 @@ entity RecursosExternos {
 entity serviRecurExter {
   key ID                 : UUID @cds.auto;
       ConceptoOferta     : String;
-      PMJ                : Decimal(20,4);
+      PMJ                : Decimal(20, 4);
       mesYear            : Date;
-      year1              : Decimal(20,4);
-      year2              : Decimal(20,4);
-      year3              : Decimal(20,4);
-      year4              : Decimal(20,4);
-      year5              : Decimal(20,4);
-      year6              : Decimal(20,4);
-      total              : Decimal(20,4);
-      totalE             : Decimal(20,4);
+      year1              : Decimal(20, 4);
+      year2              : Decimal(20, 4);
+      year3              : Decimal(20, 4);
+      year4              : Decimal(20, 4);
+      year5              : Decimal(20, 4);
+      year6              : Decimal(20, 4);
+      total              : Decimal(20, 4);
+      totalE             : Decimal(20, 4);
       tipoServicio       : Association to TipoServicio;
       Vertical           : Association to Vertical;
       datosProyect_ID    : UUID;
@@ -476,16 +480,16 @@ entity serviRecurExter {
 entity GastoViajeRecExter {
   key ID                     : UUID @cds.auto;
       ConceptoOferta         : String;
-      PMJ                    : Decimal(20,4);
+      PMJ                    : Decimal(20, 4);
       mesYear                : Date;
-      year1                  : Decimal(20,4);
-      year2                  : Decimal(20,4);
-      year3                  : Decimal(20,4);
-      year4                  : Decimal(20,4);
-      year5                  : Decimal(20,4);
-      year6                  : Decimal(20,4);
-      total                  : Decimal(20,4);
-      totalE                 : Decimal(20,4);
+      year1                  : Decimal(20, 4);
+      year2                  : Decimal(20, 4);
+      year3                  : Decimal(20, 4);
+      year4                  : Decimal(20, 4);
+      year5                  : Decimal(20, 4);
+      year6                  : Decimal(20, 4);
+      total                  : Decimal(20, 4);
+      totalE                 : Decimal(20, 4);
       tipoServicio           : Association to TipoServicio;
       Vertical               : Association to Vertical;
       datosProyect_ID        : UUID;
@@ -497,21 +501,21 @@ entity ValorMensuRecuExter {
   key ID                  : UUID @cds.auto;
       RecursosExternos_ID : UUID;
       mesAno              : String;
-      valor               : Decimal(20,4);
+      valor               : Decimal(20, 4);
 };
 
 entity ValorMensuSerExter {
   key ID                   : UUID @cds.auto;
       ServiRecurExterno_ID : UUID;
       mesAno               : String;
-      valor                : Decimal(20,4);
+      valor                : Decimal(20, 4);
 };
 
 entity ValorMensuGastoViExter {
   key ID                    : UUID @cds.auto;
       GastoViajeRecExter_ID : UUID;
       mesAno                : String;
-      valor                 : Decimal(20,4);
+      valor                 : Decimal(20, 4);
 };
 
 //************************************** */
@@ -519,16 +523,16 @@ entity ValorMensuGastoViExter {
 entity otrosConceptos {
   key ID                  : UUID @cds.auto;
       ConceptoOferta      : String;
-      PMJ                 : Decimal(20,4);
+      PMJ                 : Decimal(20, 4);
       mesYear             : Date;
-      year1               : Decimal(20,4);
-      year2               : Decimal(20,4);
-      year3               : Decimal(20,4);
-      year4               : Decimal(20,4);
-      year5               : Decimal(20,4);
-      year6               : Decimal(20,4);
-      total               : Decimal(20,4);
-      totalC              : Decimal(20,4);
+      year1               : Decimal(20, 4);
+      year2               : Decimal(20, 4);
+      year3               : Decimal(20, 4);
+      year4               : Decimal(20, 4);
+      year5               : Decimal(20, 4);
+      year6               : Decimal(20, 4);
+      total               : Decimal(20, 4);
+      totalC              : Decimal(20, 4);
       Vertical            : Association to Vertical;
       datosProyect_ID     : UUID;
       ValorMensuOtrConcep : Association to many ValorMensuOtrConcep
@@ -541,23 +545,23 @@ entity ValorMensuOtrConcep {
   key ID                : UUID @cds.auto;
       otrosConceptos_ID : UUID;
       mesAno            : String;
-      valor             : Decimal(20,4);
+      valor             : Decimal(20, 4);
 };
 
 
 entity LicenciasCon {
   key ID                 : UUID @cds.auto;
       ConceptoOferta     : String;
-      PMJ                : Decimal(20,4);
+      PMJ                : Decimal(20, 4);
       mesYear            : Date;
-      year1              : Decimal(20,4);
-      year2              : Decimal(20,4);
-      year3              : Decimal(20,4);
-      year4              : Decimal(20,4);
-      year5              : Decimal(20,4);
-      year6              : Decimal(20,4);
-      total              : Decimal(20,4);
-      totalC             : Decimal(20,4);
+      year1              : Decimal(20, 4);
+      year2              : Decimal(20, 4);
+      year3              : Decimal(20, 4);
+      year4              : Decimal(20, 4);
+      year5              : Decimal(20, 4);
+      year6              : Decimal(20, 4);
+      total              : Decimal(20, 4);
+      totalC             : Decimal(20, 4);
       Vertical           : Association to Vertical;
       datosProyect_ID    : UUID;
       ValorMensulicencia : Association to many ValorMensulicencia
@@ -570,7 +574,7 @@ entity ValorMensulicencia {
   key ID          : UUID @cds.auto;
       licencia_ID : UUID;
       mesAno      : String;
-      valor       : Decimal(20,4);
+      valor       : Decimal(20, 4);
 };
 
 
@@ -594,7 +598,7 @@ entity ClientFactura {
   key ID              : UUID @cds.auto;
       juridica        : String;
       oferta          : String;
-      total           : Decimal(20,4);
+      total           : Decimal(20, 4);
       datosProyect_ID : UUID;
 
 };
@@ -608,31 +612,32 @@ entity WorkflowInstancias {
       actualizadoEn   : Timestamp;
       creadoPor       : String;
       datosProyect_ID : UUID;
-      etapas          : Association to many WorkflowEtapas on etapas.workflow_ID = ID
-              @cds.on.delete: 'cascade';
+      etapas          : Association to many WorkflowEtapas
+                          on etapas.workflow_ID = ID
+                             @cds.on.delete: 'cascade';
 
 
 };
 
 entity WorkflowEtapas {
-  key ID            : UUID @cds.auto;
-      workflow_ID   : UUID;
-      taskInstanceId: String;     // NUEVO: guardar aquí el ID de la tarea activa
-      nombreEtapa   : String;     // "Control PMO", "Dirección", etc.
-      asignadoA     : String;     // email del aprobador
-      aprobadoPor   : String;     // se llena cuando se aprueba
-      estado        : String;     // "Pendiente", "Aprobado", "Rechazado"
-      comentario    : String;
-      fechaAprobado : Timestamp;
+  key ID             : UUID @cds.auto;
+      workflow_ID    : UUID;
+      taskInstanceId : String; // NUEVO: guardar aquí el ID de la tarea activa
+      nombreEtapa    : String; // "Control PMO", "Dirección", etc.
+      asignadoA      : String; // email del aprobador
+      aprobadoPor    : String; // se llena cuando se aprueba
+      estado         : String; // "Pendiente", "Aprobado", "Rechazado"
+      comentario     : String;
+      fechaAprobado  : Timestamp;
 };
 
 
 entity PerfilTotal {
   key ID              : UUID @cds.auto;
-      totalJorRI      : Decimal(20,4);
-      totalJorCE      : Decimal(20,4);
-      totalJorRE      : Decimal(20,4);
-      Total           : Decimal(20,4);
+      totalJorRI      : Decimal(20, 4);
+      totalJorCE      : Decimal(20, 4);
+      totalJorRE      : Decimal(20, 4);
+      Total           : Decimal(20, 4);
       datosProyect_ID : UUID;
 
 };
@@ -640,50 +645,50 @@ entity PerfilTotal {
 entity RecurInterTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
-      servicios       : Decimal(20,4);
-      OtrosServicios  : Decimal(20,4);
-      GastosdeViaje   : Decimal(20,4);
-      Total           : Decimal(20,4);
+      servicios       : Decimal(20, 4);
+      OtrosServicios  : Decimal(20, 4);
+      GastosdeViaje   : Decimal(20, 4);
+      Total           : Decimal(20, 4);
 
 };
 
 entity ConsuExterTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
-      servicios       : Decimal(20,4);
-      OtrosServicios  : Decimal(20,4);
-      GastosdeViaje   : Decimal(20,4);
-      Total           : Decimal(20,4);
+      servicios       : Decimal(20, 4);
+      OtrosServicios  : Decimal(20, 4);
+      GastosdeViaje   : Decimal(20, 4);
+      Total           : Decimal(20, 4);
 };
 
 
 entity RecuExterTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
-      servicios       : Decimal(20,4);
-      OtrosServicios  : Decimal(20,4);
-      GastosdeViaje   : Decimal(20,4);
-      Total           : Decimal(20,4);
+      servicios       : Decimal(20, 4);
+      OtrosServicios  : Decimal(20, 4);
+      GastosdeViaje   : Decimal(20, 4);
+      Total           : Decimal(20, 4);
 
 };
 
 entity InfraestrLicencia {
   key ID               : UUID @cds.auto;
       datosProyect_ID  : UUID;
-      totalInfraestruc : Decimal(20,4);
-      totalLicencia    : Decimal(20,4);
+      totalInfraestruc : Decimal(20, 4);
+      totalLicencia    : Decimal(20, 4);
 }
 
 
 entity ResumenCostesTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
-      Subtotal        : Decimal(20,4);
-      CosteEstruPorce : Decimal(20,4);
-      Costeestructura : Decimal(20,4);
-      MargenPorce  : Decimal(20,4);
-      Margeingresos   : Decimal(20,4);
-      total : Decimal(20,4);
+      Subtotal        : Decimal(20, 4);
+      CosteEstruPorce : Decimal(20, 4);
+      Costeestructura : Decimal(20, 4);
+      MargenPorce     : Decimal(20, 4);
+      Margeingresos   : Decimal(20, 4);
+      total           : Decimal(20, 4);
 
 
 }

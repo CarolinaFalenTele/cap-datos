@@ -4615,16 +4615,38 @@
                     </items>
                 </VBox>
             </content>
-            <footer>
-                <OverflowToolbar id="toolba1">
-                    <ToolbarSpacer id="25432"/>
+           <footer>
+    <OverflowToolbar id="toolba1">
+        <ToolbarSpacer id="25432" />
 
-                    <OverflowToolbarButton tooltip="Delete" text="Delete" id="idDelete" icon="sap-icon://delete" press="onClearFields"/>
+        <OverflowToolbarButton
+            tooltip="Delete"
+            text="Delete"
+            id="idDelete"
+            type = "Reject"
+            icon="sap-icon://delete"
+            press="onClearFields" />
 
-                    <Button id="btnAceptar" type="Accept" text="Enviar" press="onSave"/>
-                    <Button id="btnBorrado" type="Emphasized" text="Guardar" press="onBorrador"/>
-                </OverflowToolbar>
-            </footer>
+
+                    <Button
+            id="btnBorrado"
+            type="Emphasized"
+                icon="sap-icon://save"
+
+            text="Guardar como borrador"
+            press="onBorrador" />
+
+
+        <Button
+            id="btnAceptar"
+            type="Accept"
+            text="Enviar"
+            press="onSave" />
+
+
+    </OverflowToolbar>
+</footer>
+
         </Page>
     </App>
 

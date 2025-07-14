@@ -356,49 +356,6 @@ this.on("GET", "Archivos/$value", async (req) => {
 
 
 
-  /* this.on('registrarTareasWorkflow', async (req) => {
-     const { workflowInstanceId, responsables } = req.data;
-   
-     console.log("ID DEL UPDATE - "   + workflowInstanceId);
-     try {
-       const token = await getWorkflowToken();
-   
-       // 1. Obtener las tareas del workflow
-       const response = await axios.get(
-         `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
-         {
-           headers: { Authorization: `Bearer ${token}` }
-         }
-       );
-   
-       const tasks = response.data?.tasks || [];
-       const db = await cds.connect.to('db');
-   
-       // 2. Insertar cada tarea como etapa en la base de datos
-       for (const task of tasks) {
-         await db.run(INSERT.into('my.workflow.WorkflowEtapas').entries({
-           ID: cds.utils.uuid(),
-           workflow_ID: workflowInstanceId,
-           taskInstanceId: task.id,
-           nombreEtapa: task.name,
-           asignadoA: responsables[task.name] || null,
-           estado: task.status === "READY" ? "PENDIENTE" : task.status
-         }));
-       }
-   
-       return { message: "Etapas registradas correctamente" };
-   
-     } catch (err) {
-       console.error("❌ Error al registrar tareas:", err.response?.data || err.message);
-       req.reject(500, `Error al registrar tareas del workflow: ${err.message}`);
-     }
-   });*/
-
-
-
-
-
-
 
   this.on('completeWorkflow', async (req) => {
     const { workflowInstanceId, decision, comentario = '' } = req.data;
@@ -497,110 +454,6 @@ this.on("GET", "Archivos/$value", async (req) => {
       req.reject(500, `Error al completar task: ${err.message}`);
     }
   });
-
-
-  /*  this.on('completeWorkflow', async (req) => {
-  
-  
-      console.log("ENTRADO A COMPLETE WORKFLOW ");
-      const { workflowInstanceId, decision } = req.data;
-      const userEmail = req.user.email;
-      const token = await getWorkflowToken();
-    
-      try {
-        console.log("🔍 Buscando task para el workflowInstanceId:", workflowInstanceId);
-    
-        // Paso 1: Obtener todas las tareas de esa instancia
-        const getResponse = await axios.get(
-          `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-    
-        const tasks = getResponse.data;
-    
-        console.log("🔍 TAREAS ENCONTRADAS:", JSON.stringify(tasks));
-    
-        if (!tasks || tasks.length === 0) {
-          return req.reject(404, `❌ No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
-        }
-    
-        // Paso 2: Buscar la próxima tarea pendiente
-        const nextTask = tasks.find(task => task.status === "READY" || task.status === "RESERVED");
-    
-        if (!nextTask) {
-          return req.reject(400, `⚠️ No hay tareas en estado READY o RESERVED para este workflow.`);
-        }
-    
-        const taskId = nextTask.id;
-        console.log("✅ Próxima tarea pendiente encontrada:", taskId);
-    
-        // Paso 3: Completar la tarea encontrada
-        const patchResponse = await axios.patch(
-          `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${taskId}`,
-          {
-            status: "COMPLETED",
-            decision: decision
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-    
-        console.log("✅ Tarea completada con éxito:", patchResponse.data);
-        return `✅ Tarea ${taskId} completada con decisión: ${decision}`;
-    
-      } catch (err) {
-        console.error("❌ Error al completar task:", err.response?.data || err.message);
-        req.reject(500, `Error al completar task: ${err.message}`);
-      }
-    });*/
-
-
-
-
-  /* this.on('completeWorkflow', async (req) => {
-     const { workflowInstanceId, decision } = req.data;
- 
- 
-     console.log("ID del Workflow:" + workflowInstanceId);
-     console.log("Iniciando actualización del workflow...");
-     const token = await getWorkflowToken();
-     //console.log("Token obtenido:", token);
- 
-     try {
-       console.log("Realizando PATCH al contexto del workflow...");
- 
-       const patchResponse = await axios.patch(
-         `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${workflowInstanceId}/context`,
-         {
-           custom: {
-             decision: decision,
-             status: "COMPLETED"
-           }
-         },
-         {
-           headers: {
-             Authorization: `Bearer ${token}`,
-             'Content-Type': 'application/json'
-           }
-         }
-       );
- 
-       console.log("✅ Contexto actualizado exitosamente");
- 
- 
-       return `Workflow actualizado con decisión: ${decision}`;
- 
-     } catch (err) {
-       console.error("❌ Error al actualizar workflow:", err.response?.data || err.message);
-       req.reject(500, `Error al actualizar workflow: ${err.message}`);
-     }
-   });*/
 
 
 
@@ -722,36 +575,6 @@ this.on("GET", "Archivos/$value", async (req) => {
     }
   });
 
-  /*const { WorkflowService } = this.entities;
-
-  this.on('startWorkflow', async (req) => {
-    const input = JSON.parse(req.data.payload);
-  
-    const workflowPayload = {
-      definitionId: "eu10.p051dvk8.datoscdoprocess1.aprobacionCDO",
-      context: input
-    };
-  
-    try {
-      const token = await getWorkflowToken(); 
-  
-      const response = await axios.post(
-        'https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances',
-        workflowPayload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-  
-      return "Workflow iniciado correctamente";
-    } catch (err) {
-      console.error("Error en backend:", err.response?.data || err.message);
-      req.reject(500, `Error al iniciar workflow: ${err.message}`);
-    }
-  });**/
 
 
 
@@ -1334,35 +1157,4 @@ this.on("GET", "Archivos/$value", async (req) => {
 
 
 
-
-/*async function getTokenUser() {
-  const clientid = "sb-datoscdo!t46439";
-  const clientsecret = "60d01bf3-8de2-4879-88f8-05398ab2e16b$SJ31raLfmSWb2d7LWSW2UlNajajn6bmJ25ItSEDFNKc=";
-  const url = "https://j8z80lwx.authentication.eu20.hana.ondemand.com/oauth/token";
-
-  try {
-    const response = await axios({
-      method: "post",
-      url: url,
-      auth: {
-        username: clientid,
-        password: clientsecret
-      },
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      data: "grant_type=client_credentials"
-    });
-
-    const token = response.data.access_token;
-    console.log("✅ Token obtenido Get USER :", token);
-    return token;
-
-  } catch (error) {
-    console.error("❌ Error obteniendo token:", error.response?.data || error.message);
-    throw error;
-  }
-
-
-}*/
 

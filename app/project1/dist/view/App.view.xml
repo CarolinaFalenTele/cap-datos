@@ -8,6 +8,7 @@
     xmlns:m="sap.m"
     controllerName="project1.controller.App"
     displayBlock="true"
+    xmlns:controller="controller"
 >
     <m:App id="app">
         <m:pages>
@@ -51,17 +52,17 @@
                                 titlePress="handleTitlePress"
                                 numberState="Success"
                                 backgroundDesign="Translucent"
-                                class="sapUiResponsivePadding--header "
+                                class="sapUiResponsivePadding--header sapUiMediumMarginBottom "
                             >
                                 <ObjectAttribute
-                                    id="233"
+                                    id="attrEmpleado"
                                     title="Empleado"
                                     text=""
                                     active="true"
                                 />
                                 <ObjectAttribute
-                                    id="223"
-                                    title="Solicitudes"
+                                    id="attrSolicitudes"
+                                    title="📄 Solicitudes"
                                     text="{modelTotal>/Count}"
                                     active="true"
                                 />
@@ -95,6 +96,7 @@
                                         selectedKey="key3"
                                         upperCase="true"
                                         class="sapUiResponsiveContentPadding"
+                                        backgroundDesign="Translucent"
                                         select="onIconTabSelect"
                                     >
                                         <items>
@@ -108,11 +110,26 @@
                                                 <table:Table
                                                     id="idPendientes"
                                                     rows="{modelPendientes>/DatosProyect}"
+                                                    enableBusyIndicator="true"
                                                     selectionMode="None"
                                                     class="sapFDynamicPageAlignContent sapUiTableColHdrCell"
                                                     width="auto"
                                                 >
-                                                    <table:toolbar>
+                                                    <table:extension>
+                                                        <m:OverflowToolbar
+                                                            style="Clear"
+                                                        >
+                                                            <m:Title
+                                                                id="title"
+                                                                text="Pendientes a Aprobación"
+                                                                class="customTitle"
+                                                            />
+                                                            <m:ToolbarSpacer />
+
+                                        
+                                                        </m:OverflowToolbar>
+                                                    </table:extension>
+                                                    <!--  <table:toolbar>
                                                         <Toolbar>
                                                             <Title
                                                                 text="Pendientes a Aprobación"
@@ -127,7 +144,7 @@
                                                                 width="30%"
                                                             />
                                                         </Toolbar>
-                                                    </table:toolbar>
+                                                    </table:toolbar> -->
 
                                                     <!-- Columna Fecha -->
                                                     <table:Column
@@ -135,15 +152,30 @@
                                                         sortProperty="FechaCreacionFormateada"
                                                         filterProperty="FechaCreacionFormateada"
                                                         class="myStyle"
-                                                        width="12em"
+                                                        width="8em"
                                                         hAlign="Center"
                                                     >
-                                                        <Label
-                                                            text="Fecha Creación"
-                                                            class="customTitle"
-                                                        />
+                                                        <table:label>
+                                                            <m:HBox
+                                                                justifyContent="Start"
+                                                                alignItems="Center"
+                                                                fitContainer="true"
+                                                            >
+                                                                <m:Label
+                                                                    text="Fecha Creación"
+                                                                    class="customTitle"
+                                                                />
+                                                              <!--  <core:Icon
+                                                                    src="sap-icon://filter"
+                                                                    size="0.8rem"
+                                                                    color="#6a6d70"
+                                                                    class="iconMargin"
+                                                                />-->
+                                                            </m:HBox>
+                                                        </table:label>
+
                                                         <table:template>
-                                                            <Text
+                                                            <m:Text
                                                                 text="{modelPendientes>FechaCreacionFormateada}"
                                                                 class="boldText"
                                                             />
@@ -155,7 +187,7 @@
                                                         id="colCodigo"
                                                         sortProperty="codigoProyecto"
                                                         filterProperty="codigoProyecto"
-                                                        width="12em"
+                                                        width="7em"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -165,6 +197,7 @@
                                                         <table:template>
                                                             <Text
                                                                 text="{modelPendientes>codigoProyect}"
+                                                                textAlign="Center"
                                                             />
                                                         </table:template>
                                                     </table:Column>
@@ -185,6 +218,7 @@
                                                             <Text
                                                                 text="{modelPendientes>nameProyect}"
                                                                 class="boldText"
+                                                                textAlign="Center"
                                                             />
                                                         </table:template>
                                                     </table:Column>
@@ -204,6 +238,7 @@
                                                         <table:template>
                                                             <Text
                                                                 text="{modelPendientes>descripcion}"
+                                                                textAlign="Center"
                                                             />
                                                         </table:template>
                                                     </table:Column>
@@ -244,6 +279,7 @@
                                                             <Text
                                                                 text="{modelPendientes>NombreJefe}"
                                                                 class="boldText"
+                                                                textAlign="Center"
                                                             />
                                                         </table:template>
                                                     </table:Column>
@@ -253,7 +289,7 @@
                                                         id="idFechModi"
                                                         sortProperty="fechaModificacion"
                                                         filterProperty="FechaModificacionFormateada"
-                                                        width="12em"
+                                                        width="9em"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -273,7 +309,7 @@
                                                         sortProperty="estado"
                                                         filterProperty="estado"
                                                         hAlign="Center"
-                                                        width="12em"
+                                                        width="8em"
                                                     >
                                                         <Label
                                                             text="Estado"
@@ -291,18 +327,19 @@
                                                     <!-- Columna Oferta -->
                                                     <table:Column
                                                         id="colOferta"
-                                                        sortProperty="oferta"
-                                                        filterProperty="oferta"
+                                                        sortProperty="modalidad"
+                                                        filterProperty="modalidad"
                                                         hAlign="Center"
-                                                        width="12em"
+                                                        width="9em"
                                                     >
                                                         <Label
-                                                            text="Mod"
+                                                            text="Tipo de presentación"
                                                             class="customTitle"
                                                         />
                                                         <table:template>
-                                                            <Text
-                                                                text="{modelPendientes>Oferta}"
+                                                            <m:ObjectStatus
+                                                                text="{modelPendientes>modalidad}"
+                                                                state="Success"
                                                             />
                                                         </table:template>
                                                     </table:Column>
@@ -310,7 +347,7 @@
                                                     <!-- Columna Botones -->
                                                     <table:Column
                                                         id="colBotones"
-                                                        width="15em"
+                                                        width="10em"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -322,9 +359,12 @@
                                                             <HBox
                                                                 justifyContent="Center"
                                                                 alignItems="Center"
+                                                                renderType="Bare"
                                                             >
                                                                 <Button
                                                                     icon="sap-icon://message-information"
+                                                                    type="Transparent"
+                                                                    tooltip="Información del Proyecto"
                                                                     press="DialogInfo"
                                                                 >
                                                                     <customData>
@@ -334,8 +374,11 @@
                                                                         />
                                                                     </customData>
                                                                 </Button>
+
                                                                 <Button
                                                                     icon="sap-icon://edit"
+                                                                    type="Transparent"
+                                                                    tooltip="Editar Proyecto"
                                                                     press="onEditPress"
                                                                 >
                                                                     <customData>
@@ -345,8 +388,11 @@
                                                                         />
                                                                     </customData>
                                                                 </Button>
+
                                                                 <Button
                                                                     icon="sap-icon://delete"
+                                                                    type="Reject"
+                                                                    tooltip="Eliminar Proyecto"
                                                                     press="onDeletePress"
                                                                 >
                                                                     <customData>
@@ -360,24 +406,19 @@
                                                                         />
                                                                     </customData>
                                                                 </Button>
+
                                                                 <Button
-                                                                    xmlns="sap.m"
                                                                     icon="sap-icon://activity-2"
-                                                                    text=""
-                                                                    tooltip="Proceso Solicitud"
-                                                                    id="button0"
+                                                                    type="Transparent"
+                                                                    tooltip="Ver Historial de Solicitud"
                                                                     press="onVerHistorial"
                                                                 >
                                                                     <customData>
                                                                         <core:CustomData
-                                                                            xmlns:core="sap.ui.core"
-                                                                            id="mivop"
                                                                             key="nameProyect"
                                                                             value="{modelPendientes>nameProyect}"
                                                                         />
-
                                                                         <core:CustomData
-                                                                            xmlns:core="sap.ui.core"
                                                                             key="projectId"
                                                                             value="{modelPendientes>ID}"
                                                                         />
@@ -391,41 +432,45 @@
                                             <IconTabFilter
                                                 id="ma55"
                                                 key="notes"
-                                                icon="sap-icon://activity-2"
+                                                icon="sap-icon://multi-select"
                                                 tooltip="Solicitudes Aprobadas"
                                                 count="{modelAprobados>/Count}"
                                             >
                                                 <table:Table
-                                                    id="idProductsTable"
+                                                    id="idTableAprobados"
                                                     rows="{modelAprobados>/DatosProyect}"
+                                                    enableBusyIndicator="true"
                                                     selectionMode="None"
                                                     visibleRowCount="10"
                                                     width="auto"
+                                                    ariaLabelledBy="title"
                                                     class="sapFDynamicPageAlignContent sapUiTableColHdrCell"
                                                 >
-                                                    <table:toolbar>
-                                                        <Toolbar>
-                                                            <Title
-                                                                text="Lista De Solicitudes"
-                                                                level="H2"
-                                                                class="color"
+                                                    <table:extension>
+                                                        <m:OverflowToolbar
+                                                            style="Clear"
+                                                        >
+                                                            <m:Title
+                                                                id="titleAprobado"
+                                                                text="Solicitudes Procesadas"
+                                                                class="customTitle"
                                                             />
-                                                            <ToolbarSpacer />
-                                                            <SearchField
-                                                                id="searchField2"
-                                                                liveChange=".onSearchApro"
-                                                                placeholder="Buscar por Nombre de Proyecto"
-                                                                width="30%"
-                                                            />
-                                                        </Toolbar>
-                                                    </table:toolbar>
+                                                            <m:ToolbarSpacer />
+
+                                                            <!--	<m:SearchField
+							placeholder="Filter"
+							value="{ui>/globalFilter}"
+							search="filterGlobally"
+							width="15rem"/>  -->
+                                                        </m:OverflowToolbar>
+                                                    </table:extension>
 
                                                     <table:columns>
                                                         <table:Column
                                                             id="colFechaCreacion"
                                                             sortProperty="FechaCreacionFormateada"
                                                             filterProperty="FechaCreacionFormateada"
-                                                            width="12em"
+                                                            width="9em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -436,6 +481,7 @@
                                                                 <Text
                                                                     text="{modelAprobados>FechaCreacionFormateada}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -444,7 +490,7 @@
                                                             id="colCodigoProyecto"
                                                             sortProperty="codigoProyect"
                                                             filterProperty="codigoProyect"
-                                                            width="12em"
+                                                            width="9em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -454,6 +500,7 @@
                                                             <table:template>
                                                                 <Text
                                                                     text="{modelAprobados>codigoProyect}"
+                                                                    textAlign="Center"
                                                                     class="boldText"
                                                                 />
                                                             </table:template>
@@ -474,6 +521,7 @@
                                                                 <Text
                                                                     text="{modelAprobados>nameProyect}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -492,6 +540,7 @@
                                                             <table:template>
                                                                 <Text
                                                                     text="{modelAprobados>descripcion}"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -530,6 +579,7 @@
                                                                 <Text
                                                                     text="{modelAprobados>jefeProyectID/name}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -538,7 +588,7 @@
                                                             id="colFechaAprobacion"
                                                             sortProperty="actualizadoEnFormateada"
                                                             filterProperty="actualizadoEnFormateada"
-                                                            width="15em"
+                                                            width="10em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -556,7 +606,7 @@
                                                             id="colEstado1"
                                                             sortProperty="Estado"
                                                             filterProperty="Estado"
-                                                            width="10em"
+                                                            width="8em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -573,16 +623,23 @@
 
                                                         <table:Column
                                                             id="colAcciones"
-                                                            width="11em"
+                                                            width="9em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
                                                                 text="Acciones"
+                                                                class="customTitle"
                                                             />
                                                             <table:template>
-                                                                <HBox>
+                                                                <HBox
+                                                                    justifyContent="Center"
+                                                                    alignItems="Center"
+                                                                    renderType="Bare"
+                                                                >
                                                                     <Button
                                                                         icon="sap-icon://message-information"
+                                                                        type="Transparent"
+                                                                        tooltip="Información del Proyecto"
                                                                         press="DialogInfo"
                                                                     >
                                                                         <customData
@@ -593,9 +650,11 @@
                                                                             />
                                                                         </customData>
                                                                     </Button>
-                                                                      <Button
+                                                                    <Button
                                                                         id="butn346"
                                                                         icon="sap-icon://show"
+                                                                        type="Transparent"
+                                                                        tooltip="Editar Proyecto"
                                                                         press="onEditPress"
                                                                         enabled="true"
                                                                     >
@@ -618,8 +677,8 @@
                                                                     <Button
                                                                         xmlns="sap.m"
                                                                         icon="sap-icon://activity-2"
-                                                                        text=""
-                                                                        tooltip="Proceso Solicitud"
+                                                                        type="Transparent"
+                                                                        tooltip="Ver Historial de Solicitud"
                                                                         id="button20"
                                                                         press="onVerHistorial"
                                                                     >
@@ -820,33 +879,26 @@
                                                 count="{modelBorrador>/Count}"
                                             >
                                                 <table:Table
-                                                    id="newId_tablePendientes"
+                                                    id="TableBorrador"
                                                     rows="{modelBorrador>/DatosProyect}"
                                                     selectionMode="None"
+                                                    enableBusyIndicator="true"
                                                     visibleRowCount="10"
                                                     width="auto"
                                                     class="sapFDynamicPageAlignContent customHeaderColor2 sapUiTableColHdrCell"
                                                 >
-                                                    <table:toolbar>
-                                                        <Toolbar
-                                                            id="newId_headerToolbar"
+                                                    <table:extension>
+                                                        <m:OverflowToolbar
+                                                            style="Clear"
                                                         >
-                                                            <Title
-                                                                id="newId_title"
-                                                                text="Borradores"
-                                                                level="H2"
-                                                                class="color"
+                                                            <m:Title
+                                                                id="titleBorradores"
+                                                                text="Mis Borradores"
+                                                                class="customTitle"
                                                             />
-                                                            <ToolbarSpacer />
-                                                            <SearchField
-                                                                id="newId_searchField"
-                                                                liveChange="onSearch"
-                                                                class="sapUiLargeMargin"
-                                                                placeholder="Buscar por Nombre de Proyecto"
-                                                                width="30%"
-                                                            />
-                                                        </Toolbar>
-                                                    </table:toolbar>
+                                                            <m:ToolbarSpacer />
+                                                        </m:OverflowToolbar>
+                                                    </table:extension>
 
                                                     <table:columns>
                                                         <table:Column
@@ -886,6 +938,7 @@
                                                                 <Text
                                                                     text="{modelBorrador>nameProyect}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -918,6 +971,7 @@
                                                                 <Text
                                                                     text="{modelBorrador>NombreArea}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -926,7 +980,7 @@
                                                             id="newId_colJefeProyecto"
                                                             sortProperty="NombreJefe"
                                                             filterProperty="NombreJefe"
-                                                            width="12em"
+                                                            width="16em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -939,6 +993,7 @@
                                                                 <Text
                                                                     text="{modelBorrador>NombreJefe}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -959,6 +1014,7 @@
                                                                 <Text
                                                                     text="{modelBorrador>FechaModificacionFormateada}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -995,10 +1051,16 @@
                                                             />
 
                                                             <table:template>
-                                                                <HBox>
+                                                                <HBox
+                                                                    justifyContent="Center"
+                                                                    alignItems="Center"
+                                                                    renderType="Bare"
+                                                                >
                                                                     <Button
                                                                         id="newId_btnInfo"
                                                                         press="DialogInfo"
+                                                                        type="Transparent"
+                                                                        tooltip="Información del Proyecto"
                                                                         icon="sap-icon://message-information"
                                                                         ariaHasPopup="Dialog"
                                                                     >
@@ -1014,6 +1076,8 @@
 
                                                                     <Button
                                                                         id="newId_btnEditar"
+                                                                        type="Transparent"
+                                                                        tooltip="Editar Proyecto"
                                                                         icon="sap-icon://edit"
                                                                         press="onEditPress"
                                                                     >
@@ -1036,6 +1100,8 @@
                                                                     <Button
                                                                         id="newId_btnEliminar"
                                                                         icon="sap-icon://delete"
+                                                                        type="Reject"
+                                                                        tooltip="Eliminar Proyecto"
                                                                         press="onDeletePress"
                                                                         enabled="true"
                                                                     >
@@ -1196,28 +1262,21 @@
                                                 <table:Table
                                                     rows="{modelEtapasAsignadas>/Etapas}"
                                                     id="tabla_Aprobadores"
-                                                                                                        selectionMode="None"
-
+                                                    selectionMode="None"
                                                     class="customHeaderColor2 sapFDynamicPageAlignContent"
                                                 >
-                                                    <table:toolbar>
-                                                        <Toolbar>
-                                                            <Title
-                                                                id="title_aprobadores"
-                                                                text="Pendientes a Aprobar"
-                                                                level="H2"
-                                                                class="color"
+                                                    <table:extension>
+                                                        <m:OverflowToolbar
+                                                            style="Clear"
+                                                        >
+                                                            <m:Title
+                                                                id="titleAprobadore"
+                                                                text="Tus pendientes a Aprobar"
+                                                                class="customTitle"
                                                             />
-                                                            <ToolbarSpacer />
-                                                            <SearchField
-                                                                id="searchField_aprobadores"
-                                                                liveChange="onSearchAprobadores"
-                                                                class="sapUiLargeMargin"
-                                                                placeholder="Buscar por Nombre de Proyecto"
-                                                                width="30%"
-                                                            />
-                                                        </Toolbar>
-                                                    </table:toolbar>
+                                                            <m:ToolbarSpacer />
+                                                        </m:OverflowToolbar>
+                                                    </table:extension>
 
                                                     <table:columns>
                                                         <table:Column
@@ -1252,6 +1311,7 @@
                                                                 <Text
                                                                     text="{modelEtapasAsignadas>nameProyect}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -1270,6 +1330,7 @@
                                                                 <Text
                                                                     text="{modelEtapasAsignadas>descripcion}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -1306,6 +1367,7 @@
                                                                 <Text
                                                                     text="{modelEtapasAsignadas>comentario}"
                                                                     class="boldText"
+                                                                    textAlign="Center"
                                                                 />
                                                             </table:template>
                                                         </table:Column>
@@ -1320,9 +1382,15 @@
                                                                 class="customTitle"
                                                             />
                                                             <table:template>
-                                                                <HBox>
+                                                                <HBox
+                                                                    justifyContent="Center"
+                                                                    alignItems="Center"
+                                                                    renderType="Bare"
+                                                                >
                                                                     <Button
                                                                         press="DialogInfo"
+                                                                        type="Transparent"
+                                                                        tooltip="Información del Proyecto"
                                                                         icon="sap-icon://message-information"
                                                                         ariaHasPopup="Dialog"
                                                                     >
@@ -1340,6 +1408,8 @@
                                                                         id="butn3462"
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
+                                                                        type="Transparent"
+                                                                        tooltip="Editar Proyecto"
                                                                         enabled="true"
                                                                     >
                                                                         <customData
@@ -1361,6 +1431,8 @@
                                                                     <Button
                                                                         id="wsw"
                                                                         icon="sap-icon://delete"
+                                                                        type="Reject"
+                                                                        tooltip="Eliminar Proyecto"
                                                                         press="onDeletePress"
                                                                         enabled="true"
                                                                     >
@@ -1397,7 +1469,9 @@
                             id="33"
                             type="Accept"
                             enabled="true"
+                            icon="sap-icon://add"
                             text="Nueva Solicitud"
+                            tooltip="Crear una nueva solicitud"
                             press="onNavToView1"
                         />
                     </OverflowToolbar>

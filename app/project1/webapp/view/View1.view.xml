@@ -4630,16 +4630,12 @@
 
                     <Button
             id="btnBorrado"
-    type="Transparent"
+            type="Emphasized"
+                icon="sap-icon://save"
+
             text="Guardar como borrador"
             press="onBorrador" />
 
-        <Button
-            id="btnGuardarVersion"
-            text="Guardar como nueva versión"
-            icon="sap-icon://save"
-            type="Emphasized"
-            press="onGuardarVersion" />
 
         <Button
             id="btnAceptar"

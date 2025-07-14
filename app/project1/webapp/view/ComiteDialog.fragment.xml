@@ -10,7 +10,7 @@
       <Label text="¿Cómo deseas presentar la solicitud?" />
       <RadioButtonGroup id="radioGroupModalidad" columns="2" select="onSelectModalidad">
         <buttons>
-          <RadioButton text="Online" selected="true" />
+          <RadioButton text="Offline" selected="true" />
           <RadioButton text="En Comité" />
         </buttons>
       </RadioButtonGroup>

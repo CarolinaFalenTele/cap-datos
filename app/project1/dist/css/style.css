@@ -18,6 +18,18 @@
     font-weight: bold;
 }
 
+.myCustomEditButton .sapMBtnInner {
+    color: #0070f2; /* azul */
+}
+
+.myCustomDeleteButton .sapMBtnInner {
+    color: #d9534f; /* rojo */
+} 
+
+
+.iconMargin {
+    margin-left: 6px;
+  }
 
 .statusText {
     font-weight: bold;

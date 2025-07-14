@@ -138,6 +138,7 @@ sap.ui.define([
 
         this._handleInputChangeCounter = 0;
 
+       
 
       },
 
@@ -577,9 +578,29 @@ sap.ui.define([
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar como borrador");
-          btnBorrado.setType(sap.m.ButtonType.Transparent);
+          btnBorrado.setType(sap.m.ButtonType.Emphasized);
 
           btnBorrado.attachPress(this.onBorrador, this);
+
+          var oToday = new Date();  // Fecha y hora real
+
+         // var oToday = new Date("2025-07-09T13:00:00");  // Fecha y hora real actual
+    
+          var iDay = oToday.getDay();    // Día de la semana (0-6)
+          var iHours = oToday.getHours(); // Hora actual (0-23)
+      
+          if (iDay === 3 && iHours >= 12) { 
+
+            var oEnviarBtn = this.byId("btnAceptar");
+
+            oEnviarBtn.setEnabled(false);
+
+              MessageBox.error(
+                  "El envío está deshabilitado los miércoles por revisión interna. Intenta mañana.",
+                  { title: "Envío bloqueado" }
+              );
+              return;
+          }
           return;
         }
 

@@ -1,0 +1,249 @@
+{
+  "namespace": "db.datos",
+  "definitions": {
+    "db.datos.DatosProyect": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "codigoProyect": {
+          "type": "cds.Integer",
+          "@cds.persistence.name": "CODIGOPROYECT"
+        },
+        "nameProyect": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NAMEPROYECT"
+        },
+        "pluriAnual": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "PLURIANUAL"
+        },
+        "funcionalString": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "FUNCIONALSTRING"
+        },
+        "clienteFacturacion": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CLIENTEFACTURACION"
+        },
+        "multijuridica": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "MULTIJURIDICA"
+        },
+        "IPC_apli": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "IPC_APLI"
+        },
+        "costeEstructura": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTEESTRUCTURA"
+        },
+        "objetivoAlcance": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "OBJETIVOALCANCE"
+        },
+        "canto": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CANTO"
+        },
+        "comen": {
+          "type": "cds.Integer",
+          "@cds.persistence.name": "COMEN"
+        },
+        "AsuncionesyRestricciones": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "ASUNCIONESYRESTRICCIONES"
+        },
+        "datosExtra": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "DATOSEXTRA"
+        },
+        "Oferta": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "OFERTA"
+        },
+        "modalidad": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MODALIDAD"
+        },
+        "fechaComite": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHACOMITE"
+        },
+        "CambioEuRUSD": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "CAMBIOEURUSD"
+        },
+        "Estado": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ESTADO"
+        },
+        "Email": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "EMAIL"
+        },
+        "Empleado": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "EMPLEADO"
+        },
+        "fechaCreacion": {
+          "type": "cds.DateTime",
+          "@cds.persistence.name": "FECHACREACION"
+        },
+        "descripcion": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "DESCRIPCION"
+        },
+        "mensual": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "MENSUAL"
+        },
+        "holanuevo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "HOLANUEVO"
+        },
+        "comentarioTipoCompra": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "COMENTARIOTIPOCOMPRA"
+        },
+        "comentarioFacturacion": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "COMENTARIOFACTURACION"
+        },
+        "comentarioProveedor": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "COMENTARIOPROVEEDOR"
+        },
+        "comentarioPvD": {
+          "type": "cds.LargeString",
+          "@cds.persistence.name": "COMENTARIOPVD"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "Fechainicio": {
+          "type": "cds.DateTime",
+          "@cds.persistence.name": "FECHAINICIO"
+        },
+        "FechaFin": {
+          "type": "cds.DateTime",
+          "@cds.persistence.name": "FECHAFIN"
+        },
+        "FechaModificacion": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHAMODIFICACION"
+        },
+        "clienteFuncional_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "clienteFuncional",
+          "@cds.persistence.name": "CLIENTEFUNCIONAL_ID"
+        },
+        "TipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "TipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "Naturaleza_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Naturaleza",
+          "@cds.persistence.name": "NATURALEZA_ID"
+        },
+        "Seguimiento_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Seguimiento",
+          "@cds.persistence.name": "SEGUIMIENTO_ID"
+        },
+        "EjecucionVia_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "EjecucionVia",
+          "@cds.persistence.name": "EJECUCIONVIA_ID"
+        },
+        "AmReceptor_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "AmReceptor",
+          "@cds.persistence.name": "AMRECEPTOR_ID"
+        },
+        "Iniciativa_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Iniciativa",
+          "@cds.persistence.name": "INICIATIVA_ID"
+        },
+        "Area_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Area",
+          "@cds.persistence.name": "AREA_ID"
+        },
+        "jefeProyectID_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "jefeProyectID",
+          "@cds.persistence.name": "JEFEPROYECTID_ID"
+        },
+        "TipoCompra_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "TipoCompra",
+          "@cds.persistence.name": "TIPOCOMPRA_ID"
+        },
+        "MotivoCondi_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "MotivoCondi",
+          "@cds.persistence.name": "MOTIVOCONDI_ID"
+        },
+        "Usuarios_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Usuarios",
+          "@cds.persistence.name": "USUARIOS_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_DATOSPROYECT"
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v5.9.6",
+    "flavor": "inferred",
+    "minified": true,
+    "build": "CDS Build v8.9.4"
+  },
+  "$version": "2.0"
+}
