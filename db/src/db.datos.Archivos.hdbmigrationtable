@@ -1,0 +1,13 @@
+== version=1
+COLUMN TABLE db_datos_Archivos (
+  ID NVARCHAR(36) NOT NULL,
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
+  nombre NVARCHAR(5000),
+  tipoMime NVARCHAR(5000),
+  contenido BLOB,
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

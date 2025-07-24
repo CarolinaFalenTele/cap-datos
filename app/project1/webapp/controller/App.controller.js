@@ -41,7 +41,7 @@ sap.ui.define(
 
 
             formatAvailableToObjectState: function(bAvailable) {
-                console.log("Valor recibido en formatter:", bAvailable);
+                //console.log(("Valor recibido en formatter:", bAvailable);
 
                 return bAvailable ? "Success" : "Error";
             },
@@ -72,6 +72,8 @@ sap.ui.define(
                 }
             },
 
+
+            
             filterEstado: async function () {
                 try {
                     const userModel = this.getView().getModel("userModel");
@@ -102,6 +104,7 @@ sap.ui.define(
                             };
 
                             proyecto.FechaCreacionFormateada = formatearFecha(proyecto.fechaCreacion);
+                            proyecto.fechaComiteForm = formatearFecha(proyecto.fechaComite);
                             proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
@@ -208,7 +211,7 @@ sap.ui.define(
                         ...aProyectosRechazados
                     ];
                     
-                    console.log(" modelAprobados + Rechazados:", aProyectosAprobadosYRechazados);
+                    //console.log((" modelAprobados + Rechazados:", aProyectosAprobadosYRechazados);
                     
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobadosYRechazados,
@@ -351,7 +354,7 @@ sap.ui.define(
                     await oBoundContext.execute();
 
                     const result = oBoundContext.getBoundContext().getObject();
-                    console.log(` Historial del workflow (${modelo}):`, result);
+                    //console.log((` Historial del workflow (${modelo}):`, result);
 
 
 
@@ -432,7 +435,7 @@ sap.ui.define(
                     await oBoundContext.execute();
 
                     const result = oBoundContext.getBoundContext().getObject();
-                    console.log(` Historial del workflow (${modelo}):`, result);
+                    //console.log((` Historial del workflow (${modelo}):`, result);
 
 
 
@@ -737,9 +740,9 @@ sap.ui.define(
                             const ctrl = this.byId(id);
                             if (ctrl) {
                                 ctrl.setText(text || fallback);
-                                console.log(` Control '${id}' seteado a:`, text || fallback);
+                                //console.log((` Control '${id}' seteado a:`, text || fallback);
                             } else {
-                                console.warn(` Control no encontrado: id '${id}'`);
+                              //  console.warn(` Control no encontrado: id '${id}'`);
                             }
                         };
 
@@ -773,14 +776,14 @@ sap.ui.define(
                             tab.setVisible(mostrarTab);
                             //   console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
                         } else {
-                            console.warn("IconTabFilter con ID 'id34' no encontrado.");
+                          //  console.warn("IconTabFilter con ID 'id34' no encontrado.");
                         }
                         // Función para toggle de botones con logs
                         const toggleBotones = (ids, estado, tipo) => {
                             ids.forEach(id => {
                                 const btn = this.byId(id);
                                 if (!btn) {
-                                    console.warn(` Botón de ${tipo} no encontrado:`, id);
+                                 //   console.warn(` Botón de ${tipo} no encontrado:`, id);
                                 } else {
                                     btn.setEnabled(estado);
 
@@ -1436,7 +1439,7 @@ sap.ui.define(
                 // Obtener el ID recibido como parámetro de la URL
                 const newId = oEvent.getParameter("arguments").newId;
 
-                console.log("ids comtenriofg")
+                //console.log(("ids comtenriofg")
                 // Verifica si el ID es válido
                 if (!newId) {
                     console.error("No se recibió un ID válido");
@@ -1714,7 +1717,7 @@ sap.ui.define(
                     return oData.getKey() === "projectId";
                 }).getValue();
 
-                console.log("Metodo project " + sProjectID);
+                //console.log(("Metodo project " + sProjectID);
 
                 const Token = this._sCsrfToken;
                 var oModel = this.getView().getModel("mainService");
@@ -1745,7 +1748,7 @@ sap.ui.define(
 
                     const oData = await response.json();
 
-                    console.log(JSON.stringify(oData));
+                    //console.log((JSON.stringify(oData));
 
 
                     this.byId("idNombreProyecto").setText(oData.nameProyect);
@@ -1813,7 +1816,7 @@ sap.ui.define(
 
 
 
-                console.log("Eliminando Proyecto con ID:", sProjectId);
+                //console.log(("Eliminando Proyecto con ID:", sProjectId);
 
                 const hijosAnidados = {
                     otrosGastoRecu: ["ValorMensuServReInter"],
@@ -1842,7 +1845,7 @@ sap.ui.define(
                     let sCsrfToken = oTokenResponse.headers.get("x-csrf-token");
                     if (!sCsrfToken) throw new Error("No se recibió un CSRF Token");
 
-                    console.log("CSRF Token obtenido:", sCsrfToken);
+                    //console.log(("CSRF Token obtenido:", sCsrfToken);
 
                     sap.m.MessageBox.confirm(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
@@ -1869,7 +1872,7 @@ sap.ui.define(
                                     if (workflowRes.ok) {
 
 
-                                        console.log("Cancelando el workflow con ID:", workflowInstanceId);
+                                        //console.log(("Cancelando el workflow con ID:", workflowInstanceId);
                                         if (workflowInstanceId) {
                                             const oModel = this.getOwnerComponent().getModel();
                                             const oContext = oModel.bindContext("/cancelWorkflow(...)");
@@ -1954,7 +1957,7 @@ sap.ui.define(
                                                                 if (!deleteSubRes.ok) {
                                                                     console.error(`Error eliminando hijo anidado ${hijoAnidado} con ID ${subRegistro.ID}`);
                                                                 } else {
-                                                                    console.log(`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
+                                                                    //console.log((`Hijo anidado eliminado: ${hijoAnidado} ID ${subRegistro.ID}`);
                                                                 }
                                                             }));
                                                         } else {
@@ -1975,13 +1978,13 @@ sap.ui.define(
                                                 if (!deleteResponse.ok) {
                                                     console.error(`Error eliminando ${path} con ID ${hijo.ID}`);
                                                 } else {
-                                                    console.log(`${path} eliminado: ${hijo.ID}`);
+                                                    //console.log((`${path} eliminado: ${hijo.ID}`);
                                                 }
                                             }
                                         }
                                     }
 
-                                    console.log("Registros relacionados eliminados.");
+                                    //console.log(("Registros relacionados eliminados.");
 
                                     // 3️⃣ Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {

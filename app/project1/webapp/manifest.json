@@ -90,6 +90,7 @@
       },
       "": {
         "dataSource": "mainService",
+        
         "preload": true,
         "settings": {
           "synchronizationMode": "None",

@@ -1,0 +1,10 @@
+== version=1
+COLUMN TABLE db_datos_Facturacion (
+  ID NVARCHAR(36) NOT NULL,
+  descripcionHito NVARCHAR(5000),
+  fechaEstimida DATE,
+  facturacion DECIMAL(20, 4),
+  total DECIMAL(20, 4),
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

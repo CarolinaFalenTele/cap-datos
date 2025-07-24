@@ -1,0 +1,8 @@
+== version=1
+COLUMN TABLE db_datos_ValorMensuConsuEx (
+  ID NVARCHAR(36) NOT NULL,
+  ConsumoExternos_ID NVARCHAR(36),
+  mesAno NVARCHAR(5000),
+  valor DECIMAL(20, 4),
+  PRIMARY KEY(ID)
+)

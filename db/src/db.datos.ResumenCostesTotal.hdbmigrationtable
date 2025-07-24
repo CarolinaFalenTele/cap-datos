@@ -1,0 +1,12 @@
+== version=1
+COLUMN TABLE db_datos_ResumenCostesTotal (
+  ID NVARCHAR(36) NOT NULL,
+  datosProyect_ID NVARCHAR(36),
+  Subtotal DECIMAL(20, 4),
+  CosteEstruPorce DECIMAL(20, 4),
+  Costeestructura DECIMAL(20, 4),
+  MargenPorce DECIMAL(20, 4),
+  Margeingresos DECIMAL(20, 4),
+  total DECIMAL(20, 4),
+  PRIMARY KEY(ID)
+)

@@ -1,0 +1,8 @@
+== version=1
+COLUMN TABLE db_datos_ClienteNuevo (
+  ID NVARCHAR(36) NOT NULL,
+  valueClienteNuevo NVARCHAR(5000),
+  NombreClienteNuevo NVARCHAR(5000),
+  Activo BOOLEAN,
+  PRIMARY KEY(ID)
+)

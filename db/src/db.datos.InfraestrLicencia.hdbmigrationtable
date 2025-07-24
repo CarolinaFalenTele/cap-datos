@@ -1,0 +1,8 @@
+== version=1
+COLUMN TABLE db_datos_InfraestrLicencia (
+  ID NVARCHAR(36) NOT NULL,
+  datosProyect_ID NVARCHAR(36),
+  totalInfraestruc DECIMAL(20, 4),
+  totalLicencia DECIMAL(20, 4),
+  PRIMARY KEY(ID)
+)

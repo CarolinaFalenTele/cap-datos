@@ -1,0 +1,10 @@
+== version=1
+COLUMN TABLE db_datos_RecuExterTotal (
+  ID NVARCHAR(36) NOT NULL,
+  datosProyect_ID NVARCHAR(36),
+  servicios DECIMAL(20, 4),
+  OtrosServicios DECIMAL(20, 4),
+  GastosdeViaje DECIMAL(20, 4),
+  Total DECIMAL(20, 4),
+  PRIMARY KEY(ID)
+)

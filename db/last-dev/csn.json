@@ -1,6 +1,140 @@
 {
   "namespace": "db.datos",
   "definitions": {
+    "db.datos.Jefeproyect": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "matricula": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "MATRICULA"
+        },
+        "name": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NAME"
+        },
+        "lastname": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "LASTNAME"
+        },
+        "valueJefe": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEJEFE"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_JEFEPROYECT"
+    },
+    "db.datos.TipoCompra": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "tipo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "TIPO"
+        },
+        "valor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_TIPOCOMPRA"
+    },
+    "db.datos.MotivoCondi": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "tipo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "TIPO"
+        },
+        "valor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_MOTIVOCONDI"
+    },
+    "db.datos.Archivos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "createdAt": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "CREATEDAT"
+        },
+        "createdBy": {
+          "type": "cds.String",
+          "length": 255,
+          "@cds.persistence.name": "CREATEDBY"
+        },
+        "modifiedAt": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "MODIFIEDAT"
+        },
+        "modifiedBy": {
+          "type": "cds.String",
+          "length": 255,
+          "@cds.persistence.name": "MODIFIEDBY"
+        },
+        "nombre": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRE"
+        },
+        "tipoMime": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "TIPOMIME"
+        },
+        "contenido": {
+          "type": "cds.LargeBinary",
+          "@cds.persistence.name": "CONTENIDO"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_ARCHIVOS"
+    },
     "db.datos.DatosProyect": {
       "kind": "entity",
       "@cds.persistence.journal": true,
@@ -53,15 +187,6 @@
         "objetivoAlcance": {
           "type": "cds.LargeString",
           "@cds.persistence.name": "OBJETIVOALCANCE"
-        },
-        "canto": {
-          "type": "cds.String",
-          "length": 5000,
-          "@cds.persistence.name": "CANTO"
-        },
-        "comen": {
-          "type": "cds.Integer",
-          "@cds.persistence.name": "COMEN"
         },
         "AsuncionesyRestricciones": {
           "type": "cds.LargeString",
@@ -118,11 +243,6 @@
           "type": "cds.Boolean",
           "@cds.persistence.name": "MENSUAL"
         },
-        "holanuevo": {
-          "type": "cds.String",
-          "length": 5000,
-          "@cds.persistence.name": "HOLANUEVO"
-        },
         "comentarioTipoCompra": {
           "type": "cds.LargeString",
           "@cds.persistence.name": "COMENTARIOTIPOCOMPRA"
@@ -157,11 +277,16 @@
           "type": "cds.Date",
           "@cds.persistence.name": "FECHAMODIFICACION"
         },
-        "clienteFuncional_ID": {
+        "CampoNuevo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CAMPONUEVO"
+        },
+        "ClienteNuevo_ID": {
           "type": "cds.String",
           "length": 36,
-          "@odata.foreignKey4": "clienteFuncional",
-          "@cds.persistence.name": "CLIENTEFUNCIONAL_ID"
+          "@odata.foreignKey4": "ClienteNuevo",
+          "@cds.persistence.name": "CLIENTENUEVO_ID"
         },
         "TipoServicio_ID": {
           "type": "cds.String",
@@ -237,6 +362,2193 @@
         }
       },
       "@cds.persistence.name": "DB_DATOS_DATOSPROYECT"
+    },
+    "db.datos.SolicitudesVersiones": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "datosProyect",
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "version": {
+          "type": "cds.Integer",
+          "@cds.persistence.name": "VERSION"
+        },
+        "nombre": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRE"
+        },
+        "estado": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ESTADO"
+        },
+        "createdAt": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "CREATEDAT"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_SOLICITUDESVERSIONES"
+    },
+    "db.datos.Usuarios": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "nombre": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRE"
+        },
+        "email": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "EMAIL"
+        },
+        "departamento": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "DEPARTAMENTO"
+        },
+        "rol": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ROL"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_USUARIOS"
+    },
+    "db.datos.Area": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueArea": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEAREA"
+        },
+        "NombreArea": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREAREA"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_AREA"
+    },
+    "db.datos.PerfilConsumo": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "nombrePerfilC": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREPERFILC"
+        },
+        "valuePerfilC": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEPERFILC"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PERFILCONSUMO"
+    },
+    "db.datos.Vertical": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueVertical": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEVERTICAL"
+        },
+        "NombreVertical": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREVERTICAL"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VERTICAL"
+    },
+    "db.datos.ClienteNuevo": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueClienteNuevo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUECLIENTENUEVO"
+        },
+        "NombreClienteNuevo": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRECLIENTENUEVO"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_CLIENTENUEVO"
+    },
+    "db.datos.Naturaleza": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueNaturaleza": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUENATURALEZA"
+        },
+        "NombreNaturaleza": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRENATURALEZA"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_NATURALEZA"
+    },
+    "db.datos.Seguimiento": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueSeguimiento": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUESEGUIMIENTO"
+        },
+        "NombreSeguimiento": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRESEGUIMIENTO"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_SEGUIMIENTO"
+    },
+    "db.datos.AMreceptor": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueAMreceptor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEAMRECEPTOR"
+        },
+        "NombreAMreceptor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREAMRECEPTOR"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_AMRECEPTOR"
+    },
+    "db.datos.EjecucionVia": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueEjecuVia": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEEJECUVIA"
+        },
+        "NombreEjecuVia": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREEJECUVIA"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_EJECUCIONVIA"
+    },
+    "db.datos.TipoServicio": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueTipoServ": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUETIPOSERV"
+        },
+        "NombreTipoServ": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRETIPOSERV"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_TIPOSERVICIO"
+    },
+    "db.datos.TipoIniciativa": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valueinicia": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEINICIA"
+        },
+        "NombreIniciativa": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREINICIATIVA"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_TIPOINICIATIVA"
+    },
+    "db.datos.planificacion": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "hito": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "HITO"
+        },
+        "fecha_inicio": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHA_INICIO"
+        },
+        "fecha_fin": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHA_FIN"
+        },
+        "duracion": {
+          "type": "cds.Time",
+          "@cds.persistence.name": "DURACION"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PLANIFICACION"
+    },
+    "db.datos.Facturacion": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "descripcionHito": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "DESCRIPCIONHITO"
+        },
+        "fechaEstimida": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHAESTIMIDA"
+        },
+        "facturacion": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "FACTURACION"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_FACTURACION"
+    },
+    "db.datos.RecursosInternos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "PerfilServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "PerfilServicio",
+          "@cds.persistence.name": "PERFILSERVICIO_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_RECURSOSINTERNOS"
+    },
+    "db.datos.otrosGastoRecu": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_OTROSGASTORECU"
+    },
+    "db.datos.otrosRecursos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_OTROSRECURSOS"
+    },
+    "db.datos.ValorMensuReInter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "RecursosInternos_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "RECURSOSINTERNOS_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUREINTER"
+    },
+    "db.datos.ValorMensuServReInter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "otrosGastoRecu_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "OTROSGASTORECU_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUSERVREINTER"
+    },
+    "db.datos.ValorMensuGastViaReInter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "otrosRecursos_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "OTROSRECURSOS_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUGASTVIAREINTER"
+    },
+    "db.datos.ConsumoExternos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalC": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALC"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "PerfilConsumo_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "PerfilConsumo",
+          "@cds.persistence.name": "PERFILCONSUMO_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_CONSUMOEXTERNOS"
+    },
+    "db.datos.otrosServiciosConsu": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_OTROSSERVICIOSCONSU"
+    },
+    "db.datos.GastoViajeConsumo": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_GASTOVIAJECONSUMO"
+    },
+    "db.datos.ValorMensuConsuEx": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConsumoExternos_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "CONSUMOEXTERNOS_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUCONSUEX"
+    },
+    "db.datos.ValorMensuServConsuEx": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "otrosServiciosConsu_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "OTROSSERVICIOSCONSU_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUSERVCONSUEX"
+    },
+    "db.datos.ValorMensuGastoViaConsuEx": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "GastoViajeConsumo_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "GASTOVIAJECONSUMO_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUGASTOVIACONSUEX"
+    },
+    "db.datos.RecursosExternos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalR": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALR"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "PerfilServicio": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "PERFILSERVICIO"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_RECURSOSEXTERNOS"
+    },
+    "db.datos.serviRecurExter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_SERVIRECUREXTER"
+    },
+    "db.datos.GastoViajeRecExter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALE"
+        },
+        "tipoServicio_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "tipoServicio",
+          "@cds.persistence.name": "TIPOSERVICIO_ID"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_GASTOVIAJERECEXTER"
+    },
+    "db.datos.ValorMensuRecuExter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "RecursosExternos_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "RECURSOSEXTERNOS_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSURECUEXTER"
+    },
+    "db.datos.ValorMensuSerExter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ServiRecurExterno_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "SERVIRECUREXTERNO_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUSEREXTER"
+    },
+    "db.datos.ValorMensuGastoViExter": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "GastoViajeRecExter_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "GASTOVIAJERECEXTER_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUGASTOVIEXTER"
+    },
+    "db.datos.otrosConceptos": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalC": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALC"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_OTROSCONCEPTOS"
+    },
+    "db.datos.ValorMensuOtrConcep": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "otrosConceptos_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "OTROSCONCEPTOS_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSUOTRCONCEP"
+    },
+    "db.datos.LicenciasCon": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "ConceptoOferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CONCEPTOOFERTA"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "PMJ"
+        },
+        "mesYear": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "MESYEAR"
+        },
+        "year1": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR1"
+        },
+        "year2": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR2"
+        },
+        "year3": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR3"
+        },
+        "year4": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR4"
+        },
+        "year5": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR5"
+        },
+        "year6": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "YEAR6"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "totalC": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALC"
+        },
+        "Vertical_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Vertical",
+          "@cds.persistence.name": "VERTICAL_ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_LICENCIASCON"
+    },
+    "db.datos.ValorMensulicencia": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "licencia_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "LICENCIA_ID"
+        },
+        "mesAno": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "MESANO"
+        },
+        "valor": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "VALOR"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_VALORMENSULICENCIA"
+    },
+    "db.datos.PerfilServicio": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "valuePerfil": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEPERFIL"
+        },
+        "NombrePerfil": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREPERFIL"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PERFILSERVICIO"
+    },
+    "db.datos.ProveedoresC": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "checkCondi": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "CHECKCONDI"
+        },
+        "checkProveedor": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "CHECKPROVEEDOR"
+        },
+        "valueCondi": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUECONDI"
+        },
+        "valueProvee": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEPROVEE"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PROVEEDORESC"
+    },
+    "db.datos.ClientFactura": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "juridica": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "JURIDICA"
+        },
+        "oferta": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "OFERTA"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_CLIENTFACTURA"
+    },
+    "db.datos.WorkflowInstancias": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "workflowId": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "WORKFLOWID"
+        },
+        "estado": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ESTADO"
+        },
+        "creadoEn": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "CREADOEN"
+        },
+        "actualizadoEn": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "ACTUALIZADOEN"
+        },
+        "creadoPor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CREADOPOR"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_WORKFLOWINSTANCIAS"
+    },
+    "db.datos.WorkflowEtapas": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "workflow_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "WORKFLOW_ID"
+        },
+        "taskInstanceId": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "TASKINSTANCEID"
+        },
+        "nombreEtapa": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBREETAPA"
+        },
+        "asignadoA": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ASIGNADOA"
+        },
+        "aprobadoPor": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "APROBADOPOR"
+        },
+        "estado": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ESTADO"
+        },
+        "comentario": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "COMENTARIO"
+        },
+        "fechaAprobado": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "FECHAAPROBADO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_WORKFLOWETAPAS"
+    },
+    "db.datos.PerfilTotal": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "totalJorRI": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALJORRI"
+        },
+        "totalJorCE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALJORCE"
+        },
+        "totalJorRE": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALJORRE"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PERFILTOTAL"
+    },
+    "db.datos.RecurInterTotal": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "servicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "SERVICIOS"
+        },
+        "OtrosServicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "OTROSSERVICIOS"
+        },
+        "GastosdeViaje": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "GASTOSDEVIAJE"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_RECURINTERTOTAL"
+    },
+    "db.datos.ConsuExterTotal": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "servicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "SERVICIOS"
+        },
+        "OtrosServicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "OTROSSERVICIOS"
+        },
+        "GastosdeViaje": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "GASTOSDEVIAJE"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_CONSUEXTERTOTAL"
+    },
+    "db.datos.RecuExterTotal": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "servicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "SERVICIOS"
+        },
+        "OtrosServicios": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "OTROSSERVICIOS"
+        },
+        "GastosdeViaje": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "GASTOSDEVIAJE"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_RECUEXTERTOTAL"
+    },
+    "db.datos.InfraestrLicencia": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "totalInfraestruc": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALINFRAESTRUC"
+        },
+        "totalLicencia": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTALLICENCIA"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_INFRAESTRLICENCIA"
+    },
+    "db.datos.ResumenCostesTotal": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        },
+        "Subtotal": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "SUBTOTAL"
+        },
+        "CosteEstruPorce": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTEESTRUPORCE"
+        },
+        "Costeestructura": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTEESTRUCTURA"
+        },
+        "MargenPorce": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "MARGENPORCE"
+        },
+        "Margeingresos": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "MARGEINGRESOS"
+        },
+        "total": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "TOTAL"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_RESUMENCOSTESTOTAL"
     }
   },
   "meta": {

@@ -288,15 +288,11 @@ this.on("GET", "Archivos/$value", async (req) => {
         .where({ ID: workflowInstanceId });
 
       // ** Aquí agrego el UPDATE para DatosProyect solo estado **
-        if (idProject) {
-          await UPDATE('DatosProyect')
-            .set({
-              estado: estadoFinal
-            })
-            .where({ ID: idProject });
-          console.log(`✅ Estado actualizado en DatosProyect para ID: ${idProject}`);
-        }
-
+      const result = await UPDATE('DatosProyect')
+      .set({ Estado: estadoFinal })
+      .where({ ID: idProject });
+    
+    console.log("🔄 Resultado UPDATE DatosProyect:", result);
 
       return { message: `✅ Workflow completado. Estado final: ${estadoFinal}` };
 
@@ -651,8 +647,8 @@ this.on("GET", "Archivos/$value", async (req) => {
     const {
       codigoProyect, nameProyect, Total, descripcion, pluriAnual, multijuridica, funcionalString, clienteFacturacion,
       sMultiJuri, objetivoAlcance, AsuncionesyRestricciones, Naturaleza_ID, Email, Empleado, comentarioProveedor, comentarioPvD, CambioEuRUSD,
-      Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual, Oferta, modalidad,
-      AmReceptor_ID, Vertical_ID, clienteFuncional_ID, Estado, IPC_apli, costeEstructura, Fechainicio, FechaFin, TipoCompra_ID, MotivoCondi_ID, comentarioFacturacion, comentarioTipoCompra
+      Iniciativa_ID, Area_ID, jefeProyectID_ID, Seguimiento_ID, EjecucionVia_ID, datosExtra, fechaCreacion, FechaModificacion, mensual, Oferta, modalidad,   fechaComite,
+      AmReceptor_ID, Vertical_ID, ClienteNuevo_ID, Estado, IPC_apli, costeEstructura, Fechainicio, FechaFin, TipoCompra_ID, MotivoCondi_ID, comentarioFacturacion, comentarioTipoCompra
     } = req.data;
 
 
@@ -702,6 +698,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         comentarioTipoCompra,
         comentarioPvD,
         comentarioProveedor,
+        fechaComite,
         IPC_apli,
         sMultiJuri,
         CambioEuRUSD,
@@ -723,7 +720,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         Usuarios: { ID: user.ID }, // <--- Aquí estaba el error
 
         Estado,
-        clienteFuncional_ID,
+        ClienteNuevo_ID,
         costeEstructura,
 
       });

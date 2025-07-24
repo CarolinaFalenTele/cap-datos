@@ -5,26 +5,30 @@ using {
   managed
 } from '@sap/cds/common';
 
-
+@cds.persistence.journal
 entity Jefeproyect {
   key ID        : UUID @cds.auto;
       matricula : Decimal(20, 4);
       name      : String;
       lastname  : String;
       valueJefe : String;
+      Activo    : Boolean;
 }
+@cds.persistence.journal
 
 entity TipoCompra {
   key ID    : UUID @cds.auto;
       tipo  : String;
       valor : String;
 }
+@cds.persistence.journal
 
 entity MotivoCondi {
   key ID    : UUID @cds.auto;
       tipo  : String;
       valor : String;
 }
+@cds.persistence.journal
 
 entity Archivos : cuid, managed {
   key ID              : UUID;
@@ -50,8 +54,6 @@ entity DatosProyect {
       IPC_apli                 : Decimal(20, 4);
       costeEstructura          : Decimal(20, 4);
       objetivoAlcance          : LargeString;
-      canto                     : String; 
-      comen                     : Integer; 
       AsuncionesyRestricciones : LargeString;
       datosExtra               : LargeString;
       Oferta                   : Boolean;
@@ -64,7 +66,6 @@ entity DatosProyect {
       fechaCreacion            : DateTime;
       descripcion              : String;
       mensual                  : Boolean;
-      holanuevo                 :String;
       comentarioTipoCompra     : LargeString;
       comentarioFacturacion    : LargeString;
       comentarioProveedor      : LargeString;
@@ -73,7 +74,8 @@ entity DatosProyect {
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
       FechaModificacion        : Date;
-      clienteFuncional         : Association to clienteFuncional;
+      CampoNuevo              : String;
+      ClienteNuevo             : Association to ClienteNuevo;
       TipoServicio             : Association to TipoServicio;
       Vertical                 : Association to Vertical;
       Naturaleza               : Association to Naturaleza;
@@ -143,9 +145,10 @@ entity DatosProyect {
                                    on InfraestrLicencia.datosProyect_ID = ID;
 
       ResumenCostesTotal       : Association to many ResumenCostesTotal
-                                  on ResumenCostesTotal.datosProyect_ID = ID;
-}; 
+                                   on ResumenCostesTotal.datosProyect_ID = ID;
+};
 
+@cds.persistence.journal
 
 entity SolicitudesVersiones {
   key ID           : UUID;
@@ -156,6 +159,8 @@ entity SolicitudesVersiones {
       createdAt    : Timestamp;
 }
 
+@cds.persistence.journal
+
 entity Usuarios {
   key ID           : UUID @cds.auto;
       nombre       : String;
@@ -164,12 +169,17 @@ entity Usuarios {
       rol          : String;
 }
 
-
+@cds.persistence.journal
 entity Area {
   key ID         : UUID @cds.auto;
       valueArea  : String;
       NombreArea : String;
+      Activo     : Boolean;
+
 };
+
+
+@cds.persistence.journal
 
 entity PerfilConsumo {
   key ID            : UUID @cds.auto;
@@ -177,64 +187,98 @@ entity PerfilConsumo {
       valuePerfilC  : String;
 };
 
+@cds.persistence.journal
+
 type UserInfo {
   id    : String;
   email : String;
   name  : String;
 }
 
+@cds.persistence.journal
 
 entity Vertical {
   key ID             : UUID @cds.auto;
       valueVertical  : String;
       NombreVertical : String;
+      Activo         : Boolean;
+
 };
 
-entity clienteFuncional {
-  key ID               : UUID @cds.auto;
-      valueClienteFun  : String;
-      NombreClienteFun : String;
+
+@cds.persistence.journal
+
+entity ClienteNuevo {
+  key ID                 : UUID @cds.auto;
+      valueClienteNuevo  : String;
+      NombreClienteNuevo : String;
+      Activo             : Boolean;
+
 };
 
+@cds.persistence.journal
 
 entity Naturaleza {
   key ID               : UUID @cds.auto;
       valueNaturaleza  : String;
       NombreNaturaleza : String;
+      Activo           : Boolean;
+
 };
+
+
+@cds.persistence.journal
 
 entity Seguimiento {
   key ID                : UUID @cds.auto;
       valueSeguimiento  : String;
       NombreSeguimiento : String;
+      Activo            : Boolean;
+
 };
+
+@cds.persistence.journal
 
 entity AMreceptor {
   key ID               : UUID @cds.auto;
       valueAMreceptor  : String;
       NombreAMreceptor : String;
+      Activo           : Boolean;
+
 };
 
+@cds.persistence.journal
 
 entity EjecucionVia {
   key ID             : UUID @cds.auto;
       valueEjecuVia  : String;
       NombreEjecuVia : String;
+      Activo         : Boolean;
+
 };
 
+@cds.persistence.journal
 
 entity TipoServicio {
   key ID             : UUID @cds.auto;
       valueTipoServ  : String;
       NombreTipoServ : String;
+      Activo         : Boolean;
+
 };
 
+@cds.persistence.journal
 
 entity TipoIniciativa {
   key ID               : UUID @cds.auto;
       valueinicia      : String;
       NombreIniciativa : String;
+      Activo           : Boolean;
+
 };
+
+
+@cds.persistence.journal
 
 
 entity planificacion {
@@ -245,6 +289,9 @@ entity planificacion {
       duracion        : Time;
       datosProyect_ID : UUID; // Clave foránea a DatosProyect
 };
+
+
+@cds.persistence.journal
 
 entity Facturacion {
   key ID              : UUID @cds.auto;
@@ -257,6 +304,9 @@ entity Facturacion {
 
 
 // ----- RECURSO INTERNO  ----------------------
+
+@cds.persistence.journal
+
 entity RecursosInternos {
   key ID                : UUID @cds.auto;
       ConceptoOferta    : String;
@@ -279,6 +329,9 @@ entity RecursosInternos {
 
 
 ///    SERVICIO DE RECURSO INTERNO
+
+@cds.persistence.journal
+
 entity otrosGastoRecu {
   key ID                    : UUID @cds.auto;
       ConceptoOferta        : String;
@@ -303,6 +356,7 @@ entity otrosGastoRecu {
 
 
 // ----- GASTOS DE VIAJEEE
+@cds.persistence.journal
 
 entity otrosRecursos {
   key ID                       : UUID @cds.auto;
@@ -323,6 +377,7 @@ entity otrosRecursos {
                                    on ValorMensuGastViaReInter.otrosRecursos_ID = ID;
 }
 
+@cds.persistence.journal
 
 entity ValorMensuReInter {
   key ID                  : UUID @cds.auto;
@@ -331,12 +386,16 @@ entity ValorMensuReInter {
       valor               : Decimal(20, 4);
 };
 
+@cds.persistence.journal
+
 entity ValorMensuServReInter {
   key ID                : UUID @cds.auto;
       otrosGastoRecu_ID : UUID;
       mesAno            : String;
       valor             : Decimal(20, 4);
 };
+
+@cds.persistence.journal
 
 entity ValorMensuGastViaReInter {
   key ID               : UUID @cds.auto;
@@ -348,7 +407,11 @@ entity ValorMensuGastViaReInter {
 
 
 //--------------- Consumo Externo -------------------------
+
+@cds.persistence.journal
+
 entity ConsumoExternos {
+
   key ID                : UUID @cds.auto;
       ConceptoOferta    : String;
       PMJ               : Decimal(20, 4);
@@ -368,6 +431,7 @@ entity ConsumoExternos {
                             on ValorMensuConsuEx.ConsumoExternos_ID = ID;
 };
 
+@cds.persistence.journal
 
 entity otrosServiciosConsu {
   key ID                    : UUID @cds.auto;
@@ -389,6 +453,8 @@ entity otrosServiciosConsu {
                                 on ValorMensuServConsuEx.otrosServiciosConsu_ID = ID;
 };
 
+@cds.persistence.journal
+
 entity GastoViajeConsumo {
   key ID                        : UUID @cds.auto;
       ConceptoOferta            : String;
@@ -409,6 +475,8 @@ entity GastoViajeConsumo {
                                     on ValorMensuGastoViaConsuEx.GastoViajeConsumo_ID = ID;
 };
 
+@cds.persistence.journal
+
 entity ValorMensuConsuEx {
   key ID                 : UUID @cds.auto;
       ConsumoExternos_ID : UUID;
@@ -416,12 +484,17 @@ entity ValorMensuConsuEx {
       valor              : Decimal(20, 4);
 };
 
+
+@cds.persistence.journal
+
 entity ValorMensuServConsuEx {
   key ID                     : UUID @cds.auto;
       otrosServiciosConsu_ID : UUID;
       mesAno                 : String;
       valor                  : Decimal(20, 4);
 };
+
+@cds.persistence.journal
 
 entity ValorMensuGastoViaConsuEx {
   key ID                   : UUID @cds.auto;
@@ -434,6 +507,7 @@ entity ValorMensuGastoViaConsuEx {
 
 //------- RECURSO EXTERNO ----------------
 
+@cds.persistence.journal
 entity RecursosExternos {
   key ID                  : UUID @cds.auto;
       ConceptoOferta      : String;
@@ -457,6 +531,7 @@ entity RecursosExternos {
 };
 
 
+@cds.persistence.journal
 entity serviRecurExter {
   key ID                 : UUID @cds.auto;
       ConceptoOferta     : String;
@@ -477,6 +552,7 @@ entity serviRecurExter {
                              on ValorMensuSerExter.ServiRecurExterno_ID = ID;
 };
 
+@cds.persistence.journal
 entity GastoViajeRecExter {
   key ID                     : UUID @cds.auto;
       ConceptoOferta         : String;
@@ -497,6 +573,7 @@ entity GastoViajeRecExter {
                                  on ValorMensuGastoViExter.GastoViajeRecExter_ID = ID;
 }
 
+@cds.persistence.journal
 entity ValorMensuRecuExter {
   key ID                  : UUID @cds.auto;
       RecursosExternos_ID : UUID;
@@ -504,6 +581,7 @@ entity ValorMensuRecuExter {
       valor               : Decimal(20, 4);
 };
 
+@cds.persistence.journal
 entity ValorMensuSerExter {
   key ID                   : UUID @cds.auto;
       ServiRecurExterno_ID : UUID;
@@ -511,6 +589,7 @@ entity ValorMensuSerExter {
       valor                : Decimal(20, 4);
 };
 
+@cds.persistence.journal
 entity ValorMensuGastoViExter {
   key ID                    : UUID @cds.auto;
       GastoViajeRecExter_ID : UUID;
@@ -520,6 +599,7 @@ entity ValorMensuGastoViExter {
 
 //************************************** */
 
+@cds.persistence.journal
 entity otrosConceptos {
   key ID                  : UUID @cds.auto;
       ConceptoOferta      : String;
@@ -540,6 +620,7 @@ entity otrosConceptos {
 
 };
 
+@cds.persistence.journal
 
 entity ValorMensuOtrConcep {
   key ID                : UUID @cds.auto;
@@ -549,6 +630,7 @@ entity ValorMensuOtrConcep {
 };
 
 
+@cds.persistence.journal
 entity LicenciasCon {
   key ID                 : UUID @cds.auto;
       ConceptoOferta     : String;
@@ -569,6 +651,7 @@ entity LicenciasCon {
 
 };
 
+@cds.persistence.journal
 
 entity ValorMensulicencia {
   key ID          : UUID @cds.auto;
@@ -578,11 +661,17 @@ entity ValorMensulicencia {
 };
 
 
+@cds.persistence.journal
 entity PerfilServicio {
   key ID           : UUID @cds.auto;
       valuePerfil  : String;
       NombrePerfil : String;
+      Activo         : Boolean;
+
+
 };
+
+@cds.persistence.journal
 
 entity ProveedoresC {
   key ID              : UUID @cds.auto;
@@ -593,6 +682,7 @@ entity ProveedoresC {
       datosProyect_ID : UUID; // Clave foránea a DatosProyect
 };
 
+@cds.persistence.journal
 
 entity ClientFactura {
   key ID              : UUID @cds.auto;
@@ -604,6 +694,7 @@ entity ClientFactura {
 };
 
 
+@cds.persistence.journal
 entity WorkflowInstancias {
   key ID              : UUID @cds.auto;
       workflowId      : String;
@@ -619,6 +710,7 @@ entity WorkflowInstancias {
 
 };
 
+@cds.persistence.journal
 entity WorkflowEtapas {
   key ID             : UUID @cds.auto;
       workflow_ID    : UUID;
@@ -631,6 +723,7 @@ entity WorkflowEtapas {
       fechaAprobado  : Timestamp;
 };
 
+@cds.persistence.journal
 
 entity PerfilTotal {
   key ID              : UUID @cds.auto;
@@ -642,6 +735,7 @@ entity PerfilTotal {
 
 };
 
+@cds.persistence.journal
 entity RecurInterTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
@@ -651,6 +745,8 @@ entity RecurInterTotal {
       Total           : Decimal(20, 4);
 
 };
+
+@cds.persistence.journal
 
 entity ConsuExterTotal {
   key ID              : UUID @cds.auto;
@@ -662,6 +758,7 @@ entity ConsuExterTotal {
 };
 
 
+@cds.persistence.journal
 entity RecuExterTotal {
   key ID              : UUID @cds.auto;
       datosProyect_ID : UUID;
@@ -672,6 +769,8 @@ entity RecuExterTotal {
 
 };
 
+@cds.persistence.journal
+
 entity InfraestrLicencia {
   key ID               : UUID @cds.auto;
       datosProyect_ID  : UUID;
@@ -679,6 +778,7 @@ entity InfraestrLicencia {
       totalLicencia    : Decimal(20, 4);
 }
 
+@cds.persistence.journal
 
 entity ResumenCostesTotal {
   key ID              : UUID @cds.auto;

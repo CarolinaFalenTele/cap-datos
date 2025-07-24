@@ -69,7 +69,7 @@
                                 <ObjectAttribute
                                     id="2"
                                     title="Departamento"
-                                    text="BTP"
+                                    text=""
                                 />
                                 <!--  <ObjectAttribute id="2323" title="Weight per unit" text="" />
                                 <ObjectAttribute id="2222" title="Dimension per unit" text="" />-->
@@ -78,7 +78,7 @@
                                     <ObjectStatus
                                         id="status0"
                                         title="Aprobación"
-                                        text="Pening"
+                                        text=""
                                         state="Warning"
                                     />
                                 </statuses>
@@ -340,6 +340,28 @@
                                                             <m:ObjectStatus
                                                                 text="{modelPendientes>modalidad}"
                                                                 state="Success"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+
+
+
+                                                <table:Column
+                                                        id="colFechaComite"
+                                                        sortProperty="fechaComiteForm"
+                                                        filterProperty="fechaComiteForm"
+                                                        hAlign="Center"
+                                                        width="9em"
+                                                    >
+                                                        <Label
+                                                            text="Fecha Comite"
+                                                            class="customTitle"
+                                                        />
+                                                        <table:template>
+                                                            <m:ObjectStatus
+                                                                text="{modelPendientes>fechaComiteForm}"
+                                                                state="Information"
+
                                                             />
                                                         </table:template>
                                                     </table:Column>

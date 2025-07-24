@@ -1,0 +1,9 @@
+== version=1
+COLUMN TABLE db_datos_ClientFactura (
+  ID NVARCHAR(36) NOT NULL,
+  juridica NVARCHAR(5000),
+  oferta NVARCHAR(5000),
+  total DECIMAL(20, 4),
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

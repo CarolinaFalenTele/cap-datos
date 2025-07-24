@@ -1,0 +1,19 @@
+== version=1
+COLUMN TABLE db_datos_ConsumoExternos (
+  ID NVARCHAR(36) NOT NULL,
+  ConceptoOferta NVARCHAR(5000),
+  PMJ DECIMAL(20, 4),
+  year1 DECIMAL(20, 4),
+  year2 DECIMAL(20, 4),
+  year3 DECIMAL(20, 4),
+  year4 DECIMAL(20, 4),
+  year5 DECIMAL(20, 4),
+  year6 DECIMAL(20, 4),
+  total DECIMAL(20, 4),
+  totalC DECIMAL(20, 4),
+  tipoServicio_ID NVARCHAR(36),
+  Vertical_ID NVARCHAR(36),
+  PerfilConsumo_ID NVARCHAR(36),
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

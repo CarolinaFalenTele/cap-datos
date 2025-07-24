@@ -1,0 +1,10 @@
+== version=1
+COLUMN TABLE db_datos_ProveedoresC (
+  ID NVARCHAR(36) NOT NULL,
+  checkCondi BOOLEAN,
+  checkProveedor BOOLEAN,
+  valueCondi NVARCHAR(5000),
+  valueProvee NVARCHAR(5000),
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

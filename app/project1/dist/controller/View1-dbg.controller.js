@@ -138,12 +138,822 @@ sap.ui.define([
 
         this._handleInputChangeCounter = 0;
 
-       
+
+        const hostname = window.location.hostname;
+        //console.log("🧠 Hostname detectado:", hostname);
+
+        this.filtertables();
 
       },
 
 
 
+      //   -------- FILTROS INACTIVOS O ACTIVOS ----------      
+      filterAreaFalse: async function (ID) {
+        var oSelect = this.byId("slct_area");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Area",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreArea}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Area('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreArea + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el área:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+      filterJefe: async function (ID) {
+        var oSelect = this.byId("slct_Jefe");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Jefeproyect",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{name}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Jefeproyect('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.name + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el JefeProyecto:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+      filterVertical: async function (ID) {
+        var oSelect = this.byId("slct_verti");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Vertical",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreVertical}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Vertical('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreVertical + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el Vertical:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+
+
+      filterClienteNuevo: async function (ID) {
+        var oSelect = this.byId("slct_client");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/ClienteNuevo",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreClienteNuevo}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/ClienteNuevo('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreClienteNuevo + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el ClienteNuevo:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+      filterTipoIniciativa: async function (ID) {
+        var oSelect = this.byId("slct_inic");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/TipoIniciativa",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreIniciativa}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/TipoIniciativa('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreIniciativa + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el TipoIniciativa:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+      filterNaturaleza: async function (ID) {
+        var oSelect = this.byId("idNatu");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Naturaleza",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreNaturaleza}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Naturaleza('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreNaturaleza + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el Naturaleza:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+      filterSeguimiento: async function (ID) {
+        var oSelect = this.byId("selc_Segui");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Seguimiento",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreSeguimiento}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Seguimiento('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreSeguimiento + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el Seguimiento:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+      filterEjecucionVia: async function (ID) {
+        var oSelect = this.byId("selc_ejcu");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/EjecucionVia",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreEjecuVia}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/EjecucionVia('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreEjecuVia + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el EjecucionVia:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+      filterAMreceptor: async function (ID) {
+        var oSelect = this.byId("selct_Amrecp");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/AMreceptor",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreAMreceptor}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/AMreceptor('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreAMreceptor + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el AMreceptor:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+
+
+      filtertables: async function () {
+        const aTableIds = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+          "idOtroserConsu",
+          "idGastoViajeConsu",
+          "idServiExterno",
+          "idGastoRecuExter",
+          "tablaInfrestuctura",
+          "tablaLicencia",
+          "tableServicioInterno",
+          "tablGastoViajeInterno"
+        ];
+
+        for (let sTableId of aTableIds) {
+          await this.filterSelectsFromTable(sTableId);
+
+        }
+      },
+
+
+
+      filterSelectsFromTable: async function (sTableId) {
+        //console.log("tablas recbidas " + sTableId);   
+        var oTable = this.byId(sTableId);
+        var aItems = oTable.getItems();
+
+        for (let i = 0; i < aItems.length; i++) {
+          let oRow = aItems[i];
+          let oSelect = oRow.getCells()[0]; // Cambia [1] si el Select está en otra columna
+
+          if (!oSelect) continue;
+
+          //console.log("LOS oselect"   +  oSelect );
+
+
+          let sSelectedKey = oSelect.getSelectedKey(); // o desde el bindingContext si lo prefieres
+
+          //console.log("LOS IDS DEL SELECT"   +  sSelectedKey );
+          await this.filterVerticaltablasDinamicas(sSelectedKey, oSelect);
+
+          //   await   this.filterTipoServicioDinamicas( oSelect );
+
+        }
+      },
+
+
+      filterVerticaltablasDinamicas: async function (ID, oSelect) {
+        // var oSelect = this.byId("selct_Amrecp");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/Vertical",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreVertical}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/Vertical('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreVertical + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el Vertical:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+
+      filterTipoServicioDinamicas: async function (ID, oSelect) {
+        // var oSelect = this.byId("selct_Amrecp");
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/TipoServicio",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombreTipoServ}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/TipoServicio('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreTipoServ + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el TipoServicio:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
+
+
+
+      /* filterAreaFalse: async function (ID) {
+         console.log("datos traidos " + ID);
+     
+         var oModel = this.getOwnerComponent().getModel();
+   
+   
+         var sServiceUrl = oModel.sServiceUrl; // por ejemplo: "/odata/v4/datos-cdo/"
+         var sUrl = sServiceUrl + "/odata/v4/datos-cdo/Area(" + "'" + ID + "'" + ")";
+     
+         fetch("/odata/v4/datos-cdo/Area('123e4567-e89b-12d3-a456-426614174002')")
+             .then(response => {
+                 if (!response.ok) {
+                     throw new Error("No se pudo obtener el registro");
+                 }
+   
+                 console.log("lo que trae " + JSON.stringify(response));
+                 return response.json();
+             })
+             .then(data => {
+                 if (data && data.Activo === false) {
+   
+                       console.log("DATOS" + JSON.stringify(data));
+                       console.log("Seteando área inactiva: ", ID);
+   
+                     // Establece el ID como seleccionado aunque no esté en el dropdown
+                     oSelect.setSelectedKey(ID);
+                     console.log("oSelect:", oSelect);
+   
+                 }
+             })
+             .catch(error => {
+                 console.error("Error al obtener el área:", error);
+             });
+   
+   
+   
+         var oSelect = this.byId("slct_area");
+     
+         // 1. Hacemos el bindItems como siempre (solo los activos)
+         oSelect.bindItems({
+             path: "/Area",
+             filters: [
+                 new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+             ],
+             template: new sap.ui.core.Item({
+                 key: "{ID}",
+                 text: "{NombreArea}"
+             })
+         });
+     
+       
+     },*/
 
 
 
@@ -349,7 +1159,7 @@ sap.ui.define([
         }, 1000);
 
         const dialog = new sap.m.Dialog({
-          title: "⚠️ Sesión a punto de expirar",
+          title: "    Sesión a punto de expirar",
           content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
           beginButton: new sap.m.Button({
             text: "Sí, mantener sesión",
@@ -467,10 +1277,12 @@ sap.ui.define([
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
         const sMode = oArgs.mode || "display";
 
-        // ✅ Parseamos el flag de aprobación
+
+
+        //  Parseamos el flag de aprobación
         let aprobacionFlag = this._parseAprobacionFlag(oArgs, sSourceModel);
 
-        // ✅ LIMPIAMOS el sSourceModel si viene con sufijos tipo ";aprobacion=true"
+        // LIMPIAMOS el sSourceModel si viene con sufijos tipo ";aprobacion=true"
         if (sSourceModel.includes(";")) {
           sSourceModel = sSourceModel.split(";")[0];
         }
@@ -488,6 +1300,7 @@ sap.ui.define([
         if (sMode === "create") {
           await this._clearAllInputs();
         } else if ((sMode === "edit")) {
+          console.log("Entrando a clearTableTextsOnly");
           this._clearAllInputsEdit();
         }
 
@@ -497,7 +1310,7 @@ sap.ui.define([
         btnAceptar.attachPress(this.onSave, this);
 
         btnBorrado.setEnabled(true);
-        btnBorrado.setText("Guardar");
+        btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
         if (
@@ -509,7 +1322,7 @@ sap.ui.define([
           return;
         }
 
-        // ✅ Llamamos con el source limpio
+        //     Llamamos con el source limpio
         this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
         this._sProjectID = sProjectID;
@@ -562,50 +1375,51 @@ sap.ui.define([
           btnAceptar.setType(sap.m.ButtonType.Accept);
 
           btnBorrado.setEnabled(false);
-          btnBorrado.setText("Guardar");
+          btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
           return;
         }
 
         // 3️ MODO CREATE o EDIT con borrador
-        if (sSourceModel === "modelBorrador"  || sMode === "create") {
+        if (sSourceModel === "modelBorrador" || sMode === "create") {
           this._isAprobacion = false;
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Enviar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnBorrado.setIcon("sap-icon://save"); //  icono de guardar
           btnAceptar.attachPress(this.onSave, this);
 
           btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
-
+          btnAceptar.setIcon(""); //  sin icono
           btnBorrado.attachPress(this.onBorrador, this);
 
           var oToday = new Date();  // Fecha y hora real
 
-         // var oToday = new Date("2025-07-09T13:00:00");  // Fecha y hora real actual
-    
+          // var oToday = new Date("2025-07-09T13:00:00");  // Fecha y hora real actual
+
           var iDay = oToday.getDay();    // Día de la semana (0-6)
           var iHours = oToday.getHours(); // Hora actual (0-23)
-      
-          if (iDay === 3 && iHours >= 12) { 
+
+          if (iDay === 3 && iHours >= 12) {
 
             var oEnviarBtn = this.byId("btnAceptar");
 
             oEnviarBtn.setEnabled(false);
 
-              MessageBox.error(
-                  "El envío está deshabilitado los miércoles por revisión interna. Intenta mañana.",
-                  { title: "Envío bloqueado" }
-              );
-              return;
+            MessageBox.error(
+              "El envío está deshabilitado los miércoles por revisión interna. Intenta mañana.",
+              { title: "Envío bloqueado" }
+            );
+            return;
           }
           return;
         }
 
-        if(sSourceModel === "modelPendientes"  ||  sMode === "edit"){  
-           this._isAprobacion = false;
+        if (sSourceModel === "modelPendientes" || sMode === "edit") {
+          this._isAprobacion = false;
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Enviar");
@@ -618,7 +1432,7 @@ sap.ui.define([
 
           btnBorrado.attachPress(this.onBorrador, this);
           return;
-      }
+        }
 
         // 4️ MODO DEFAULT: asegurar botones habilitados con acción segura
         btnAceptar.setEnabled(true);
@@ -627,7 +1441,7 @@ sap.ui.define([
         btnAceptar.attachPress(this.onSave, this);
 
         btnBorrado.setEnabled(true);
-        btnBorrado.setText("Guardar");
+        btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Transparent);
         btnBorrado.attachPress(this.onBorrador, this);
       },
@@ -658,11 +1472,14 @@ sap.ui.define([
 
       _populateViewWithData: async function (oData) {
         if (!oData) return;
+        var oStatus = this.byId("23437");
 
         // Poblar controles básicos
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
         this.byId("area0").setValue(oData.datosExtra || "");
+        this._setEstadoVisual(oStatus, oData.Estado);
+
         this.byId("inputCambioEu").setValue(oData.CambioEuRUSD || "");
         this.byId("23d3").setText(oData.Empleado || "");
         this.byId("ofertaCheckBox").setSelected(oData.Oferta === true || oData.Oferta === "true");
@@ -680,17 +1497,32 @@ sap.ui.define([
         this.byId("idAsunyRestri").setValue(oData.AsuncionesyRestricciones || "");
         this.byId("box_multiJuridica").setSelected(!!oData.multijuridica);
         this.byId("box_pluriAnual").setSelected(!!oData.pluriAnual);
-        this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
-        this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+        //        this.byId("slct_area").setSelectedKey(oData.Area_ID || "");
+        await this.filterAreaFalse(oData.Area_ID);
+
+        //  this.byId("slct_Jefe").setSelectedKey(oData.jefeProyectID_ID || "");
+
+        await this.filterJefe(oData.jefeProyectID_ID);
+
         this.byId("selectMotivo").setSelectedKey(oData.MotivoCondi_ID || "");
         this.byId("select_tipoCom").setSelectedKey(oData.TipoCompra_ID || "");
-        this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
-        this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
-        this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
-        this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
-        this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
-        this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
-        this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
+        // this.byId("slct_verti").setSelectedKey(oData.Vertical_ID || "");
+        this.filterVertical(oData.Vertical_ID);
+
+        //  this.byId("slct_inic").setSelectedKey(oData.Iniciativa_ID || "");
+
+        await this.filterTipoIniciativa(oData.Iniciativa_ID);
+        // this.byId("idNatu").setSelectedKey(oData.Naturaleza_ID || "");
+        await this.filterNaturaleza(oData.Naturaleza_ID);
+
+        //this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
+        //this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
+        //  this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
+        // this.byId("slct_client").setSelectedKey(oData.ClienteNuevo_ID || "");
+        await this.filterAMreceptor(oData.AmReceptor_ID);
+        await this.filterEjecucionVia(oData.EjecucionVia_ID);
+        await this.filterSeguimiento(oData.Seguimiento_ID);
+        await this.filterClienteNuevo(oData.ClienteNuevo_ID);
         this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
         this.byId("date_fin").setDateValue(oData.FechaFin ? new Date(oData.FechaFin) : null);
         this.byId("box_pluriAnual").setSelected(oData.pluriAnual);
@@ -737,8 +1569,11 @@ sap.ui.define([
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
+        const btnBorrar = this.byId("btnBorrado");
+
         if (!this._isAprobacion && btnAceptar) {
           btnAceptar.setText("Guardar");
+          //          btnBorrar.setEnabled(true);
         }
 
         new sap.m.Dialog({
@@ -764,7 +1599,7 @@ sap.ui.define([
         const oContext = oItem.getBindingContext("archivosModel");
 
         if (!oContext) {
-          sap.m.MessageToast.show("⚠️ No se pudo obtener el contexto del archivo.");
+          sap.m.MessageToast.show("    No se pudo obtener el contexto del archivo.");
           return;
         }
 
@@ -773,11 +1608,11 @@ sap.ui.define([
         const mimeType = oContext.getProperty("tipoMime");
 
         if (!archivoID || !fileName || !mimeType) {
-          sap.m.MessageToast.show("⚠️ Faltan datos para abrir o descargar el archivo.");
+          sap.m.MessageToast.show("    Faltan datos para abrir o descargar el archivo.");
           return;
         }
 
-        //  console.log("📌 ID recibido para ver archivo:", archivoID);
+        //  console.log("    ID recibido para ver archivo:", archivoID);
         this._descargarArchivo(archivoID, fileName, mimeType);
       },
 
@@ -793,7 +1628,7 @@ sap.ui.define([
 
           if (!res.ok) {
             const errorText = await res.text();
-            throw new Error("❌ Error al descargar archivo: " + errorText);
+            throw new Error("    Error al descargar archivo: " + errorText);
           }
 
           const blob = await res.blob();
@@ -815,9 +1650,9 @@ sap.ui.define([
           a.click();
           document.body.removeChild(a);
 
-          //      sap.m.MessageToast.show("✅ Archivo descargado: " + fileName);
+          //      sap.m.MessageToast.show("    Archivo descargado: " + fileName);
         } catch (err) {
-          console.error("❌ Error en descarga:", err);
+          console.error("    Error en descarga:", err);
           //   sap.m.MessageToast.show(err.message);
         }
       },
@@ -852,9 +1687,9 @@ sap.ui.define([
           const oModel = new sap.ui.model.json.JSONModel({ archivos });
           this.getView().setModel(oModel, "archivosModel");
 
-          //  console.log("📌 Modelo cargado en la vista con archivos:", archivos.length);
+          //  console.log("    Modelo cargado en la vista con archivos:", archivos.length);
         } catch (err) {
-          console.error("❌ Error al cargar archivos:", err);
+          console.error("    Error al cargar archivos:", err);
           sap.m.MessageToast.show(err.message);
         }
       },
@@ -863,10 +1698,12 @@ sap.ui.define([
 
 
 
-      _clearAllInputs: function () {
+      _clearAllInputs: async function () {
         const oView = this.getView();
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
+        const oModelDynamic = oView.getModel("dynamicInputs");
+
         this._idWorkflowInstancias = null; // o undefined
         this._idWorkIniciado = null;
 
@@ -884,7 +1721,6 @@ sap.ui.define([
         this._IdFechasPorMesConsuEx = null;
         this._IdFechasPorMesGVinter = null;
         this._IdFechasPorMesServInt = null;
-
         this._IdFechasPorMesGasViaConsuEx = [];
         this._IdFechasPorMes = [];
         this._RecursoInt = [];
@@ -905,6 +1741,8 @@ sap.ui.define([
         this._idJornadas = null;
         this._idTotalRecInter = null;
         this._selectedFile = null;
+
+
 
 
         const aTableIdsConColumnasDinamicas = [
@@ -1022,6 +1860,13 @@ sap.ui.define([
           oModel.setProperty("/chartModel", []);
         }
 
+        // Limpiar el modelo dynamicInputs completamente
+        if (oModelDynamic) {
+          oModelDynamic.setData({}); // <<< esta línea limpia todo el contenido del modelo
+          oModelDynamic.refresh(true); // <<< refresca el modelo si es necesario
+        }
+
+
         const oArchivosModel = this.getView().getModel("archivosModel");
         if (oArchivosModel) {
           oArchivosModel.setProperty("/archivos", []);
@@ -1032,14 +1877,55 @@ sap.ui.define([
 
         this.refreshODataModel();
 
+
+
+        
+        aTableIdsConColumnasDinamicas.forEach((tableId) => {
+          const oTable = this.byId(tableId);
+          if (oTable) {
+            const aColumns = oTable.getColumns();
+            for (let i = aColumns.length - 1; i >= 0; i--) {
+              const oHeader = aColumns[i].getHeader();
+              if (oHeader && /\d{4}-\w+/.test(oHeader.getText())) {
+                oTable.removeColumn(aColumns[i]);
+              }
+            }
+        
+            // Además, limpiar los inputs dinámicos en cada fila
+            oTable.getItems().forEach((oRow) => {
+              const aCells = oRow.getCells();
+              for (let i = aCells.length - 1; i >= 0; i--) {
+                const oCell = aCells[i];
+                const oBinding = aColumns[i] && aColumns[i].getHeader()?.getText();
+                if (/\d{4}-\w+/.test(oBinding)) {
+                  oRow.removeCell(oCell);
+                }
+              }
+            });
+        
+            // 🔧 Nuevo agregado: volver al tamaño original configurado
+            // Forzar invalidation para que la tabla re-renderice su layout
+            oTable.invalidate();
+          }
+        });
+        
         //     console.log("Todos los campos, textos y gráficos han sido limpiados.");
       },
 
 
-      _clearAllInputsEdit: function () {
+      _clearAllInputsEdit: async function () {
+        await this._clearTableTextsOnly();
         const oView = this.getView();
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
+        const oModelDynamic = oView.getModel("dynamicInputs");
+
+
+        if (oModelDynamic) {
+          oModelDynamic.setData({});
+          oModelDynamic.refresh(true);
+        }
+
         this._IdFechasPorMesGasViaConsuEx = [];
         this._IdFechasPorMes = [];
         this._RecursoInt = [];
@@ -1061,7 +1947,7 @@ sap.ui.define([
         this._idTotalRecInter = null;
         this._selectedFile = null;
 
-        this._clearTableTextsOnly();
+
         const aAlwaysReadOnlyIds = [
           "inputReInter", "inputConsuEx", "inputRcurExtern", "inputTotalJor", "inputServi1",
           "inputOtrosServi1", "inputGastoVia1", "totalRecuInter", "inputServi2", "inputOtroSer2",
@@ -1090,10 +1976,9 @@ sap.ui.define([
       },
 
 
-
-
-
       _clearTableTextsOnly: function () {
+
+   //     console.log("Entre a este metodo --->ZZZ    ")
         const oView = this.getView();
         const aTableIds = [
           "tablaConsuExter",
@@ -1116,70 +2001,245 @@ sap.ui.define([
             return;
           }
 
+          const aColumns = oTable.getColumns();
           const aItems = oTable.getItems();
+
           aItems.forEach(oItem => {
             const aCells = oItem.getCells();
-            aCells.forEach(oCell => {
-              // Si el cell es un Input o Text control, se limpia
-              if (oCell instanceof sap.m.Input || oCell instanceof sap.m.Text) {
-                if (typeof oCell.setValue === "function") {
-                  oCell.setValue("");
-                }
-                if (typeof oCell.setText === "function") {
-                  oCell.setText("");
-                }
+
+            aCells.forEach((oCell, index) => {
+              // Opcional: verifica si quieres limpiar solo columnas dinámicas (YYYY-Month)
+              const sHeaderText = aColumns[index] && aColumns[index].getHeader()?.getText();
+              const isDynamicColumn = /\d{4}-\w+/.test(sHeaderText);
+
+              // Si quieres limpiar solo columnas dinámicas, activa esta condición:
+              // if (!isDynamicColumn) return;
+
+              // Limpiar Input
+              if (typeof oCell.setValue === "function") {
+                oCell.setValue("");
               }
+
+              // Limpiar Text
+              if (typeof oCell.setText === "function") {
+                oCell.setText("");
+              }
+
+              // Limpiar Select
+              if (typeof oCell.setSelectedKey === "function") {
+                oCell.setSelectedKey(""); // O setSelectedKey("defaultKey") si lo necesitas
+              }
+
             });
           });
         });
 
-        //   console.log("Texto de celdas internas de las tablas limpiado.");
+
+
+
+
+        //console.log("Limpieza de textos, selects y fechas completada en tablas dinámicas.");
       },
 
 
 
+      /*  _clearTableTextsOnly: function () {
+          const oView = this.getView();
+          const aTableIds = [
+            "tablaConsuExter",
+            "table_dimicFecha",
+            "tablaRecExterno",
+            "idOtroserConsu",
+            "idGastoViajeConsu",
+            "idServiExterno",
+            "idGastoRecuExter",
+            "tablaInfrestuctura",
+            "tablaLicencia",
+            "tableServicioInterno",
+            "tablGastoViajeInterno"
+          ];
+  
+          aTableIds.forEach(sTableId => {
+            const oTable = this.byId(sTableId);
+            if (!oTable) {
+              console.warn(`Tabla no encontrada: ${sTableId}`);
+              return;
+            }
+  
+            const aItems = oTable.getItems();
+            aItems.forEach(oItem => {
+              const aCells = oItem.getCells();
+              aCells.forEach(oCell => {
+                // Si el cell es un Input o Text control, se limpia
+                if (oCell instanceof sap.m.Input || oCell instanceof sap.m.Text) {
+                  if (typeof oCell.setValue === "function") {
+                    oCell.setValue("");
+                  }
+                  if (typeof oCell.setText === "function") {
+                    oCell.setText("");
+                  }
+                }
+              });
+            });
+          });
+  
+          //   console.log("Texto de celdas internas de las tablas limpiado.");
+        },*
+  
+  
+  
+  
+  //      ENVIOOOOO  CON COMENTARIOOOOOOOOOOOOOO       
+  
+     /*   _onDecisionPress: function (oEvent) {
+          const decision = oEvent.getSource().data("valor");
+          const textoAccion = decision === "approve" ? "aprobar" : "rechazar";
+          const decisionTitulo = decision === "approve" ? "Aprobación" : "Rechazo";
+        
+          console.log("DECISIÓN:", decision);
+        
+          // Crear campo de texto para comentarios
+          const oTextArea = new sap.m.TextArea({
+            width: "100%",
+            placeholder: "Puede escribir un comentario (opcional)...",
+            rows: 4
+          });
+        
+          // Crear el diálogo
+          const oDialog = new sap.m.Dialog({
+            title: "Confirmar " + decisionTitulo,
+            type: "Message",
+            content: [
+              new sap.m.Text({ text: `¿Está seguro de que desea ${textoAccion} este proyecto?` }),
+              new sap.m.Label({ text: "Comentario:", labelFor: oTextArea }),
+              oTextArea
+            ],
+            beginButton: new sap.m.Button({
+              text: "Confirmar",
+              type: sap.m.ButtonType.Emphasized,
+              press: function () {
+                const comentario = oTextArea.getValue();
+        
+                console.log(" Comentario ingresado:", comentario);
+        
+                oDialog.close();
+        
+                // Ejecutar el proceso de workflow con la decisión y el comentario
+                this._completarWorkflow(decision, comentario)
+                  .catch(err => {
+                    console.error("Error completando workflow:", err);
+                    sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+                  });
+        
+                // Navegar
+                sap.m.MessageBox.information(
+                  "La decisión fue enviada correctamente. Puede ir a la aplicación para ver el estado del proceso.",
+                  {
+                    title: "Proceso enviado",
+                    onClose: function () {
+                      var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                      oRouter.navTo("appNoparame");
+                    }.bind(this)
+                  }
+                );
+              }.bind(this)
+            }),
+            endButton: new sap.m.Button({
+              text: "Cancelar",
+              press: function () {
+                oDialog.close();
+              }
+            }),
+            afterClose: function () {
+              oDialog.destroy();
+            }
+          });
+        
+          oDialog.open();
+        },*/
 
 
 
-
-
-
-
-
+      ///   este funciona       
       _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
 
-        console.log("DESAION " + decision);
-        if (decision) {
-          // Lanzar el proceso async, pero no bloquear la UI
-          this._completarWorkflow(decision)
-            .catch(err => {
-              // Aquí puedes hacer un log o notificar error sin bloquear al usuario
-              console.error("Error completando workflow:", err);
-              sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
-            });
+        //console.log("DECISIÓN:", decision);
 
-          // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
-          sap.m.MessageBox.information(
-            "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
-            {
-              title: "Aprobación enviada",
-              onClose: function () {
-                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                oRouter.navTo("appNoparame");
-              }.bind(this)
-            }
-          );
-        } else {
+        if (!decision) {
           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+          return;
         }
+
+        const sTextoConfirmacion = decision === "approve"
+          ? "¿Está seguro de que desea aprobar este proyecto?"
+          : "¿Está seguro de que desea rechazar este proyecto?";
+
+        sap.m.MessageBox.confirm(sTextoConfirmacion, {
+          title: "Confirmar decisión",
+          actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+          emphasizedAction: sap.m.MessageBox.Action.YES,
+          onClose: function (sAction) {
+            if (sAction === sap.m.MessageBox.Action.YES) {
+              // Lanzar proceso async, no bloquear UI
+              this._completarWorkflow(decision)
+                .catch(err => {
+                  console.error("Error completando workflow:", err);
+                  sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+                });
+
+              // Mostrar mensaje informativo y navegar
+              sap.m.MessageBox.information(
+                "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                {
+                  title: "Aprobación enviada",
+                  onClose: function () {
+                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                    oRouter.navTo("appNoparame");
+                  }.bind(this)
+                }
+              );
+            } else {
+              //console.log("Usuario canceló la acción.");
+            }
+          }.bind(this)
+        });
       },
+
+      /*/   _onDecisionPress: function (oEvent) {
+           const decision = oEvent.getSource().data("valor");
+   
+           console.log("DESAION " + decision);
+           if (decision) {
+             // Lanzar el proceso async, pero no bloquear la UI
+             this._completarWorkflow(decision)
+               .catch(err => {
+                 // Aquí puedes hacer un log o notificar error sin bloquear al usuario
+                 console.error("Error completando workflow:", err);
+                 sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+               });
+   
+             // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
+             sap.m.MessageBox.information(
+               "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+               {
+                 title: "Aprobación enviada",
+                 onClose: function () {
+                   var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                   oRouter.navTo("appNoparame");
+                 }.bind(this)
+               }
+             );
+           } else {
+             sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+           }
+         },*/
 
 
 
 
       _Visualizar: async function (sProjectID, sSourceModel) {
-        console.log("ENTRE A VISUALIZAR con ID:", sSourceModel);
+        //console.log("ENTRE A VISUALIZAR con ID:", sSourceModel);
 
 
         const btnAceptar = this.byId("btnAceptar");
@@ -1210,15 +2270,17 @@ sap.ui.define([
 
           // Configurar botones para modo aprobación
           btnDelete.setVisible(false); // Ocultar el botón en modo aprobación
-          btnAceptar.setEnabled(true);
+          btnAceptar.detachPress(this._onDecisionPress, this);
           btnAceptar.setText("Aprobar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
+          btnAceptar.setIcon("sap-icon://accept"); //  Ícono de check verde
           btnAceptar.data("valor", "approve");
           btnAceptar.attachPress(this._onDecisionPress, this);
 
-          btnBorrado.setEnabled(true);
+          btnBorrado.detachPress(this._onDecisionPress, this);
           btnBorrado.setText("Rechazar");
           btnBorrado.setType(sap.m.ButtonType.Reject);
+          btnBorrado.setIcon("sap-icon://decline"); //  Ícono de cruz roja
           btnBorrado.data("valor", "reject");
           btnBorrado.attachPress(this._onDecisionPress, this);
         } else {
@@ -1228,7 +2290,7 @@ sap.ui.define([
         }
 
 
-        console.log("ENTRE A VISUALIZAR con ID:", sProjectID);
+        //console.log("ENTRE A VISUALIZAR con ID:", sProjectID);
 
         this._configureButtonsForView();
 
@@ -1303,46 +2365,6 @@ sap.ui.define([
       },
 
 
-      /* _openDecisionDialog: function (decisionType) {
-         if (!this._oDecisionDialog) {
-           const that = this;  // Guardamos referencia al controlador
-           this._oDecisionDialog = new sap.m.Dialog({
-             title: decisionType === "approve" ? "Confirmar Aprobación" : "Confirmar Rechazo",
-             content: [
-               new sap.m.Text({ text: "¿Está seguro de que desea continuar?" }),
-               new sap.m.TextArea("commentArea", {
-                 width: "100%",
-                 placeholder: "Agregue un comentario (opcional)",
-                 rows: 8,
-                 height: "150px"
-               })
-             ],
-             beginButton: new sap.m.Button({
-               text: "Confirmar",
-               press: () => {
-                 const comentario = sap.ui.getCore().byId("commentArea").getValue();
- 
-                 this._oDecisionDialog.close();
- 
-                 this._onDecisionPress(null, {
-                   getSource: () => ({ data: () => decisionType })
-                 }, comentario);
-               }
-             }),
-             endButton: new sap.m.Button({
-               text: "Cancelar",
-               press: () => this._oDecisionDialog.close()
-             }),
-             afterClose: function () {
-               that._oDecisionDialog.destroy();
-               that._oDecisionDialog = null;
-             }
-           });
-         }
-         this._oDecisionDialog.open();
-       },*/
-
-
 
 
 
@@ -1370,11 +2392,16 @@ sap.ui.define([
 
       // Función para llenar controles con datos recibidos
       _fillControlsWithData: async function (oData) {
+
+        var oStatus = this.byId("23437");
+
         // Inputs y TextAreas
         this.byId("input0").setValue(oData.codigoProyect || "");
         this.byId("input1").setValue(oData.nameProyect || "");
         this.byId("area0").setValue(oData.datosExtra || "");
         this.byId("inputCambioEu").setValue(oData.CambioEuRUSD || "");
+        this._setEstadoVisual(oStatus, oData.Estado);
+
         this.byId("ofertaCheckBox").setSelected(oData.Oferta === true || oData.Oferta === "true");
         this.byId("23d3").setText(oData.Empleado || "");
         this.byId("idComentariosFac").setValue(oData.comentarioFacturacion || "");
@@ -1403,7 +2430,7 @@ sap.ui.define([
         this.byId("selct_Amrecp").setSelectedKey(oData.AmReceptor_ID || "");
         this.byId("selc_ejcu").setSelectedKey(oData.EjecucionVia_ID || "");
         this.byId("selc_Segui").setSelectedKey(oData.Seguimiento_ID || "");
-        this.byId("slct_client").setSelectedKey(oData.clienteFuncional_ID || "");
+        this.byId("slct_client").setSelectedKey(oData.ClienteNuevo_ID || "");
 
         // Dates
         this.byId("date_inico").setDateValue(oData.Fechainicio ? new Date(oData.Fechainicio) : null);
@@ -1450,6 +2477,25 @@ sap.ui.define([
 
 
 
+      _setEstadoVisual: function (oStatusControl, sEstado) {
+        oStatusControl.setText(sEstado || "");
+
+        switch ((sEstado || "").toLowerCase()) {
+          case "aprobado":
+            oStatusControl.setState(sap.ui.core.ValueState.Success); // verde
+            break;
+          case "rechazado":
+            oStatusControl.setState(sap.ui.core.ValueState.Error); // rojo
+            break;
+          case "borrador":
+            oStatusControl.setState(sap.ui.core.ValueState.None); // gris neutro
+            break;
+          case "pendiente":
+          default:
+            oStatusControl.setState(sap.ui.core.ValueState.Warning); // amarillo
+            break;
+        }
+      },
 
 
 
@@ -1507,7 +2553,7 @@ sap.ui.define([
           const result = oContext.getBoundContext().getObject();
 
           //      MessageToast.show("Tareas registradas correctamente");
-          console.log("Resultado:", result);
+          //console.log("Resultado:", result);
 
         } catch (error) {
           MessageBox.error("Error al registrar tareas:\n" + error.message);
@@ -1522,9 +2568,10 @@ sap.ui.define([
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
         const idProject = this._sProjectID;
+        console.log("ID" + idProject);
         const usuario = "Carolina Falen";
 
-        console.log("ID DEL PROYECTO " + idProject);
+        //console.log("ID DEL PROYECTO " + idProject);
 
         if (!workflowInstanceId) {
           sap.m.MessageBox.error("No se encontró el ID del flujo de trabajo.");
@@ -1722,10 +2769,10 @@ sap.ui.define([
             this.byId("box_condi").setSelected(oData.value[0].checkCondi || false);
             this.byId("box_prove").setSelected(oData.value[0].checkProveedor || false);
 
-            //    console.log("IDs cargados:", this._proveedoresIDs);
+            //    //console.log("IDs cargados:", this._proveedoresIDs);
 
           } else {
-            console.log("No hay datos de proveedores disponibles.");
+            //console.log("No hay datos de proveedores disponibles.");
           }
 
         } catch (error) {
@@ -1778,7 +2825,7 @@ sap.ui.define([
                 if (aCells.length > 1) {
                   // Actualizar DatePicker (asumiendo que la fecha está en la primera celda)
                   if (aCells[0] instanceof sap.m.DatePicker) {
-                    console.log("Tipo de celda:", aCells[0].constructor.name); // Verifica el tipo de celda
+                    //console.log("Tipo de celda:", aCells[0].constructor.name); // Verifica el tipo de celda
                     // Si hay fecha estimada, se asigna al DatePicker
                     aCells[0].setDateValue(Facturacion.fechaEstimida ? new Date(Facturacion.fechaEstimida) : null);
                   }
@@ -1979,7 +3026,10 @@ sap.ui.define([
                 var aCells = oItem.getCells();
 
                 aCells[0].setSelectedKey(Recurso.Vertical_ID || "");
+
+                this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                 aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
+                this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                 aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                 aCells[3].setValue(Recurso.ConceptoOferta || "");
                 aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
@@ -2048,7 +3098,7 @@ sap.ui.define([
             //      console.log("JORNADAS ID " + this._idJornadas);
 
           } else {
-            console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
+            //console.log("NO SE ENCONTRARON DATOS PARA PERFIL JORNADAS");
           }
 
 
@@ -2359,7 +3409,7 @@ sap.ui.define([
         const promesas = recursos.map(async (recursoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
 
-          //   console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+          //   console.log(`  Consultando URL para recursoID: ${recursoID}`);
 
           try {
             const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
@@ -2368,9 +3418,9 @@ sap.ui.define([
 
             // Verificamos si hay resultados o no
             if (data.value && data.value.length > 0) {
-              //      console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+              //      console.log(`    Resultado para recursoID ${recursoID}:`, data.value);
             } else {
-              console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+              console.warn(`    Sin resultados para recursoID ${recursoID}`);
             }
 
             const valoresPorFecha = {};
@@ -2394,7 +3444,7 @@ sap.ui.define([
 
             return { recursoID, data: data.value || [] };
           } catch (error) {
-            console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+            console.error(`    Error en consulta para recursoID ${recursoID}:`, error);
             return { recursoID, error };
           }
         });
@@ -2402,7 +3452,7 @@ sap.ui.define([
         // Esperamos todas las promesas y tenemos los resultados
         const resultados = await Promise.all(promesas);
 
-        //  console.log("📊 Resultados completos:", resultados);
+        //  console.log("  Resultados completos:", resultados);
       },
 
       /*    leerFechas: async function () {
@@ -2417,7 +3467,7 @@ sap.ui.define([
             const promesas = recursos.map(async (recursoID, index) => {
               const sUrl = `/odata/v4/datos-cdo/ValorMensuReInter?$filter=RecursosInternos_ID eq '${recursoID}'`;
     
-           //   console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+           //   console.log(`  Consultando URL para recursoID: ${recursoID}`);
     
               try {
                 const response = await fetch(sUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
@@ -2426,9 +3476,9 @@ sap.ui.define([
     
                 // Verificamos si hay resultados o no
                 if (data.value && data.value.length > 0) {
-            //      console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+            //      console.log(`    Resultado para recursoID ${recursoID}:`, data.value);
                 } else {
-                  console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+                  console.warn(`    Sin resultados para recursoID ${recursoID}`);
                 }
     
                 const valoresPorFecha = {};
@@ -2449,7 +3499,7 @@ sap.ui.define([
     
                 return { recursoID, data: data.value || [] };
               } catch (error) {
-                console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+                console.error(`    Error en consulta para recursoID ${recursoID}:`, error);
                 return { recursoID, error };
               }
             });
@@ -2462,7 +3512,7 @@ sap.ui.define([
     
             console.log("FECHAS TRAIDAS "  + this._IdFechasPorMes);
     
-          //  console.log("📊 Resultados completos:", resultados);
+          //  console.log("  Resultados completos:", resultados);
           },*/
 
 
@@ -2503,7 +3553,7 @@ sap.ui.define([
         const promesas = servicios.map(async (servicioID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuServReInter?$filter=otrosGastoRecu_ID eq '${servicioID}'`;
 
-          // console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
+          // console.log(`  Consultando URL para servicioID: ${servicioID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2514,9 +3564,9 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              //    console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+              //    console.log(`    Resultado para servicioID ${servicioID}:`, data.value);
             } else {
-              console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
+              console.warn(`    Sin resultados para servicioID ${servicioID}`);
             }
 
             const valoresPorFecha = {};
@@ -2534,14 +3584,14 @@ sap.ui.define([
 
             return { servicioID, data: data.value || [] };
           } catch (error) {
-            console.error(`❌ Error en consulta para servicioID ${servicioID}:`, error);
+            console.error(`    Error en consulta para servicioID ${servicioID}:`, error);
             return { servicioID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //console.log("📊 Resultados completos:", resultados);
+        //console.log("  Resultados completos:", resultados);
       },
 
 
@@ -2561,7 +3611,7 @@ sap.ui.define([
         const promesas = recursosArray.map(async (recursoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuGastViaReInter?$filter=otrosRecursos_ID eq '${recursoID}'`;
 
-          //  console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+          //  console.log(`  Consultando URL para recursoID: ${recursoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2572,9 +3622,9 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              //       console.log(`✅ Resultado para recursoID ${recursoID}:`, data.value);
+              //       console.log(`    Resultado para recursoID ${recursoID}:`, data.value);
             } else {
-              console.warn(`⚠️ Sin resultados para recursoID ${recursoID}`);
+              console.warn(`    Sin resultados para recursoID ${recursoID}`);
             }
 
             const valoresPorFecha = {};
@@ -2593,14 +3643,14 @@ sap.ui.define([
 
             return { recursoID, data: data.value || [] };
           } catch (error) {
-            console.error(`❌ Error en consulta para recursoID ${recursoID}:`, error);
+            console.error(`    Error en consulta para recursoID ${recursoID}:`, error);
             return { recursoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //    console.log("📊 Resultados completos:", resultados);
+        //    console.log("  Resultados completos:", resultados);
       },
 
       //---------------------------------------------------------------------------------
@@ -2622,7 +3672,7 @@ sap.ui.define([
         const promesas = consumos.map(async (consumoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuConsuEx?$filter=ConsumoExternos_ID eq '${consumoID}'`;
 
-          //   console.log(`🔗 Consultando URL para consumoID: ${consumoID}`);
+          //   console.log(`  Consultando URL para consumoID: ${consumoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2633,9 +3683,9 @@ sap.ui.define([
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              //   console.log(`✅ Resultado para consumoID ${consumoID}:`, data.value);
+              //   console.log(`    Resultado para consumoID ${consumoID}:`, data.value);
             } else {
-              console.warn(`⚠️ Sin resultados para consumoID ${consumoID}`);
+              console.warn(`    Sin resultados para consumoID ${consumoID}`);
             }
 
             const valoresPorFecha = {};
@@ -2653,14 +3703,14 @@ sap.ui.define([
 
             return { consumoID, data: data.value || [] };
           } catch (error) {
-            console.error(`❌ Error en consulta para consumoID ${consumoID}:`, error);
+            console.error(`    Error en consulta para consumoID ${consumoID}:`, error);
             return { consumoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //    console.log("📊 Resultados completos consumo externo:", resultados);
+        //    console.log("  Resultados completos consumo externo:", resultados);
       },
 
 
@@ -2679,7 +3729,7 @@ sap.ui.define([
         const promesas = otrosServiciosIDs.map(async (servicioID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuServConsuEx?$filter=otrosServiciosConsu_ID eq '${servicioID}'`;
 
-          console.log(`🔗 Consultando URL para servicioID: ${servicioID}`);
+          console.log(`  Consultando URL para servicioID: ${servicioID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2689,15 +3739,15 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error al consultar el servicio: ' + errorText);
+              throw new Error('    Error al consultar el servicio: ' + errorText);
             }
 
             const data = await response.json();
 
             if (data.value && data.value.length > 0) {
-              //    console.log(`✅ Resultado para servicioID ${servicioID}:`, data.value);
+              //    console.log(`    Resultado para servicioID ${servicioID}:`, data.value);
             } else {
-              console.warn(`⚠️ Sin resultados para servicioID ${servicioID}`);
+              console.warn(`    Sin resultados para servicioID ${servicioID}`);
             }
 
             const valoresPorFecha = {};
@@ -2709,20 +3759,20 @@ sap.ui.define([
 
             this._IdFechasPorMesServiConsu = idPorFecha;
 
-            // console.log("📅 Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
+            // console.log("  Valores por fecha para servicio consumo externo:", JSON.stringify(valoresPorFecha));
 
             this.rellenarInputsConFechas("idOtroserConsu", index, valoresPorFecha);
 
             return { servicioID, data: data.value || [] };
           } catch (error) {
-            console.error(`❌ Error en consulta para servicioID ${servicioID}:`, error);
+            console.error(`    Error en consulta para servicioID ${servicioID}:`, error);
             return { servicioID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        // console.log("📊 Resultados completos de servicios consumo externo:", resultados);
+        // console.log("  Resultados completos de servicios consumo externo:", resultados);
       },
 
 
@@ -2730,9 +3780,9 @@ sap.ui.define([
 
 
       leerFechasGastoConsumoExterno: async function () {
-        //  const gastosIDs = this._idGastoViajeCOnsu; // Asegúrate de que sea un array
+        const gastosIDs = this._idGastoViajeCOnsu; // Asegúrate de que sea un array
 
-        console.log("🔎 IDs de Gasto de Viaje Consumo Externo a consultar:", gastosIDs);
+        //console.log("🔎 IDs de Gasto de Viaje Consumo Externo a consultar:", gastosIDs);
 
         const valoresPorFecha = {};
         const idPorFecha = {};
@@ -2740,7 +3790,7 @@ sap.ui.define([
         const promesas = gastosIDs.map(async (gastoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx?$filter=GastoViajeConsumo_ID eq '${gastoID}'`;
 
-          console.log(`🔗 Consultando URL para gastoID: ${gastoID}`);
+          console.log(`  Consultando URL para gastoID: ${gastoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2753,14 +3803,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const data = await response.json();
-            //    console.log("📦 Respuesta JSON completa:", data);
+            //    console.log("    Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
-              console.warn(`⚠️ Sin datos encontrados para gastoID: ${gastoID}`);
+              console.warn(`    Sin datos encontrados para gastoID: ${gastoID}`);
               return { gastoID, data: [] };
             }
 
@@ -2773,20 +3823,20 @@ sap.ui.define([
 
             this._IdFechasPorMesGasViaConsuEx = idPorFecha;
 
-            console.log("📅 Valores por fecha para gastoID:", gastoID, valoresPorFecha);
+            //console.log("  Valores por fecha para gastoID:", gastoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("idGastoViajeConsu", index, valoresPorFecha);
 
             return { gastoID, data: data.value };
           } catch (error) {
-            console.error(`❌ Error al consultar gastoID ${gastoID}:`, error);
+            console.error(`    Error al consultar gastoID ${gastoID}:`, error);
             return { gastoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //   console.log("📊 Resultados completos de Gasto Consumo Externo:", resultados);
+        //   console.log("  Resultados completos de Gasto Consumo Externo:", resultados);
       },
 
 
@@ -2808,7 +3858,7 @@ sap.ui.define([
         const promesas = recursosExternosIDs.map(async (recursoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuRecuExter?$filter=RecursosExternos_ID eq ${recursoID}`;
 
-          console.log(`🔗 Consultando URL para recursoID: ${recursoID}`);
+       //   console.log(`  Consultando URL para recursoID: ${recursoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2821,14 +3871,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const data = await response.json();
-            //    console.log("📦 Respuesta JSON completa:", data);
+            //    console.log("    Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
-              console.warn(`⚠️ Sin datos encontrados para recurso externo ID: ${recursoID}`);
+              console.warn(`    Sin datos encontrados para recurso externo ID: ${recursoID}`);
               return { recursoID, data: [] };
             }
 
@@ -2842,20 +3892,20 @@ sap.ui.define([
             // Guardar IDs por fecha si se requiere luego
             this._IdFechasPorMesREExt = idPorFecha;
 
-            //  console.log("📅 Valores por fecha para recurso externo ID:", recursoID, valoresPorFecha);
+            //  console.log("  Valores por fecha para recurso externo ID:", recursoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("tablaRecExterno", index, valoresPorFecha);
 
             return { recursoID, data: data.value };
           } catch (error) {
-            console.error(`❌ Error al consultar recurso externo ID ${recursoID}:`, error);
+            console.error(`    Error al consultar recurso externo ID ${recursoID}:`, error);
             return { recursoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //  console.log("📊 Resultados completos de Recursos Externos:", resultados);
+        //  console.log("  Resultados completos de Recursos Externos:", resultados);
       },
 
 
@@ -2863,13 +3913,13 @@ sap.ui.define([
 
       leerFechasServRecursoExterno: async function () {
         const serviciosExternosIDs = this._idOtroSerEx; // Asegúrate que sea un array
-        //    console.log("🔍 IDs de Servicios Recurso Externo a consultar:", serviciosExternosIDs);
+        //    console.log("    IDs de Servicios Recurso Externo a consultar:", serviciosExternosIDs);
 
         const idPorFecha = {};
 
         const promesas = serviciosExternosIDs.map(async (servID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuSerExter?$filter=ServiRecurExterno_ID eq ${servID}`;
-          console.log(`🔗 URL consultada para ServiRecurExterno_ID: ${servID}`);
+          console.log(`  URL consultada para ServiRecurExterno_ID: ${servID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2882,14 +3932,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const data = await response.json();
-            //            console.log("📦 Respuesta JSON completa:", data);
+            //            console.log("    Respuesta JSON completa:", data);
 
             if (!data.value || data.value.length === 0) {
-              console.warn(`⚠️ No hay datos de ValorMensuSerExter para el ID: ${servID}`);
+              console.warn(`    No hay datos de ValorMensuSerExter para el ID: ${servID}`);
               return { servID, data: [] };
             }
 
@@ -2902,20 +3952,20 @@ sap.ui.define([
 
             this._IdFechasPorMesSerReEx = idPorFecha; // Si necesitas los IDs luego
 
-            console.log("📅 Valores por fecha para servicio externo:", servID, valoresPorFecha);
+            //console.log("  Valores por fecha para servicio externo:", servID, valoresPorFecha);
 
             this.rellenarInputsConFechas("idServiExterno", index, valoresPorFecha);
 
             return { servID, data: data.value };
           } catch (error) {
-            console.error(`❌ Error al consultar ServiRecurExterno_ID ${servID}:`, error);
+            console.error(`    Error al consultar ServiRecurExterno_ID ${servID}:`, error);
             return { servID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //    console.log("📊 Resultados completos de Servicios Recurso Externo:", resultados);
+        //    console.log("  Resultados completos de Servicios Recurso Externo:", resultados);
       },
 
 
@@ -2924,13 +3974,13 @@ sap.ui.define([
 
       leerFechasGastoRecursoExterno: async function () {
         const gastosExternosIDs = this._idGasViaReEx; // Asegúrate que sea un array
-        //    console.log("🔍 IDs de Gastos de Viaje Recurso Externo a consultar:", gastosExternosIDs);
+        //    console.log("    IDs de Gastos de Viaje Recurso Externo a consultar:", gastosExternosIDs);
 
         const idPorFecha = {};
 
         const promesas = gastosExternosIDs.map(async (gastoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuGastoViExter?$filter=GastoViajeRecExter_ID eq ${gastoID}`;
-          console.log(`🔗 URL consultada para GastoViajeRecExter_ID: ${gastoID}`);
+          console.log(`  URL consultada para GastoViajeRecExter_ID: ${gastoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -2943,14 +3993,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const oData = await response.json();
-            //    console.log("📦 Respuesta JSON completa:", oData);
+            //    console.log("    Respuesta JSON completa:", oData);
 
             if (!oData.value || oData.value.length === 0) {
-              console.warn(`⚠️ No hay datos de ValorMensuGastoViExter para el ID: ${gastoID}`);
+              console.warn(`    No hay datos de ValorMensuGastoViExter para el ID: ${gastoID}`);
               return { gastoID, data: [] };
             }
 
@@ -2963,20 +4013,20 @@ sap.ui.define([
 
             this._IdFechasPorMesReEx = idPorFecha;
 
-            console.log("📅 Valores por fecha para gasto externo:", gastoID, valoresPorFecha);
+            //console.log("  Valores por fecha para gasto externo:", gastoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("idGastoRecuExter", index, valoresPorFecha);
 
             return { gastoID, data: oData.value };
           } catch (error) {
-            console.error(`❌ Error al consultar GastoViajeRecExter_ID ${gastoID}:`, error);
+            console.error(`    Error al consultar GastoViajeRecExter_ID ${gastoID}:`, error);
             return { gastoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //   console.log("📊 Resultados completos de Gastos Recurso Externo:", resultados);
+        //   console.log("  Resultados completos de Gastos Recurso Externo:", resultados);
       },
 
 
@@ -3021,7 +4071,9 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
                   aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
@@ -3095,7 +4147,9 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
                   aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00"); // Para el Input (PMJ)
@@ -3171,7 +4225,7 @@ sap.ui.define([
                 var aCells = oItem.getCells();
 
 
-                console.log("Número de filas visibles en la tabla: ", aItems.length);
+                //console.log("Número de filas visibles en la tabla: ", aItems.length);
 
 
 
@@ -3179,8 +4233,10 @@ sap.ui.define([
 
 
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
-                  console.log("RECURSO PERFOL " + Recurso.tipoServicio_ID);
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
+                  //   console.log("RECURSO PERFOL " + Recurso.tipoServicio_ID);
                   aCells[2].setSelectedKey(Recurso.PerfilConsumo_ID || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || "");
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
@@ -3253,7 +4309,9 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   //  aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
@@ -3323,7 +4381,10 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
+
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
@@ -3396,7 +4457,9 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   aCells[2].setValue(Recurso.PerfilServicio || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setValue(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
@@ -3469,7 +4532,9 @@ sap.ui.define([
 
                 if (aCells.length > 1) {
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
@@ -3541,7 +4606,10 @@ sap.ui.define([
                 if (aCells.length > 1) {
 
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
+
                   aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
+                  this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                   //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[3].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
                   aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00"); // Para el Input (ConceptoOferta)
@@ -3617,6 +4685,8 @@ sap.ui.define([
                 if (aCells.length > 1) {
 
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
+
                   //     aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
                   //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[2].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
@@ -3653,16 +4723,15 @@ sap.ui.define([
 
 
 
-
       leerFechasOtrosConcetos: async function () {
         const otrosConceptosIDs = this._OtrosConceptos; // Asegúrate que sea un array de IDs
-        //  console.log("🔍 IDs de Otros Conceptos a consultar:", otrosConceptosIDs);
+        //  console.log("    IDs de Otros Conceptos a consultar:", otrosConceptosIDs);
 
         const idPorFecha = {};
 
         const promesas = otrosConceptosIDs.map(async (conceptoID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensuOtrConcep?$filter=otrosConceptos_ID eq ${conceptoID}`;
-          console.log(`🔗 URL consultada para otrosConceptos_ID: ${conceptoID}`);
+        //  console.log(`  URL consultada para otrosConceptos_ID: ${conceptoID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -3675,14 +4744,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const oData = await response.json();
-            //  console.log("📦 Respuesta JSON completa:", oData);
+            //  console.log("    Respuesta JSON completa:", oData);
 
             if (!oData.value || oData.value.length === 0) {
-              console.warn(`⚠️ No hay datos de ValorMensuOtrConcep para el ID: ${conceptoID}`);
+              console.warn(`    No hay datos de ValorMensuOtrConcep para el ID: ${conceptoID}`);
               return { conceptoID, data: [] };
             }
 
@@ -3695,20 +4764,20 @@ sap.ui.define([
 
             this._IdFechasPorMesOtConp = idPorFecha;
 
-            //  console.log("📅 Valores por fecha para concepto:", conceptoID, valoresPorFecha);
+            //  console.log("  Valores por fecha para concepto:", conceptoID, valoresPorFecha);
 
             this.rellenarInputsConFechas("tablaInfrestuctura", index, valoresPorFecha);
 
             return { conceptoID, data: oData.value };
           } catch (error) {
-            console.error(`❌ Error al consultar otrosConceptos_ID ${conceptoID}:`, error);
+            console.error(`    Error al consultar otrosConceptos_ID ${conceptoID}:`, error);
             return { conceptoID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        //console.log("📊 Resultados completos de Otros Conceptos:", resultados);
+        //console.log("  Resultados completos de Otros Conceptos:", resultados);
       },
 
 
@@ -3716,13 +4785,13 @@ sap.ui.define([
 
       leerFechasLicencia: async function () {
         const licenciasIDs = this._idLicencia; // Esperamos un array de IDs
-        // console.log("🔍 IDs de Licencias a consultar:", licenciasIDs);
+        // console.log("    IDs de Licencias a consultar:", licenciasIDs);
 
         const idPorFecha = {};
 
         const promesas = licenciasIDs.map(async (licenciaID, index) => {
           const sUrl = `/odata/v4/datos-cdo/ValorMensulicencia?$filter=licencia_ID eq ${licenciaID}`;
-          console.log(`🔗 URL consultada para licencia_ID: ${licenciaID}`);
+          console.log(`  URL consultada para licencia_ID: ${licenciaID}`);
 
           try {
             const response = await fetch(sUrl, {
@@ -3735,14 +4804,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorText = await response.text();
-              throw new Error('❌ Error en respuesta de red: ' + errorText);
+              throw new Error('    Error en respuesta de red: ' + errorText);
             }
 
             const oData = await response.json();
-            console.log("📦 Respuesta JSON completa:", oData);
+            console.log("    Respuesta JSON completa:", oData);
 
             if (!oData.value || oData.value.length === 0) {
-              console.warn(`⚠️ No hay datos de ValorMensulicencia para el ID: ${licenciaID}`);
+              console.warn(`    No hay datos de ValorMensulicencia para el ID: ${licenciaID}`);
               return { licenciaID, data: [] };
             }
 
@@ -3755,20 +4824,20 @@ sap.ui.define([
 
             this._IdFechasPorMesLicencia = idPorFecha;
 
-            console.log("📅 Valores por fecha para licencia:", licenciaID, valoresPorFecha);
+            //console.log("  Valores por fecha para licencia:", licenciaID, valoresPorFecha);
 
             this.rellenarInputsConFechas("tablaLicencia", index, valoresPorFecha);
 
             return { licenciaID, data: oData.value };
           } catch (error) {
-            console.error(`❌ Error al consultar licencia_ID ${licenciaID}:`, error);
+            console.error(`    Error al consultar licencia_ID ${licenciaID}:`, error);
             return { licenciaID, error };
           }
         });
 
         const resultados = await Promise.all(promesas);
 
-        // console.log("📊 Resultados completos de Licencias:", resultados);
+        // console.log("  Resultados completos de Licencias:", resultados);
       },
 
 
@@ -3810,6 +4879,8 @@ sap.ui.define([
                 if (aCells.length > 1) {
 
                   aCells[0].setSelectedKey(Recurso.Vertical_ID || "");  // Para el Select (Vertical)
+                  this.filterVerticaltablasDinamicas(Recurso.Vertical_ID, aCells[0]);
+
                   //     aCells[1].setSelectedKey(Recurso.tipoServicio_ID || ""); // Para el Select (TipoServicio)
                   //      aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
                   aCells[2].setValue(Recurso.ConceptoOferta || ""); // Para el Input (ConceptoOferta)
@@ -4358,7 +5429,7 @@ sap.ui.define([
         const sCsrfToken = this.getCsrfToken();
 
         if (!sCsrfToken) {
-          console.log("No hay CSRF Token disponible, obteniendo uno...");
+          //console.log("No hay CSRF Token disponible, obteniendo uno...");
           await this.token(); // Si no hay token, obtén uno nuevo
         }
 
@@ -4401,7 +5472,7 @@ sap.ui.define([
             }
   
   
-            console.log(" CSRF Token obtenido desde el metodo :", sCsrfToken);
+            //console.log(" CSRF Token obtenido desde el metodo :", sCsrfToken);
             this._sCsrfToken = sCsrfToken;
   
           } catch (error) {
@@ -4421,7 +5492,7 @@ sap.ui.define([
 
       onSave: async function () {
 
-        console.log("Entre al ONSAVE ");
+        //console.log("Entre al ONSAVE ");
         const usuarioOn = this._usuarioActual;
 
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
@@ -4445,7 +5516,7 @@ sap.ui.define([
           sMode = this._sProjectID ? "edit" : "create";
         }
 
-        console.log("MODO FINAL USADO EN onSave:", sMode);
+        //console.log("MODO FINAL USADO EN onSave:", sMode);
 
 
         let errorCount = 0;
@@ -4569,7 +5640,7 @@ sap.ui.define([
         const gastoviajeReExValidation = this.validateGastoViajeExterno();
         const otroConcepValidation = this.validateOtrosConceptos();
         const LicenciaValidation = this.validateLicencia();
-
+        const MultijuridaCheck = this.validateClienteFacturacion();
         if (!chartValidation.success) {
           errorMessages.push(...chartValidation.errors);
         }
@@ -4623,9 +5694,13 @@ sap.ui.define([
           errorMessages.push(...LicenciaValidation.errors);
         }
 
+        if (!MultijuridaCheck.success) {
+          errorMessages.push(...MultijuridaCheck.errors);
+        }
+
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
         validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
-        validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
+        //  validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
         validateField(this.byId("date_inico"), sFechaIni, "Inicio", "date");
         validateField(this.byId("date_fin"), sFechaFin, "Fin", "date");
 
@@ -4657,9 +5732,9 @@ sap.ui.define([
         const resultadoDialogo = await this.mostrarDialogoModalidad();
 
 
-        let sModalidad = "Online";
+        let sModalidad = "Offline";
         let sFechaComite = null;
-        
+
         if (resultadoDialogo.modalidad === "Comité") {
           sModalidad = "Comité";
           sFechaComite = resultadoDialogo.fechaComite ? resultadoDialogo.fechaComite.toISOString().split("T")[0] : null;
@@ -4698,9 +5773,10 @@ sap.ui.define([
           Seguimiento_ID: sSelectKeySegui,
           EjecucionVia_ID: sSelectKeyEjcu,
           AmReceptor_ID: sSelectKeyAmrep,
-          clienteFuncional_ID: sSelectKeyClienNuevo,
+          ClienteNuevo_ID: sSelectKeyClienNuevo,
           Estado: "Pendiente",
-          modalidad: sModalidad, // la defines aquí desde el inicio
+          modalidad: sModalidad, // la defines aquí desde el inicio,
+          fechaComite: sFechaComite,
           Usuarios_ID: usuarioOn,
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
@@ -4714,8 +5790,8 @@ sap.ui.define([
         }
 
 
-        console.log("RESULTADO ----> " + sModalidad);
-        console.log("DEBUG resultadoDialogo.modalidad -->", resultadoDialogo.modalidad);
+        //console.log("RESULTADO ----> " + sModalidad);
+        //console.log("DEBUG resultadoDialogo.modalidad -->", resultadoDialogo.modalidad);
 
 
         // Crear la fecha de modificación (formato yyyy-MM-dd)
@@ -4738,7 +5814,7 @@ sap.ui.define([
         }
 
         // Log del payload antes de enviarlo
-        console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+        //console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
 
 
@@ -4764,7 +5840,7 @@ sap.ui.define([
               return;
             }
 
-            console.log("ID DEL WORK " + this._idWorkIniciado);
+            //console.log("ID DEL WORK " + this._idWorkIniciado);
 
             if (this._idWorkIniciado) {
               try {
@@ -4806,7 +5882,7 @@ sap.ui.define([
             throw new Error("No se recibió un CSRF Token");
           }
 
-          //  console.log(" CSRF Token obtenido:", sCsrfToken);
+          //  //console.log(" CSRF Token obtenido:", sCsrfToken);
 
           // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
@@ -4839,7 +5915,7 @@ sap.ui.define([
           // Procesar respuesta si es exitosa
           if (response.ok) {
             const result = await response.json();
-            console.log("Respuesta completa de la API:", result);
+            //console.log("Respuesta completa de la API:", result);
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
@@ -4881,11 +5957,33 @@ sap.ui.define([
 
 
 
-
+              const hostname = window.location.hostname;
+              //console.log(" Hostname detectado:", hostname);
 
               // 1 Payload para iniciar workflow de aprobación
 
-              const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+              // const urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+              let urlAPP = "";
+              if (hostname.includes("localhost") ||
+                hostname.includes("dev") ||
+                hostname.includes("test") ||
+                hostname.includes("applicationstudio")) {
+                urlAPP = "https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-16bb931b.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+              } else {
+                urlAPP = "https://telefonica-global-technology--s-a--zagvian4-sp-shc-qa-d6cf78b85.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/";
+              }
+
+
+
+
+              /* const fullUrl = window.location.href;
+                   console.log(" URL completa detectada:", fullUrl);
+ 
+                   if (fullUrl === "https://miapp--s-a--z123456shc-qa-d6cf78b85.cfapps.eu20-001.hana.ondemand.com/project1/index.html#/app/") {
+                     console.log(" Entorno QA detectado por URL exacta");
+                     urlAPP = "https://URL-especial-para-QA/index.html#/app/";
+                   }*/
+
 
 
 
@@ -4907,7 +6005,7 @@ sap.ui.define([
 
               //  Agrega fechaComite solo si es Comité
               if (sModalidad === "Comité" && sFechaComite) {
-  workflowPayload.fechaComite = sFechaComite;
+                workflowPayload.fechaComite = sFechaComite;
               }
 
               oContext.setParameter("payload", JSON.stringify(workflowPayload));
@@ -4921,7 +6019,7 @@ sap.ui.define([
                 const result = oContext.getBoundContext().getObject();
                 this.workflowInstanceId = result.workflowInstanceId; // Guardamos esto
 
-                console.log("Resultado del flujo de trabajo:", result);
+                //console.log("Resultado del flujo de trabajo:", result);
 
                 if (result && result.workflowInstanceId) {
                   const workflowInstanceId = result.workflowInstanceId;
@@ -5018,8 +6116,166 @@ sap.ui.define([
           errors
         };
       },
+      validateClienteFacturacion: function () {
+        console.log("He entrado al log ");
+
+        const oCheckBox = this.byId("box_multiJuridica");
+        const isMultiJuridicaChecked = oCheckBox.getSelected();
+
+        const oTable = this.byId("table_clienteFac");
+        const aItems = oTable.getItems();
+        const errors = [];
+        let hasFilledRow = false;
+        let atLeastOneValidRow = false;
+
+        for (let i = 0; i < aItems.length; i++) {
+          const oItem = aItems[i];
+          const aCells = oItem.getCells();
+
+          // Evitar validar filas de Total
+          if (aCells[0].getMetadata().getName() === "sap.m.Title") {
+            continue;
+          }
+
+          const oJuridica = aCells[0];
+          const oPorcentaje = aCells[1];
+
+          const sJuridica = oJuridica.getValue().trim();
+          const sPorcentaje = oPorcentaje.getValue().trim();
+
+          const isEmptyRow = !sJuridica && !sPorcentaje;
+
+          // Limpiar estados anteriores
+          oJuridica.setValueState("None");
+          oPorcentaje.setValueState("None");
+
+          if (!isEmptyRow) {
+            hasFilledRow = true;
+            const rowErrors = [];
+
+            if (!sJuridica) {
+              rowErrors.push("Debe ingresar la Jurídica");
+              oJuridica.setValueState("Error");
+              oJuridica.setValueStateText("Campo obligatorio");
+            }
+
+            if (!sPorcentaje) {
+              rowErrors.push("Debe ingresar el % Oferta");
+              oPorcentaje.setValueState("Error");
+              oPorcentaje.setValueStateText("Campo obligatorio");
+            } else if (isNaN(sPorcentaje) || Number(sPorcentaje) < 0 || Number(sPorcentaje) > 100) {
+              rowErrors.push("El % Oferta debe ser un número entre 0 y 100");
+              oPorcentaje.setValueState("Error");
+              oPorcentaje.setValueStateText("Valor inválido");
+            }
+
+            if (rowErrors.length > 0) {
+              errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+            } else {
+              atLeastOneValidRow = true;
+            }
+          }
+        }
+
+        // Si el checkbox está seleccionado y no hay ninguna fila rellenada => marcar primera fila en rojo
+        if (isMultiJuridicaChecked && !hasFilledRow) {
+          const oFirstItem = aItems[0];
+          const aFirstCells = oFirstItem.getCells();
+          const oFirstJuridica = aFirstCells[0];
+          const oFirstPorcentaje = aFirstCells[1];
+
+          oFirstJuridica.setValueState("Error");
+          oFirstJuridica.setValueStateText("Campo obligatorio");
+          oFirstPorcentaje.setValueState("Error");
+          oFirstPorcentaje.setValueStateText("Campo obligatorio");
+
+          errors.push("Debe completar al menos una fila de Cliente Facturación cuando Multi Jurídica está seleccionado.");
+        }
+        // Si el checkbox está seleccionado y hay filas rellenadas pero ninguna válida => error
+        else if (isMultiJuridicaChecked && hasFilledRow && !atLeastOneValidRow) {
+          errors.push("Debe completar correctamente al menos una fila de Cliente Facturación.");
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
 
 
+      /* validateClienteFacturacion: function () {
+         console.log("He entrado al log "   );
+         const oCheckBox = this.byId("box_multiJuridica");
+         if (!oCheckBox.getSelected()) {
+           // Si no está seleccionado, no valida nada y devuelve éxito
+           return { success: true, errors: [] };
+         }
+       
+         const oTable = this.byId("table_clienteFac");
+         const aItems = oTable.getItems();
+         const errors = [];
+         let hasFilledRow = false;
+         let atLeastOneValidRow = false;
+       
+         for (let i = 0; i < aItems.length; i++) {
+           const oItem = aItems[i];
+           const aCells = oItem.getCells();
+       
+           // Evitar validar filas de Total
+           if (aCells[0].getMetadata().getName() === "sap.m.Title") {
+             continue;
+           }
+       
+           const oJuridica = aCells[0];
+           const oPorcentaje = aCells[1];
+       
+           const sJuridica = oJuridica.getValue().trim();
+           const sPorcentaje = oPorcentaje.getValue().trim();
+       
+           const isEmptyRow = !sJuridica && !sPorcentaje;
+       
+           // Limpiar estados anteriores
+           oJuridica.setValueState("None");
+           oPorcentaje.setValueState("None");
+       
+           if (!isEmptyRow) {
+             hasFilledRow = true;
+             const rowErrors = [];
+       
+             if (!sJuridica) {
+               rowErrors.push("Debe ingresar la Jurídica");
+               oJuridica.setValueState("Error");
+               oJuridica.setValueStateText("Campo obligatorio");
+             }
+       
+             if (!sPorcentaje) {
+               rowErrors.push("Debe ingresar el % Oferta");
+               oPorcentaje.setValueState("Error");
+               oPorcentaje.setValueStateText("Campo obligatorio");
+             } else if (isNaN(sPorcentaje) || Number(sPorcentaje) < 0 || Number(sPorcentaje) > 100) {
+               rowErrors.push("El % Oferta debe ser un número entre 0 y 100");
+               oPorcentaje.setValueState("Error");
+               oPorcentaje.setValueStateText("Valor inválido");
+             }
+       
+             if (rowErrors.length > 0) {
+               errors.push(`Fila ${i + 1}: ${rowErrors.join(", ")}`);
+             } else {
+               atLeastOneValidRow = true;
+             }
+           }
+         }
+       
+         // Si hay filas rellenadas pero ninguna completa y válida
+         if (hasFilledRow && !atLeastOneValidRow) {
+           errors.push("Debe completar correctamente al menos una fila de Cliente Facturación.");
+         }
+       
+         return {
+           success: errors.length === 0,
+           errors
+         };
+       },*/
 
 
 
@@ -5851,7 +7107,7 @@ sap.ui.define([
 
       onConfirmModalidad: function () {
         const iSelectedIndex = sap.ui.getCore().byId("radioGroupModalidad").getSelectedIndex();
-        const modalidad = iSelectedIndex === 0 ? "Online" : "Comité";
+        const modalidad = iSelectedIndex === 0 ? "Offline" : "Comité";
 
         const oDatePicker = sap.ui.getCore().byId("datePickerComite");
         const selectedDate = oDatePicker.getDateValue();
@@ -5933,7 +7189,7 @@ sap.ui.define([
             return usuarioActual.ID;
 
           } else {
-            throw new Error("❌ No se encontró el usuario con el email logueado.");
+            throw new Error("    No se encontró el usuario con el email logueado.");
           }
 
         } catch (error) {
@@ -5952,7 +7208,7 @@ sap.ui.define([
 
       onBorrador: async function () {
 
-        console.log("ENTRANDO A onBorrador");
+        //console.log("ENTRANDO A onBorrador");
 
         const usuario = this._usuarioActual;
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
@@ -5967,7 +7223,7 @@ sap.ui.define([
           sMode = this._sProjectID ? "edit" : "create";
         }
 
-        console.log("MODO FINAL USADO EN onSave:", sMode);
+        //console.log("MODO FINAL USADO EN onSave:", sMode);
 
         let errorCount = 0;
         const incompleteFields = [];
@@ -6012,8 +7268,8 @@ sap.ui.define([
         const sComentarioTipCompra = this.byId("idComentarioTipo").getValue();
         const sComentarioFacturacion = this.byId("idComentariosFac").getValue();
 
-        console.log("Objeto comentarioProveedor:", sComentarioProvee);
-        console.log("Objeto comentarioPvD:", sComentarioPVd);
+        //console.log("Objeto comentarioProveedor:", sComentarioProvee);
+        //console.log("Objeto comentarioPvD:", sComentarioPVd);
 
 
         var oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T'HH:mm:ss" });
@@ -6093,7 +7349,7 @@ sap.ui.define([
           Seguimiento_ID: sSelectKeySegui,
           EjecucionVia_ID: sSelectKeyEjcu,
           AmReceptor_ID: sSelectKeyAmrep,
-          clienteFuncional_ID: sSelectKeyClienNuevo,
+          ClienteNuevo_ID: sSelectKeyClienNuevo,
           Estado: "Borrador",
           datosExtra: sDatosExtra,
           IPC_apli: ipcNumber,
@@ -6126,7 +7382,7 @@ sap.ui.define([
         }
 
         // Log del payload antes de enviarlo
-        console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+        //console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
 
 
 
@@ -6173,7 +7429,7 @@ sap.ui.define([
             throw new Error("No se recibió un CSRF Token");
           }
 
-          console.log(" CSRF Token obtenido:", sCsrfToken);
+          //console.log(" CSRF Token obtenido:", sCsrfToken);
 
           // Realizamos la llamada al servicio con el método y URL adecuados
           response = await fetch(url, {
@@ -6207,7 +7463,7 @@ sap.ui.define([
           // Procesar respuesta si es exitosa
           if (response.ok) {
             const result = await response.json();
-            console.log("Respuesta completa de la API:", result);
+            //console.log("Respuesta completa de la API:", result);
 
             // Verifica si la respuesta contiene un campo 'ID' o si está anidado dentro de otro objeto
             const generatedId = result.ID || result.data?.ID; // Si el ID está dentro de un objeto 'data'
@@ -6256,7 +7512,7 @@ sap.ui.define([
         const file = oEvent.getParameter("files")[0];
         if (file) {
           this._selectedFile = file; // Guardamos el archivo seleccionado
-          console.log("Archivo seleccionado:", file.name);
+          //console.log("Archivo seleccionado:", file.name);
         }
       },
 
@@ -6270,7 +7526,7 @@ sap.ui.define([
         const existeArchivo = this._archivoIds;
         const file = this._selectedFile;
         if (!file) {
-          // sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+          // sap.m.MessageToast.show("    No se ha seleccionado ningún archivo.");
           return;
         }
 
@@ -6278,12 +7534,12 @@ sap.ui.define([
         const fileName = file.name;
         const mimeType = file.type || "application/octet-stream"; // genérico por defecto
 
-        /*console.log("📄 Archivo seleccionado:");
-        console.log("🆔 ID:", archivoId);
-        console.log("📛 Nombre:", fileName);
-        console.log("📦 Tipo MIME:", mimeType);
-        console.log("📐 Tamaño:", file.size, "bytes");
-        console.log("📂 Contenido (Blob):", file);
+        /*console.log(" Archivo seleccionado:");
+        console.log(" ID:", archivoId);
+        console.log(" Nombre:", fileName);
+        console.log(" Tipo MIME:", mimeType);
+        console.log(" Tamaño:", file.size, "bytes");
+        console.log(" Contenido (Blob):", file);
       */
         try {
           // Paso 1: Enviar metadata
@@ -6305,7 +7561,7 @@ sap.ui.define([
               body: JSON.stringify(metadataPayload)
             });
 
-            // 🔁 Subes (reemplazas) el archivo
+            //     Subes (reemplazas) el archivo
             putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${existeArchivo}')/contenido/$value`, {
               method: "PUT",
               headers: {
@@ -6325,7 +7581,7 @@ sap.ui.define([
               body: JSON.stringify(metadataPayload)
             });
 
-            // 🆕 Subes archivo
+            //     Subes archivo
             putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
               method: "PUT",
               headers: {
@@ -6338,12 +7594,12 @@ sap.ui.define([
 
           if (!putRes.ok) {
             const putText = await putRes.text();
-            throw new Error("❌ Error subiendo archivo: " + putText);
+            throw new Error("    Error subiendo archivo: " + putText);
           }
 
-          //    sap.m.MessageToast.show("✅ Archivo subido con éxito.");
+          //    sap.m.MessageToast.show("    Archivo subido con éxito.");
         } catch (err) {
-          console.error("💥 Error total en upload:", err);
+          console.error("    Error total en upload:", err);
           sap.m.MessageToast.show(err.message);
         }
       },
@@ -6356,7 +7612,7 @@ sap.ui.define([
       /*    onUploadFile: async function (generatedId, sCsrfToken) {
             const file = this._selectedFile;
             if (!file) {
-              sap.m.MessageToast.show("⚠️ No se ha seleccionado ningún archivo.");
+              sap.m.MessageToast.show("    No se ha seleccionado ningún archivo.");
               return;
             }
           
@@ -6364,13 +7620,13 @@ sap.ui.define([
             const fileName = file.name;
             const mimeType = file.type || "application/pdf";
           
-            // 🔍 Verificar detalles del archivo
-            console.log("📄 Archivo seleccionado:");
-            console.log("🆔 ID:", archivoId);
-            console.log("📛 Nombre:", fileName);
-            console.log("📦 Tipo MIME:", mimeType);
-            console.log("📐 Tamaño:", file.size, "bytes");
-            console.log("📂 Contenido (Blob):", file);
+            //     Verificar detalles del archivo
+            console.log("    Archivo seleccionado:");
+            console.log(" ID:", archivoId);
+            console.log(" Nombre:", fileName);
+            console.log(" Tipo MIME:", mimeType);
+            console.log(" Tamaño:", file.size, "bytes");
+            console.log("    Contenido (Blob):", file);
           
             try {
               // Paso 1: Crear metadata
@@ -6381,7 +7637,7 @@ sap.ui.define([
                 datosProyect_ID: generatedId
               };
           
-              console.log("📤 Enviando metadata al backend:", metadataPayload);
+              console.log("    Enviando metadata al backend:", metadataPayload);
           
               const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
                 method: "POST",
@@ -6394,14 +7650,14 @@ sap.ui.define([
           
               if (!postRes.ok) {
                 const errorText = await postRes.text();
-                console.error("❌ Error en POST metadata:", errorText);
-                throw new Error("❌ Error creando metadata: " + errorText);
+                console.error("    Error en POST metadata:", errorText);
+                throw new Error("    Error creando metadata: " + errorText);
               }
           
-              console.log("✅ Metadata creada correctamente.");
+              console.log("    Metadata creada correctamente.");
           
               // Paso 2: Subir archivo
-              console.log("📤 Subiendo archivo binario con PUT...");
+              console.log("    Subiendo archivo binario con PUT...");
               const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
                 method: "PUT",
                 headers: {
@@ -6414,14 +7670,14 @@ sap.ui.define([
           
               if (!putRes.ok) {
                 const putText = await putRes.text();
-                console.error("❌ Error en PUT archivo:", putText);
-                throw new Error("❌ Error subiendo archivo: " + putText);
+                console.error("    Error en PUT archivo:", putText);
+                throw new Error("    Error subiendo archivo: " + putText);
               }
           
-              console.log("✅ Archivo subido con éxito.");
-              sap.m.MessageToast.show("✅ Archivo subido con éxito.");
+              console.log("    Archivo subido con éxito.");
+              sap.m.MessageToast.show("    Archivo subido con éxito.");
             } catch (err) {
-              console.error("💥 Error total en upload:", err);
+              console.error("    Error total en upload:", err);
               sap.m.MessageToast.show(err.message);
             }
           },*/
@@ -6491,7 +7747,7 @@ sap.ui.define([
 
         var idWork = this._idWorkflowInstancias;
 
-        console.log("ID ANTES DE ACTUALIZAR" + idWork);
+        //console.log("ID ANTES DE ACTUALIZAR" + idWork);
 
         var payload = {
           workflowId: workflowInstanceId,
@@ -6506,7 +7762,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/WorkflowInstancias";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idWork) {
           sUrl += `(${idWork})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6563,7 +7819,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/PerfilTotal";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idjornadas) {
           sUrl += `(${idjornadas})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6615,7 +7871,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/RecurInterTotal";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idtotalRecur) {
           sUrl += `(${idtotalRecur})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6668,7 +7924,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/ConsuExterTotal";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idtotalConsuEx) {
           sUrl += `(${idtotalConsuEx})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6707,7 +7963,7 @@ sap.ui.define([
         var sTotaleJorC = parseFloat(this.byId("totaRecurExterno").getValue(), 10);
 
 
-        console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
+        //console.log("ID RECIBIDO DEL INSERT " + idRecurExterTotal);
 
 
         var payload = {
@@ -6721,7 +7977,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/RecuExterTotal";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idRecurExterTotal) {
           sUrl += `(${idRecurExterTotal})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6761,7 +8017,7 @@ sap.ui.define([
         var sTotalLicencia = parseFloat(this.byId("input0_1724758359").getValue(),);
 
 
-        console.log("ID RECIBIDO DEL INSERT " + idInfraLicencia);
+        //console.log("ID RECIBIDO DEL INSERT " + idInfraLicencia);
 
 
         var payload = {
@@ -6773,7 +8029,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/InfraestrLicencia";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idInfraLicencia) {
           sUrl += `(${idInfraLicencia})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6820,7 +8076,7 @@ sap.ui.define([
         var sMargenIngreso = parseFloat(this.byId("input2_1756121205").getValue());
         var Total = parseFloat(this.byId("input0_1725625161348").getValue());
 
-        console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
+        //console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
 
 
         var payload = {
@@ -6836,7 +8092,7 @@ sap.ui.define([
         let sUrl = "/odata/v4/datos-cdo/ResumenCostesTotal";
         let sMethod = "POST";
 
-        // 👉 Aquí decides si haces POST o PATCH
+        //     Aquí decides si haces POST o PATCH
         if (idResumenCostetotal) {
           sUrl += `(${idResumenCostetotal})`;  // Construyes la URL con ID si vas a hacer UPDATE
           sMethod = "PATCH";          // PATCH para actualizar
@@ -6929,14 +8185,14 @@ sap.ui.define([
 
                 if (response.ok) {
                   const result = await response.json();
-                  console.log("Planificación actualizada con éxito:", result);
+                  //console.log("Planificación actualizada con éxito:", result);
                 } else {
                   const errorMessage = await response.text();
-                  console.log("Error al actualizar la planificación:", errorMessage);
+                  //console.log("Error al actualizar la planificación:", errorMessage);
                   //sap.m.MessageToast.show("Error al actualizar la planificación: " + errorMessage);
                 }
               } else {
-                console.log("ID no válido para el registro a actualizar:", recordToUpdate);
+                //console.log("ID no válido para el registro a actualizar:", recordToUpdate);
                 //sap.m.MessageToast.show("Error al actualizar: ID no válido.");
               }
             } else {
@@ -6951,10 +8207,10 @@ sap.ui.define([
 
               if (response2.ok) {
                 const result2 = await response2.json();
-                console.log("Planificación guardada con éxito:", result2);
+                //console.log("Planificación guardada con éxito:", result2);
               } else {
                 const errorMessage = await response2.text();
-                console.log("Error al guardar la planificación:", errorMessage);
+                //console.log("Error al guardar la planificación:", errorMessage);
                 //sap.m.MessageToast.show("Error al guardar la planificación: " + errorMessage);
               }
             }
@@ -6973,7 +8229,7 @@ sap.ui.define([
       /*  inserChart: async function (generatedId, sCsrfToken) {
   
           // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
-          // 🔴 1. Validar fechas antes de insertar
+          //     1. Validar fechas antes de insertar
           const sFechaIniForm = this.byId("date_inico").getDateValue();
           const sFechaFinForm = this.byId("date_fin").getDateValue();
         
@@ -7027,7 +8283,7 @@ sap.ui.define([
           }
           // 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹
         
-          // 🔴 2. Luego continuas con tu lógica de insert
+          //     2. Luego continuas con tu lógica de insert
         
           const saChartdata = this._aChartData;
           const idPlan = this._idPlani;
@@ -7061,7 +8317,7 @@ sap.ui.define([
 
 
       insertFacturacion: async function (generatedId) {
-        console.log("ID RECIBIDOOO   " + generatedId); // Este es el ID que debe estar recibiendo la función
+        //console.log("ID RECIBIDOOO   " + generatedId); // Este es el ID que debe estar recibiendo la función
 
         const sTokenG = this._sCsrfToken;
         const oTablaFac = this.byId("table0");
@@ -7116,7 +8372,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/Facturacion";
           let sBody = { ...data };
 
-          console.log("Enviando datos: ", JSON.stringify(sBody));
+          //console.log("Enviando datos: ", JSON.stringify(sBody));
 
           // Si ya existe un ID de facturación, actualizamos (PATCH)
           if (existingFacturacionID) {
@@ -7142,7 +8398,7 @@ sap.ui.define([
 
           if (response.ok) {
             const json = await response.json();
-            console.log("Facturación guardada/actualizada:", json);
+            //console.log("Facturación guardada/actualizada:", json);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la Facturación:", errorMessage);
@@ -7349,9 +8605,9 @@ sap.ui.define([
           const stotalRe = parseFloat(oItem.getCells()[12]?.getText() || "0");
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+          if (!sVertical || !stipoServi || !sPerfil) {
             //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // SALTA A LA SIGUIENTE ITERACIÓN
           }
 
 
@@ -7376,7 +8632,7 @@ sap.ui.define([
           // Verificar si existe el ID de recurso para hacer actualización o inserción
           //      const recursoID = oItem.getBindingContext()?.getProperty("ID"); // Obtiene el ID del recurso, si existe
 
-          console.log("ID DE ACTUALIZACION ----->>>>>", recursoID);
+          //console.log("ID DE ACTUALIZACION ----->>>>>", recursoID);
           let response;
           if (recursoID) {
             // Si el ID existe, hacemos PATCH para actualizar
@@ -7407,13 +8663,13 @@ sap.ui.define([
           // Manejo de la respuesta
           if (response.ok) {
             const result = await response.json();
-            console.log("📌 Respuesta completa de la API:", result);
+            //console.log("    Respuesta completa de la API:", result);
 
             const idRecursos = result.ID; // Verificar si `ID` realmente existe en la respuesta
-            console.log("📌 ID de Recurso obtenido:", idRecursos);
+            //console.log("    ID de Recurso obtenido:", idRecursos);
 
             if (!idRecursos) {
-              console.error("⚠️ La API no devolvió un ID válido.");
+              console.error("    La API no devolvió un ID válido.");
               return;
             }
 
@@ -7422,8 +8678,8 @@ sap.ui.define([
 
             await this.InsertMesAñoRecurInterno(oItem);
 
-            console.log("TERMINANDO  RECURSOS------");
-            console.log("Fila " + (i + 1) + " guardada con éxito: RECURSOS INTERNOS", result);
+            //console.log("TERMINANDO  RECURSOS------");
+            //console.log("Fila " + (i + 1) + " guardada con éxito: RECURSOS INTERNOS", result);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -7526,13 +8782,13 @@ sap.ui.define([
             // Manejo de la respuesta
             if (response.ok) {
               const result = await response.json();
-              console.log("📌 Respuesta completa de la API:", result);
+              console.log("    Respuesta completa de la API:", result);
   
               const idRecursos = result.ID; // Verificar si `ID` realmente existe en la respuesta
-              console.log("📌 ID de Recurso obtenido:", idRecursos);
+              console.log("    ID de Recurso obtenido:", idRecursos);
   
               if (!idRecursos) {
-                console.error("⚠️ La API no devolvió un ID válido.");
+                console.error("    La API no devolvió un ID válido.");
                 return;
               }
   
@@ -7574,7 +8830,7 @@ sap.ui.define([
       InsertMesAñoRecurInterno: async function (oItem) {
 
 
-        console.log("ids recibidos  " + JSON.stringify(this._IdFechasPorMes));
+        //console.log("ids recibidos  " + JSON.stringify(this._IdFechasPorMes));
         const idRecursos = this._RecursoInt;
         const sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
@@ -7589,12 +8845,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(` Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(` Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -7604,26 +8860,26 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn(" No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(` No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            //   console.warn(` Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //   console.log(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log( Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
@@ -7631,7 +8887,7 @@ sap.ui.define([
           const claveCompuesta = `${mes}_${idRecursos}`;
           let idFecha = null;
 
-          // 🔍 Paso 1: Verificar si ya existe el registro para este mes y recurso
+          //  Paso 1: Verificar si ya existe el registro para este mes y recurso
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuReInter?$filter=mesAno eq '${mes}' and RecursosInternos_ID eq '${idRecursos}'`,
@@ -7649,30 +8905,30 @@ sap.ui.define([
 
               if (results.length > 0) {
                 idFecha = results[0].ID;
-                this._IdFechasPorMes[claveCompuesta] = idFecha; // opcional: almacenar en caché
+                this._IdFechasPorMes[claveCompuesta] = idFecha;
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(` No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error(" Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Paso 2: Armar payload
+          //  Paso 2: Armar payload
           const payload = {
             RecursosInternos_ID: idRecursos,
             mesAno: mes,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          ////console.log("(" Payload a enviar:", payload);
 
-          // 🚀 Paso 3: Enviar PATCH o POST según si existe o no
+          //  Paso 3: Enviar PATCH o POST según si existe o no
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuReInter(${idFecha})`);
+              //console.log(` Haciendo PATCH a ValorMensuReInter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuReInter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -7682,7 +8938,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log(" Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
                 method: "POST",
                 headers: {
@@ -7695,12 +8951,12 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(` Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             }
 
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error(" Error durante envío de datos:", error);
           }
 
         }
@@ -7708,221 +8964,6 @@ sap.ui.define([
 
 
 
-
-      /*     InsertMesAñoRecurInterno: async function (oItem) {
-     
-             const idRecursos =  this._RecursoInt;
-             const sTokenMe = this._sCsrfToken;
-             const dynamicColumnsData = {};
-             const columns = oItem.getParent().getColumns();
-           
-             for (let j = 12; j < oItem.getCells().length; j++) {
-               const cell = oItem.getCells()[j];
-               let dynamicValue;
-           
-               if (typeof cell.getValue === "function") {
-                 dynamicValue = cell.getValue();
-               } else if (typeof cell.getText === "function") {
-                 dynamicValue = cell.getText();
-               } else {
-                 console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
-                 continue;
-               }
-           
-               if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-                 console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
-                 continue;
-               }
-           
-               let columnHeader = `Columna_${j}`;
-               if (columns[j]) {
-                 const header = columns[j].getHeader();
-                 if (header && typeof header.getText === "function") {
-                   columnHeader = header.getText() || columnHeader;
-                 } else {
-                   console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
-                 }
-               } else {
-                 console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
-               }
-           
-               if (columnHeader.toLowerCase().includes("total")) {
-                 console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
-                 continue;
-               }
-           
-               console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
-               dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
-             }
-           
-             console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
-           
-             for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
-               if (valor === null || valor === undefined) {
-                 console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
-                 continue;
-               }
-           
-               const payload = {
-                 RecursosInternos_ID: idRecursos,
-                 mesAno: mes,
-                 valor: valor
-               };
-           
-               const idFecha = this._IdFechasPorMes && this._IdFechasPorMes[mes];
-               console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-               console.log("📤 Payload a enviar:", payload);
-           
-               let response;
-               try {
-                 if (idFecha) {
-                   console.log(`🔁 Haciendo PATCH a ValorMensuReInter(${idFecha})`);
-                   response = await fetch(`/odata/v4/datos-cdo/ValorMensuReInter(${idFecha})`, {
-                     method: 'PATCH',
-                     headers: {
-                       "Content-Type": "application/json",
-                       "x-csrf-token": sTokenMe
-                     },
-                     body: JSON.stringify(payload)
-                   });
-                 } else {
-                   console.log("🆕 Haciendo POST para nuevo mes:", mes);
-                   response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
-                     method: "POST",
-                     headers: {
-                       "Content-Type": "application/json",
-                       "x-csrf-token": sTokenMe
-                     },
-                     body: JSON.stringify(payload)
-                   });
-                 }
-           
-                 if (!response.ok) {
-                   const errorDetails = await response.text();
-                   console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
-                   throw new Error(`Error al enviar: ${response.statusText}`);
-                 } else {
-                   console.log(`✅ ${idFecha ? "PATCH" : "POST"} exitoso para mes '${mes}'`);
-                   // Si deseas ver más, puedes leer response.text o response.json (si es POST)
-                   if (!idFecha) {
-                     const result = await response.json();
-                     console.log("📥 ID generado en POST:", result.ID);
-                   }
-                 }
-           
-               } catch (error) {
-                 console.error("🚨 Error durante envío de datos:", error);
-               }
-             }
-           },*/
-
-
-      /*  InsertMesAñoRecurInterno: async function (oItem, idRecursos) {
-  
-          const sTokenMe = this._sCsrfToken;
-          const idmesAñoInterno = this._idleerReIn;
-          const dynamicColumnsData = {};
-          const columns = oItem.getParent().getColumns();
-  
-          //  console.log("Columnas obtenidas:", columns);
-  
-          for (let j = 12; j < oItem.getCells().length; j++) {
-            const cell = oItem.getCells()[j];
-            let dynamicValue;
-  
-            if (typeof cell.getValue === "function") {
-              dynamicValue = cell.getValue();
-            } else if (typeof cell.getText === "function") {
-              dynamicValue = cell.getText();
-            } else {
-              console.warn(`Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
-              continue;
-            }
-  
-            if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-              console.warn(`Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
-              continue;
-            }
-  
-            let columnHeader = `Columna_${j}`;
-  
-            if (columns[j]) {
-              const header = columns[j].getHeader();
-              if (header && typeof header.getText === "function") {
-                columnHeader = header.getText() || columnHeader;
-              } else {
-                console.warn("No se pudo obtener el texto del encabezado en la columna", j);
-              }
-            } else {
-              console.warn(`No se puede acceder a la columna en índice ${j}`);
-            }
-  
-            // 🔴 **Filtro para evitar enviar la columna 'Total'**
-            if (columnHeader.toLowerCase().includes("total")) {
-              console.warn(`Se omite la columna ${columnHeader} porque es un total.`);
-              continue;
-            }
-  
-            console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-            console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
-  
-            dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
-          }
-  
-          console.log("Datos a enviar:", dynamicColumnsData);
-  
-          for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
-            if (valor === null || valor === undefined) {
-              console.warn(`No se puede enviar un valor nulo para mes ${mes}.`);
-              continue;
-            }
-  
-            // Usa el encabezado de la columna (mes) como valor para `mesAño`
-            const payload = {
-              RecursosInternos_ID: idRecursos,
-              mesAno: mes,  // Aquí se usa `mes` como valor dinámico para `mesAño`
-              valor: valor
-            };
-  
-            console.log("Payload preparado para enviar:", payload);
-            let response;
-  
-  
-            try {
-              if (idmesAñoInterno) {
-  
-                response = await fetch(`/odata/v4/datos-cdo/ValorMensuReInter(${idmesAñoInterno})`, {
-                  method: 'PATCH',
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sTokenMe
-                  },
-                  body: JSON.stringify(payload)
-                });
-  
-              } else {
-                response = await fetch("/odata/v4/datos-cdo/ValorMensuReInter", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sTokenMe
-                  },
-                  body: JSON.stringify(payload)
-                });
-  
-  
-              }
-              if (!response.ok) {
-                const errorDetails = await response.text();
-                throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
-              } else {
-                console.log("Datos enviados con éxito para el mes:", mes);
-              }
-            } catch (error) {
-              console.error("Error al enviar los datos:", error);
-            }
-          }
-        },*/
 
 
       InsertMesAñoServRecurInterno: async function (oItem) {
@@ -7940,12 +8981,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(` Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -7955,33 +8996,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn(" No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(` No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(` Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("(" Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(` Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idRecursos}`;
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe un registro
+          //  Verificar si ya existe un registro
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuServReInter?$filter=mesAno eq '${mes}' and otrosGastoRecu_ID eq '${idRecursos}'`,
@@ -8003,27 +9044,27 @@ sap.ui.define([
                 this._IdFechasPorMesServInt[claveCompuesta] = idFecha;
               }
             } else {
-              console.warn(`⚠️ Error al verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(` Error al verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error(" Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Armar payload
+          //  Armar payload
           const payload = {
             otrosGastoRecu_ID: idRecursos,
             mesAno: mes,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(` Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("(" Payload a enviar:", payload);
 
-          // 🚀 Enviar PATCH o POST
+          //  Enviar PATCH o POST
           try {
             let response;
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuServReInter(${idFecha})`);
+              //console.log("(` Haciendo PATCH a ValorMensuServReInter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuServReInter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8033,7 +9074,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("(" Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuServReInter", {
                 method: "POST",
                 headers: {
@@ -8046,13 +9087,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(` Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("✅ Datos enviados correctamente para el mes:", mes);
+              //console.log("(" Datos enviados correctamente para el mes:", mes);
             }
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error(" Error durante envío de datos:", error);
           }
         }
       },
@@ -8075,12 +9116,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(` Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(` Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -8090,26 +9131,26 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn(" No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(` No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(` Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("(" Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(` Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
@@ -8136,10 +9177,10 @@ sap.ui.define([
                 this._IdFechasPorMesGVinter[claveCompuesta] = idFecha; // opcional: almacenar en caché
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(` No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error(" Error al verificar existencia del registro:", e);
           }
 
           const payload = {
@@ -8148,13 +9189,13 @@ sap.ui.define([
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(` Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("(" Payload a enviar:", payload);
 
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuGastViaReInter(${idFecha})`);
+              //console.log("(` Haciendo PATCH a ValorMensuGastViaReInter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastViaReInter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8164,7 +9205,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("(" Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuGastViaReInter", {
                 method: "POST",
                 headers: {
@@ -8177,12 +9218,12 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(` Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             }
 
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error(" Error durante envío de datos:", error);
           }
         }
       },
@@ -8253,13 +9294,13 @@ sap.ui.define([
             continue;
           }
 
-          console.log(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
+          //console.log("(`Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
+          //console.log("(`Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
 
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("Datos a enviar:", dynamicColumnsData);
+        //console.log("("Datos a enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
@@ -8304,12 +9345,12 @@ sap.ui.define([
             valor: valor
           };
 
-          console.log(`Payload preparado para enviar para mes '${mes}' con idFecha: ${idFecha}`, payload);
+          //console.log("(`Payload preparado para enviar para mes '${mes}' con idFecha: ${idFecha}`, payload);
 
           try {
             let response;
             if (idFecha) {
-              console.log(`Haciendo PATCH a ValorMensuConsuEx(${idFecha})`);
+              //console.log("(`Haciendo PATCH a ValorMensuConsuEx(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8319,7 +9360,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("Haciendo POST para nuevo mes:", mes);
+              //console.log("("Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuConsuEx", {
                 method: "POST",
                 headers: {
@@ -8334,7 +9375,7 @@ sap.ui.define([
               const errorDetails = await response.text();
               throw new Error(`Error en la llamada al servicio: ${response.statusText}, Detalles: ${errorDetails}`);
             } else {
-              console.log("Datos enviados con éxito para el mes:", mes);
+              //console.log("("Datos enviados con éxito para el mes:", mes);
             }
           } catch (error) {
             console.error("Error al enviar los datos:", error);
@@ -8357,12 +9398,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(` Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -8372,26 +9413,26 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mesAno, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mesAno}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mesAno}', se omite.`);
             continue;
           }
 
@@ -8399,7 +9440,7 @@ sap.ui.define([
 
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe el registro para este mesAño y servicio consumo externo
+          //     Verificar si ya existe el registro para este mesAño y servicio consumo externo
           try {
             const filterQuery = `/odata/v4/datos-cdo/ValorMensuServConsuEx?$filter=mesAno eq '${mesAno}' and otrosServiciosConsu_ID eq '${idSerConsu}'`;
             const checkResponse = await fetch(filterQuery, {
@@ -8417,26 +9458,26 @@ sap.ui.define([
                 this._IdFechasPorMesServiConsu[claveCompuesta] = idFecha;
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Construir payload
+          //     Construir payload
           const payload = {
             otrosServiciosConsu_ID: idSerConsu,
             mesAno: mesAno,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mesAño '${mesAno}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mesAño '${mesAno}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuServConsuEx(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuServConsuEx(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuServConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8446,7 +9487,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mesAño:", mesAno);
+              //console.log("("    Haciendo POST para nuevo mesAño:", mesAno);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuServConsuEx", {
                 method: "POST",
                 headers: {
@@ -8459,13 +9500,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log(`✅ Datos enviados con éxito para el mesAño: ${mesAno}`);
+              //console.log("(`    Datos enviados con éxito para el mesAño: ${mesAno}`);
             }
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
@@ -8490,12 +9531,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
+            console.warn(`    Tipo de celda inesperado en la columna dinámica (índice ${j}):`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, se omite el envío para esta columna.`);
             continue;
           }
 
@@ -8506,28 +9547,28 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en la columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en la columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Se omite la columna ${columnHeader} porque es un total.`);
+            console.warn(`    Se omite la columna ${columnHeader} porque es un total.`);
             continue;
           }
 
-          console.log(`✅ Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
-          console.log(`✅ Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
+          //console.log("(`    Encabezado obtenido (columnHeader) para columna ${j}:`, columnHeader);
+          //console.log("(`    Valor de la celda (dynamicValue) para columna ${j}:`, dynamicValue);
 
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos a enviar:", dynamicColumnsData);
+        //console.log("("    Datos a enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ No se puede enviar un valor nulo para mes ${mes}.`);
+            console.warn(`    No se puede enviar un valor nulo para mes ${mes}.`);
             continue;
           }
 
@@ -8556,10 +9597,10 @@ sap.ui.define([
                 this._IdFechasPorMesGasViaConsuEx[claveCompuesta] = idFecha; // almacenar en caché si quieres
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
           // Paso 2: Armar payload
@@ -8569,14 +9610,14 @@ sap.ui.define([
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
           // Paso 3: Enviar PATCH o POST según si existe o no
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuGastoViaConsuEx(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuGastoViaConsuEx(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8586,7 +9627,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuGastoViaConsuEx", {
                 method: "POST",
                 headers: {
@@ -8599,13 +9640,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("✅ Datos enviados con éxito para el mes:", mes);
+              //console.log("("    Datos enviados con éxito para el mes:", mes);
             }
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
@@ -8635,12 +9676,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`    Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, se omite.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, se omite.`);
             continue;
           }
 
@@ -8650,33 +9691,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idRecursos}`;
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe un registro para este mes y recurso externo
+          //     Verificar si ya existe un registro para este mes y recurso externo
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuRecuExter?$filter=mesAno eq '${mes}' and RecursosExternos_ID eq '${idRecursos}'`,
@@ -8697,27 +9738,27 @@ sap.ui.define([
                 this._IdFechasPorMesREExt[claveCompuesta] = idFecha; // guardar id para futuras operaciones si quieres
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Armar payload
+          //     Armar payload
           const payload = {
             RecursosExternos_ID: idRecursos,
             mesAno: mes,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
-          // 🚀 PATCH o POST según si existe
+          //     PATCH o POST según si existe
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuRecuExter(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuRecuExter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuRecuExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8727,7 +9768,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuRecuExter", {
                 method: "POST",
                 headers: {
@@ -8740,13 +9781,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log(`✅ Datos enviados correctamente para el mes: ${mes}`);
+              //console.log("(`    Datos enviados correctamente para el mes: ${mes}`);
             }
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
@@ -8754,7 +9795,7 @@ sap.ui.define([
 
 
       InsertMesAñosSerRecursoExterno: async function (oItem) {
-        console.log("ids recibidos  " + JSON.stringify(this._idleeSerRExt));
+        //console.log("("ids recibidos  " + JSON.stringify(this._idleeSerRExt));
         const idServiExterno = this._idServiExterno;
         const sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
@@ -8769,12 +9810,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`    Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -8784,33 +9825,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idServiExterno}`;
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe el registro
+          //     Verificar si ya existe el registro
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuSerExter?$filter=mesAno eq '${mes}' and ServiRecurExterno_ID eq '${idServiExterno}'`,
@@ -8831,10 +9872,10 @@ sap.ui.define([
                 this._IdFechasPorMesSerReEx[claveCompuesta] = idFecha; // Cache opcional
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
           const payload = {
@@ -8843,13 +9884,13 @@ sap.ui.define([
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuSerExter(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuSerExter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuSerExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8859,7 +9900,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuSerExter", {
                 method: "POST",
                 headers: {
@@ -8872,21 +9913,21 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("✅ Datos enviados con éxito para el mes:", mes);
+              //console.log("("    Datos enviados con éxito para el mes:", mes);
             }
 
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
 
 
       InsertMesAñosGastoRecursoExterno: async function (oItem) {
-        //    console.log("IDs recibidos para gasto recurso externo:", JSON.stringify(this._idleeGasRExt));
+        //    //console.log("("IDs recibidos para gasto recurso externo:", JSON.stringify(this._idleeGasRExt));
 
         const idGasRecuExter = this._idGastoRecuExter;
         const sTokenMe = this._sCsrfToken;
@@ -8902,12 +9943,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`    Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -8917,33 +9958,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idGasRecuExter}`;
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe el registro para este mes y gasto externo
+          //     Verificar si ya existe el registro para este mes y gasto externo
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuGastoViExter?$filter=mesAno eq '${mes}' and GastoViajeRecExter_ID eq '${idGasRecuExter}'`,
@@ -8964,27 +10005,27 @@ sap.ui.define([
                 this._IdFechasPorMesReEx[claveCompuesta] = idFecha; // opcional: guardar en caché
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Armar payload
+          //     Armar payload
           const payload = {
             GastoViajeRecExter_ID: idGasRecuExter,
             mesAno: mes,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
-          // 🚀 Enviar PATCH o POST según si existe o no
+          //     Enviar PATCH o POST según si existe o no
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuGastoViExter(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuGastoViExter(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuGastoViExter(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -8994,7 +10035,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuGastoViExter", {
                 method: "POST",
                 headers: {
@@ -9007,14 +10048,14 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log(`✅ Datos enviados con éxito para '${mes}'`);
+              //console.log("(`    Datos enviados con éxito para '${mes}'`);
             }
 
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
@@ -9046,12 +10087,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`    Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -9061,33 +10102,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar:", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar:", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idOtrosConcep}`;
           let idFecha = null;
 
-          // 🔍 Paso 1: Verificar si ya existe el registro para este mes y concepto
+          //     Paso 1: Verificar si ya existe el registro para este mes y concepto
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensuOtrConcep?$filter=mesAno eq '${mes}' and otrosConceptos_ID eq '${idOtrosConcep}'`,
@@ -9109,27 +10150,27 @@ sap.ui.define([
                 this._IdFechasPorMesOtConp[claveCompuesta] = idFecha;
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
-          // 📦 Paso 2: Preparar payload
+          //     Paso 2: Preparar payload
           const payload = {
             otrosConceptos_ID: idOtrosConcep,
             mesAno: mes,
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar:", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar:", payload);
 
-          // 🚀 Paso 3: Enviar PATCH o POST
+          //     Paso 3: Enviar PATCH o POST
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensuOtrConcep(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensuOtrConcep(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensuOtrConcep(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -9139,7 +10180,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensuOtrConcep", {
                 method: "POST",
                 headers: {
@@ -9152,13 +10193,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             }
 
-            console.log(`✅ Enviado con éxito para mes: ${mes}`);
+            //console.log("(`    Enviado con éxito para mes: ${mes}`);
           } catch (error) {
-            console.error("🚨 Error durante envío de datos:", error);
+            console.error("    Error durante envío de datos:", error);
           }
         }
       },
@@ -9184,12 +10225,12 @@ sap.ui.define([
           } else if (typeof cell.getText === "function") {
             dynamicValue = cell.getText();
           } else {
-            console.warn(`⚠️ Tipo de celda inesperado en columna ${j}:`, cell);
+            console.warn(`    Tipo de celda inesperado en columna ${j}:`, cell);
             continue;
           }
 
           if (dynamicValue === null || dynamicValue === undefined || dynamicValue === "") {
-            console.warn(`⚠️ Celda vacía o nula en columna ${j}, omitida.`);
+            console.warn(`    Celda vacía o nula en columna ${j}, omitida.`);
             continue;
           }
 
@@ -9199,33 +10240,33 @@ sap.ui.define([
             if (header && typeof header.getText === "function") {
               columnHeader = header.getText() || columnHeader;
             } else {
-              console.warn("⚠️ No se pudo obtener el texto del encabezado en columna", j);
+              console.warn("    No se pudo obtener el texto del encabezado en columna", j);
             }
           } else {
-            console.warn(`⚠️ No se puede acceder a la columna en índice ${j}`);
+            console.warn(`    No se puede acceder a la columna en índice ${j}`);
           }
 
           if (columnHeader.toLowerCase().includes("total")) {
-            console.warn(`🛑 Columna ${columnHeader} omitida por ser TOTAL.`);
+            console.warn(`    Columna ${columnHeader} omitida por ser TOTAL.`);
             continue;
           }
 
-          console.log(`✅ Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          //console.log("(`    Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
-        console.log("📦 Datos recolectados para enviar (Licencias):", dynamicColumnsData);
+        //console.log("("    Datos recolectados para enviar (Licencias):", dynamicColumnsData);
 
         for (const [mes, valor] of Object.entries(dynamicColumnsData)) {
           if (valor === null || valor === undefined) {
-            console.warn(`⚠️ Valor nulo/undefined para '${mes}', se omite.`);
+            console.warn(`    Valor nulo/undefined para '${mes}', se omite.`);
             continue;
           }
 
           const claveCompuesta = `${mes}_${idLicencia}`;
           let idFecha = null;
 
-          // 🔍 Verificar si ya existe el registro
+          //     Verificar si ya existe el registro
           try {
             const checkResponse = await fetch(
               `/odata/v4/datos-cdo/ValorMensulicencia?$filter=mesAno eq '${mes}' and licencia_ID eq '${idLicencia}'`,
@@ -9247,10 +10288,10 @@ sap.ui.define([
                 this._IdFechasPorMesLicencia[claveCompuesta] = idFecha;
               }
             } else {
-              console.warn(`⚠️ No se pudo verificar existencia. Código: ${checkResponse.status}`);
+              console.warn(`    No se pudo verificar existencia. Código: ${checkResponse.status}`);
             }
           } catch (e) {
-            console.error("🚨 Error al verificar existencia del registro:", e);
+            console.error("    Error al verificar existencia del registro:", e);
           }
 
           const payload = {
@@ -9259,13 +10300,13 @@ sap.ui.define([
             valor: valor
           };
 
-          console.log(`🕓 Procesando mes '${mes}' con idFecha: ${idFecha}`);
-          console.log("📤 Payload a enviar (Licencia):", payload);
+          //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
+          //console.log("("    Payload a enviar (Licencia):", payload);
 
           let response;
           try {
             if (idFecha) {
-              console.log(`🔁 Haciendo PATCH a ValorMensulicencia(${idFecha})`);
+              //console.log("(`    Haciendo PATCH a ValorMensulicencia(${idFecha})`);
               response = await fetch(`/odata/v4/datos-cdo/ValorMensulicencia(${idFecha})`, {
                 method: 'PATCH',
                 headers: {
@@ -9275,7 +10316,7 @@ sap.ui.define([
                 body: JSON.stringify(payload)
               });
             } else {
-              console.log("🆕 Haciendo POST para nuevo mes:", mes);
+              //console.log("("    Haciendo POST para nuevo mes:", mes);
               response = await fetch("/odata/v4/datos-cdo/ValorMensulicencia", {
                 method: "POST",
                 headers: {
@@ -9288,13 +10329,13 @@ sap.ui.define([
 
             if (!response.ok) {
               const errorDetails = await response.text();
-              console.error(`❌ Error ${response.status} - ${response.statusText}:`, errorDetails);
+              console.error(`    Error ${response.status} - ${response.statusText}:`, errorDetails);
               throw new Error(`Error al enviar: ${response.statusText}`);
             } else {
-              console.log("✅ Datos enviados con éxito para el mes:", mes);
+              //console.log("("    Datos enviados con éxito para el mes:", mes);
             }
           } catch (error) {
-            console.error("🚨 Error durante envío de datos (Licencia):", error);
+            console.error("    Error durante envío de datos (Licencia):", error);
           }
         }
       },
@@ -9335,9 +10376,9 @@ sap.ui.define([
 
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+          if (!sVertical || !stipoServi || !sConcepto) {
+            //  //console.log("("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -9392,7 +10433,7 @@ sap.ui.define([
               await this.InsertMesAñoServRecurInterno(oItem, idOtrosGastos);
 
 
-              console.log("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
+              //console.log("("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -9498,7 +10539,7 @@ sap.ui.define([
                   await this.InsertMesAñoServRecurInterno(oItem, idOtrosGastos);
     
     
-                  console.log("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
+                  //console.log("("Fila " + (i + 1) + " guardada con éxito: INSERT OTROS GASTOS ", result);
                 } else {
                   const errorMessage = await response.text();
                   console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -9546,10 +10587,11 @@ sap.ui.define([
           const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-            //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+          if (!sVertical || !stipoServi || !sConcepto) {
+            //  //console.log("("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            continue; // Si hay un error, no se envía la solicitud
           }
+
 
           // Construir el payload para cada fila
           const payload = {
@@ -9605,7 +10647,7 @@ sap.ui.define([
               await this.InsertMesAñoGastoViajRecuInterno(oItem);
 
 
-              console.log("Fila " + (i + 1) + " guardada con éxito: OTROS RECURSOS ", result);
+              //console.log("("Fila " + (i + 1) + " guardada con éxito: OTROS RECURSOS ", result);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -9638,6 +10680,7 @@ sap.ui.define([
           const oItem = aItems[i];  // Obtener la fila actual
 
           const consuID = this._consumoExternosIDs && this._consumoExternosIDs[i] ? this._consumoExternosIDs[i] : null;
+          console.log("filA" + JSON.stringify(consuID));
 
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey() || "ValorPorDefecto"; // Select de Vertical
@@ -9655,9 +10698,9 @@ sap.ui.define([
           const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0; // Text de TotalE
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
+          if (!sVertical || !stipoServi || !sPerfil || !sConcepto) {
             //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -9679,13 +10722,13 @@ sap.ui.define([
           };
 
           // Log the payload data being sent for the external consumption
-          console.log("----->>>>> DATOS TRAIDOS CONSUMO EXTERNO ----- ", payload);
+          //console.log("("----->>>>> DATOS TRAIDOS CONSUMO EXTERNO ----- ", payload);
 
           let response;
 
           // Lógica de PATCH o POST dependiendo si existe idConst
           if (consuID) {
-            console.log("Entrando a PATCH");
+            //console.log("("Entrando a PATCH");
             response = await fetch(`/odata/v4/datos-cdo/ConsumoExternos(${consuID})`, {
               method: 'PATCH',
               headers: {
@@ -9715,7 +10758,7 @@ sap.ui.define([
             await this.InsertmesAñoConsumoExterno(oItem);
 
 
-            console.log("Fila " + (i + 1) + " guardada con éxito: CONSUMO EXTERNO", result);
+            //console.log("("Fila " + (i + 1) + " guardada con éxito: CONSUMO EXTERNO", result);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -9724,114 +10767,6 @@ sap.ui.define([
         }
       },
 
-
-      /* insertCosumoExterno: async function (generatedId) {
-          
-          const sTokenG =  this._sCsrfToken;
-          const idConst =   this._idConsum;
-          console.log("ID CONSUMO EXTERNO "   + idConst );
-          
-          // Obtener la tabla por su ID
-          const oTable = this.byId("tablaConsuExter");
-  
-  
-          // Obtener todos los elementos del tipo ColumnListItem
-          const aItems = oTable.getItems();
-  
-          // Iterar sobre cada fila
-          for (let i = 0; i < aItems.length; i++) {
-            const oItem = aItems[i];  // Obtener la fila actual
-  
-            // Obtener los controles dentro de cada celda
-            const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-            const stipoServi = oItem.getCells()[1].getSelectedKey(); // Select de TipoServicio
-            const sPerfil = oItem.getCells()[2].getSelectedKey(); // Select de PerfilServicio
-            const sConcepto = oItem.getCells()[3].getValue(); // Input de Concepto Oferta
-            const sPMJ = parseFloat(oItem.getCells()[4].getText()); // Text de PMJ
-            const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0", 10);
-            const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0", 10);
-            const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0", 10);
-            const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0", 10);
-            const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0", 10);
-            const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0", 10);
-            const sTotal = parseFloat(oItem.getCells()[11].getText()); // Text de Total
-            const stotalRe = parseFloat(oItem.getCells()[12].getText()); // Text de TotalE
-  
-            // Validar si todos los datos son válidos
-            if (!sVertical || !stipoServi || !sPerfil || !sConcepto || isNaN(sPMJ) || isNaN(sTotal) || isNaN(stotalRe)) {
-              //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-              return; // Si hay un error, no se envía la solicitud
-            }
-  
-            // Construir el payload para cada fila
-            const payload = {
-              Vertical_ID: sVertical,
-              ConceptoOferta: sConcepto,
-              PMJ: sPMJ,
-              year1: Number(syear1.toFixed(2)),
-              year2: Number(syear2.toFixed(2)),
-              year3: Number(syear3.toFixed(2)),
-              year4: Number(syear4.toFixed(2)),
-              year5: Number(syear5.toFixed(2)),
-              year6: Number(syear6.toFixed(2)),
-              total: sTotal,
-              totalC: stotalRe,
-              tipoServicio_ID: stipoServi,
-              PerfilConsumo_ID: sPerfil,
-              datosProyect_ID: generatedId
-            };
-  
-    
-  
-              let response;
-  
-  
-              // Log the payload data being sent for the external consumption
-              console.log("----->>>>> DATOS TRAIDOS CONUSMO EXTERNO ----- " + payload );
-            
-            
-              if (idConst) {
-  
-                console.log("He entreando a PATCH");
-              response = await fetch(`/odata/v4/datos-cdo/ConsumoExternos(${idConst})`, {
-               //   response = await fetch(`/odata/v4/datos-cdo/ConsumoExternos('${idConst}')`, {
-  
-                  method: 'PATCH',
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sTokenG,
-                  },
-                  body: JSON.stringify(payload)
-                });
-  
-            
-              } else {
-                response = await fetch("/odata/v4/datos-cdo/ConsumoExternos", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-csrf-token": sTokenG
-                  },
-                  body: JSON.stringify(payload)
-                });
-              }
-            
-              if (response.ok) {
-                const result = await response.json();
-                const idRecursos = result.ID; // Obtener el ID generado
-            
-                await this.insertServiConsu(idRecursos);
-                await this.insertGastoConsu(idRecursos);
-            
-                console.log("Fila " + (i + 1) + " guardada con éxito: CONSUMO EXTERNO", result);
-              } else {
-                const errorMessage = await response.text();
-                console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-                //sap.m.MessageToast.show("Error al guardar la fila " + (i + 1) + ": " + errorMessage);
-              }
-          }
-  
-        },*/
 
 
 
@@ -9866,9 +10801,9 @@ sap.ui.define([
 
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
+          if (!sVertical || !stipoServi || !sConcepto) {
             //   console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -9928,7 +10863,7 @@ sap.ui.define([
               await this.InsertmesAñoServConExterno(oItem);
 
 
-              console.log("Fila " + (i + 1) + " guardada con éxito: INSERT SERVI ", result);
+              //console.log("("Fila " + (i + 1) + " guardada con éxito: INSERT SERVI ", result);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -9975,9 +10910,9 @@ sap.ui.define([
 
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
+          if (!sVertical || !stipoServi || !sConcepto) {
             // console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -10091,7 +11026,7 @@ sap.ui.define([
           const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0;
 
           // Evitar insertar filas vacías
-          if (!sVertical && !stipoServi && !sPerfil && !sConcepto && sPMJ === 0 && sTotal === 0 && stotalRe === 0) {
+          if (!sVertical && !stipoServi && !sPerfil && !sConcepto) {
             console.warn("Fila", i + 1, "está vacía, se omite.");
             continue;
           }
@@ -10114,10 +11049,10 @@ sap.ui.define([
             datosProyect_ID: generatedId
           };
 
-          console.log("Payload enviado:", JSON.stringify(payload, null, 2));
+          //console.log(("Payload enviado:", JSON.stringify(payload, null, 2));
 
 
-          console.log("DATOS RECU EXTRA  " + JSON.stringify(payload, null, 2));
+          //console.log(("DATOS RECU EXTRA  " + JSON.stringify(payload, null, 2));
 
           let response;
 
@@ -10162,7 +11097,7 @@ sap.ui.define([
               await this.InsertMesAñoRecursoExterno(oItem);
 
 
-              console.log("Fila " + (i + 1) + " guardada con éxito:RECURSO EXTERNO", result);
+              //console.log(("Fila " + (i + 1) + " guardada con éxito:RECURSO EXTERNO", result);
 
 
 
@@ -10219,9 +11154,9 @@ sap.ui.define([
 
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+          if (!sVertical || !stipoServi || !sConcepto) {
+            //  //console.log(("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -10275,7 +11210,7 @@ sap.ui.define([
 
             await this.InsertMesAñosSerRecursoExterno(oItem);
 
-            console.log("Fila " + (i + 1) + " guardada con éxito: SERVICIO EXTERNO  ", result);
+            //console.log(("Fila " + (i + 1) + " guardada con éxito: SERVICIO EXTERNO  ", result);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -10326,9 +11261,9 @@ sap.ui.define([
 
 
           // Validar si todos los datos son válidos
-          if (!sVertical || !stipoServi || !sConcepto || isNaN(sPMJ) || isNaN(sTotal)) {
-            //  console.log("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+          if (!sVertical || !stipoServi || !sConcepto) {
+            //  //console.log(("Por favor, rellena todos los campos en la fila  SERVICIO INTERNO" + (i + 1) + " correctamente.");
+            continue; // Si hay un error, no se envía la solicitud
           }
           // Construir el payload para cada fila
           const payload = {
@@ -10347,9 +11282,9 @@ sap.ui.define([
             datosProyect_ID: generatedId
           };
 
-          console.log("Payload de Gasto Externo:", payload);
+          //console.log(("Payload de Gasto Externo:", payload);
 
-          console.log("PAYLOAD DE GASTO EXTERNO " + JSON.stringify(payload, null, 2));
+          //console.log(("PAYLOAD DE GASTO EXTERNO " + JSON.stringify(payload, null, 2));
 
           let response;
 
@@ -10382,7 +11317,7 @@ sap.ui.define([
 
             await this.InsertMesAñosGastoRecursoExterno(oItem);
 
-            console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
+            //console.log(("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
           } else {
             const errorMessage = await response.text();
             console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -10426,7 +11361,7 @@ sap.ui.define([
           // Validar si todos los datos son válidos
           if (!sVertical || !sConcepto) {
             //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -10483,7 +11418,7 @@ sap.ui.define([
 
               await this.InsertMesAñosOtrosConceptos(oItem);
 
-              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
+              //console.log(("Fila " + (i + 1) + " guardada con éxito: INSERTVIAJES RECURSO EXTERNO  ", result);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -10542,7 +11477,7 @@ sap.ui.define([
           // Validar si todos los datos son válidos
           if (!sVertical || !sConcepto) {
             //sap.m.MessageToast.show("Por favor, rellena todos los campos en la fila " + (i + 1) + " correctamente.");
-            return; // Si hay un error, no se envía la solicitud
+            continue; // Si hay un error, no se envía la solicitud
           }
 
           // Construir el payload para cada fila
@@ -10598,7 +11533,7 @@ sap.ui.define([
 
               await this.InsertMesAñosLicencia(oItem);
 
-              console.log("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
+              //console.log(("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
             } else {
               const errorMessage = await response.text();
               console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
@@ -10686,9 +11621,9 @@ sap.ui.define([
               });
 
               if (updateResponse.ok) {
-                console.log(`Factura actualizada:`, await updateResponse.json());
+                //console.log((`Factura actualizada:`, await updateResponse.json());
               } else {
-                console.log("Error al actualizar Factura:", await updateResponse.text());
+                //console.log(("Error al actualizar Factura:", await updateResponse.text());
                 //sap.m.MessageToast.show("Error al actualizar Factura.");
               }
             } else {
@@ -10702,9 +11637,9 @@ sap.ui.define([
               });
 
               if (insertResponse.ok) {
-                console.log("Factura insertada:", await insertResponse.json());
+                //console.log(("Factura insertada:", await insertResponse.json());
               } else {
-                console.log("Error al insertar Factura:", await insertResponse.text());
+                //console.log(("Error al insertar Factura:", await insertResponse.text());
                 //sap.m.MessageToast.show("Error al insertar Factura.");
               }
             }
@@ -10747,7 +11682,7 @@ sap.ui.define([
            }
          }.bind(this));
  
-         console.log("Total de la columna oferta: ", totalOferta);
+         //console.log(("Total de la columna oferta: ", totalOferta);
  
          try {
            // --- 1. Obtener TODAS las facturas existentes con este projectID ---
@@ -10927,7 +11862,7 @@ sap.ui.define([
             // Solo sumar si valueOferta es un número válido
             if (!isNaN(numericValue)) {
               totalOferta += numericValue; // Solo sumar si es un número
-              console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+              //console.log(("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
             }
           }
         });
@@ -10949,7 +11884,7 @@ sap.ui.define([
         var aItems = oTablaFac.getItems();
         var totalOferta = 0;
 
-        console.log("Cantidad de filas en la tabla:", aItems.length);
+        //console.log(("Cantidad de filas en la tabla:", aItems.length);
 
         // Iterar solo sobre las filas de datos (excluyendo la última)
         aItems.forEach(function (oItem, index) {
@@ -10971,12 +11906,12 @@ sap.ui.define([
             var numericValue = parseFloat(valueOferta);
 
             // Imprimir para depuración
-            console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+            //console.log(("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
 
             // Solo sumar si valueOferta es un número válido
             if (!isNaN(numericValue)) {
               totalOferta += numericValue; // Solo sumar si es un número
-              console.log("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+              //console.log(("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
             }
           }
         });
@@ -10984,7 +11919,7 @@ sap.ui.define([
         // Actualiza el control Text con el total de la oferta
         this.byId("text73_172746565340569997").setText(totalOferta.toFixed(2));
 
-        console.log("Total de la columna oferta:", totalOferta);
+        ////console.log(("Total de la columna oferta:", totalOferta);
       },
 
 
@@ -11062,7 +11997,7 @@ sap.ui.define([
 
 
       CaseAno: function (tableId) {
-        //  console.log("TABLA RECIBIDA  : " + tableId);
+        //  //console.log("TABLA RECIBIDA  : " + tableId);
 
         var oDatePickerInicio = this.getView().byId("date_inico");
         var oDatePickerFin = this.getView().byId("date_fin");
@@ -11098,7 +12033,7 @@ sap.ui.define([
             return;
           }
 
-          //   console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
+          //   //console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
 
           var that = this;
           var Totalporcentaje = 0;
@@ -11314,7 +12249,7 @@ sap.ui.define([
           that.getView().byId("text70_1729079344938").setText((totalesPorInput["Text1"] || 0).toFixed(2) + "€"); // 2025 
           that.getView().byId("text137").setText((totalesPorInput["Text4"] || 0).toFixed(2) + "€");
 
-          //  console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
+          //  //console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
         } else {
           //    sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
         }
@@ -11494,7 +12429,7 @@ sap.ui.define([
         });
 
         oModelDynamic.setData(oDynamicData);
-        console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
+        // //console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
       },
 
 
@@ -11629,11 +12564,11 @@ sap.ui.define([
                oDynamicData[tableId][rowIndex][keyCol] = prevVal;
        
  
-               console.log("Valores " + prevVal);
-               // 🔁 Disparar handleInputChange manualmente si hay valor previo
+               //console.log("Valores " + prevVal);
+               //     Disparar handleInputChange manualmente si hay valor previo
                if (prevVal !== "") {
  
-                 console.log("Estoy entrando a metodo del handle por segunda vez "); 
+                 //console.log("Estoy entrando a metodo del handle por segunda vez "); 
                  this.handleInputChange(
                    tableId, 
                    rowIndex, 
@@ -11660,7 +12595,7 @@ sap.ui.define([
            this.getView().setModel(oModelDynamic, "dynamicInputs");
          }
          oModelDynamic.setData(oDynamicData);
-         console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
+         //console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
          
        },*/
 
@@ -11835,18 +12770,18 @@ sap.ui.define([
         if (!oClipboardData) return;
 
         var sPastedData = oClipboardData.getData("text"); // Datos copiados, por ejemplo: "62,00\t50,00\t62,00\t62,00"
-        console.log(" Datos pegados:", sPastedData);
+        //console.log(" Datos pegados:", sPastedData);
 
         var aValues = sPastedData.split(/\t/); // ['62,00', '50,00', ...]
 
         var inputDOM = oEvent.target;
-        console.log(" DOM del input donde se pegó:", inputDOM);
+        //console.log(" DOM del input donde se pegó:", inputDOM);
 
         var encontrado = false;
 
         // Recorrer los inputs dinámicos para encontrar el que coincide con el evento
         for (var tableId in this._inputsDinamicos) {
-          console.log(" Explorando _inputsDinamicos...");
+          //console.log(" Explorando _inputsDinamicos...");
 
           var table = this._inputsDinamicos[tableId];
           for (var rowIndex in table) {
@@ -11860,7 +12795,7 @@ sap.ui.define([
 
               //  Aquí la comparación corregida:
               if (inputRef.contains(inputDOM)) {
-                console.log(" Input encontrado:", { tableId, rowIndex, columnKey });
+                //console.log(" Input encontrado:", { tableId, rowIndex, columnKey });
 
                 // Obtener la fila y todas sus celdas
                 var oCell = jQuery(inputDOM).closest("td");
@@ -11893,7 +12828,7 @@ sap.ui.define([
         }
 
         if (!encontrado) {
-          console.warn("❌ No se pudo identificar el input en _inputsDinamicos.");
+          console.warn("    No se pudo identificar el input en _inputsDinamicos.");
         }
       },
 
@@ -11922,8 +12857,8 @@ sap.ui.define([
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
 
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
-        //  console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
-        // console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
+        //  //console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
+        // //console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
 
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
 
@@ -11962,7 +12897,7 @@ sap.ui.define([
           this._yearlySums[tableId][rowIndex][year] += newValue;
 
 
-          console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
+          //console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
           this.updateTotalField(tableId, rowIndex, newValue);
 
           if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
@@ -11971,14 +12906,14 @@ sap.ui.define([
 
           this._insercionesPorAnoYTabla[year][tableId]++;
 
-          console.log(`Reclutado hasta ahora en año ${year} para tabla ${tableId}:`, this._insercionesPorAnoYTabla[year][tableId]);
+        //  console.log(`Reclutado hasta ahora en año ${year} para tabla ${tableId}:`, this._insercionesPorAnoYTabla[year][tableId]);
 
           if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
           if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
 
           this._insercionesPorTabla[tableId]++;
 
-          console.log("TOTAL YEAR JSON", JSON.stringify(this._insercionesPorTabla));
+          //console.log("TOTAL YEAR JSON", JSON.stringify(this._insercionesPorTabla));
 
 
           this.calcularPorcentajeInserciones();
@@ -12006,10 +12941,10 @@ sap.ui.define([
           oModelDynamic.setData(oData);
           oModelDynamic.refresh();
 
-          console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
+          //console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
 
         } else {
-          console.log("No hay cambio de valor, no actualizo nada.");
+          //console.log("No hay cambio de valor, no actualizo nada.");
         }
       },
 
@@ -12043,7 +12978,7 @@ sap.ui.define([
  
          this._tableChanged = true;
  
-         //   console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
+         //   //console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
  
          if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
  
@@ -12077,7 +13012,7 @@ sap.ui.define([
          this._insercionesPorAnoYTabla[year][tableId]++;
  
  
-         console.log("ME AÑO RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
+         //console.log("ME AÑO RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
  
          if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
          if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
@@ -12085,9 +13020,9 @@ sap.ui.define([
          this._insercionesPorTabla[tableId]++;
  
  
-         //  console.log("PORCEM RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
-         //  console.log("PORCEM RECOGIDO:", this._insercionesPorAnoYTabla);
-         // console.log("PORCENTAJE POR TABLA  RECOGIDO" + JSON.stringify(this._insercionesPorTabla));
+         //  //console.log("PORCEM RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
+         //  //console.log("PORCEM RECOGIDO:", this._insercionesPorAnoYTabla);
+         // //console.log("PORCENTAJE POR TABLA  RECOGIDO" + JSON.stringify(this._insercionesPorTabla));
  
  
  
@@ -12109,12 +13044,12 @@ sap.ui.define([
           totalInserciones += this._insercionesPorTabla[table];
         }
 
-        // console.log(" **Distribución de Inserciones por Tabla** ");
+        // //console.log(" **Distribución de Inserciones por Tabla** ");
         // console.log(` Total de inserciones en todas las tablas: ${totalInserciones}`);
 
         // Verificamos que haya inserciones antes de calcular porcentajes
         if (totalInserciones === 0) {
-          //  console.log(" No hay inserciones registradas.");
+          //  //console.log(" No hay inserciones registradas.");
           return;
         }
 
@@ -12130,7 +13065,7 @@ sap.ui.define([
 
         if (this._insercionesPorAnoYTabla) {
           for (let year in this._insercionesPorAnoYTabla) {
-            //   console.log("tablaaaaaa  PRIMERA " + JSON.stringify(this._insercionesPorAnoYTabla));
+            //   //console.log("tablaaaaaa  PRIMERA " + JSON.stringify(this._insercionesPorAnoYTabla));
 
             for (let table in this._insercionesPorAnoYTabla[year]) {
               const insercionesEnAno = this._insercionesPorAnoYTabla[year][table] || 0;
@@ -12186,7 +13121,7 @@ sap.ui.define([
         elementos.forEach(elemento => {
           let oElemento = this.byId(elemento.id);
           if (!oElemento) {
-            console.error(`❌ No se encontró el elemento con ID '${elemento.id}'`);
+            console.error(`    No se encontró el elemento con ID '${elemento.id}'`);
             return;
           }
 
@@ -12272,7 +13207,7 @@ sap.ui.define([
         });
 
         // Para fines de prueba puedes imprimir los resultados
-        // console.log("📊 Valores distribuidos por tabla y año:");
+        // console.log("  Valores distribuidos por tabla y año:");
         //console.log(JSON.stringify(valoresDistribuidos, null, 2));
 
         //console.log("🔢 Acumulado de textos distribuidos por tabla y año:");
@@ -12762,7 +13697,7 @@ sap.ui.define([
         //  console.log("1. AÑO GETTOTAL ----->>>", year, "Fila actual:", rowIndex, "Tabla actual:", tableId, "Datos actuales:", JSON.stringify(this._yearlySums, null, 2));
 
         if (Number(rowIndex) !== Number(this.currentRow) || tableId !== this.currentTableId) {
-          //  console.log("🚨 Cambiando de fila de " + this.currentRow + " a " + rowIndex + " y/o cambiando de tabla a " + tableId);
+          //  console.log("    Cambiando de fila de " + this.currentRow + " a " + rowIndex + " y/o cambiando de tabla a " + tableId);
           this.resetTableAccumulations(tableId);
           this.currentRow = Number(rowIndex);
           this.currentTableId = tableId;
@@ -12773,17 +13708,17 @@ sap.ui.define([
 
         // Asegúrate de que la tabla y la fila existan
         if (!this._yearlySums[tableId]) {
-          console.warn(`⚠️ No hay datos para la tabla ${tableId}. Creando estructura.`);
+          console.warn(`    No hay datos para la tabla ${tableId}. Creando estructura.`);
           this._yearlySums[tableId] = {};
         }
         if (!this._yearlySums[tableId][rowIndex]) {
-          console.warn(`⚠️ No hay datos para la fila ${rowIndex} en la tabla ${tableId}. Creando estructura.`);
+          console.warn(`    No hay datos para la fila ${rowIndex} en la tabla ${tableId}. Creando estructura.`);
           this._yearlySums[tableId][rowIndex] = {};
         }
 
         // Si el valor de año aún no existe, inicialízalo en 0
         if (this._yearlySums[tableId][rowIndex][year] === undefined) {
-          //   console.warn(`⚠️ No hay datos para el año ${year} en la fila ${rowIndex} de la tabla ${tableId}. Inicializando en 0.`);
+          //   console.warn(`    No hay datos para el año ${year} en la fila ${rowIndex} de la tabla ${tableId}. Inicializando en 0.`);
           this._yearlySums[tableId][rowIndex][year] = 0;
         }
 

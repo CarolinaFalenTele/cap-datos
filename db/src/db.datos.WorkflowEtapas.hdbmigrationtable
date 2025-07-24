@@ -1,0 +1,13 @@
+== version=1
+COLUMN TABLE db_datos_WorkflowEtapas (
+  ID NVARCHAR(36) NOT NULL,
+  workflow_ID NVARCHAR(36),
+  taskInstanceId NVARCHAR(5000),
+  nombreEtapa NVARCHAR(5000),
+  asignadoA NVARCHAR(5000),
+  aprobadoPor NVARCHAR(5000),
+  estado NVARCHAR(5000),
+  comentario NVARCHAR(5000),
+  fechaAprobado TIMESTAMP,
+  PRIMARY KEY(ID)
+)

@@ -17,7 +17,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity Jefeproyect               as projection on datos.Jefeproyect;
 
   entity Area                      as projection on datos.Area;
-  entity clienteFuncional          as projection on datos.clienteFuncional;
+  entity ClienteNuevo          as projection on datos.ClienteNuevo;
   entity AMreceptor                as projection on datos.AMreceptor;
   entity Vertical                  as projection on datos.Vertical;
   entity TipoIniciativa            as projection on datos.TipoIniciativa;
@@ -126,7 +126,7 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
     workflowInstanceId : String
   };
 
-  action   completeWorkflow(workflowInstanceId : String, decision : String ,     ComentarioAprobado: LargeString) returns String;
+  action   completeWorkflow(workflowInstanceId : String, decision : String ,     ComentarioAprobado: LargeString  ,   idProject: UUID ) returns String;
 
 
   action   getWorkflowTimeline(ID : String)                                 returns array of {
