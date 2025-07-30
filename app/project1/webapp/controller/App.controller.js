@@ -1,18 +1,17 @@
-
-
 sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "sap/ui/core/CustomData",
-        "sap/ui/core/format/DateFormat",
-        "sap/m/MessageBox",     // Importar MessageBox
-
-
+        "sap/m/MessageBox",              // CORRECTO AQUÍ
+        "sap/ui/core/format/DateFormat", // CORRECTO AQUÍ
+        "project1/model/formatter"
     ],
-    function (BaseController, CustomData, MessageBox, DateFormat) {
+    function (BaseController, CustomData, MessageBox, DateFormat, Formatter) {
         "use strict";
 
         return BaseController.extend("project1.controller.App", {
+
+            formatter: Formatter,
             onInit: function () {
 
 
@@ -31,24 +30,13 @@ sap.ui.define(
                 // this.DialogInfo();
                 this.getUserInfo();
 
-
-                // Llama a una función separada que sí puede ser async
                 this._cargarDatosUsuario();
 
-             
-
             },
 
 
-            formatAvailableToObjectState: function(bAvailable) {
-                //console.log(("Valor recibido en formatter:", bAvailable);
-
-                return bAvailable ? "Success" : "Error";
-            },
 
 
-      
-            
 
 
             _cargarDatosUsuario: async function () {
@@ -73,12 +61,12 @@ sap.ui.define(
             },
 
 
-            
+
             filterEstado: async function () {
                 try {
                     const userModel = this.getView().getModel("userModel");
                     if (!userModel) {
-                        console.error(" userModel no está definido aún.");
+                        //    console.error(" userModel no está definido aún.");
                         return;
                     }
 
@@ -108,6 +96,20 @@ sap.ui.define(
                             proyecto.FechaModificacionFormateada = formatearFecha(proyecto.FechaModificacion);
                             proyecto.NombreArea = proyecto.Area?.NombreArea || "Sin área";
                             proyecto.NombreJefe = proyecto.jefeProyectID?.name || "Sin jefe";
+                            proyecto.EstadoStatus = proyecto.Estado === "Aprobado"
+                                ? "Success"
+                                : proyecto.Estado === "Rechazado"
+                                    ? "Error"
+                                    : "None";
+
+
+                            // Aquí colocamos el campo para el ícono y el color según Oferta (true/false) 
+                            proyecto.OfertaIcon = proyecto.Oferta ? "sap-icon://accept" : "sap-icon://decline";
+                            proyecto.OfertaColor = proyecto.Oferta ? "#0066FF" : "red";
+                            proyecto.OfertaTexto = proyecto.Oferta ? "Si" : "No";
+
+                            //  console.log("OFERTAS " + proyecto.Oferta);
+
 
                             if (proyecto.Estado === "Borrador") {
                                 proyecto.workflowId = null;
@@ -149,6 +151,8 @@ sap.ui.define(
                             proyecto.actualizadoEnFormateada = formatearFecha(proyecto.actualizadoEn) || "Fecha no disponible";
                             proyecto.Etapas = etapas;
 
+
+
                             return proyecto;
                         }));
                     };
@@ -158,7 +162,7 @@ sap.ui.define(
                     const aProyectosConEstado = await procesarProyectos(allProjects);
 
 
-                    
+
                     // Separar por estado
                     const aProyectosAprobados = aProyectosConEstado.filter(p => p.Estado === "Aprobado");
                     const aProyectosPendientes = aProyectosConEstado.filter(p => p.Estado === "Pendiente");
@@ -210,14 +214,14 @@ sap.ui.define(
                         ...aProyectosAprobados,
                         ...aProyectosRechazados
                     ];
-                    
+
                     //console.log((" modelAprobados + Rechazados:", aProyectosAprobadosYRechazados);
-                    
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosAprobadosYRechazados,
                         Count: aProyectosAprobadosYRechazados.length
                     }), "modelAprobados");
-                    
+
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
                         DatosProyect: aProyectosPendientes,
                         Count: aProyectosPendientes.length
@@ -742,7 +746,7 @@ sap.ui.define(
                                 ctrl.setText(text || fallback);
                                 //console.log((` Control '${id}' seteado a:`, text || fallback);
                             } else {
-                              //  console.warn(` Control no encontrado: id '${id}'`);
+                                //  console.warn(` Control no encontrado: id '${id}'`);
                             }
                         };
 
@@ -776,14 +780,14 @@ sap.ui.define(
                             tab.setVisible(mostrarTab);
                             //   console.log(`IconTabFilter 'id34' visibilidad: ${mostrarTab}`);
                         } else {
-                          //  console.warn("IconTabFilter con ID 'id34' no encontrado.");
+                            //  console.warn("IconTabFilter con ID 'id34' no encontrado.");
                         }
                         // Función para toggle de botones con logs
                         const toggleBotones = (ids, estado, tipo) => {
                             ids.forEach(id => {
                                 const btn = this.byId(id);
                                 if (!btn) {
-                                 //   console.warn(` Botón de ${tipo} no encontrado:`, id);
+                                    //   console.warn(` Botón de ${tipo} no encontrado:`, id);
                                 } else {
                                     btn.setEnabled(estado);
 
@@ -865,14 +869,14 @@ sap.ui.define(
                               emailCtrl.setText(userInfo.email || "Sin email");
                               console.log("📧 Email seteado:", userInfo.email || "Sin email");
                           } else {
-                              console.warn("⚠️ Control de email no encontrado (id 'dddtg')");
+                              console.warn("  Control de email no encontrado (id 'dddtg')");
                           }
               
                           if (nameCtrl) {
                               nameCtrl.setText(userInfo.fullName || "Sin nombre");
                               console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
                           } else {
-                              console.warn("⚠️ Control de nombre no encontrado (id 'attrEmpleado')");
+                              console.warn("  Control de nombre no encontrado (id 'attrEmpleado')");
                           }
               
                           // Roles
@@ -887,10 +891,10 @@ sap.ui.define(
                           const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
                               roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
                           
-                          console.log("✅ ¿Es solo Visualizador?", isVisualizadorSolo);
+                          console.log("  ¿Es solo Visualizador?", isVisualizadorSolo);
                           
   
-                          console.log("🔐 ¿Es solo Visualizador?", isVisualizadorSolo);
+                          console.log("  ¿Es solo Visualizador?", isVisualizadorSolo);
                           
               
                           // Botones a controlar
@@ -903,7 +907,7 @@ sap.ui.define(
                               ids.forEach(id => {
                                   const btn = this.byId(id);
                                   if (!btn) {
-                                      console.warn(`⚠️ Botón de ${tipo} no encontrado:`, id);
+                                      console.warn(`  Botón de ${tipo} no encontrado:`, id);
                                   } else {
                                       btn.setEnabled(estado);
                                       console.log(`🔘 Botón ${id} (${tipo}) seteado a:`, estado);
@@ -918,9 +922,9 @@ sap.ui.define(
               
                               if (btnCrear) {
                                   btnCrear.setEnabled(false);
-                                  console.log("⛔ Botón de creación deshabilitado.");
+                                  console.log("  Botón de creación deshabilitado.");
                               } else {
-                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                                  console.warn("  Botón de creación no encontrado: id '33'");
                               }
               
                               sap.m.MessageBox.warning(
@@ -928,28 +932,28 @@ sap.ui.define(
                                   { title: "Permisos insuficientes" }
                               );
                           } else {
-                              console.log("✅ Usuario con más permisos: habilitando botones...");
+                              console.log("  Usuario con más permisos: habilitando botones...");
                               toggleBotones(botonesEditarIDs, true, "editar");
                               toggleBotones(botonesEliminarIDs, true, "eliminar");
               
                               if (btnCrear) {
                                   btnCrear.setEnabled(true);
-                                  console.log("✅ Botón de creación habilitado.");
+                                  console.log("  Botón de creación habilitado.");
                               } else {
-                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
+                                  console.warn("  Botón de creación no encontrado: id '33'");
                               }
                           }
               
                           if (token) {
-                              console.log("🔐 Token recibido:", token);
-                              console.log("▶️ Iniciando watcher de sesión...");
+                              console.log("  Token recibido:", token);
+                              console.log("  Iniciando watcher de sesión...");
                               this._startSessionWatcher(token);
                           } else {
-                              console.warn("⚠️ Token no recibido en la respuesta.");
+                              console.warn("  Token no recibido en la respuesta.");
                           }
                       })
                       .catch(error => {
-                          console.error("🚨 Error obteniendo datos del usuario:", error);
+                          console.error("  Error obteniendo datos del usuario:", error);
                       });
               },*/
 
@@ -978,7 +982,7 @@ sap.ui.define(
                 const interval = setInterval(() => {
                     if (secondsLeft <= 0) {
                         clearInterval(interval);
-                        MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
+                        MessageBox.error("  Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
                         return;
                     }
 
@@ -991,14 +995,14 @@ sap.ui.define(
                 }, 1000);
 
                 const dialog = new sap.m.Dialog({
-                    title: "⚠️ Sesión a punto de expirar",
+                    title: "  Sesión a punto de expirar",
                     content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
                     beginButton: new sap.m.Button({
                         text: "Sí, mantener sesión",
                         press: () => {
                             clearInterval(interval);
                             dialog.close();
-                            this._refreshToken(); // 🔁 Simula renovación de sesión
+                            this._refreshToken(); //   Simula renovación de sesión
                         }
                     }),
                     endButton: new sap.m.Button({
@@ -1006,7 +1010,7 @@ sap.ui.define(
                         press: () => {
                             clearInterval(interval);
                             dialog.close();
-                            // 🔕 No hay logout en pruebas
+                            //   No hay logout en pruebas
                         }
                     }),
                     afterClose: () => {
@@ -1291,7 +1295,7 @@ sap.ui.define(
                         oProcessFlow.addNode(node); // Añade el nodo al ProcessFlow
                     });
     
-                    // ✅ Solo una vez, fuera del bucle
+                    //   Solo una vez, fuera del bucle
                     oProcessFlow.attachNodePress(this.onNodePress.bind(this));
     
                     this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
@@ -1355,7 +1359,7 @@ sap.ui.define(
                            isTitleClickable: true // Muy importante
                        });
                        
-                       // 🔁 Asegura que el nodo reaccione al click
+                       //   Asegura que el nodo reaccione al click
                        node.attachPress(this.onNodePress, this); // Bind al controlador actual
                        
                        oProcessFlow.addNode(node);
@@ -1373,7 +1377,7 @@ sap.ui.define(
                    oIconTabBar.setSelectedKey("people");
                
                    // Añadir evento de presión en los nodos
-                //   node.attachPress(this.onNodePress, this); // ✅ correcta
+                //   node.attachPress(this.onNodePress, this); //   correcta
    
             
                },
@@ -1729,7 +1733,7 @@ sap.ui.define(
 
 
                 // Construye la URL con el ID correctamente escapado
-                var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})`;
+                var sUrl = `/odata/v4/datos-cdo/DatosProyect(${sProjectID})?$expand=jefeProyectID,Area`;
 
                 try {
                     const response = await fetch(sUrl, {
@@ -1757,6 +1761,9 @@ sap.ui.define(
                     this.byId("idEMail").setText(oData.Email);
                     this.byId("idModifi").setText(oData.FechaModificacion);
                     this.byId("fechainitProyect").setText(oData.Fechainicio);
+                    const sNombreJefe = oData.jefeProyectID?.name || "Sin jefe asignado";
+                    this.byId("idJefeProyect").setText(sNombreJefe);
+                    this.byId("idArea").setText(oData.Area?.NombreArea || "Sin área");
 
                     const oDateFormat = sap.ui.core.format.DateFormat.getDateTimeInstance({
                         style: "medium" // Puedes usar "short", "medium", "long", o "full"
@@ -1768,14 +1775,42 @@ sap.ui.define(
                     this.byId("idCreacion").setText(formattedDate);
 
 
-                    var fecha = oData.FechaFin.split("T")[0]; // obtenemos solo la fecha 2025-03-27
-                    var partes = fecha.split("-"); // separamos ["2025","03","27"]
-                    var fechaFormateada = partes[2] + "-" + partes[1] + "-" + partes[0]; // armamos 27/03/2025
-                    this.byId("idFechaFinProyect").setText(fechaFormateada);
+                    if (oData.FechaFin) {
+                        var fecha = oData.FechaFin.split("T")[0];
+                        var partes = fecha.split("-");
+                        var fechaFormateada = partes[2] + "-" + partes[1] + "-" + partes[0];
+                        this.byId("idFechaFinProyect").setText(fechaFormateada);
+                    } else {
+                        this.byId("idFechaFinProyect").setText("Sin fecha");
+                        console.warn("FechaFin es null o indefinido");
+                    }
+
 
                     //      this.byId("idFechaFinProyect").setText(oData.FechaFin);
                     this.byId("idEstadoProyect").setText(oData.Estado);
-                    this.byId("idArea").setText(oData.Area_ID.NombreArea);
+
+                    const sEstado = oData.Estado || "";
+                    const oObjectStatus = this.byId("idEstadoProyect");
+
+                    oObjectStatus.setText(sEstado);
+
+                    switch (sEstado.toLowerCase()) {
+                        case "aprobado":
+                            oObjectStatus.setState("Success");
+                            break;
+                        case "rechazado":
+                            oObjectStatus.setState("Error");
+                            break;
+                        case "pendiente":
+                            oObjectStatus.setState("Warning");
+                            break;
+                        case "borrador":
+                            oObjectStatus.setState("None"); // o "Information"
+                            break;
+                        default:
+                            oObjectStatus.setState("None");
+                            break;
+                    }
                     var formattedTotal = new Intl.NumberFormat('es-ES', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
@@ -1851,13 +1886,13 @@ sap.ui.define(
                         "¿Deseas eliminar este proyecto y todos sus registros relacionados?",
                         {
                             actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-    
+
                             onClose: async (oAction) => {
                                 if (oAction !== sap.m.MessageBox.Action.YES) return;
-                                this.byId("idPendientes").setBusy(true); 
-                                this.byId("idTableAprobados").setBusy(true); 
-                                this.byId("TableBorrador").setBusy(true); 
-                                this.byId("tabla_Aprobadores").setBusy(true); 
+                                this.byId("idPendientes").setBusy(true);
+                                this.byId("idTableAprobados").setBusy(true);
+                                this.byId("TableBorrador").setBusy(true);
+                                this.byId("tabla_Aprobadores").setBusy(true);
                                 try {
 
                                     // ❗ Cancelar workflow si existe
@@ -1909,7 +1944,7 @@ sap.ui.define(
                                         "PerfilTotal"
                                     ];
 
-                                    // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
+                                    //   Eliminar registros relacionados, incluyendo hijos anidados
                                     for (const path of paths) {
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
                                             method: "GET",
@@ -1920,7 +1955,7 @@ sap.ui.define(
                                         });
 
                                         if (!res.ok) {
-                                            console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                            console.warn(`  No se pudieron obtener los registros de ${path}`);
                                             continue;
                                         }
 
@@ -1986,7 +2021,7 @@ sap.ui.define(
 
                                     //console.log(("Registros relacionados eliminados.");
 
-                                    // 3️⃣ Eliminar el proyecto principal
+                                    //   Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                         method: "DELETE",
                                         headers: {
@@ -2007,10 +2042,10 @@ sap.ui.define(
                                                     if (oBinding) {
                                                         oBinding.refresh(true);  // Forzar actualización desde backend
                                                     } else {
-                                                        console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                        console.warn("  No se encontró el binding de la tabla.");
                                                     }
                                                 } else {
-                                                    console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                    console.warn("  Tabla no encontrada con ID idPendientes.");
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
@@ -2021,11 +2056,11 @@ sap.ui.define(
                                 } catch (error) {
                                     console.error("Error eliminando el proyecto o registros:", error);
                                     sap.m.MessageToast.show("Error al eliminar el proyecto o registros.");
-                                }  finally {
-                                    this.byId("TableBorrador").setBusy(false); 
-                                    this.byId("idPendientes").setBusy(false); 
-                                    this.byId("idTableAprobados").setBusy(false); 
-                                    this.byId("tabla_Aprobadores").setBusy(false); 
+                                } finally {
+                                    this.byId("TableBorrador").setBusy(false);
+                                    this.byId("idPendientes").setBusy(false);
+                                    this.byId("idTableAprobados").setBusy(false);
+                                    this.byId("tabla_Aprobadores").setBusy(false);
                                 }
                             }
                         }
@@ -2034,7 +2069,7 @@ sap.ui.define(
                     console.error("Error al obtener el CSRF Token:", error);
                     sap.m.MessageToast.show("Error al obtener el CSRF Token.");
                 }
-               
+
             },
 
             /*onDeletePress: async function (oEvent) {
@@ -2110,7 +2145,7 @@ sap.ui.define(
                                         "PerfilTotal"
                                     ];
             
-                                    // 2️⃣ Eliminar registros relacionados, incluyendo hijos anidados
+                                    //   Eliminar registros relacionados, incluyendo hijos anidados
                                     for (const path of paths) {
                                         // Obtener registros relacionados
                                         let res = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})/${path}`, {
@@ -2122,7 +2157,7 @@ sap.ui.define(
                                         });
             
                                         if (!res.ok) {
-                                            console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                            console.warn(`  No se pudieron obtener los registros de ${path}`);
                                             continue;
                                         }
             
@@ -2188,7 +2223,7 @@ sap.ui.define(
             
                                     console.log("Registros relacionados eliminados.");
             
-                                    // 3️⃣ Eliminar el proyecto principal
+                                    //   Eliminar el proyecto principal
                                     let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                         method: "DELETE",
                                         headers: {
@@ -2209,10 +2244,10 @@ sap.ui.define(
                                                     if (oBinding) {
                                                         oBinding.refresh(true);  // Forzar actualización desde el backend
                                                     } else {
-                                                        console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                        console.warn("  No se encontró el binding de la tabla.");
                                                     }
                                                 } else {
-                                                    console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                    console.warn("  Tabla no encontrada con ID idPendientes.");
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
@@ -2248,7 +2283,7 @@ sap.ui.define(
                   console.log("id seleccionado "    + sProjectId); 
                   const workflowInstanceId = oButton.data("etapaId");
   
-                 console.log("🔴 Eliminar etapa", workflowInstanceId +" " +  sProjectId);
+                 console.log("  Eliminar etapa", workflowInstanceId +" " +  sProjectId);
               
                   if (!sProjectId) {
                       console.error("No se encontró un ID válido para eliminar.");
@@ -2309,7 +2344,7 @@ sap.ui.define(
                                           });
               
                                           if (!res.ok) {
-                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                              console.warn(`  No se pudieron obtener los registros de ${path}`);
                                               return;
                                           }
               
@@ -2362,10 +2397,10 @@ sap.ui.define(
                                                       if (oBinding) {
                                                           oBinding.refresh(true);
                                                       } else {
-                                                          console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                          console.warn("  No se encontró el binding de la tabla.");
                                                       }
                                                   } else {
-                                                      console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                      console.warn("  Tabla no encontrada con ID idPendientes.");
                                                   }
                                                   await this.filterEstado();
                                               }.bind(this)
@@ -2461,7 +2496,7 @@ sap.ui.define(
                                           });
   
                                           if (!res.ok) {
-                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
+                                              console.warn(`  No se pudieron obtener los registros de ${path}`);
                                               return;
                                           }
   
@@ -2493,7 +2528,7 @@ sap.ui.define(
                                       await Promise.all(deletePromises);
                                       console.log(" Registros relacionados eliminados.");
   
-                                      // 3️⃣ Eliminar el proyecto principal
+                                      //   Eliminar el proyecto principal
                                       let projectResponse = await fetch(`/odata/v4/datos-cdo/DatosProyect(${sProjectId})`, {
                                           method: "DELETE",
                                           headers: {
@@ -2514,10 +2549,10 @@ sap.ui.define(
                                                       if (oBinding) {
                                                           oBinding.refresh(true);  // Forzar actualización desde el backend
                                                       } else {
-                                                          console.warn("⚠️ No se encontró el binding de la tabla.");
+                                                          console.warn(" No se encontró el binding de la tabla.");
                                                       }
                                                   } else {
-                                                      console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
+                                                      console.warn(" Tabla no encontrada con ID idPendientes.");
                                                   }
                                                   await this.filterEstado();
                                               }.bind(this)

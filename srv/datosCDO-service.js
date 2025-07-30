@@ -69,17 +69,17 @@ module.exports = cds.service.impl(async function () {
       );
 
       const workflowInstanceId = response.data.id;
-      console.log("🔄 ID del Workflow creado:", workflowInstanceId);
+      console.log("  ID del Workflow creado:", workflowInstanceId);
 
       let taskList = [];
       let attempts = 0;
       const maxAttempts = 10;
       const delay = ms => new Promise(res => setTimeout(res, ms));
 
-      // 🔁 Esperar dinámicamente hasta que existan tareas
+      //   Esperar dinámicamente hasta que existan tareas
       while (taskList.length === 0 && attempts < maxAttempts) {
         attempts++;
-        console.log(`⏳ Esperando tareas... intento ${attempts}`);
+        console.log(`  Esperando tareas... intento ${attempts}`);
         await delay(1500); // espera 1.5 segundos
 
         const getTasks = await axios.get(
@@ -93,12 +93,12 @@ module.exports = cds.service.impl(async function () {
       }
 
       if (!taskList || taskList.length === 0) {
-        console.warn("⚠️ No se encontraron tareas después de varios intentos.");
+        console.warn("  No se encontraron tareas después de varios intentos.");
       } else {
-        console.log(`✅ Tareas encontradas en intento ${attempts}:`, JSON.stringify(taskList, null, 2));
+        console.log(`  Tareas encontradas en intento ${attempts}:`, JSON.stringify(taskList, null, 2));
 
         for (const task of taskList) {
-          console.log("➡️ Insertando tarea:", {
+          console.log("  Insertando tarea:", {
             taskId: task.id,
             subject: task.subject,
             assigned: task.recipientUsers?.[0]
@@ -115,12 +115,12 @@ module.exports = cds.service.impl(async function () {
       }
 
       return {
-        message: "✅ Workflow iniciado. Etapas insertadas si existían.",
+        message: "  Workflow iniciado. Etapas insertadas si existían.",
         workflowInstanceId
       };
 
     } catch (err) {
-      console.error("❌ Error en backend:", err.response?.data || err.message);
+      console.error("  Error en backend:", err.response?.data || err.message);
       req.reject(500, `Error al iniciar workflow: ${err.message}`);
     }
   });
@@ -131,7 +131,7 @@ module.exports = cds.service.impl(async function () {
    // PUT /Archivos(ID)/$value para subir el contenido binario
  this.on("PUT", "Archivos/$value", async (req) => {
   const id = req.params[0].ID;
-  console.log("📩 Entró al handler PUT /$value");
+  console.log("  Entró al handler PUT /$value");
 
   const chunks = [];
   for await (const chunk of req._.req) {
@@ -170,11 +170,11 @@ this.on("GET", "Archivos/$value", async (req) => {
     const userEmail = req.user.email;
     const token = await getWorkflowToken();
 
-    console.log("🧪 req.data:", req.data);
+    console.log("  req.data:", req.data);
 
     
     if (!idProject) {
-      console.warn("⚠️ idProject no recibido. Verifica el payload.");
+      console.warn("  idProject no recibido. Verifica el payload.");
     }
     
 
@@ -198,7 +198,7 @@ this.on("GET", "Archivos/$value", async (req) => {
     }
 
     try {
-      console.log("🔍 Buscando tareas para el workflowInstanceId:", workflowInstanceId);
+      console.log("  Buscando tareas para el workflowInstanceId:", workflowInstanceId);
 
       // Paso 1: Obtener tareas actuales
       const getResponse = await axios.get(
@@ -209,17 +209,17 @@ this.on("GET", "Archivos/$value", async (req) => {
       const tasks = getResponse.data;
 
       if (!tasks || tasks.length === 0) {
-        return req.reject(404, `❌ No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
+        return req.reject(404, `  No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
       }
 
       // Paso 2: Buscar la tarea activa (READY o RESERVED)
       const activeTask = tasks.find(task => task.status === "READY" || task.status === "RESERVED");
       if (!activeTask) {
-        return req.reject(400, `⚠️ No hay tareas activas (READY o RESERVED) para este workflow.`);
+        return req.reject(400, `  No hay tareas activas (READY o RESERVED) para este workflow.`);
       }
 
       const taskId = activeTask.id;
-      console.log("✅ Tarea activa encontrada:", taskId);
+      console.log("  Tarea activa encontrada:", taskId);
 
       // Paso 3: Completar la tarea
       await axios.patch(
@@ -236,7 +236,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         }
       );
 
-      console.log("✅ Tarea completada con éxito:", taskId);
+      console.log("  Tarea completada con éxito:", taskId);
 
       // Paso 4: Actualizar etapa actual en la tabla WorkflowEtapas
       await UPDATE('WorkflowEtapas')
@@ -272,7 +272,7 @@ this.on("GET", "Archivos/$value", async (req) => {
       }
 
       if (inserted > 0) {
-        return { message: `✅ Tarea completada. ${inserted} nueva(s) etapa(s) insertada(s).` };
+        return { message: `  Tarea completada. ${inserted} nueva(s) etapa(s) insertada(s).` };
       }
 
       // Paso 6: Si no hay más tareas nuevas, marcar workflow como finalizado
@@ -292,12 +292,12 @@ this.on("GET", "Archivos/$value", async (req) => {
       .set({ Estado: estadoFinal })
       .where({ ID: idProject });
     
-    console.log("🔄 Resultado UPDATE DatosProyect:", result);
+    console.log("  Resultado UPDATE DatosProyect:", result);
 
-      return { message: `✅ Workflow completado. Estado final: ${estadoFinal}` };
+      return { message: `  Workflow completado. Estado final: ${estadoFinal}` };
 
     } catch (err) {
-      console.error("❌ Error al completar tarea:", err.response?.data || err.message);
+      console.error("  Error al completar tarea:", err.response?.data || err.message);
       req.reject(500, `Error al completar task: ${err.message}`);
     }
   });
@@ -313,11 +313,11 @@ this.on("GET", "Archivos/$value", async (req) => {
         asignadoA: email
       });
 
-      console.log("✅ Etapas encontradas para", email, ":", resultados.length);
+      console.log("  Etapas encontradas para", email, ":", resultados.length);
       return resultados;
 
     } catch (err) {
-      console.error("❌ Error al consultar etapas pendientes:", err.message);
+      console.error("  Error al consultar etapas pendientes:", err.message);
       req.reject(500, "No se pudieron obtener las etapas pendientes.");
     }
   });
@@ -359,7 +359,7 @@ this.on("GET", "Archivos/$value", async (req) => {
     const token = await getWorkflowToken();
 
     try {
-      console.log("🔍 Buscando tareas para el workflowInstanceId:", workflowInstanceId);
+      console.log("  Buscando tareas para el workflowInstanceId:", workflowInstanceId);
 
       // Paso 1: Obtener todas las tareas de la instancia
       const getResponse = await axios.get(
@@ -371,20 +371,20 @@ this.on("GET", "Archivos/$value", async (req) => {
 
       const tasks = getResponse.data;
 
-      console.log("🔍 TAREAS ENCONTRADAS:", JSON.stringify(tasks));
+      console.log("  TAREAS ENCONTRADAS:", JSON.stringify(tasks));
 
       if (!tasks || tasks.length === 0) {
-        return req.reject(404, `❌ No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
+        return req.reject(404, `  No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
       }
 
       // Paso 2: Buscar la tarea activa (READY o RESERVED)
       const activeTask = tasks.find(task => task.status === "READY" || task.status === "RESERVED");
       if (!activeTask) {
-        return req.reject(400, `⚠️ No hay tareas activas en estado READY o RESERVED para este workflow.`);
+        return req.reject(400, `  No hay tareas activas en estado READY o RESERVED para este workflow.`);
       }
 
       const taskId = activeTask.id;
-      console.log("✅ Próxima tarea pendiente encontrada:", taskId);
+      console.log("  Próxima tarea pendiente encontrada:", taskId);
 
       // Paso 3: Completar la tarea vía PATCH
       await axios.patch(
@@ -401,7 +401,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         }
       );
 
-      console.log("✅ Tarea completada con éxito:", taskId);
+      console.log("  Tarea completada con éxito:", taskId);
 
       // Paso 4: Actualizar WorkflowEtapas en la base de datos CAP
       await UPDATE('WorkflowEtapas')
@@ -446,7 +446,7 @@ this.on("GET", "Archivos/$value", async (req) => {
       return { message: `Workflow completado. Estado final: ${estadoFinal}` };
 
     } catch (err) {
-      console.error("❌ Error al completar task:", err.response?.data || err.message);
+      console.error("  Error al completar task:", err.response?.data || err.message);
       req.reject(500, `Error al completar task: ${err.message}`);
     }
   });
@@ -455,7 +455,7 @@ this.on("GET", "Archivos/$value", async (req) => {
 
   this.on("getWorkflowTimeline", async (req) => {
     const { ID } = req.data;
-    console.log("📥 ID recibido:", ID);
+    console.log("  ID recibido:", ID);
 
     try {
       const workflowInstanceId = ID;
@@ -478,7 +478,7 @@ this.on("GET", "Archivos/$value", async (req) => {
 
       let events = [];
 
-      // 🔍 Detectamos si es array directo o envuelto
+      //   Detectamos si es array directo o envuelto
       if (Array.isArray(timeline)) {
         events = timeline;
       } else if (Array.isArray(timeline.events)) {
@@ -490,7 +490,7 @@ this.on("GET", "Archivos/$value", async (req) => {
       }
 
       if (events.length === 0) {
-        console.warn("⚠️ No hay eventos disponibles para esta instancia:", ID);
+        console.warn("  No hay eventos disponibles para esta instancia:", ID);
         req.reject(204, `No hay historial disponible para la instancia con ID: ${ID}`);
         return;
       }
@@ -511,7 +511,7 @@ this.on("GET", "Archivos/$value", async (req) => {
         const descripcion = tipoEventoLegible[ev.type] || ev.type;
         const paso = ev.subject || ev.subjectId || ev.activityId || "Paso desconocido";
 
-        console.log(`➡️ ${ev.type}  →  ${descripcion}, Paso: ${paso}`);
+        console.log(`  ${ev.type}  →  ${descripcion}, Paso: ${paso}`);
 
         return {
           id: ev.id,
@@ -527,7 +527,7 @@ this.on("GET", "Archivos/$value", async (req) => {
       return eventosTransformados;
 
     } catch (error) {
-      console.error("❌ Error al obtener el timeline del workflow:", error.message);
+      console.error("  Error al obtener el timeline del workflow:", error.message);
       req.reject(500, "Error al consultar el historial del workflow");
     }
   });
@@ -577,10 +577,10 @@ this.on("GET", "Archivos/$value", async (req) => {
 
 
   this.on('getUserInfo', async (req) => {
-    console.log("📥 Entrando en getUserInfo");
+    console.log("  Entrando en getUserInfo");
 
     if (!req.user || !req.user.id) {
-      console.log("⚠️ No se encontró usuario autenticado.");
+      console.log("  No se encontró usuario autenticado.");
       return {};
     }
 
@@ -592,7 +592,7 @@ this.on("GET", "Archivos/$value", async (req) => {
     console.log("🧾 req.user completo:", req.user);
     const attr = req.user.attr || {};
 
-    // 🔐 Obtener el token
+    //   Obtener el token
   ///  const token = await getTokenUser();
 
     const userInfo = {
@@ -605,10 +605,10 @@ this.on("GET", "Archivos/$value", async (req) => {
       roles: req.user.roles || [],
       scopes: req.user.scopes || [],
 
-      token: jwt // ✅ aquí lo agregas
+      token: jwt //   aquí lo agregas
     };
 
-    console.log("✅ Datos del usuario:", userInfo);
+    console.log("  Datos del usuario:", userInfo);
     return userInfo;
   });
 

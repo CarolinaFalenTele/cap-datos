@@ -13,7 +13,7 @@ sap.ui.define([
 
 ],
 
-  function (Controller, DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
+  function (Controller , DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -140,7 +140,7 @@ sap.ui.define([
 
 
         const hostname = window.location.hostname;
-        //console.log("🧠 Hostname detectado:", hostname);
+        //console.log(" Hostname detectado:", hostname);
 
         this.filtertables();
 
@@ -900,6 +900,66 @@ sap.ui.define([
         }
       },
 
+      filterPerfilServiDinamicas: async function (ID, oSelect) {
+        var oModel = this.getOwnerComponent().getModel();
+
+        // 1. BindItems solo con áreas activas
+        oSelect.bindItems({
+          path: "/PerfilServicio",
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: "{ID}",
+            text: "{NombrePerfil}"
+          })
+        });
+
+        // Esperar que termine el binding para poder agregar ítems
+        await new Promise((resolve) => {
+          var oBinding = oSelect.getBinding("items");
+          if (!oBinding) {
+            resolve();
+            return;
+          }
+          oBinding.attachEventOnce("dataReceived", function () {
+            resolve();
+          });
+        });
+
+        // 2. Si hay ID recibido, comprobar si está inactivo y agregar manualmente
+        if (ID) {
+          var sUrl = oModel.sServiceUrl + "/PerfilServicio('" + ID + "')";
+          try {
+            var response = await fetch(sUrl);
+            if (!response.ok) {
+              throw new Error("No se pudo obtener el registro");
+            }
+            var data = await response.json();
+
+            if (data && data.Activo === false) {
+              // Crear ítem para área inactiva (deshabilitado y con texto marcado)
+              var oInactiveItem = new sap.ui.core.Item({
+                key: data.ID,
+                text: data.NombreTipoServ + " (inactiva)",
+                enabled: false
+              });
+
+              // Agregar el item manualmente
+              oSelect.addItem(oInactiveItem);
+
+              // Seleccionar la clave
+              oSelect.setSelectedKey(data.ID);
+            } else {
+              // Si está activo, seleccionar el ID normalmente
+              oSelect.setSelectedKey(ID);
+            }
+          } catch (error) {
+            console.error("Error al obtener el PerfilServicio:", error);
+            oSelect.setSelectedKey(ID);
+          }
+        }
+      },
 
 
       /* filterAreaFalse: async function (ID) {
@@ -1309,7 +1369,7 @@ sap.ui.define([
         btnAceptar.setType(sap.m.ButtonType.Accept);
         btnAceptar.attachPress(this.onSave, this);
 
-        btnBorrado.setEnabled(true);
+      btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
@@ -1323,14 +1383,16 @@ sap.ui.define([
         }
 
         //     Llamamos con el source limpio
-        this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
         this._sProjectID = sProjectID;
 
         if (sProjectID) {
           try {
             const oData = await this._fetchProjectData(sProjectID);
-            await this._populateViewWithData(oData);
+            await this._populateViewWithData(oData, sMode);
+            await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+
           } catch (error) {
             console.error("Error al obtener los datos del proyecto:", error);
             sap.m.MessageToast.show("Error al cargar los datos del proyecto");
@@ -1390,7 +1452,7 @@ sap.ui.define([
           btnBorrado.setIcon("sap-icon://save"); //  icono de guardar
           btnAceptar.attachPress(this.onSave, this);
 
-          btnBorrado.setEnabled(true);
+         btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
           btnAceptar.setIcon(""); //  sin icono
@@ -1403,7 +1465,7 @@ sap.ui.define([
           var iDay = oToday.getDay();    // Día de la semana (0-6)
           var iHours = oToday.getHours(); // Hora actual (0-23)
 
-          if (iDay === 3 && iHours >= 12) {
+          if (iDay === 3 && iHours >= 20) {
 
             var oEnviarBtn = this.byId("btnAceptar");
 
@@ -1418,19 +1480,23 @@ sap.ui.define([
           return;
         }
 
-        if (sSourceModel === "modelPendientes" || sMode === "edit") {
+        if (sSourceModel === "modelPendientes" && sMode === "edit") {
           this._isAprobacion = false;
+
 
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Enviar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnAceptar.attachPress(this.onSave, this);
 
-          btnBorrado.setEnabled(false);
+
+          btnBorrado.setEnabled(true); // primero habilita para asegurarte que se renderiza
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Transparent);
-
           btnBorrado.attachPress(this.onBorrador, this);
+        
+          btnBorrado.setEnabled(false); // y luego fuerza deshabilitar
+        
           return;
         }
 
@@ -1444,6 +1510,7 @@ sap.ui.define([
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Transparent);
         btnBorrado.attachPress(this.onBorrador, this);
+        console.log("¿Botón deshabilitado3", btnBorrado.getEnabled()); 
       },
 
 
@@ -1470,7 +1537,13 @@ sap.ui.define([
       },
 
 
-      _populateViewWithData: async function (oData) {
+      _populateViewWithData: async function (oData, sMode) {
+
+        console.log(sMode);
+        const btnBorrado = this.byId("btnBorrado");
+
+        //console.log("¿Al trae la informacion   inciio   ", btnBorrado.getEnabled()); 
+   
         if (!oData) return;
         var oStatus = this.byId("23437");
 
@@ -1569,12 +1642,10 @@ sap.ui.define([
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
-        const btnBorrar = this.byId("btnBorrado");
+     //   const btnBorrar = this.byId("btnBorrado");
 
-        if (!this._isAprobacion && btnAceptar) {
-          btnAceptar.setText("Guardar");
-          //          btnBorrar.setEnabled(true);
-        }
+
+
 
         new sap.m.Dialog({
           title: "Información",
@@ -2247,8 +2318,11 @@ sap.ui.define([
 
         // Siempre limpiar eventos y custom data para evitar duplicados
         btnAceptar.detachPress(this.onSave, this);
+        btnAceptar.setIcon(""); //  sin icono
         btnAceptar.removeAllCustomData();
         btnBorrado.detachPress(this.onBorrador, this);
+        btnAceptar.setIcon(""); //  sin icono
+
         btnBorrado.removeAllCustomData();
         const btnDelete = this.byId("idDelete");
 
@@ -2568,7 +2642,7 @@ sap.ui.define([
       _completarWorkflow: async function (decision) {
         const workflowInstanceId = this._idWorkIniciado;
         const idProject = this._sProjectID;
-        console.log("ID" + idProject);
+        //console.log("ID" + idProject);
         const usuario = "Carolina Falen";
 
         //console.log("ID DEL PROYECTO " + idProject);
@@ -3031,6 +3105,7 @@ sap.ui.define([
                 aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
                 this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                 aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
+                this.filterPerfilServiDinamicas(Recurso.PerfilServicio_ID , aCells[2]);
                 aCells[3].setValue(Recurso.ConceptoOferta || "");
                 aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
                 aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00");
@@ -7227,6 +7302,8 @@ sap.ui.define([
 
         let errorCount = 0;
         const incompleteFields = [];
+        let errorMessages = [];
+
 
         const sProjectID = this._sProjectID; // ID del proyecto
         const scodigoProyect = parseFloat(this.byId("input0").getValue(), 10);
@@ -7306,15 +7383,97 @@ sap.ui.define([
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
         validateField(this.byId("idDescripcion"), sdescripcion, "Descripcion");
 
-        if (errorCount > 0) {
-          sap.m.MessageBox.warning(`Por favor, complete los siguientes campos: ${incompleteFields.join(", ")}`, { title: "Advertencia" });
+
+
+
+        const recursosValidation = this.validateRecursosInternos();
+        const ServInternoValidation = this.validateServicioInterno();
+        const gastoInternoValidation = this.validateGastoViajeInterno();
+        const chartValidation = this.validateChartData();
+        const consumoValidation = this.validateConsumoExterno();
+        const ServiConsuValidation = this.validateServiConsu();
+        const GastoViConsValidation = this.validateGastoConsu();
+        const recurExterValidation = this.validateRecursoExterno();
+        const serviRecExValidation = this.validateServicioRecuExter();
+        const gastoviajeReExValidation = this.validateGastoViajeExterno();
+        const otroConcepValidation = this.validateOtrosConceptos();
+        const LicenciaValidation = this.validateLicencia();
+
+        if (!recursosValidation.success) {
+          errorMessages.push(...recursosValidation.errors);
+        }
+
+
+        if (!ServInternoValidation.success) {
+          errorMessages.push(...ServInternoValidation.errors);
+        }
+
+        if (!gastoInternoValidation.success) {
+          errorMessages.push(...gastoInternoValidation.errors);
+        }
+
+        if (!consumoValidation.success) {
+          errorMessages.push(...consumoValidation.errors);
+        }
+
+
+        if (!ServiConsuValidation.success) {
+          errorMessages.push(...ServiConsuValidation.errors);
+        }
+
+        if (!GastoViConsValidation.success) {
+          errorMessages.push(...GastoViConsValidation.errors);
+        }
+
+
+        if (!recurExterValidation.success) {
+          errorMessages.push(...recurExterValidation.errors);
+        }
+
+
+        if (!serviRecExValidation.success) {
+          errorMessages.push(...serviRecExValidation.errors);
+        }
+
+
+        if (!gastoviajeReExValidation.success) {
+          errorMessages.push(...gastoviajeReExValidation.errors);
+        }
+
+        if (!otroConcepValidation.success) {
+          errorMessages.push(...otroConcepValidation.errors);
+        }
+
+        if (!LicenciaValidation.success) {
+          errorMessages.push(...LicenciaValidation.errors);
+        }
+
+
+
+        if (errorCount > 0 || errorMessages.length > 0) {
+          let message = "";
+
+          if (incompleteFields.length > 0) {
+            message += "Por favor, complete los siguientes campos:\n- " + incompleteFields.join("\n- ");
+          }
+
+          if (errorMessages.length > 0) {
+            if (message.length > 0) {
+              message += "\n\n";
+            }
+            message += "Errores en los datos ingresados:\n- " + errorMessages.join("\n- ");
+          }
+
+          sap.m.MessageBox.warning(message, { title: "Advertencia" });
           return;
         }
+
+
 
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-        console.log(localDate);
+//console.log(localDate);
 
 
         const payload = {
@@ -7606,139 +7765,6 @@ sap.ui.define([
 
 
 
-
-
-
-      /*    onUploadFile: async function (generatedId, sCsrfToken) {
-            const file = this._selectedFile;
-            if (!file) {
-              sap.m.MessageToast.show("    No se ha seleccionado ningún archivo.");
-              return;
-            }
-          
-            const archivoId = crypto.randomUUID(); // Nuevo UUID
-            const fileName = file.name;
-            const mimeType = file.type || "application/pdf";
-          
-            //     Verificar detalles del archivo
-            console.log("    Archivo seleccionado:");
-            console.log(" ID:", archivoId);
-            console.log(" Nombre:", fileName);
-            console.log(" Tipo MIME:", mimeType);
-            console.log(" Tamaño:", file.size, "bytes");
-            console.log("    Contenido (Blob):", file);
-          
-            try {
-              // Paso 1: Crear metadata
-              const metadataPayload = {
-                ID: archivoId,
-                nombre: fileName,
-                tipoMime: mimeType,
-                datosProyect_ID: generatedId
-              };
-          
-              console.log("    Enviando metadata al backend:", metadataPayload);
-          
-              const postRes = await fetch("/odata/v4/datos-cdo/Archivos", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-CSRF-Token": sCsrfToken
-                },
-                body: JSON.stringify(metadataPayload)
-              });
-          
-              if (!postRes.ok) {
-                const errorText = await postRes.text();
-                console.error("    Error en POST metadata:", errorText);
-                throw new Error("    Error creando metadata: " + errorText);
-              }
-          
-              console.log("    Metadata creada correctamente.");
-          
-              // Paso 2: Subir archivo
-              console.log("    Subiendo archivo binario con PUT...");
-              const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${archivoId}')/contenido/$value`, {
-                method: "PUT",
-                headers: {
-                  "X-CSRF-Token": sCsrfToken,
-                  "Content-Type": "application/pdf"
-    
-                },
-                body: file
-              });
-          
-              if (!putRes.ok) {
-                const putText = await putRes.text();
-                console.error("    Error en PUT archivo:", putText);
-                throw new Error("    Error subiendo archivo: " + putText);
-              }
-          
-              console.log("    Archivo subido con éxito.");
-              sap.m.MessageToast.show("    Archivo subido con éxito.");
-            } catch (err) {
-              console.error("    Error total en upload:", err);
-              sap.m.MessageToast.show(err.message);
-            }
-          },*/
-
-
-
-
-
-
-      /*  onUploadFile: async function (generatedId, sCsrfToken) {
-       const file = this._selectedFile;
-     
-       if (!file) {
-         console.warn("No se ha seleccionado ningún archivo para subir.");
-         return;
-       }
-     
-       const reader = new FileReader();
-       reader.onload = async () => {
-         const base64String = reader.result.split(",")[1];
-     
-         try {
-           const response = await fetch("/odata/v4/datos-cdo/Archivos", {
-             method: "POST",
-             headers: {
-               "Content-Type": "application/json",
-               "X-CSRF-Token": sCsrfToken
-             },
-             body: JSON.stringify({
-               ID: archivoId,
-               nombre: file.name,
-               tipoMime: file.type,
-               fechaSubida: new Date().toISOString(),
-               datosProyect_ID: generatedId
-             })
-           });
-     
-     
-             // Paso 2: Subir el contenido binario (PUT $value)
-       await fetch(`/odata/v4/ArchivosService/Archivos(${archivoId})/$value`, {
-         method: "PUT",
-         headers: {
-           "Content-Type": file.type,
-           "X-CSRF-Token": csrfToken
-         },
-         body: file
-       });
-     
-           if (!response.ok) {
-             throw new Error(`Error del servidor: ${response.statusText}`);
-           }
-     
-           sap.m.MessageToast.show("Archivo subido con éxito");
-         } catch (error) {
-           console.error("Error al subir el archivo:", error);
-           sap.m.MessageToast.show("Error al subir archivo: " + error.message);
-         }
-       };
-     
-       reader.readAsDataURL(file);
-     },*/
 
 
 
@@ -10680,7 +10706,7 @@ sap.ui.define([
           const oItem = aItems[i];  // Obtener la fila actual
 
           const consuID = this._consumoExternosIDs && this._consumoExternosIDs[i] ? this._consumoExternosIDs[i] : null;
-          console.log("filA" + JSON.stringify(consuID));
+       //   console.log("filA" + JSON.stringify(consuID));
 
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey() || "ValorPorDefecto"; // Select de Vertical

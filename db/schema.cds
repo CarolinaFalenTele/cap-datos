@@ -74,7 +74,6 @@ entity DatosProyect {
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
       FechaModificacion        : Date;
-      CampoNuevo              : String;
       ClienteNuevo             : Association to ClienteNuevo;
       TipoServicio             : Association to TipoServicio;
       Vertical                 : Association to Vertical;

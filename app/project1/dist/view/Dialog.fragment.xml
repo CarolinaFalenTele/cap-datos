@@ -121,11 +121,8 @@
                         />
 
                         <Label text="Estado" />
-                        <Text
-                            text=""
-                            id="idEstadoProyect"
-                            class="errorCount"
-                        />
+              <ObjectStatus id="idEstadoProyect" text="" state="None" />
+
 
                             <Label text="Fecha Modificacion" />
                         <Text
