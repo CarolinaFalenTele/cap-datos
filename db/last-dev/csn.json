@@ -277,11 +277,6 @@
           "type": "cds.Date",
           "@cds.persistence.name": "FECHAMODIFICACION"
         },
-        "CampoNuevo": {
-          "type": "cds.String",
-          "length": 5000,
-          "@cds.persistence.name": "CAMPONUEVO"
-        },
         "ClienteNuevo_ID": {
           "type": "cds.String",
           "length": 36,

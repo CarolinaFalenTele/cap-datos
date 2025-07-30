@@ -147,7 +147,7 @@
                                                     </table:toolbar> -->
 
                                                     <!-- Columna Fecha -->
-                                                    <table:Column
+                                                  <!-- <table:Column
                                                         id="colFecha"
                                                         sortProperty="FechaCreacionFormateada"
                                                         filterProperty="FechaCreacionFormateada"
@@ -165,12 +165,12 @@
                                                                     text="Fecha Creación"
                                                                     class="customTitle"
                                                                 />
-                                                              <!--  <core:Icon
+                                                               <core:Icon
                                                                     src="sap-icon://filter"
                                                                     size="0.8rem"
                                                                     color="#6a6d70"
                                                                     class="iconMargin"
-                                                                />-->
+                                                                />
                                                             </m:HBox>
                                                         </table:label>
 
@@ -180,9 +180,9 @@
                                                                 class="boldText"
                                                             />
                                                         </table:template>
-                                                    </table:Column>
+                                                    </table:Column>  -->
 
-                                                    <!-- Columna Código Proyecto -->
+                                                    <!-- Columna Código Proyecto 
                                                     <table:Column
                                                         id="colCodigo"
                                                         sortProperty="codigoProyecto"
@@ -200,7 +200,7 @@
                                                                 textAlign="Center"
                                                             />
                                                         </table:template>
-                                                    </table:Column>
+                                                    </table:Column>   -->
 
                                                     <!-- Columna Nombre Proyecto -->
                                                     <table:Column
@@ -223,7 +223,7 @@
                                                         </table:template>
                                                     </table:Column>
 
-                                                    <!-- Columna Descripción -->
+                                                    <!-- Columna Descripción 
                                                     <table:Column
                                                         id="colDescripcion"
                                                         sortProperty="descripcion"
@@ -241,14 +241,14 @@
                                                                 textAlign="Center"
                                                             />
                                                         </table:template>
-                                                    </table:Column>
+                                                    </table:Column>-->
 
                                                     <!-- Columna Área -->
                                                     <table:Column
                                                         id="colArea"
                                                         sortProperty="NombreArea"
                                                         filterProperty="NombreArea"
-                                                        width="12em"
+                                                        width="14em"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -268,7 +268,7 @@
                                                         id="colJefeProyecto"
                                                         sortProperty="NombreJefe"
                                                         filterProperty="NombreJefe"
-                                                        width="12em"
+                                                        width="15em"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -284,7 +284,36 @@
                                                         </table:template>
                                                     </table:Column>
 
-                                                    <!-- Columna Fecha Modificación -->
+                                                    <table:Column
+    id="Oferta"
+    sortProperty="Oferta"
+    filterProperty="OfertaTexto"
+    hAlign="Center"
+     tooltip="Filtrar por 'Sí' o 'No'"
+    width="6em"
+>
+    <Label text="Oferta" class="customTitle"            
+/>
+    
+    <table:template>
+    <HBox         justifyContent="Center"
+        alignItems="Center"
+        width="100%">
+            <core:Icon
+                src="{modelPendientes>OfertaIcon}"
+                color="{modelPendientes>OfertaColor}"
+                size="1.5rem"
+            />
+            <Text
+                text="{modelPendientes>OfertaTexto}"
+                visible="false"
+            />
+        </HBox>
+    </table:template>
+</table:Column>
+
+
+                                                    <!-- Columna Fecha Modificación 
                                                     <table:Column
                                                         id="idFechModi"
                                                         sortProperty="fechaModificacion"
@@ -301,13 +330,13 @@
                                                                 text="{modelPendientes>FechaModificacionFormateada}"
                                                             />
                                                         </table:template>
-                                                    </table:Column>
+                                                    </table:Column> -->
 
                                                     <!-- Columna Estado -->
                                                     <table:Column
                                                         id="colEstado"
-                                                        sortProperty="estado"
-                                                        filterProperty="estado"
+                                                        sortProperty="Estado"
+                                                        filterProperty="Estado"
                                                         hAlign="Center"
                                                         width="8em"
                                                     >
@@ -330,10 +359,10 @@
                                                         sortProperty="modalidad"
                                                         filterProperty="modalidad"
                                                         hAlign="Center"
-                                                        width="9em"
+                                                        width="7em"
                                                     >
                                                         <Label
-                                                            text="Tipo de presentación"
+                                                            text="Presentación"
                                                             class="customTitle"
                                                         />
                                                         <table:template>
@@ -351,16 +380,21 @@
                                                         sortProperty="fechaComiteForm"
                                                         filterProperty="fechaComiteForm"
                                                         hAlign="Center"
-                                                        width="9em"
+                                                        width="10em"
                                                     >
-                                                        <Label
-                                                            text="Fecha Comite"
-                                                            class="customTitle"
-                                                        />
+        <VBox class="sapUiSmallMargin">
+            <HBox justifyContent="Center" alignItems="Center" >
+                <core:Icon src="sap-icon://calendar" size="1rem" class="sapUiTinyMargin"      color="#0070f2"  />
+                <Label text=" Comité" class="customTitle" />
+            </HBox>
+        </VBox>
+
+
                                                         <table:template>
                                                             <m:ObjectStatus
                                                                 text="{modelPendientes>fechaComiteForm}"
                                                                 state="Information"
+                                                                
 
                                                             />
                                                         </table:template>
@@ -488,7 +522,7 @@
                                                     </table:extension>
 
                                                     <table:columns>
-                                                        <table:Column
+                                                      <!--  <table:Column
                                                             id="colFechaCreacion"
                                                             sortProperty="FechaCreacionFormateada"
                                                             filterProperty="FechaCreacionFormateada"
@@ -506,13 +540,14 @@
                                                                     textAlign="Center"
                                                                 />
                                                             </table:template>
-                                                        </table:Column>
+                                                        </table:Column> -->
 
                                                         <table:Column
                                                             id="colCodigoProyecto"
                                                             sortProperty="codigoProyect"
                                                             filterProperty="codigoProyect"
                                                             width="9em"
+
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -548,7 +583,7 @@
                                                             </table:template>
                                                         </table:Column>
 
-                                                        <table:Column
+                                                      <!--  <table:Column
                                                             id="colDescripcion1"
                                                             sortProperty="descripcion"
                                                             filterProperty="descripcion"
@@ -565,7 +600,7 @@
                                                                     textAlign="Center"
                                                                 />
                                                             </table:template>
-                                                        </table:Column>
+                                                        </table:Column> -->
 
                                                         <table:Column
                                                             id="colArea1"
@@ -638,14 +673,15 @@
                                                             <table:template>
                                                                 <ObjectStatus
                                                                     text="{modelAprobados>Estado}"
-                                                                    state="Success"
+                                                                        state="{modelAprobados>EstadoStatus}"
+
                                                                 />
                                                             </table:template>
                                                         </table:Column>
 
                                                         <table:Column
                                                             id="colAcciones"
-                                                            width="9em"
+                                                            width="10em"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1020,7 +1056,7 @@
                                                             </table:template>
                                                         </table:Column>
 
-                                                        <table:Column
+                                                    <!--    <table:Column
                                                             id="newId_colFechModi"
                                                             sortProperty="FechaModificacionFormateada"
                                                             filterProperty="FechaModificacionFormateada"
@@ -1039,7 +1075,7 @@
                                                                     textAlign="Center"
                                                                 />
                                                             </table:template>
-                                                        </table:Column>
+                                                        </table:Column>-->
 
                                                         <table:Column
                                                             id="newId_colEstado"

@@ -1,0 +1,2 @@
+sap.ui.define([],function(){"use strict";return{formatOfertaIcon:function(t){return t?"sap-icon://accept":"sap-icon://decline"},formatOfertaColor:function(t){return t?"green":"red"},testFormatter:function(t){console.log("Formatter testFormatter value:",t);return t?"Sí hay oferta":"No hay oferta"},statusText:function(t){return t?"true":"false"},statusState:function(t){return t?"Success":"Error"}}});
+//# sourceMappingURL=formatter.js.map
