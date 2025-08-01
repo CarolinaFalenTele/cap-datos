@@ -13,7 +13,7 @@ sap.ui.define([
 
 ],
 
-  function (Controller , DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
+  function (Controller, DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -112,8 +112,8 @@ sap.ui.define([
 
 
 
-
-        this._mode = ""; // fallback local
+        this._oBusyDialog = null;
+        this._mode = "";
 
         const oViewModel = new sap.ui.model.json.JSONModel({ mode: "" });
         this.getView().setModel(oViewModel, "viewModel");
@@ -125,24 +125,16 @@ sap.ui.define([
           oRouter.getRoute(routeName).attachPatternMatched(this._onObjectMatched, this);
         }, this);
 
-        //  console.log("MODELO TRAIDO " + this._mode);
-
-
-        this.enviarID();
-
-
-        //    console.log("ID ANTES DE ACTUALIZAR folsdf  OINIT " + this._idWorkflowInstancias);
 
         this.byId("coste6552").setVisible(false);
 
-
         this._handleInputChangeCounter = 0;
 
-
-        const hostname = window.location.hostname;
-        //console.log(" Hostname detectado:", hostname);
-
         this.filtertables();
+
+        this._idWorkflowInstancias = null;
+        this._idWorkIniciado = null;
+
 
       },
 
@@ -1081,7 +1073,6 @@ sap.ui.define([
 
 
       highlightControls: function () {
-        //    console.log("Se cambiaron las pestañas debido a campos vacíos.");
 
         const controlsToHighlight = [
           this.byId("input0"),
@@ -1126,7 +1117,7 @@ sap.ui.define([
             // this.showSuccessDialog(); 
 
           }, 2000);
-        }, 50); // 50 ms suele ser suficiente para que la UI se refresque
+        }, 50); 
       },
 
 
@@ -1157,7 +1148,7 @@ sap.ui.define([
 
               console.log("Roles del usuario  View:", roleKeys);
               //  Guardar los roles y si puede aprobar
-              this._userRoles = roleKeys; // <-- Aquí guardas los roles completos
+              this._userRoles = roleKeys; 
               const rolesParaMostrarTab = ["Control", "Direccion", "BasisTQFac", "PMO"];
               this._userPuedeAprobar = rolesParaMostrarTab.some(role => roleKeys.includes(role)); // <-- Aquí la bandera
 
@@ -1166,7 +1157,7 @@ sap.ui.define([
               this.getUsuario();
               if (token) {
                 this._startSessionWatcher(token);
-                //    console.log("Token recibido y watcher iniciado.");
+  
               } else {
                 console.warn("Token no recibido en la respuesta.");
               }
@@ -1336,6 +1327,13 @@ sap.ui.define([
         let sProjectID = oArgs.sProjectID;
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
         const sMode = oArgs.mode || "display";
+        
+        const oModel = this.getOwnerComponent().getModel();
+        const oContext = oModel.bindContext("/getTotalConAjuste(...)");
+
+        oContext.setParameter("id", sProjectID);
+
+
 
 
 
@@ -1360,7 +1358,7 @@ sap.ui.define([
         if (sMode === "create") {
           await this._clearAllInputs();
         } else if ((sMode === "edit")) {
-          console.log("Entrando a clearTableTextsOnly");
+          //  console.log("Entrando a clearTableTextsOnly");
           this._clearAllInputsEdit();
         }
 
@@ -1369,7 +1367,7 @@ sap.ui.define([
         btnAceptar.setType(sap.m.ButtonType.Accept);
         btnAceptar.attachPress(this.onSave, this);
 
-      btnBorrado.setEnabled(true);
+        btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
@@ -1383,7 +1381,7 @@ sap.ui.define([
         }
 
         //     Llamamos con el source limpio
-         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+        await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
         this._sProjectID = sProjectID;
 
@@ -1421,6 +1419,7 @@ sap.ui.define([
       _configureButtons: function (sSourceModel, aprobacionFlag, sMode) {
         const btnAceptar = this.byId("btnAceptar");
         const btnBorrado = this.byId("btnBorrado");
+        const btnButon = this.byId("idDelete");
 
         if (!btnAceptar || !btnBorrado) return;
 
@@ -1445,14 +1444,14 @@ sap.ui.define([
         // 3️ MODO CREATE o EDIT con borrador
         if (sSourceModel === "modelBorrador" || sMode === "create") {
           this._isAprobacion = false;
-
+          btnButon.setVisible(true);
           btnAceptar.setEnabled(true);
           btnAceptar.setText("Enviar");
           btnAceptar.setType(sap.m.ButtonType.Accept);
           btnBorrado.setIcon("sap-icon://save"); //  icono de guardar
           btnAceptar.attachPress(this.onSave, this);
 
-         btnBorrado.setEnabled(true);
+          btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
           btnAceptar.setIcon(""); //  sin icono
@@ -1465,7 +1464,7 @@ sap.ui.define([
           var iDay = oToday.getDay();    // Día de la semana (0-6)
           var iHours = oToday.getHours(); // Hora actual (0-23)
 
-          if (iDay === 3 && iHours >= 20) {
+          if (iDay === 3 && iHours >= 14) {
 
             var oEnviarBtn = this.byId("btnAceptar");
 
@@ -1494,9 +1493,9 @@ sap.ui.define([
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Transparent);
           btnBorrado.attachPress(this.onBorrador, this);
-        
+
           btnBorrado.setEnabled(false); // y luego fuerza deshabilitar
-        
+
           return;
         }
 
@@ -1510,7 +1509,7 @@ sap.ui.define([
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Transparent);
         btnBorrado.attachPress(this.onBorrador, this);
-        console.log("¿Botón deshabilitado3", btnBorrado.getEnabled()); 
+        console.log("¿Botón deshabilitado3", btnBorrado.getEnabled());
       },
 
 
@@ -1539,11 +1538,11 @@ sap.ui.define([
 
       _populateViewWithData: async function (oData, sMode) {
 
-        console.log(sMode);
+        // console.log(sMode);
         const btnBorrado = this.byId("btnBorrado");
 
         //console.log("¿Al trae la informacion   inciio   ", btnBorrado.getEnabled()); 
-   
+
         if (!oData) return;
         var oStatus = this.byId("23437");
 
@@ -1642,7 +1641,7 @@ sap.ui.define([
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
-     //   const btnBorrar = this.byId("btnBorrado");
+        //   const btnBorrar = this.byId("btnBorrado");
 
 
 
@@ -1670,7 +1669,7 @@ sap.ui.define([
         const oContext = oItem.getBindingContext("archivosModel");
 
         if (!oContext) {
-          sap.m.MessageToast.show("    No se pudo obtener el contexto del archivo.");
+          //  sap.m.MessageToast.show("    No se pudo obtener el contexto del archivo.");
           return;
         }
 
@@ -1679,7 +1678,7 @@ sap.ui.define([
         const mimeType = oContext.getProperty("tipoMime");
 
         if (!archivoID || !fileName || !mimeType) {
-          sap.m.MessageToast.show("    Faltan datos para abrir o descargar el archivo.");
+          //   sap.m.MessageToast.show("    Faltan datos para abrir o descargar el archivo.");
           return;
         }
 
@@ -1729,7 +1728,7 @@ sap.ui.define([
       },
 
       getArchivosByProjectId: async function (projectId) {
-        //    console.log("📥 Entrando a getArchivosByProjectId con ID:", projectId);
+        //    console.log(" Entrando a getArchivosByProjectId con ID:", projectId);
 
         try {
           const sUrl = `/odata/v4/datos-cdo/Archivos?$filter=datosProyect_ID eq '${projectId}'`;
@@ -1750,7 +1749,7 @@ sap.ui.define([
           const data = await response.json();
           const archivos = data.value || [];
           const archivoIds = archivos.map(archivo => archivo.ID); // Extraer los IDs
-          //          console.log("🆔 IDs de los archivos:", archivoIds);
+          //          console.log(" IDs de los archivos:", archivoIds);
 
           this._archivoIds = archivoIds; // Guardar en el controlador
 
@@ -1781,7 +1780,7 @@ sap.ui.define([
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
 
-
+        this._oBusyDialog = null;
         this._IdFechasPorMesLicencia = null;
         this._IdFechasPorMesOtConp = null;
         this._IdFechasPorMesReEx = null;
@@ -1812,6 +1811,7 @@ sap.ui.define([
         this._idJornadas = null;
         this._idTotalRecInter = null;
         this._selectedFile = null;
+        this._archivoIds = null;
 
 
 
@@ -1996,7 +1996,8 @@ sap.ui.define([
           oModelDynamic.setData({});
           oModelDynamic.refresh(true);
         }
-
+        this._oBusyDialog = null;
+        this._archivoIds = null;
         this._IdFechasPorMesGasViaConsuEx = [];
         this._IdFechasPorMes = [];
         this._RecursoInt = [];
@@ -2017,6 +2018,9 @@ sap.ui.define([
         this._idJornadas = null;
         this._idTotalRecInter = null;
         this._selectedFile = null;
+        this._idWorkflowInstancias = null;
+        this._idWorkIniciado = null;
+
 
 
         const aAlwaysReadOnlyIds = [
@@ -2230,12 +2234,8 @@ sap.ui.define([
         },*/
 
 
-
-      ///   este funciona       
       _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
-
-        //console.log("DECISIÓN:", decision);
 
         if (!decision) {
           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
@@ -2252,60 +2252,99 @@ sap.ui.define([
           emphasizedAction: sap.m.MessageBox.Action.YES,
           onClose: function (sAction) {
             if (sAction === sap.m.MessageBox.Action.YES) {
-              // Lanzar proceso async, no bloquear UI
+              //  Mostrar BusyDialog
+              const sTituloBusy = decision === "approve" ? "Enviando aprobación" : "Enviando rechazo";
+              const sTextoBusy = decision === "approve"
+                ? "Enviando su aprobación, por favor espere..."
+                : "Enviando su rechazo, por favor espere...";
+
+              if (!this._oBusyDialog) {
+                this._oBusyDialog = new sap.m.BusyDialog({
+                  title: sTituloBusy,
+                  text: sTextoBusy
+                });
+              } else {
+                this._oBusyDialog.setTitle(sTituloBusy);
+                this._oBusyDialog.setText(sTextoBusy);
+              }
+
+              this._oBusyDialog.open();
+
+              //  Ejecutar proceso async
               this._completarWorkflow(decision)
+                .then(() => {
+                  this._oBusyDialog.close(); //  Cerrar BusyDialog al terminar
+
+
+                  sap.m.MessageBox.information(
+                    "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                    {
+                      title: "Aprobación enviada",
+                      onClose: function () {
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("appNoparame");
+                      }.bind(this)
+                    }
+                  );
+                })
                 .catch(err => {
+                  this._oBusyDialog.close(); // También cerrarlo si hay error
                   console.error("Error completando workflow:", err);
                   sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
                 });
-
-              // Mostrar mensaje informativo y navegar
-              sap.m.MessageBox.information(
-                "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
-                {
-                  title: "Aprobación enviada",
-                  onClose: function () {
-                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                    oRouter.navTo("appNoparame");
-                  }.bind(this)
-                }
-              );
-            } else {
-              //console.log("Usuario canceló la acción.");
             }
           }.bind(this)
         });
       },
 
-      /*/   _onDecisionPress: function (oEvent) {
-           const decision = oEvent.getSource().data("valor");
-   
-           console.log("DESAION " + decision);
-           if (decision) {
-             // Lanzar el proceso async, pero no bloquear la UI
-             this._completarWorkflow(decision)
-               .catch(err => {
-                 // Aquí puedes hacer un log o notificar error sin bloquear al usuario
-                 console.error("Error completando workflow:", err);
-                 sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
-               });
-   
-             // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
-             sap.m.MessageBox.information(
-               "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
-               {
-                 title: "Aprobación enviada",
-                 onClose: function () {
-                   var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                   oRouter.navTo("appNoparame");
-                 }.bind(this)
-               }
-             );
-           } else {
-             sap.m.MessageBox.warning("No se pudo determinar la decisión.");
-           }
-         },*/
 
+
+
+      ///   este funciona       
+      /*  _onDecisionPress: function (oEvent) {
+          const decision = oEvent.getSource().data("valor");
+  
+          //console.log("DECISIÓN:", decision);
+  
+          if (!decision) {
+            sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+            return;
+          }
+  
+          const sTextoConfirmacion = decision === "approve"
+            ? "¿Está seguro de que desea aprobar este proyecto?"
+            : "¿Está seguro de que desea rechazar este proyecto?";
+  
+          sap.m.MessageBox.confirm(sTextoConfirmacion, {
+            title: "Confirmar decisión",
+            actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+            emphasizedAction: sap.m.MessageBox.Action.YES,
+            onClose: function (sAction) {
+              if (sAction === sap.m.MessageBox.Action.YES) {
+                // Lanzar proceso async, no bloquear UI
+                this._completarWorkflow(decision)
+                  .catch(err => {
+                    console.error("Error completando workflow:", err);
+                    sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+                  });
+  
+                // Mostrar mensaje informativo y navegar
+                sap.m.MessageBox.information(
+                  "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                  {
+                    title: "Aprobación enviada",
+                    onClose: function () {
+                      var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                      oRouter.navTo("appNoparame");
+                    }.bind(this)
+                  }
+                );
+              } else {
+                //console.log("Usuario canceló la acción.");
+              }
+            }.bind(this)
+          });
+        },*/
 
 
 
@@ -2320,8 +2359,9 @@ sap.ui.define([
         btnAceptar.detachPress(this.onSave, this);
         btnAceptar.setIcon(""); //  sin icono
         btnAceptar.removeAllCustomData();
+        btnBorrado.setText("Guardar como borrador");
         btnBorrado.detachPress(this.onBorrador, this);
-        btnAceptar.setIcon(""); //  sin icono
+        btnBorrado.setIcon("sap-icon://save"); //  sin icono
 
         btnBorrado.removeAllCustomData();
         const btnDelete = this.byId("idDelete");
@@ -2458,9 +2498,12 @@ sap.ui.define([
         btnButon.setEnabled(false);
 
         btnAceptar.setText("Enviar");
+        btnAceptar.setIcon("");
+
         btnAceptar.setType(sap.m.ButtonType.Accept);
 
-        btnBorrado.setText("Guardar");
+        btnBorrado.setText("Guardar como borrador");
+        btnBorrado.setIcon("sap-icon://save"); //  sin icono
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
       },
 
@@ -2607,7 +2650,7 @@ sap.ui.define([
       },
 
 
-      enviarID: async function (workflowInstanceId) {
+ /*     enviarID: async function (workflowInstanceId) {
         const workflowInstanceId2 = workflowInstanceId;
 
         if (!workflowInstanceId2) {
@@ -2632,7 +2675,7 @@ sap.ui.define([
         } catch (error) {
           MessageBox.error("Error al registrar tareas:\n" + error.message);
         }
-      },
+      },*/
 
 
 
@@ -3105,7 +3148,7 @@ sap.ui.define([
                 aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
                 this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                 aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
-                this.filterPerfilServiDinamicas(Recurso.PerfilServicio_ID , aCells[2]);
+                //  this.filterPerfilServiDinamicas(Recurso.PerfilServicio_ID , aCells[2]);
                 aCells[3].setValue(Recurso.ConceptoOferta || "");
                 aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
                 aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00");
@@ -5040,7 +5083,7 @@ sap.ui.define([
         }).filter(Boolean); // Filtra los elementos nulos
 
         oModel.setProperty("/chartData", aChartData);
-        console.log(aChartData);
+        //   console.log(aChartData);
 
         this._aChartData = aChartData;
 
@@ -6060,7 +6103,7 @@ sap.ui.define([
                    }*/
 
 
-
+              //console.log("modalidad recibida " +  sModalidad);
 
               const oModel = this.getView().getModel();
 
@@ -6074,8 +6117,9 @@ sap.ui.define([
                 descripcion: sdescripcion,
                 jefeProyecto: sSelecTextJe,
                 area: sSelecTextA,
+                emailuser: sEmail,
                 usuario: sEmpleado,
-                Modalidad: sModalidad
+                modalidad: sModalidad
               };
 
               //  Agrega fechaComite solo si es Comité
@@ -7288,6 +7332,16 @@ sap.ui.define([
         const usuario = this._usuarioActual;
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
 
+
+
+        if (!this._oBusyDialog) {
+          this._oBusyDialog = new sap.m.BusyDialog({
+            title: "Procesando",
+            text: "Guardando, por favor espere",
+          });
+        }
+
+
         // Si no está en el modelo, usa la propiedad interna
         if (!sMode) {
           sMode = this._mode || "";
@@ -7473,7 +7527,7 @@ sap.ui.define([
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-//console.log(localDate);
+        //console.log(localDate);
 
 
         const payload = {
@@ -7554,7 +7608,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-
+          this._oBusyDialog.open();
 
           if (this._mode === "edit") {
 
@@ -7600,6 +7654,8 @@ sap.ui.define([
             body: JSON.stringify(payload),
           });
 
+
+
           // Verificar respuesta
           if (!response.ok) {
             const errorText = await response.text();
@@ -7629,7 +7685,7 @@ sap.ui.define([
             // console.log("ID generado:", generatedId);
 
             if (generatedId) {
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+
 
               // Llamadas en paralelo para mejorar rendimiento
               await Promise.all([
@@ -7653,6 +7709,10 @@ sap.ui.define([
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
               ]);
+              this._oBusyDialog.close();
+
+
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
 
 
             } else {
@@ -7688,6 +7748,7 @@ sap.ui.define([
           // sap.m.MessageToast.show("    No se ha seleccionado ningún archivo.");
           return;
         }
+        let putRes;  // <-- declarar aquí con let
 
         const archivoId = crypto.randomUUID(); // Nuevo UUID
         const fileName = file.name;
@@ -7711,7 +7772,7 @@ sap.ui.define([
 
           if (existeArchivo) {
             // El archivo ya existe → solo actualizas metadata si cambió
-            const putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${existeArchivo}')`, {
+            putRes = await fetch(`/odata/v4/datos-cdo/Archivos('${existeArchivo}')`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
@@ -10706,7 +10767,7 @@ sap.ui.define([
           const oItem = aItems[i];  // Obtener la fila actual
 
           const consuID = this._consumoExternosIDs && this._consumoExternosIDs[i] ? this._consumoExternosIDs[i] : null;
-       //   console.log("filA" + JSON.stringify(consuID));
+          //   console.log("filA" + JSON.stringify(consuID));
 
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey() || "ValorPorDefecto"; // Select de Vertical
@@ -11053,7 +11114,7 @@ sap.ui.define([
 
           // Evitar insertar filas vacías
           if (!sVertical && !stipoServi && !sPerfil && !sConcepto) {
-            console.warn("Fila", i + 1, "está vacía, se omite.");
+            //  console.warn("Fila", i + 1, "está vacía, se omite.");
             continue;
           }
 

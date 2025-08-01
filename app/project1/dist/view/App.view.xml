@@ -731,7 +731,23 @@
                                                                             />
                                                                         </customData>
                                                                     </Button>
-
+ <!-- <Button
+                                                                    icon="sap-icon://delete"
+                                                                    type="Reject"
+                                                                    tooltip="Eliminar Proyecto"
+                                                                    press="onDeletePress"
+                                                                >
+                                                                    <customData>
+                                                                        <core:CustomData
+                                                                            key="projectId"
+                                                                            value="{modelAprobados>ID}"
+                                                                        />
+                                                                        <core:CustomData
+                                                                            key="etapaId"
+                                                                            value="{modelAprobados>workflowId}"
+                                                                        />
+                                                                    </customData>
+                                                                </Button> -->
                                                                     <Button
                                                                         xmlns="sap.m"
                                                                         icon="sap-icon://activity-2"
@@ -1316,6 +1332,7 @@
                                                 icon="sap-icon://pending"
                                                 visible="false"
                                                 count="{modelEtapasAsignadas>/Count}"
+                                                
                                             >
                                                 <table:Table
                                                     rows="{modelEtapasAsignadas>/Etapas}"
@@ -1486,7 +1503,7 @@
                                                                         </customData>
                                                                     </Button>
 
-                                                                    <Button
+                                                                  <!-- <Button
                                                                         id="wsw"
                                                                         icon="sap-icon://delete"
                                                                         type="Reject"
@@ -1502,7 +1519,7 @@
                                                                                 value="{modelEtapasAsignadas>ID}"
                                                                             />
                                                                         </customData>
-                                                                    </Button>
+                                                                    </Button> -->
                                                                 </HBox>
                                                             </table:template>
                                                         </table:Column>

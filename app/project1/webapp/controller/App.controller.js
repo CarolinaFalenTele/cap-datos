@@ -19,6 +19,7 @@ sap.ui.define(
                 this._loadProjectData();
                 const oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("app").attachPatternMatched(this._onObjectMatched, this);
+                oRouter.getRoute("appNoparame").attachPatternMatched(this._onObjectMatched, this);
 
                 this.bProcessFlowAllowed = false;  // Bandera para controlar el acceso al ProcessFlow
                 this.loadFilteredData();
@@ -32,8 +33,9 @@ sap.ui.define(
 
                 this._cargarDatosUsuario();
 
-            },
+          
 
+            },
 
 
 
@@ -1440,15 +1442,16 @@ sap.ui.define(
 
 
             _onObjectMatched: async function (oEvent) {
-                // Obtener el ID recibido como parámetro de la URL
-                const newId = oEvent.getParameter("arguments").newId;
 
-                //console.log(("ids comtenriofg")
-                // Verifica si el ID es válido
-                if (!newId) {
-                    console.error("No se recibió un ID válido");
-                    return;
-                }
+                // Obtener el ID recibido como parámetro de la URL
+                /*  const newId = oEvent.getParameter("arguments").newId;
+  
+                  //console.log(("ids comtenriofg")
+                  // Verifica si el ID es válido
+                  if (!newId) {
+                      console.error("No se recibió un ID válido");
+                      return;
+                  }*/
 
                 const oModel = this.getOwnerComponent().getModel("modelEtapasAsignadas");
                 if (oModel) {
@@ -1456,10 +1459,57 @@ sap.ui.define(
                 }
 
 
+                this._refrescarModelEtapas();
                 this.filterEstado();
 
 
             },
+
+            _refrescarModelEtapas: async function () {
+                try {
+                    const userModel = this.getView().getModel("userModel");
+                    if (!userModel) return;
+
+                    const userEmail = userModel.getProperty("/email");
+                    const modelPendientes = this.getView().getModel("modelPendientes");
+
+                    if (!modelPendientes) return;
+
+                    const aProyectosPendientes = modelPendientes.getProperty("/DatosProyect") || [];
+
+                    const aEtapasAsignadas = [];
+
+                    aProyectosPendientes.forEach((proyecto) => {
+                        proyecto.Etapas.forEach((etapa) => {
+                            if (
+                                etapa.estado === "Pendiente" &&
+                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
+                            ) {
+                                aEtapasAsignadas.push({
+                                    nombreEtapa: etapa.nombreEtapa,
+                                    asignadoA: etapa.asignadoA,
+                                    aprobadoPor: etapa.aprobadoPor,
+                                    estado: etapa.estado,
+                                    comentario: etapa.comentario,
+                                    fechaAprobado: etapa.fechaAprobado,
+                                    nameProyect: proyecto.nameProyect,
+                                    creadoPor: proyecto.creadoPor,
+                                    descripcion: proyecto.descripcion,
+                                    projectId: proyecto.ID
+                                });
+                            }
+                        });
+                    });
+
+                    this.getView().getModel("modelEtapasAsignadas").setData({
+                        Etapas: aEtapasAsignadas,
+                        Count: aEtapasAsignadas.length
+                    });
+                } catch (error) {
+                    console.error("Error al refrescar modelEtapasAsignadas:", error);
+                }
+            },
+
 
 
 
@@ -1907,13 +1957,15 @@ sap.ui.define(
                                     if (workflowRes.ok) {
 
 
-                                        //console.log(("Cancelando el workflow con ID:", workflowInstanceId);
                                         if (workflowInstanceId) {
-                                            const oModel = this.getOwnerComponent().getModel();
-                                            const oContext = oModel.bindContext("/cancelWorkflow(...)");
-
-                                            oContext.setParameter("workflowInstanceId", workflowInstanceId);
-                                            await oContext.execute();
+                                            try {
+                                                const oModel = this.getOwnerComponent().getModel();
+                                                const oContext = oModel.bindContext("/cancelWorkflow(...)");
+                                                oContext.setParameter("workflowInstanceId", workflowInstanceId);
+                                                await oContext.execute();  // <-- Si da error aquí, entra al catch
+                                            } catch (cancelError) {
+                                                console.warn("Error al cancelar el workflow. Continuando con la eliminación.", cancelError);
+                                            }
                                         }
                                     } else {
                                         console.warn("No se pudo obtener la instancia de workflow.");
@@ -2031,7 +2083,7 @@ sap.ui.define(
                                     });
 
                                     if (projectResponse.ok) {
-                                        console.log("Proyecto eliminado correctamente.");
+                                  //     console.log("Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],

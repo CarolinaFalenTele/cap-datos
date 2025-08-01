@@ -137,6 +137,12 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
   };
 
 
+  action getTotalConAjuste(id: UUID) returns {
+    id: UUID;
+    totalAjustado: Decimal(20,4);
+  };  
+
+  
   function getUserInfo()                                                    returns String;
     action cancelWorkflow(workflowInstanceId: String) returns String;
         action uploadFile() returns String;
