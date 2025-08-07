@@ -60,13 +60,12 @@ module.exports = cds.service.impl(async function () {
           OUT_RESULTADO: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
         }
       );
-<<<<<<< HEAD
-  
+
       return { resultado: result.OUT_RESULTADO };
     } catch (e) {
       console.error('❌ Error al ejecutar el procedure:', e.message);
       req.error(500, 'Error al ejecutar el procedimiento');  // ← esto lanza el 500
-=======
+
 
       const workflowInstanceId = response.data.id;
       console.log("  ID del Workflow creado:", workflowInstanceId);
@@ -119,10 +118,6 @@ module.exports = cds.service.impl(async function () {
         workflowInstanceId
       };
 
-    } catch (err) {
-      console.error("  Error en backend:", err.response?.data || err.message);
-      req.reject(500, `Error al iniciar workflow: ${err.message}`);
->>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
     }
   });
   
@@ -255,15 +250,12 @@ this.on('startWorkflow', async (req) => {
 
 
   this.on('completeWorkflow', async (req) => {
-    const { workflowInstanceId, decision, comentario   , idProject } = req.data;
+    const { workflowInstanceId, decision, comentario , idProject } = req.data;
     const userEmail = req.user.email;
     const token = await getWorkflowToken();
 
     console.log("  req.data:", req.data);
-<<<<<<< HEAD
     console.log("Comentario ---->>> ", comentario);
-=======
->>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
 
     
     if (!idProject) {

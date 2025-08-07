@@ -1729,7 +1729,7 @@ sap.ui.define([
       },
 
       getArchivosByProjectId: async function (projectId) {
-        //    console.log("📥 Entrando a getArchivosByProjectId con ID:", projectId);
+        //    console.log(" Entrando a getArchivosByProjectId con ID:", projectId);
 
         try {
           const sUrl = `/odata/v4/datos-cdo/Archivos?$filter=datosProyect_ID eq '${projectId}'`;
@@ -7701,6 +7701,8 @@ sap.ui.define([
         console.log(" Contenido (Blob):", file);
       */
         try {
+          let putRes; //  Declarar aquí para evitar error de "not defined"
+
           // Paso 1: Enviar metadata
           const metadataPayload = {
             ID: archivoId,

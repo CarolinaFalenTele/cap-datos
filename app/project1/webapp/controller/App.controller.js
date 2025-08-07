@@ -32,20 +32,9 @@ sap.ui.define(
                 this.getUserInfo();
 
                 this._cargarDatosUsuario();
-
-<<<<<<< HEAD
-          
-
-=======
->>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
-            },
+},
 
 
-
-<<<<<<< HEAD
-=======
-
->>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
 
 
             _cargarDatosUsuario: async function () {
@@ -1891,11 +1880,12 @@ sap.ui.define(
 
 
 
+            
+
 
 
             // Define un objeto con las propiedades hijas que quieres eliminar
-
-            onDeletePress: async function (oEvent) {
+           onDeletePress: async function (oEvent) {
                 let oButton = oEvent.getSource();
                 const workflowInstanceId = oButton.data("etapaId");
                 let sProjectId = oButton.getCustomData()[0].getValue();
@@ -2000,7 +1990,9 @@ sap.ui.define(
                                         "ConsuExterTotal",
                                         "RecuExterTotal",
                                         "InfraestrLicencia",
-                                        "PerfilTotal"
+                                        "PerfilTotal",
+                                        "Archivos"              
+
                                     ];
 
                                     //   Eliminar registros relacionados, incluyendo hijos anidados
