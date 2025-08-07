@@ -1,23 +1,55 @@
 using {db.datos as datos} from '../db/schema';
 
 service DatosCDOService @(path: '/odata/v4/datos-cdo') {
- // @odata.draft.enabled
+  // @odata.draft.enabled
 
-@restrict: [
-  { grant: 'READ', to: ['Visualizador', 'Usuario', 'Control', 'PMO', 'BasisTQFac', 'Direccion'] },
-  { grant: 'CREATE', to: ['Usuario' , 'Control', 'PMO'] },
-  { grant: 'UPDATE', to: ['Usuario', 'Control', 'PMO'] },
-  { grant: 'DELETE', to: ['Usuario', 'Control', 'PMO'] }
-]
+  @restrict: [
+    {
+      grant: 'READ',
+      to   : [
+        'Visualizador',
+        'Usuario',
+        'Control',
+        'PMO',
+        'BasisTQFac',
+        'Direccion'
+      ]
+    },
+    {
+      grant: 'CREATE',
+      to   : [
+        'Usuario',
+        'Control',
+        'PMO'
+      ]
+    },
+    {
+      grant: 'UPDATE',
+      to   : [
+        'Usuario',
+        'Control',
+        'PMO'
+      ]
+    },
+    {
+      grant: 'DELETE',
+      to   : [
+        'Usuario',
+        'Control',
+        'PMO'
+      ]
+    }
+  ]
 
 
- //@requires: 'authenticated-user'
+  //@requires: 'authenticated-user'
 
   entity DatosProyect              as projection on datos.DatosProyect;
+
   entity Jefeproyect               as projection on datos.Jefeproyect;
 
   entity Area                      as projection on datos.Area;
-  entity ClienteNuevo          as projection on datos.ClienteNuevo;
+  entity ClienteNuevo              as projection on datos.ClienteNuevo;
   entity AMreceptor                as projection on datos.AMreceptor;
   entity Vertical                  as projection on datos.Vertical;
   entity TipoIniciativa            as projection on datos.TipoIniciativa;
@@ -42,7 +74,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity otrosServiciosConsu       as projection on datos.otrosServiciosConsu;
   entity GastoViajeConsumo         as projection on datos.GastoViajeConsumo;
   entity WorkflowInstancias        as projection on datos.WorkflowInstancias;
-  entity WorkflowEtapas        as projection on datos.WorkflowEtapas;
+  entity WorkflowEtapas            as projection on datos.WorkflowEtapas;
   entity PerfilConsumo             as projection on datos.PerfilConsumo;
   entity ValorMensuReInter         as projection on datos.ValorMensuReInter;
   entity ValorMensuGastoViaConsuEx as projection on datos.ValorMensuGastoViaConsuEx;
@@ -63,36 +95,37 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity ResumenCostesTotal        as projection on datos.ResumenCostesTotal;
   entity MotivoCondi               as projection on datos.MotivoCondi;
   entity TipoCompra                as projection on datos.TipoCompra;
-  entity Usuarios as projection on datos.Usuarios;
-  entity Archivos as projection on datos.Archivos;
+  entity Usuarios                  as projection on datos.Usuarios;
+  entity Archivos                  as projection on datos.Archivos;
 
-   entity PendientesUsuario as select from WorkflowEtapas {
-    ID,
-    nombreEtapa,
-    estado,
-    asignadoA,
-    comentario,
-    fechaAprobado,
-    workflow_ID
-  } where estado = 'Pendiente';
-
-
-function userdata() returns Usuarios;
-  function etapasPendientesParaUsuario(email: String) returns array of WorkflowEtapas;
-
-action GetPendientes(email: String) returns array of PendientesUsuario;
+  entity PendientesUsuario         as
+    select from WorkflowEtapas {
+      ID,
+      nombreEtapa,
+      estado,
+      asignadoA,
+      comentario,
+      fechaAprobado,
+      workflow_ID
+    }
+    where
+      estado = 'Pendiente';
 
 
+  function userdata()                                                                                                           returns Usuarios;
+  function etapasPendientesParaUsuario(email : String)                                                                          returns array of WorkflowEtapas;
 
-  
-  function Action1()                                                        returns String;
+  action   GetPendientes(email : String)                                                                                        returns array of PendientesUsuario;
 
 
- function getTareasPendientes(usuario: String) returns array of WorkflowEtapas;
+  function Action1()                                                                                                            returns String;
 
-  action aprobarEtapa(ID: UUID, comentario: String) returns String;
 
-   action registrarTareasWorkflow(workflowInstanceId: String) returns String;
+  function getTareasPendientes(usuario : String)                                                                                returns array of WorkflowEtapas;
+
+  action   aprobarEtapa(ID : UUID, comentario : String)                                                                         returns String;
+
+  action   registrarTareasWorkflow(workflowInstanceId : String)                                                                 returns String;
 
 
   action   StartProcess(scodigoProyect : Integer,
@@ -119,17 +152,17 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
                         Total : Integer,
 
 
-  )                                                                         returns String;
+  )                                                                                                                             returns String;
 
 
-  action   startWorkflow(payload : LargeString)                             returns {
+  action   startWorkflow(payload : LargeString)                                                                                 returns {
     workflowInstanceId : String
   };
 
-  action   completeWorkflow(workflowInstanceId : String, decision : String ,     ComentarioAprobado: LargeString  ,   idProject: UUID ) returns String;
+  action   completeWorkflow(workflowInstanceId : String, decision  : String, comentariopmo : LargeString, comentario : LargeString, idProject : UUID) returns String;
 
 
-  action   getWorkflowTimeline(ID : String)                                 returns array of {
+  action   getWorkflowTimeline(ID : String)                                                                                     returns array of {
     step      : String;
     status    : String;
     timestamp : String;
@@ -137,16 +170,12 @@ action GetPendientes(email: String) returns array of PendientesUsuario;
   };
 
 
-  action getTotalConAjuste(id: UUID) returns {
-    id: UUID;
-    totalAjustado: Decimal(20,4);
-  };  
+action getResultado(id: UUID) returns { resultado: Decimal(20,4); };
 
-  
-  function getUserInfo()                                                    returns String;
-    action cancelWorkflow(workflowInstanceId: String) returns String;
-        action uploadFile() returns String;
+
+  function getUserInfo()                                                                                                        returns String;
+  action   cancelWorkflow(workflowInstanceId : String)                                                                          returns String;
+  action   uploadFile()                                                                                                         returns String;
 
 
 }
-

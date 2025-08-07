@@ -11,7 +11,8 @@ console.log("HOLAAAAAAAAAAAAA");
 //getTokenUser();
 
 module.exports = cds.service.impl(async function () {
-  
+  const db = await cds.connect.to('db'); // <--- ¡importante!
+
 
   console.log("Servicio cargado correctamente");
 
@@ -43,16 +44,28 @@ module.exports = cds.service.impl(async function () {
   const { WorkflowService } = this.entities;
 
 
+  const testID = '9159aee0-e77e-4401-a2b4-9eafcb527ab8'
 
-  this.on('getTotalConAjuste', async (req) => {
-    const { id } = req.data; // ID viene desde el frontend o Postman
 
-    const result = await db.run(`CALL "prueba"(?, ?)`, [id, null]);
 
-    return {
-      id: id,
-      totalAjustado: result[0]?.OUT_RESULTADO ?? 0
-    };
+  this.on('getResultado', async req => {
+    const id = req.data.id;
+    console.log(' procedure: ejecutando con ID:', id);
+  
+    try {
+      const result = await db.run(
+        `CALL "prueba"(?, ?);`,
+        {
+          IN_ID: id,
+          OUT_RESULTADO: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
+        }
+      );
+  
+      return { resultado: result.OUT_RESULTADO };
+    } catch (e) {
+      console.error('❌ Error al ejecutar el procedure:', e.message);
+      req.error(500, 'Error al ejecutar el procedimiento');  // ← esto lanza el 500
+    }
   });
   
   
@@ -184,11 +197,12 @@ this.on('startWorkflow', async (req) => {
 
 
   this.on('completeWorkflow', async (req) => {
-    const { workflowInstanceId, decision, comentario = '', idProject } = req.data;
+    const { workflowInstanceId, decision, comentario   , idProject } = req.data;
     const userEmail = req.user.email;
     const token = await getWorkflowToken();
 
     console.log("  req.data:", req.data);
+    console.log("Comentario ---->>> ", comentario);
 
     
     if (!idProject) {
@@ -244,7 +258,13 @@ this.on('startWorkflow', async (req) => {
         `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${taskId}`,
         {
           status: "COMPLETED",
-          decision: decision
+          decision: decision,          
+          context: {
+            idcompmo: comentario,
+            comentarioapro: comentario,
+         
+          }
+          
         },
         {
           headers: {

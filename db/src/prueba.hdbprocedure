@@ -1,0 +1,15 @@
+PROCEDURE "prueba"(
+    IN in_id NVARCHAR(36),
+    --  (ID)
+    OUT out_resultado DECIMAL(20, 4) 
+  ) 
+  LANGUAGE SQLSCRIPT 
+  SQL SECURITY INVOKER 
+  READS SQL DATA AS 
+BEGIN 
+    -- "ResumenCostesTotal" +  ID dado
+    -- Guarda  resultado
+    SELECT total + 4 INTO out_resultado
+FROM db_datos_ResumenCostesTotal
+    WHERE ID = :in_id;
+END 

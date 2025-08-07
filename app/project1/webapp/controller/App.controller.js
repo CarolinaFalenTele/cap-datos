@@ -840,28 +840,28 @@ sap.ui.define(
 
             // Método para obtener información del usuario
             /*  getUserInfo: function () {
-                  console.log("🔍 Iniciando getUserInfo...");
+                  console.log(" Iniciando getUserInfo...");
               
                   fetch('/odata/v4/datos-cdo/getUserInfo')
                       .then(response => {
-                          console.log("📥 Respuesta recibida del backend:", response);
+                          console.log(" Respuesta recibida del backend:", response);
                           if (!response.ok) {
-                              throw new Error("❌ No se pudo obtener la información del usuario.");
+                              throw new Error(" No se pudo obtener la información del usuario.");
                           }
                           return response.json();
                       })
                       .then(data => {
-                          console.log("📦 Datos parseados:", data);
+                          console.log(" Datos parseados:", data);
               
                           const userInfo = data.value;
                           const token = data.token || (userInfo && userInfo.token);
               
                           if (!userInfo) {
-                              console.error("❌ No se encontró la información del usuario.");
+                              console.error(" No se encontró la información del usuario.");
                               return;
                           }
               
-                          console.log("👤 Información del usuario:", userInfo);
+                          console.log(" Información del usuario:", userInfo);
               
                           // Mostrar datos del usuario
                           const emailCtrl = this.byId("dddtg");
@@ -869,21 +869,21 @@ sap.ui.define(
               
                           if (emailCtrl) {
                               emailCtrl.setText(userInfo.email || "Sin email");
-                              console.log("📧 Email seteado:", userInfo.email || "Sin email");
+                              console.log(" Email seteado:", userInfo.email || "Sin email");
                           } else {
                               console.warn("  Control de email no encontrado (id 'dddtg')");
                           }
               
                           if (nameCtrl) {
                               nameCtrl.setText(userInfo.fullName || "Sin nombre");
-                              console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
+                              console.log(" Nombre seteado:", userInfo.fullName || "Sin nombre");
                           } else {
                               console.warn("  Control de nombre no encontrado (id 'attrEmpleado')");
                           }
               
                           // Roles
                           const roles = userInfo.roles || [];
-                          console.log("🧩 Roles del usuario:", roles);
+                          console.log(" Roles del usuario:", roles);
   
                           const rolesObject = userInfo.roles || {};
                           const rolesEsperadosVisualizador = ["", "Visualizador", "user", "DatosProyect.Read"];
@@ -912,13 +912,13 @@ sap.ui.define(
                                       console.warn(`  Botón de ${tipo} no encontrado:`, id);
                                   } else {
                                       btn.setEnabled(estado);
-                                      console.log(`🔘 Botón ${id} (${tipo}) seteado a:`, estado);
+                                      console.log(` Botón ${id} (${tipo}) seteado a:`, estado);
                                   }
                               });
                           };
               
                           if (isVisualizadorSolo) {
-                              console.log("🔒 Usuario es solo visualizador: deshabilitando botones...");
+                              console.log(" Usuario es solo visualizador: deshabilitando botones...");
                               toggleBotones(botonesEditarIDs, false, "editar");
                               toggleBotones(botonesEliminarIDs, false, "eliminar");
               

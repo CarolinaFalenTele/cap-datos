@@ -731,7 +731,7 @@
                                                                             />
                                                                         </customData>
                                                                     </Button>
- <!-- <Button
+ <Button
                                                                     icon="sap-icon://delete"
                                                                     type="Reject"
                                                                     tooltip="Eliminar Proyecto"
@@ -747,7 +747,7 @@
                                                                             value="{modelAprobados>workflowId}"
                                                                         />
                                                                     </customData>
-                                                                </Button> -->
+                                                                </Button> 
                                                                     <Button
                                                                         xmlns="sap.m"
                                                                         icon="sap-icon://activity-2"

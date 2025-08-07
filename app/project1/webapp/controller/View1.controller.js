@@ -1,3 +1,4 @@
+
 sap.ui.define([
   "sap/ui/core/mvc/Controller",
   "sap/ui/core/format/DateFormat",
@@ -135,7 +136,7 @@ sap.ui.define([
         this._idWorkflowInstancias = null;
         this._idWorkIniciado = null;
 
-
+          this.onGetTotalConAjuste();
       },
 
 
@@ -1328,12 +1329,6 @@ sap.ui.define([
         let sSourceModel = oArgs.sourceModel || "modelPendientes";
         const sMode = oArgs.mode || "display";
         
-        const oModel = this.getOwnerComponent().getModel();
-        const oContext = oModel.bindContext("/getTotalConAjuste(...)");
-
-        oContext.setParameter("id", sProjectID);
-
-
 
 
 
@@ -1397,6 +1392,34 @@ sap.ui.define([
           }
         }
       },
+
+
+      onGetTotalConAjuste: async function () {
+
+        console.log("Entrado al metodo ");
+        const oModel = this.getOwnerComponent().getModel(); // OData V4
+        const oContext = oModel.bindContext("/getResultado(...)");
+
+        const sid =  "9159aee0-e77e-4401-a2b4-9eafcb527ab8";
+        oContext.setParameter("id", sid);
+
+        try {
+          await oContext.execute();
+          const oData = oContext.getBoundContext().getObject(); // ← obtiene el resultado
+
+          if (oData && oData.resultado !== undefined) {
+            console.log(`Resultado del cálculo: ${oData.resultado}`);
+          } else {
+            console.log(" No se recibió resultado del servidor.");
+          }
+
+        } catch (err) {
+          MessageBox.error("❌ Error al llamar a la acción.");
+          console.error(err);
+        }
+      },
+      
+      
 
 
       _parseAprobacionFlag: function (oArgs, sSourceModel) {
@@ -1464,7 +1487,7 @@ sap.ui.define([
           var iDay = oToday.getDay();    // Día de la semana (0-6)
           var iHours = oToday.getHours(); // Hora actual (0-23)
 
-          if (iDay === 3 && iHours >= 14) {
+          if (iDay === 3 && iHours >= 21) {
 
             var oEnviarBtn = this.byId("btnAceptar");
 
@@ -2159,14 +2182,14 @@ sap.ui.define([
           });
   
           //   console.log("Texto de celdas internas de las tablas limpiado.");
-        },*
+        },*/
   
   
   
   
   //      ENVIOOOOO  CON COMENTARIOOOOOOOOOOOOOO       
   
-     /*   _onDecisionPress: function (oEvent) {
+        _onDecisionPress: function (oEvent) {
           const decision = oEvent.getSource().data("valor");
           const textoAccion = decision === "approve" ? "aprobar" : "rechazar";
           const decisionTitulo = decision === "approve" ? "Aprobación" : "Rechazo";
@@ -2231,10 +2254,10 @@ sap.ui.define([
           });
         
           oDialog.open();
-        },*/
+        },
 
 
-      _onDecisionPress: function (oEvent) {
+    /*  _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
 
         if (!decision) {
@@ -2296,7 +2319,7 @@ sap.ui.define([
           }.bind(this)
         });
       },
-
+*/
 
 
 
@@ -2344,7 +2367,7 @@ sap.ui.define([
               }
             }.bind(this)
           });
-        },*/
+        },* */
 
 
 
@@ -2682,9 +2705,10 @@ sap.ui.define([
 
 
 
-      _completarWorkflow: async function (decision) {
+      _completarWorkflow: async function (decision , comentario) {
         const workflowInstanceId = this._idWorkIniciado;
         const idProject = this._sProjectID;
+        let scomentario = comentario;
         //console.log("ID" + idProject);
         const usuario = "Carolina Falen";
 
@@ -2702,7 +2726,17 @@ sap.ui.define([
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
         oContext.setParameter("idProject", idProject);
+        oContext.setParameter("comentario", comentario);
+        oContext.setParameter("comentariopmo", comentario);
 
+
+        console.log("Enviando parámetros al workflow:", {
+          workflowInstanceId,
+          decision,
+          usuario,
+          idProject,
+          comentario: scomentario
+        }); 
 
         try {
           await oContext.execute();
@@ -8495,7 +8529,7 @@ sap.ui.define([
       },
 
 
-      insertarProveedor: async function (generatedId, sProjectID) {
+      insertarProveedor: async function (generatedId) {
 
         const stoken = this._sCsrfToken;
         var oTable = this.byId("table2");
