@@ -2114,55 +2114,13 @@ sap.ui.define([
 
 
 
-      /*  _clearTableTextsOnly: function () {
-          const oView = this.getView();
-          const aTableIds = [
-            "tablaConsuExter",
-            "table_dimicFecha",
-            "tablaRecExterno",
-            "idOtroserConsu",
-            "idGastoViajeConsu",
-            "idServiExterno",
-            "idGastoRecuExter",
-            "tablaInfrestuctura",
-            "tablaLicencia",
-            "tableServicioInterno",
-            "tablGastoViajeInterno"
-          ];
-  
-          aTableIds.forEach(sTableId => {
-            const oTable = this.byId(sTableId);
-            if (!oTable) {
-              console.warn(`Tabla no encontrada: ${sTableId}`);
-              return;
-            }
-  
-            const aItems = oTable.getItems();
-            aItems.forEach(oItem => {
-              const aCells = oItem.getCells();
-              aCells.forEach(oCell => {
-                // Si el cell es un Input o Text control, se limpia
-                if (oCell instanceof sap.m.Input || oCell instanceof sap.m.Text) {
-                  if (typeof oCell.setValue === "function") {
-                    oCell.setValue("");
-                  }
-                  if (typeof oCell.setText === "function") {
-                    oCell.setText("");
-                  }
-                }
-              });
-            });
-          });
-  
-          //   console.log("Texto de celdas internas de las tablas limpiado.");
-        },*
-  
+   
   
   
   
   //      ENVIOOOOO  CON COMENTARIOOOOOOOOOOOOOO       
   
-     /*   _onDecisionPress: function (oEvent) {
+        _onDecisionPress: function (oEvent) {
           const decision = oEvent.getSource().data("valor");
           const textoAccion = decision === "approve" ? "aprobar" : "rechazar";
           const decisionTitulo = decision === "approve" ? "Aprobación" : "Rechazo";
@@ -2227,12 +2185,12 @@ sap.ui.define([
           });
         
           oDialog.open();
-        },*/
+        },
 
 
 
       ///   este funciona       
-      _onDecisionPress: function (oEvent) {
+     /* _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
 
         //console.log("DECISIÓN:", decision);
@@ -2276,36 +2234,8 @@ sap.ui.define([
           }.bind(this)
         });
       },
-
-      /*/   _onDecisionPress: function (oEvent) {
-           const decision = oEvent.getSource().data("valor");
+*/
    
-           console.log("DESAION " + decision);
-           if (decision) {
-             // Lanzar el proceso async, pero no bloquear la UI
-             this._completarWorkflow(decision)
-               .catch(err => {
-                 // Aquí puedes hacer un log o notificar error sin bloquear al usuario
-                 console.error("Error completando workflow:", err);
-                 sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
-               });
-   
-             // Mostrar mensaje y navegar inmediatamente, sin esperar resultado
-             sap.m.MessageBox.information(
-               "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
-               {
-                 title: "Aprobación enviada",
-                 onClose: function () {
-                   var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                   oRouter.navTo("appNoparame");
-                 }.bind(this)
-               }
-             );
-           } else {
-             sap.m.MessageBox.warning("No se pudo determinar la decisión.");
-           }
-         },*/
-
 
 
 
@@ -2639,7 +2569,7 @@ sap.ui.define([
 
 
 
-      _completarWorkflow: async function (decision) {
+      _completarWorkflow: async function (decision, comentario) {
         const workflowInstanceId = this._idWorkIniciado;
         const idProject = this._sProjectID;
         //console.log("ID" + idProject);
@@ -2659,6 +2589,10 @@ sap.ui.define([
         oContext.setParameter("decision", decision);
         oContext.setParameter("usuario", usuario);
         oContext.setParameter("idProject", idProject);
+        oContext.setParameter("comentario", comentario);
+        oContext.setParameter("comentariopmo", comentario);
+
+
 
 
         try {
