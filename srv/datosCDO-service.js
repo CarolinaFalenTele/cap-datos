@@ -60,11 +60,69 @@ module.exports = cds.service.impl(async function () {
           OUT_RESULTADO: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
         }
       );
+<<<<<<< HEAD
   
       return { resultado: result.OUT_RESULTADO };
     } catch (e) {
       console.error('❌ Error al ejecutar el procedure:', e.message);
       req.error(500, 'Error al ejecutar el procedimiento');  // ← esto lanza el 500
+=======
+
+      const workflowInstanceId = response.data.id;
+      console.log("  ID del Workflow creado:", workflowInstanceId);
+
+      let taskList = [];
+      let attempts = 0;
+      const maxAttempts = 10;
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+
+      //   Esperar dinámicamente hasta que existan tareas
+      while (taskList.length === 0 && attempts < maxAttempts) {
+        attempts++;
+        console.log(`  Esperando tareas... intento ${attempts}`);
+        await delay(1500); // espera 1.5 segundos
+
+        const getTasks = await axios.get(
+          `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        taskList = getTasks.data;
+      }
+
+      if (!taskList || taskList.length === 0) {
+        console.warn("  No se encontraron tareas después de varios intentos.");
+      } else {
+        console.log(`  Tareas encontradas en intento ${attempts}:`, JSON.stringify(taskList, null, 2));
+
+        for (const task of taskList) {
+          console.log("  Insertando tarea:", {
+            taskId: task.id,
+            subject: task.subject,
+            assigned: task.recipientUsers?.[0]
+          });
+
+          await INSERT.into('WorkflowEtapas').entries({
+            workflow_ID: workflowInstanceId,
+            taskInstanceId: task.id,
+            nombreEtapa: task.subject || 'Etapa sin nombre',
+            asignadoA: task.recipientUsers?.[0] || null,
+            estado: 'Pendiente'
+          });
+        }
+      }
+
+      return {
+        message: "  Workflow iniciado. Etapas insertadas si existían.",
+        workflowInstanceId
+      };
+
+    } catch (err) {
+      console.error("  Error en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al iniciar workflow: ${err.message}`);
+>>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
     }
   });
   
@@ -202,7 +260,10 @@ this.on('startWorkflow', async (req) => {
     const token = await getWorkflowToken();
 
     console.log("  req.data:", req.data);
+<<<<<<< HEAD
     console.log("Comentario ---->>> ", comentario);
+=======
+>>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
 
     
     if (!idProject) {

@@ -19,7 +19,6 @@ sap.ui.define(
                 this._loadProjectData();
                 const oRouter = this.getOwnerComponent().getRouter();
                 oRouter.getRoute("app").attachPatternMatched(this._onObjectMatched, this);
-                oRouter.getRoute("appNoparame").attachPatternMatched(this._onObjectMatched, this);
 
                 this.bProcessFlowAllowed = false;  // Bandera para controlar el acceso al ProcessFlow
                 this.loadFilteredData();
@@ -33,9 +32,8 @@ sap.ui.define(
 
                 this._cargarDatosUsuario();
 
-          
-
             },
+
 
 
 
@@ -871,14 +869,14 @@ sap.ui.define(
                               emailCtrl.setText(userInfo.email || "Sin email");
                               console.log("📧 Email seteado:", userInfo.email || "Sin email");
                           } else {
-                              console.warn("  Control de email no encontrado (id 'dddtg')");
+                              console.warn("⚠️ Control de email no encontrado (id 'dddtg')");
                           }
               
                           if (nameCtrl) {
                               nameCtrl.setText(userInfo.fullName || "Sin nombre");
                               console.log("👤 Nombre seteado:", userInfo.fullName || "Sin nombre");
                           } else {
-                              console.warn("  Control de nombre no encontrado (id 'attrEmpleado')");
+                              console.warn("⚠️ Control de nombre no encontrado (id 'attrEmpleado')");
                           }
               
                           // Roles
@@ -893,10 +891,10 @@ sap.ui.define(
                           const isVisualizadorSolo = roleKeys.length === rolesEsperadosVisualizador.length &&
                               roleKeys.every(role => rolesEsperadosVisualizador.includes(role));
                           
-                          console.log("  ¿Es solo Visualizador?", isVisualizadorSolo);
+                          console.log("✅ ¿Es solo Visualizador?", isVisualizadorSolo);
                           
   
-                          console.log("  ¿Es solo Visualizador?", isVisualizadorSolo);
+                          console.log("🔐 ¿Es solo Visualizador?", isVisualizadorSolo);
                           
               
                           // Botones a controlar
@@ -909,7 +907,7 @@ sap.ui.define(
                               ids.forEach(id => {
                                   const btn = this.byId(id);
                                   if (!btn) {
-                                      console.warn(`  Botón de ${tipo} no encontrado:`, id);
+                                      console.warn(`⚠️ Botón de ${tipo} no encontrado:`, id);
                                   } else {
                                       btn.setEnabled(estado);
                                       console.log(`🔘 Botón ${id} (${tipo}) seteado a:`, estado);
@@ -924,9 +922,9 @@ sap.ui.define(
               
                               if (btnCrear) {
                                   btnCrear.setEnabled(false);
-                                  console.log("  Botón de creación deshabilitado.");
+                                  console.log("⛔ Botón de creación deshabilitado.");
                               } else {
-                                  console.warn("  Botón de creación no encontrado: id '33'");
+                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
                               }
               
                               sap.m.MessageBox.warning(
@@ -934,28 +932,28 @@ sap.ui.define(
                                   { title: "Permisos insuficientes" }
                               );
                           } else {
-                              console.log("  Usuario con más permisos: habilitando botones...");
+                              console.log("✅ Usuario con más permisos: habilitando botones...");
                               toggleBotones(botonesEditarIDs, true, "editar");
                               toggleBotones(botonesEliminarIDs, true, "eliminar");
               
                               if (btnCrear) {
                                   btnCrear.setEnabled(true);
-                                  console.log("  Botón de creación habilitado.");
+                                  console.log("✅ Botón de creación habilitado.");
                               } else {
-                                  console.warn("  Botón de creación no encontrado: id '33'");
+                                  console.warn("⚠️ Botón de creación no encontrado: id '33'");
                               }
                           }
               
                           if (token) {
-                              console.log("  Token recibido:", token);
-                              console.log("  Iniciando watcher de sesión...");
+                              console.log("🔐 Token recibido:", token);
+                              console.log("▶️ Iniciando watcher de sesión...");
                               this._startSessionWatcher(token);
                           } else {
-                              console.warn("  Token no recibido en la respuesta.");
+                              console.warn("⚠️ Token no recibido en la respuesta.");
                           }
                       })
                       .catch(error => {
-                          console.error("  Error obteniendo datos del usuario:", error);
+                          console.error("🚨 Error obteniendo datos del usuario:", error);
                       });
               },*/
 
@@ -984,7 +982,7 @@ sap.ui.define(
                 const interval = setInterval(() => {
                     if (secondsLeft <= 0) {
                         clearInterval(interval);
-                        MessageBox.error("  Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
+                        MessageBox.error("⛔ Tu sesión ha expirado. (En pruebas: no se cerrará la sesión)");
                         return;
                     }
 
@@ -997,14 +995,14 @@ sap.ui.define(
                 }, 1000);
 
                 const dialog = new sap.m.Dialog({
-                    title: "  Sesión a punto de expirar",
+                    title: "⚠️ Sesión a punto de expirar",
                     content: [new sap.m.Text({ text: `Tu sesión expirará en ${secondsLeft} segundos. ¿Deseas continuar?` })],
                     beginButton: new sap.m.Button({
                         text: "Sí, mantener sesión",
                         press: () => {
                             clearInterval(interval);
                             dialog.close();
-                            this._refreshToken(); //   Simula renovación de sesión
+                            this._refreshToken(); // 🔁 Simula renovación de sesión
                         }
                     }),
                     endButton: new sap.m.Button({
@@ -1012,7 +1010,7 @@ sap.ui.define(
                         press: () => {
                             clearInterval(interval);
                             dialog.close();
-                            //   No hay logout en pruebas
+                            // 🔕 No hay logout en pruebas
                         }
                     }),
                     afterClose: () => {
@@ -1297,7 +1295,7 @@ sap.ui.define(
                         oProcessFlow.addNode(node); // Añade el nodo al ProcessFlow
                     });
     
-                    //   Solo una vez, fuera del bucle
+                    // ✅ Solo una vez, fuera del bucle
                     oProcessFlow.attachNodePress(this.onNodePress.bind(this));
     
                     this.byId("idTitleProceso").setText("Proceso de solicitud: " + sNameProyect);
@@ -1361,7 +1359,7 @@ sap.ui.define(
                            isTitleClickable: true // Muy importante
                        });
                        
-                       //   Asegura que el nodo reaccione al click
+                       // 🔁 Asegura que el nodo reaccione al click
                        node.attachPress(this.onNodePress, this); // Bind al controlador actual
                        
                        oProcessFlow.addNode(node);
@@ -1379,7 +1377,7 @@ sap.ui.define(
                    oIconTabBar.setSelectedKey("people");
                
                    // Añadir evento de presión en los nodos
-                //   node.attachPress(this.onNodePress, this); //   correcta
+                //   node.attachPress(this.onNodePress, this); // ✅ correcta
    
             
                },
@@ -1442,16 +1440,15 @@ sap.ui.define(
 
 
             _onObjectMatched: async function (oEvent) {
-
                 // Obtener el ID recibido como parámetro de la URL
-                /*  const newId = oEvent.getParameter("arguments").newId;
-  
-                  //console.log(("ids comtenriofg")
-                  // Verifica si el ID es válido
-                  if (!newId) {
-                      console.error("No se recibió un ID válido");
-                      return;
-                  }*/
+                const newId = oEvent.getParameter("arguments").newId;
+
+                //console.log(("ids comtenriofg")
+                // Verifica si el ID es válido
+                if (!newId) {
+                    console.error("No se recibió un ID válido");
+                    return;
+                }
 
                 const oModel = this.getOwnerComponent().getModel("modelEtapasAsignadas");
                 if (oModel) {
@@ -1459,57 +1456,10 @@ sap.ui.define(
                 }
 
 
-                this._refrescarModelEtapas();
                 this.filterEstado();
 
 
             },
-
-            _refrescarModelEtapas: async function () {
-                try {
-                    const userModel = this.getView().getModel("userModel");
-                    if (!userModel) return;
-
-                    const userEmail = userModel.getProperty("/email");
-                    const modelPendientes = this.getView().getModel("modelPendientes");
-
-                    if (!modelPendientes) return;
-
-                    const aProyectosPendientes = modelPendientes.getProperty("/DatosProyect") || [];
-
-                    const aEtapasAsignadas = [];
-
-                    aProyectosPendientes.forEach((proyecto) => {
-                        proyecto.Etapas.forEach((etapa) => {
-                            if (
-                                etapa.estado === "Pendiente" &&
-                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
-                            ) {
-                                aEtapasAsignadas.push({
-                                    nombreEtapa: etapa.nombreEtapa,
-                                    asignadoA: etapa.asignadoA,
-                                    aprobadoPor: etapa.aprobadoPor,
-                                    estado: etapa.estado,
-                                    comentario: etapa.comentario,
-                                    fechaAprobado: etapa.fechaAprobado,
-                                    nameProyect: proyecto.nameProyect,
-                                    creadoPor: proyecto.creadoPor,
-                                    descripcion: proyecto.descripcion,
-                                    projectId: proyecto.ID
-                                });
-                            }
-                        });
-                    });
-
-                    this.getView().getModel("modelEtapasAsignadas").setData({
-                        Etapas: aEtapasAsignadas,
-                        Count: aEtapasAsignadas.length
-                    });
-                } catch (error) {
-                    console.error("Error al refrescar modelEtapasAsignadas:", error);
-                }
-            },
-
 
 
 
@@ -1957,15 +1907,13 @@ sap.ui.define(
                                     if (workflowRes.ok) {
 
 
+                                        //console.log(("Cancelando el workflow con ID:", workflowInstanceId);
                                         if (workflowInstanceId) {
-                                            try {
-                                                const oModel = this.getOwnerComponent().getModel();
-                                                const oContext = oModel.bindContext("/cancelWorkflow(...)");
-                                                oContext.setParameter("workflowInstanceId", workflowInstanceId);
-                                                await oContext.execute();  // <-- Si da error aquí, entra al catch
-                                            } catch (cancelError) {
-                                                console.warn("Error al cancelar el workflow. Continuando con la eliminación.", cancelError);
-                                            }
+                                            const oModel = this.getOwnerComponent().getModel();
+                                            const oContext = oModel.bindContext("/cancelWorkflow(...)");
+
+                                            oContext.setParameter("workflowInstanceId", workflowInstanceId);
+                                            await oContext.execute();
                                         }
                                     } else {
                                         console.warn("No se pudo obtener la instancia de workflow.");
@@ -2007,7 +1955,7 @@ sap.ui.define(
                                         });
 
                                         if (!res.ok) {
-                                            console.warn(`  No se pudieron obtener los registros de ${path}`);
+                                            console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
                                             continue;
                                         }
 
@@ -2083,7 +2031,7 @@ sap.ui.define(
                                     });
 
                                     if (projectResponse.ok) {
-                                  //     console.log("Proyecto eliminado correctamente.");
+                                        console.log("Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],
@@ -2094,10 +2042,10 @@ sap.ui.define(
                                                     if (oBinding) {
                                                         oBinding.refresh(true);  // Forzar actualización desde backend
                                                     } else {
-                                                        console.warn("  No se encontró el binding de la tabla.");
+                                                        console.warn("⚠️ No se encontró el binding de la tabla.");
                                                     }
                                                 } else {
-                                                    console.warn("  Tabla no encontrada con ID idPendientes.");
+                                                    console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
@@ -2209,7 +2157,7 @@ sap.ui.define(
                                         });
             
                                         if (!res.ok) {
-                                            console.warn(`  No se pudieron obtener los registros de ${path}`);
+                                            console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
                                             continue;
                                         }
             
@@ -2296,10 +2244,10 @@ sap.ui.define(
                                                     if (oBinding) {
                                                         oBinding.refresh(true);  // Forzar actualización desde el backend
                                                     } else {
-                                                        console.warn("  No se encontró el binding de la tabla.");
+                                                        console.warn("⚠️ No se encontró el binding de la tabla.");
                                                     }
                                                 } else {
-                                                    console.warn("  Tabla no encontrada con ID idPendientes.");
+                                                    console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
                                                 }
                                                 await this.filterEstado();
                                             }.bind(this)
@@ -2396,7 +2344,7 @@ sap.ui.define(
                                           });
               
                                           if (!res.ok) {
-                                              console.warn(`  No se pudieron obtener los registros de ${path}`);
+                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
                                               return;
                                           }
               
@@ -2449,10 +2397,10 @@ sap.ui.define(
                                                       if (oBinding) {
                                                           oBinding.refresh(true);
                                                       } else {
-                                                          console.warn("  No se encontró el binding de la tabla.");
+                                                          console.warn("⚠️ No se encontró el binding de la tabla.");
                                                       }
                                                   } else {
-                                                      console.warn("  Tabla no encontrada con ID idPendientes.");
+                                                      console.warn("⚠️ Tabla no encontrada con ID idPendientes.");
                                                   }
                                                   await this.filterEstado();
                                               }.bind(this)
@@ -2548,7 +2496,7 @@ sap.ui.define(
                                           });
   
                                           if (!res.ok) {
-                                              console.warn(`  No se pudieron obtener los registros de ${path}`);
+                                              console.warn(`⚠️ No se pudieron obtener los registros de ${path}`);
                                               return;
                                           }
   

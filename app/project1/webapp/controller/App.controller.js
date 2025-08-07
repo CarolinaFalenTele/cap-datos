@@ -33,12 +33,19 @@ sap.ui.define(
 
                 this._cargarDatosUsuario();
 
+<<<<<<< HEAD
           
 
+=======
+>>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
             },
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
 
 
             _cargarDatosUsuario: async function () {
