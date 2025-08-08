@@ -207,7 +207,7 @@
                                                         id="colNombreProyecto"
                                                         sortProperty="nameProyect"
                                                         filterProperty="nameProyect"
-                                                        width="20em"
+                                                        width="auto"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -248,7 +248,7 @@
                                                         id="colArea"
                                                         sortProperty="NombreArea"
                                                         filterProperty="NombreArea"
-                                                        width="14em"
+                                                        width="auto"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -268,7 +268,7 @@
                                                         id="colJefeProyecto"
                                                         sortProperty="NombreJefe"
                                                         filterProperty="NombreJefe"
-                                                        width="15em"
+                                                        width="auto"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -290,7 +290,7 @@
     filterProperty="OfertaTexto"
     hAlign="Center"
      tooltip="Filtrar por 'Sí' o 'No'"
-    width="6em"
+    width="auto"
 >
     <Label text="Oferta" class="customTitle"            
 />
@@ -338,7 +338,7 @@
                                                         sortProperty="Estado"
                                                         filterProperty="Estado"
                                                         hAlign="Center"
-                                                        width="8em"
+                                                        width="auto"
                                                     >
                                                         <Label
                                                             text="Estado"
@@ -359,7 +359,7 @@
                                                         sortProperty="modalidad"
                                                         filterProperty="modalidad"
                                                         hAlign="Center"
-                                                        width="7em"
+                                                        width="auto"
                                                     >
                                                         <Label
                                                             text="Presentación"
@@ -380,7 +380,7 @@
                                                         sortProperty="fechaComiteForm"
                                                         filterProperty="fechaComiteForm"
                                                         hAlign="Center"
-                                                        width="10em"
+                                                        width="auto"
                                                     >
         <VBox class="sapUiSmallMargin">
             <HBox justifyContent="Center" alignItems="Center" >
@@ -403,7 +403,7 @@
                                                     <!-- Columna Botones -->
                                                     <table:Column
                                                         id="colBotones"
-                                                        width="10em"
+                                                        width="auto"
                                                         hAlign="Center"
                                                     >
                                                         <Label
@@ -546,7 +546,7 @@
                                                             id="colCodigoProyecto"
                                                             sortProperty="codigoProyect"
                                                             filterProperty="codigoProyect"
-                                                            width="9em"
+                                                            width="auto"
 
                                                             hAlign="Center"
                                                         >
@@ -567,7 +567,7 @@
                                                             id="colNombreProyecto1"
                                                             sortProperty="nameProyect"
                                                             filterProperty="nameProyect"
-                                                            width="20em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -606,7 +606,7 @@
                                                             id="colArea1"
                                                             sortProperty="Area/NombreArea"
                                                             filterProperty="Area/NombreArea"
-                                                            width="15em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -625,7 +625,7 @@
                                                             id="colJefeProyecto1"
                                                             sortProperty="jefeProyectID/name"
                                                             filterProperty="jefeProyectID/name"
-                                                            width="15em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -645,7 +645,7 @@
                                                             id="colFechaAprobacion"
                                                             sortProperty="actualizadoEnFormateada"
                                                             filterProperty="actualizadoEnFormateada"
-                                                            width="10em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -663,7 +663,7 @@
                                                             id="colEstado1"
                                                             sortProperty="Estado"
                                                             filterProperty="Estado"
-                                                            width="8em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -681,7 +681,7 @@
 
                                                         <table:Column
                                                             id="colAcciones"
-                                                            width="10em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -712,7 +712,7 @@
                                                                         id="butn346"
                                                                         icon="sap-icon://show"
                                                                         type="Transparent"
-                                                                        tooltip="Editar Proyecto"
+                                                                        tooltip="Ver Proyecto"
                                                                         press="onEditPress"
                                                                         enabled="true"
                                                                     >
@@ -731,7 +731,7 @@
                                                                             />
                                                                         </customData>
                                                                     </Button>
- <!-- <Button
+ <!--<Button
                                                                     icon="sap-icon://delete"
                                                                     type="Reject"
                                                                     tooltip="Eliminar Proyecto"
@@ -979,7 +979,7 @@
                                                             id="newId_colFecha"
                                                             sortProperty="FechaCreacionFormateada"
                                                             filterProperty="FechaCreacionFormateada"
-                                                            width="12em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1000,6 +1000,7 @@
                                                             id="newId_colNombreProyecto"
                                                             sortProperty="nameProyect"
                                                             filterProperty="nameProyect"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1021,6 +1022,7 @@
                                                             id="newId_colDescripcion"
                                                             sortProperty="descripcion"
                                                             filterProperty="descripcion"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1034,6 +1036,7 @@
                                                             id="newId_colArea"
                                                             sortProperty="NombreArea"
                                                             filterProperty="NombreArea"
+                                                           width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1054,7 +1057,7 @@
                                                             id="newId_colJefeProyecto"
                                                             sortProperty="NombreJefe"
                                                             filterProperty="NombreJefe"
-                                                            width="16em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1097,6 +1100,8 @@
                                                             id="newId_colEstado"
                                                             sortProperty="Estado"
                                                             filterProperty="Estado"
+                                                              width="auto"
+
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1115,7 +1120,7 @@
 
                                                         <table:Column
                                                             id="newId_colAcciones"
-                                                            width="10em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1358,6 +1363,7 @@
                                                             id="colEtapa"
                                                             sortProperty="nombreEtapa"
                                                             filterProperty="nombreEtapa"
+                                                             width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1376,6 +1382,7 @@
                                                             id="colProyecto"
                                                             sortProperty="nameProyect"
                                                             filterProperty="nameProyect"
+                                                             width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1395,6 +1402,7 @@
                                                             id="colDescripcion2"
                                                             sortProperty="descripcion"
                                                             filterProperty="descripcion"
+                                                          width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1414,6 +1422,7 @@
                                                             id="colAsignadoA"
                                                             sortProperty="asignadoA"
                                                             filterProperty="asignadoA"
+                                                             width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1432,6 +1441,7 @@
                                                             id="colComentario"
                                                             sortProperty="comentario"
                                                             filterProperty="comentario"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1449,7 +1459,7 @@
 
                                                         <table:Column
                                                             id="colAcciones2"
-                                                            width="10em"
+                                                            width="auto"
                                                             hAlign="Center"
                                                         >
                                                             <Label
@@ -1484,7 +1494,7 @@
                                                                         icon="sap-icon://show"
                                                                         press="onEditPress"
                                                                         type="Transparent"
-                                                                        tooltip="Editar Proyecto"
+                                                                        tooltip="Ver Proyecto"
                                                                         enabled="true"
                                                                     >
                                                                         <customData

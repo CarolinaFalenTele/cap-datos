@@ -13,7 +13,7 @@ sap.ui.define([
 
 ],
 
-  function (Controller , DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
+  function (Controller, DateFormat, VizFrame, ODataModel, MessageToast, Sorter, Filter, FilterOperator, FilterType, JSONModel, MessageBox) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -110,6 +110,7 @@ sap.ui.define([
   
           oRouter.getRoute("viewWithMode").attachPatternMatched(this._onObjectMatched, this);*/
 
+        //   this._anioActual = new Date().getFullYear();
 
 
 
@@ -139,12 +140,68 @@ sap.ui.define([
         this._handleInputChangeCounter = 0;
 
 
-        const hostname = window.location.hostname;
-        //console.log(" Hostname detectado:", hostname);
+        //     this.actualizarHeadersAnios();
 
         this.filtertables();
 
       },
+
+
+      //Actualizar las tablas con años  
+      actualizarHeadersAnios: function () {
+        // IDs de las tablas a actualizar
+        const idsTablas = [
+          "tablaConsuExter",
+          "table_dimicFecha",
+          "tablaRecExterno",
+          "tablaInfrestuctura"
+        ];
+
+        const anioHoy = new Date().getFullYear();
+
+        // Si no cambio el año, no hacemos nada
+        if (anioHoy === this._anioActual) {
+          console.log("Año sin cambios, no actualizo headers.");
+          return;
+        }
+
+        // Actualizamos la variable del año guardado
+        this._anioActual = anioHoy;
+
+        idsTablas.forEach(tablaId => {
+          const oTabla = this.byId(tablaId);
+          if (!oTabla) {
+            console.warn(`No se encontró tabla con id: ${tablaId}`);
+            return;
+          }
+
+          const aColumnas = oTabla.getColumns();
+          let offset = 0;
+
+          aColumnas.forEach(col => {
+            const headerControl = col.getHeader();
+            if (headerControl && headerControl.isA("sap.m.Label")) {
+              const textoOriginal = headerControl.getText();
+              const texto = textoOriginal.trim();
+
+              // Solo si el texto es un año válido (4 dígitos)
+              if (/^\d{4}$/.test(texto)) {
+                const anioOriginal = parseInt(texto, 10);
+                const nuevoAnio = anioHoy + offset;
+
+                headerControl.setText(nuevoAnio.toString());
+
+                console.log(`Tabla: ${tablaId} - Header "${textoOriginal}" actualizado a "${nuevoAnio}"`);
+                offset++;
+              }
+            }
+          });
+        });
+
+        //  MessageToast.show("Headers con años actualizados al año " + anioHoy);
+      },
+
+
 
 
 
@@ -1360,7 +1417,7 @@ sap.ui.define([
         if (sMode === "create") {
           await this._clearAllInputs();
         } else if ((sMode === "edit")) {
-          console.log("Entrando a clearTableTextsOnly");
+          //  console.log("Entrando a clearTableTextsOnly");
           this._clearAllInputsEdit();
         }
 
@@ -1369,7 +1426,7 @@ sap.ui.define([
         btnAceptar.setType(sap.m.ButtonType.Accept);
         btnAceptar.attachPress(this.onSave, this);
 
-      btnBorrado.setEnabled(true);
+        btnBorrado.setEnabled(true);
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
         btnBorrado.attachPress(this.onBorrador, this);
@@ -1383,7 +1440,7 @@ sap.ui.define([
         }
 
         //     Llamamos con el source limpio
-         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+        await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
         this._sProjectID = sProjectID;
 
@@ -1452,7 +1509,7 @@ sap.ui.define([
           btnBorrado.setIcon("sap-icon://save"); //  icono de guardar
           btnAceptar.attachPress(this.onSave, this);
 
-         btnBorrado.setEnabled(true);
+          btnBorrado.setEnabled(true);
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Emphasized);
           btnAceptar.setIcon(""); //  sin icono
@@ -1494,9 +1551,9 @@ sap.ui.define([
           btnBorrado.setText("Guardar como borrador");
           btnBorrado.setType(sap.m.ButtonType.Transparent);
           btnBorrado.attachPress(this.onBorrador, this);
-        
+
           btnBorrado.setEnabled(false); // y luego fuerza deshabilitar
-        
+
           return;
         }
 
@@ -1510,7 +1567,7 @@ sap.ui.define([
         btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Transparent);
         btnBorrado.attachPress(this.onBorrador, this);
-        console.log("¿Botón deshabilitado3", btnBorrado.getEnabled()); 
+        console.log("¿Botón deshabilitado3", btnBorrado.getEnabled());
       },
 
 
@@ -1539,11 +1596,11 @@ sap.ui.define([
 
       _populateViewWithData: async function (oData, sMode) {
 
-        console.log(sMode);
+        //  console.log(sMode);
         const btnBorrado = this.byId("btnBorrado");
 
         //console.log("¿Al trae la informacion   inciio   ", btnBorrado.getEnabled()); 
-   
+
         if (!oData) return;
         var oStatus = this.byId("23437");
 
@@ -1642,7 +1699,7 @@ sap.ui.define([
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
-     //   const btnBorrar = this.byId("btnBorrado");
+        //   const btnBorrar = this.byId("btnBorrado");
 
 
 
@@ -1761,7 +1818,7 @@ sap.ui.define([
           //  console.log("    Modelo cargado en la vista con archivos:", archivos.length);
         } catch (err) {
           console.error("    Error al cargar archivos:", err);
-          sap.m.MessageToast.show(err.message);
+         console.log(err.message);
         }
       },
 
@@ -2114,128 +2171,150 @@ sap.ui.define([
 
 
 
-   
-  
-  
-  
-  //      ENVIOOOOO  CON COMENTARIOOOOOOOOOOOOOO       
-  
-        _onDecisionPress: function (oEvent) {
-          const decision = oEvent.getSource().data("valor");
-          const textoAccion = decision === "approve" ? "aprobar" : "rechazar";
-          const decisionTitulo = decision === "approve" ? "Aprobación" : "Rechazo";
-        
-          console.log("DECISIÓN:", decision);
-        
-          // Crear campo de texto para comentarios
-          const oTextArea = new sap.m.TextArea({
-            width: "100%",
-            placeholder: "Puede escribir un comentario (opcional)...",
-            rows: 4
-          });
-        
-          // Crear el diálogo
-          const oDialog = new sap.m.Dialog({
-            title: "Confirmar " + decisionTitulo,
-            type: "Message",
-            content: [
-              new sap.m.Text({ text: `¿Está seguro de que desea ${textoAccion} este proyecto?` }),
-              new sap.m.Label({ text: "Comentario:", labelFor: oTextArea }),
-              oTextArea
-            ],
-            beginButton: new sap.m.Button({
-              text: "Confirmar",
-              type: sap.m.ButtonType.Emphasized,
-              press: function () {
-                const comentario = oTextArea.getValue();
-        
-                console.log(" Comentario ingresado:", comentario);
-        
-                oDialog.close();
-        
-                // Ejecutar el proceso de workflow con la decisión y el comentario
-                this._completarWorkflow(decision, comentario)
-                  .catch(err => {
-                    console.error("Error completando workflow:", err);
-                    sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
-                  });
-        
-                // Navegar
-                sap.m.MessageBox.information(
-                  "La decisión fue enviada correctamente. Puede ir a la aplicación para ver el estado del proceso.",
-                  {
-                    title: "Proceso enviado",
-                    onClose: function () {
-                      var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                      oRouter.navTo("appNoparame");
-                    }.bind(this)
-                  }
-                );
-              }.bind(this)
-            }),
-            endButton: new sap.m.Button({
-              text: "Cancelar",
-              press: function () {
-                oDialog.close();
-              }
-            }),
-            afterClose: function () {
-              oDialog.destroy();
-            }
-          });
-        
-          oDialog.open();
-        },
 
 
 
-      ///   este funciona       
-     /* _onDecisionPress: function (oEvent) {
+
+      //      ENVIOOOOO  CON COMENTARIOOOOOOOOOOOOOO       
+
+      _onDecisionPress: function (oEvent) {
         const decision = oEvent.getSource().data("valor");
+        const textoAccion = decision === "approve" ? "aprobar" : "rechazar";
+        const decisionTitulo = decision === "approve" ? "Aprobación" : "Rechazo";
 
-        //console.log("DECISIÓN:", decision);
+        console.log("DECISIÓN:", decision);
 
-        if (!decision) {
-          sap.m.MessageBox.warning("No se pudo determinar la decisión.");
-          return;
-        }
+        // Crear campo de texto para comentarios
+        const oTextArea = new sap.m.TextArea({
+          width: "100%",
+          placeholder: "Puede escribir un comentario (opcional)...",
+          rows: 4
+        });
 
-        const sTextoConfirmacion = decision === "approve"
-          ? "¿Está seguro de que desea aprobar este proyecto?"
-          : "¿Está seguro de que desea rechazar este proyecto?";
+        // Crear el diálogo
+        const oDialog = new sap.m.Dialog({
+          title: "Confirmar " + decisionTitulo,
+          type: "Message",
+          content: [
+            new sap.m.Text({ text: `¿Está seguro de que desea ${textoAccion} este proyecto?` }),
+            new sap.m.Label({ text: "Comentario:", labelFor: oTextArea }),
+            oTextArea
+          ],
+          beginButton: new sap.m.Button({
+            text: " Confirmar",
+            type: sap.m.ButtonType.Emphasized,
+            press: function () {
+              const comentario = oTextArea.getValue();
+              console.log(" Comentario ingresado: ", comentario);
 
-        sap.m.MessageBox.confirm(sTextoConfirmacion, {
-          title: "Confirmar decisión",
-          actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-          emphasizedAction: sap.m.MessageBox.Action.YES,
-          onClose: function (sAction) {
-            if (sAction === sap.m.MessageBox.Action.YES) {
-              // Lanzar proceso async, no bloquear UI
-              this._completarWorkflow(decision)
+              oDialog.close();
+
+              // Configuración del BusyDialog
+              const sTituloBusy = decision === "approve" ? "Enviando aprobación" : "Enviando rechazo";
+              const sTextoBusy = decision === "approve"
+                ? "Enviando su aprobación, por favor espere..."
+                : "Enviando su rechazo, por favor espere...";
+
+              if (!this._oBusyDialog) {
+                this._oBusyDialog = new sap.m.BusyDialog({
+                  title: sTituloBusy,
+                  text: sTextoBusy
+                });
+              } else {
+                this._oBusyDialog.setTitle(sTituloBusy);
+                this._oBusyDialog.setText(sTextoBusy);
+              }
+
+              // Abrir BusyDialog
+              this._oBusyDialog.open();
+
+              // Ejecutar el proceso de workflow
+              this._completarWorkflow(decision, comentario)
+                .then(() => {
+                  this._oBusyDialog.close();
+                  sap.m.MessageBox.information(
+                    "La decisión fue enviada correctamente. Puede ir a la aplicación para ver el estado del proceso.",
+                    {
+                      title: "Proceso enviado",
+                      onClose: function () {
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("appNoparame");
+                      }.bind(this)
+                    }
+                  );
+                })
                 .catch(err => {
+                  this._oBusyDialog.close();
                   console.error("Error completando workflow:", err);
                   sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
                 });
 
-              // Mostrar mensaje informativo y navegar
-              sap.m.MessageBox.information(
-                "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
-                {
-                  title: "Aprobación enviada",
-                  onClose: function () {
-                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                    oRouter.navTo("appNoparame");
-                  }.bind(this)
-                }
-              );
-            } else {
-              //console.log("Usuario canceló la acción.");
+            }.bind(this)
+          }),
+          endButton: new sap.m.Button({
+            text: "Cancelar",
+            press: function () {
+              oDialog.close();
             }
-          }.bind(this)
+          }),
+          afterClose: function () {
+            oDialog.destroy();
+          }
         });
+
+        oDialog.open();
       },
-*/
-   
+
+
+
+
+      ///   este funciona       
+      /* _onDecisionPress: function (oEvent) {
+         const decision = oEvent.getSource().data("valor");
+ 
+         //console.log("DECISIÓN:", decision);
+ 
+         if (!decision) {
+           sap.m.MessageBox.warning("No se pudo determinar la decisión.");
+           return;
+         }
+ 
+         const sTextoConfirmacion = decision === "approve"
+           ? "¿Está seguro de que desea aprobar este proyecto?"
+           : "¿Está seguro de que desea rechazar este proyecto?";
+ 
+         sap.m.MessageBox.confirm(sTextoConfirmacion, {
+           title: "Confirmar decisión",
+           actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+           emphasizedAction: sap.m.MessageBox.Action.YES,
+           onClose: function (sAction) {
+             if (sAction === sap.m.MessageBox.Action.YES) {
+               // Lanzar proceso async, no bloquear UI
+               this._completarWorkflow(decision)
+                 .catch(err => {
+                   console.error("Error completando workflow:", err);
+                   sap.m.MessageBox.error("Hubo un error procesando la aprobación.");
+                 });
+ 
+               // Mostrar mensaje informativo y navegar
+               sap.m.MessageBox.information(
+                 "La aprobación se envió correctamente. Puede ir a la aplicación para ver el estado del proceso de aprobación.",
+                 {
+                   title: "Aprobación enviada",
+                   onClose: function () {
+                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                     oRouter.navTo("appNoparame");
+                   }.bind(this)
+                 }
+               );
+             } else {
+               //console.log("Usuario canceló la acción.");
+             }
+           }.bind(this)
+         });
+       },
+ */
+
 
 
 
@@ -2390,7 +2469,7 @@ sap.ui.define([
         btnAceptar.setText("Enviar");
         btnAceptar.setType(sap.m.ButtonType.Accept);
 
-        btnBorrado.setText("Guardar");
+        btnBorrado.setText("Guardar como borrador");
         btnBorrado.setType(sap.m.ButtonType.Emphasized);
       },
 
@@ -3039,7 +3118,7 @@ sap.ui.define([
                 aCells[1].setSelectedKey(Recurso.tipoServicio_ID || "");
                 this.filterTipoServicioDinamicas(Recurso.tipoServicio_ID, aCells[1]);
                 aCells[2].setSelectedKey(Recurso.PerfilServicio_ID || "");
-                this.filterPerfilServiDinamicas(Recurso.PerfilServicio_ID , aCells[2]);
+                this.filterPerfilServiDinamicas(Recurso.PerfilServicio_ID, aCells[2]);
                 aCells[3].setValue(Recurso.ConceptoOferta || "");
                 aCells[4].setText(Recurso.PMJ ? parseFloat(Recurso.PMJ).toFixed(2) : "0.00");
                 aCells[5].setText(Recurso.year1 ? parseFloat(Recurso.year1).toFixed(2) : "0.00");
@@ -7218,9 +7297,20 @@ sap.ui.define([
       onBorrador: async function () {
 
         //console.log("ENTRANDO A onBorrador");
+        //console.log("ENTRANDO A onBorrador");
 
         const usuario = this._usuarioActual;
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
+
+
+
+        if (!this._oBusyDialog) {
+          this._oBusyDialog = new sap.m.BusyDialog({
+            title: "Procesando",
+            text: "Guardando, por favor espere",
+          });
+        }
+
 
         // Si no está en el modelo, usa la propiedad interna
         if (!sMode) {
@@ -7407,7 +7497,7 @@ sap.ui.define([
         const now = new Date();
         const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-//console.log(localDate);
+        //console.log(localDate);
 
 
         const payload = {
@@ -7488,7 +7578,7 @@ sap.ui.define([
           let url = "/odata/v4/datos-cdo/DatosProyect";
           let method = "POST";
 
-
+          this._oBusyDialog.open();
 
           if (this._mode === "edit") {
 
@@ -7534,6 +7624,8 @@ sap.ui.define([
             body: JSON.stringify(payload),
           });
 
+
+
           // Verificar respuesta
           if (!response.ok) {
             const errorText = await response.text();
@@ -7563,7 +7655,7 @@ sap.ui.define([
             // console.log("ID generado:", generatedId);
 
             if (generatedId) {
-              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
+
 
               // Llamadas en paralelo para mejorar rendimiento
               await Promise.all([
@@ -7587,6 +7679,10 @@ sap.ui.define([
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
               ]);
+              this._oBusyDialog.close();
+
+
+              this.getOwnerComponent().getRouter().navTo("app", { newId: generatedId });
 
 
             } else {
@@ -7695,7 +7791,7 @@ sap.ui.define([
           //    sap.m.MessageToast.show("    Archivo subido con éxito.");
         } catch (err) {
           console.error("    Error total en upload:", err);
-          sap.m.MessageToast.show(err.message);
+          console.log(err.message);
         }
       },
 
@@ -10642,7 +10738,7 @@ sap.ui.define([
           const oItem = aItems[i];  // Obtener la fila actual
 
           const consuID = this._consumoExternosIDs && this._consumoExternosIDs[i] ? this._consumoExternosIDs[i] : null;
-       //   console.log("filA" + JSON.stringify(consuID));
+          //   console.log("filA" + JSON.stringify(consuID));
 
           // Obtener los controles dentro de cada celda
           const sVertical = oItem.getCells()[0].getSelectedKey() || "ValorPorDefecto"; // Select de Vertical

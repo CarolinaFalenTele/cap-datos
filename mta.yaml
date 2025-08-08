@@ -1,11 +1,7 @@
 _schema-version: "3.1"
 ID: datosCdo
 description: A simple CAP project.
-<<<<<<< HEAD
-version: 1.0.4
-=======
-version: 1.0.3
->>>>>>> eaa9c2f7cc49cb526d3ad3eae2bcab4ce44bc88d
+version: 1.0.5
 modules:
 - name: datoscdo-approuter
   type: approuter.nodejs

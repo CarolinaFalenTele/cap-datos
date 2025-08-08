@@ -314,7 +314,7 @@ this.on('startWorkflow', async (req) => {
           decision: decision,          
           context: {
             idcompmo: comentario,
-            comentarioapro: comentario,
+            comentario: comentario,
          
           }
           
