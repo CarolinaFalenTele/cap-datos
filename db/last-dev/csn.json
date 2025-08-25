@@ -729,6 +729,41 @@
       },
       "@cds.persistence.name": "DB_DATOS_PLANIFICACION"
     },
+    "db.datos.planServicio": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "hito": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "HITO"
+        },
+        "fecha_inicio": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHA_INICIO"
+        },
+        "fecha_fin": {
+          "type": "cds.Date",
+          "@cds.persistence.name": "FECHA_FIN"
+        },
+        "duracion": {
+          "type": "cds.Time",
+          "@cds.persistence.name": "DURACION"
+        },
+        "datosProyect_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "DATOSPROYECT_ID"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PLANSERVICIO"
+    },
     "db.datos.Facturacion": {
       "kind": "entity",
       "@cds.persistence.journal": true,

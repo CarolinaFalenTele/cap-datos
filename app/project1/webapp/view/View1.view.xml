@@ -127,7 +127,7 @@
                                                                     </Column>
                                                                     <Column id="column1" hAlign="Center">
                                                                         <header>
-                                                                            <Label text="Veritical" id="label1"/>
+                                                                            <Label text="Vertical" id="label1"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column2" hAlign="Center">
@@ -379,7 +379,7 @@
                                                     </FlexBox>
                                                     <FlexBox width="100%" id="box0_1714472600967">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="sapUiSmallMargin  customHeaderColor2 customHeaderColor1" items="{fechasModel>/fechas}" width="400px">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="customHeaderColor2 customHeaderColor1" items="{fechasModel>/fechas}" width="500px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="plsn" class="toolbar-con-borde">
                                                                         <Title id="tuilo45" text="Plan de servicio" level="H2"/>
@@ -390,8 +390,8 @@
                                                                     <ColumnListItem type="Active" id="item0_1714472906426">
                                                                         <cells>
                                                                             <Text id="text9" text="Plan"/>
-                                                                            <Text text="{fechasModel>fechaInicioConstruccion}" id="text11"/>
-                                                                            <Text text="{fechasModel>fechaFinPruebasTQ}" id="text100052881"/>
+                                                                            <DatePicker   value ="{fechasModel>fechaInicioConstruccion}" displayFormat="dd-MM-yyyy"  valueFormat="yyyy-MM-dd"  change="onFechaManualChange"  id="text11"/>
+                                                                          <DatePicker   value ="{fechasModel>fechaFinPruebasTQ}" displayFormat="dd-MM-yyyy"  valueFormat="yyyy-MM-dd"   change="onFechaManualChange"   id="text100052881"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>

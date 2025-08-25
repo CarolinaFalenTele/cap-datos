@@ -1,0 +1,10 @@
+== version=1
+COLUMN TABLE db_datos_planServicio (
+  ID NVARCHAR(36) NOT NULL,
+  hito NVARCHAR(5000),
+  fecha_inicio DATE,
+  fecha_fin DATE,
+  duracion TIME,
+  datosProyect_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+)

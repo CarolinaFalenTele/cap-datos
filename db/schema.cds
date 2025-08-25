@@ -289,6 +289,17 @@ entity planificacion {
       datosProyect_ID : UUID; // Clave foránea a DatosProyect
 };
 
+@cds.persistence.journal
+entity planServicio {
+  key ID              : UUID @cds.auto;
+      hito            : String;
+      fecha_inicio    : Date;
+      fecha_fin       : Date;
+      duracion        : Time;
+      datosProyect_ID : UUID; // Clave foránea a DatosProyect
+};
+
+
 
 @cds.persistence.journal
 
