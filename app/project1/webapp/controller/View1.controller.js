@@ -21,8 +21,10 @@ sap.ui.define([
 
       onInit: function () {
 
-        // Crear un modelo inicial con los hitos y vincularlo a la vista
-        var oModel = new sap.ui.model.json.JSONModel({
+        /* =======================================================
+           1. Inicializar modelos para Graficos 
+        ======================================================= */
+        var oPlanningModel = new sap.ui.model.json.JSONModel({
           milestones: [
             { fase: "Kick off", fechaInicio: null, fechaFin: null },
             { fase: "Diseño", fechaInicio: null, fechaFin: null },
@@ -32,20 +34,49 @@ sap.ui.define([
             { fase: "Paso AM", fechaInicio: null, fechaFin: null },
             { fase: "Server post/prod", fechaInicio: null, fechaFin: null }
           ],
-          chartData: [], // Inicializamos el chartData
+          chartData: []
         });
-        this.getView().setModel(oModel, "planning");
+        this.getView().setModel(oPlanningModel, "planning");
 
+        var oFechasPlanServi = new sap.ui.model.json.JSONModel({
+          fechas: [
+            {
+              fase: "Plan",
+              fechaInicio: null,   
+              fechaFin: null      
+            }
+            // Puedes añadir más fases si hace falta
+          ]
+        });
+        this.getView().setModel(oFechasPlanServi, "fechasModel");
+
+
+        /* =======================================================
+           2. Inicializar VizFrames
+        ======================================================= */
         var oVizframe1 = this.byId("idVizFrame");
-        oVizframe1.setVizProperties({ "title": { "text": "Planificacion" } });
-
-        var scales = [{
+        oVizframe1.setVizProperties({
+          "title": { "text": "Planificacion" }
+        });
+        oVizframe1.setVizScales([{
           'feed': 'color',
           'palette': ["#f7f7ff", "#0066ff", "#c5f8f9", "#75c0c7", "#f3e996", "#d6786b", "#e1c3f4"]
-        }];
-        var vizScalesOption = { replace: true };
-        oVizframe1.setVizScales(scales, vizScalesOption)
+        }], { replace: true });
 
+        var oVizframe2 = this.byId("idVizFrame2");
+        oVizframe2.setVizProperties({
+          "title": { "text": "Plan de Servicio" }
+        });
+
+        // Inicializar gráficos con datos
+        this.updateVizFrame1();
+        //   this.updateVizFrame2();
+        this.updateVizFrame3();
+
+
+        /* =======================================================
+           3. Inicializar propiedades internas
+        ======================================================= */
         this._tableValues = {
           "tablaConsuExter": {},
           "table_dimicFecha": {},
@@ -61,38 +92,7 @@ sap.ui.define([
         };
 
         this._editedRows = this._editedRows || {};
-
-        this._rowYearlySums = this._rowYearlySums || {}; // Asegúrate de que esté inicializado
-
-        this.currentRow = 0; // Fila actualmente seleccionada
-
-        this.currentTable = 0; // Para la tabla actual (esto es lo que faltaba definir)
-
-
-        var oFechasModel = new sap.ui.model.json.JSONModel({
-          fechas: [
-            {
-              fase: "Plan",
-              fechaInicioConstruccion: "2024-09-01",
-              fechaFinPruebasTQ: "2024-09-30"
-            }
-            // Agrega más datos según sea necesario
-          ]
-        });
-
-
-        this.getView().setModel(oFechasModel, "fechasModel");
-        
-
-       var oVizframe2 = this.byId("idVizFrame2");
-        oVizframe2.setVizProperties({ "title": { "text": "Plan de Servicio" } })
-
-        // Inicializar el gráfico con los datos actuales
-        this.updateVizFrame1();
-        this.updateVizFrame3();
-
-
-        this.updateVizFrame2();
+        this._rowYearlySums = this._rowYearlySums || {};
 
         this._yearlySums = {
           2024: 0,
@@ -103,47 +103,37 @@ sap.ui.define([
           2029: 0,
         };
 
-        this.token();
-        this.getUserInfo();
-
-        this.onColumnTotales();
-
-        /*  var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-  
-          oRouter.getRoute("viewWithMode").attachPatternMatched(this._onObjectMatched, this);*/
-
-        //   this._anioActual = new Date().getFullYear();
+        this.currentRow = 0;    // fila actualmente seleccionada
+        this.currentTable = 0;  // tabla actual
+        this._mode = "";        // fallback local
+        this._handleInputChangeCounter = 0;
 
 
-
-        this._mode = ""; // fallback local
-
+        /* =======================================================
+           4. Modelos de vista y routing
+        ======================================================= */
         const oViewModel = new sap.ui.model.json.JSONModel({ mode: "" });
         this.getView().setModel(oViewModel, "viewModel");
 
         const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-
-        // Conecta TODAS las rutas que pueden traer mode
         ["viewWithMode", "viewNoParam", "view", "viewWithAprobacion"].forEach(function (routeName) {
           oRouter.getRoute(routeName).attachPatternMatched(this._onObjectMatched, this);
         }, this);
 
 
-
+        /* =======================================================
+           5. Inicializar otros metodos 
+        ======================================================= */
+        this.token();
+        this.getUserInfo();
+        this.onColumnTotales();
         this.enviarID();
-
-
-
-        this.byId("coste6552").setVisible(false);
-
-
-        this._handleInputChangeCounter = 0;
-
-
-
         this.filtertables();
 
+        // Ajustes visuales
+        this.byId("coste6552").setVisible(false);
       },
+
 
 
 
@@ -206,8 +196,10 @@ sap.ui.define([
 
 
 
+      /* =======================================================
+                FILTROS INACTIVOS O ACTIVOS 
+      ======================================================= */
 
-      //   -------- FILTROS INACTIVOS O ACTIVOS ----------      
       filterAreaFalse: async function (ID) {
         var oSelect = this.byId("slct_area");
         var oModel = this.getOwnerComponent().getModel();
@@ -396,9 +388,6 @@ sap.ui.define([
           }
         }
       },
-
-
-
 
 
       filterClienteNuevo: async function (ID) {
@@ -782,8 +771,6 @@ sap.ui.define([
 
 
 
-
-
       filtertables: async function () {
         const aTableIds = [
           "tablaConsuExter",
@@ -1021,59 +1008,6 @@ sap.ui.define([
       },
 
 
-      /* filterAreaFalse: async function (ID) {
-         console.log("datos traidos " + ID);
-     
-         var oModel = this.getOwnerComponent().getModel();
-   
-   
-         var sServiceUrl = oModel.sServiceUrl; // por ejemplo: "/odata/v4/datos-cdo/"
-         var sUrl = sServiceUrl + "/odata/v4/datos-cdo/Area(" + "'" + ID + "'" + ")";
-     
-         fetch("/odata/v4/datos-cdo/Area('123e4567-e89b-12d3-a456-426614174002')")
-             .then(response => {
-                 if (!response.ok) {
-                     throw new Error("No se pudo obtener el registro");
-                 }
-   
-                 console.log("lo que trae " + JSON.stringify(response));
-                 return response.json();
-             })
-             .then(data => {
-                 if (data && data.Activo === false) {
-   
-                       console.log("DATOS" + JSON.stringify(data));
-                       console.log("Seteando área inactiva: ", ID);
-   
-                     // Establece el ID como seleccionado aunque no esté en el dropdown
-                     oSelect.setSelectedKey(ID);
-                     console.log("oSelect:", oSelect);
-   
-                 }
-             })
-             .catch(error => {
-                 console.error("Error al obtener el área:", error);
-             });
-   
-   
-   
-         var oSelect = this.byId("slct_area");
-     
-         // 1. Hacemos el bindItems como siempre (solo los activos)
-         oSelect.bindItems({
-             path: "/Area",
-             filters: [
-                 new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
-             ],
-             template: new sap.ui.core.Item({
-                 key: "{ID}",
-                 text: "{NombreArea}"
-             })
-         });
-     
-       
-     },*/
-
 
 
       refreshODataModel: function () {
@@ -1238,10 +1172,6 @@ sap.ui.define([
             console.error("Error obteniendo datos del usuario:", error);
           });
       },
-
-
-
-
 
       _startSessionWatcher: function (token) {
         const decoded = this._parseJwt(token);
@@ -1673,7 +1603,8 @@ sap.ui.define([
 
         // Carga de datos adicionales (en paralelo)
         await Promise.all([
-          this.fetchMilestones(this._sProjectID),
+          this.leerPlanificacion(this._sProjectID),
+          this.leerPlanServicio(this._sProjectID),
           this.leerProveedor(this._sProjectID),
           this.leerFacturacion(this._sProjectID),
           this.leerClientFactura(this._sProjectID),
@@ -2414,7 +2345,8 @@ sap.ui.define([
 
             // Carga paralela de datos relacionados
             await Promise.all([
-              this.fetchMilestones(sProjectID),
+              this.leerPlanificacion(sProjectID),
+              this.leerPlanServicio(sProjectID),
               this.leerProveedor(sProjectID),
               this.leerFacturacion(sProjectID),
               this.leerClientFactura(sProjectID),
@@ -2733,7 +2665,7 @@ sap.ui.define([
       //----------Traer informacion de tabla Planificacion--------
 
 
-      fetchMilestones: async function (projectID) {
+      leerPlanificacion: async function (projectID) {
         if (!projectID) {
           console.error("Error: projectID es inválido o indefinido:", projectID);
           //     sap.m.MessageToast.show("Error: ID del proyecto no válido.");
@@ -2810,6 +2742,70 @@ sap.ui.define([
       },
 
 
+      leerPlanServicio: async function (projectID) {
+        if (!projectID) {
+          console.error("Error: projectID es inválido o indefinido:", projectID);
+          return;
+        }
+
+        var sUrl = `/odata/v4/datos-cdo/planServicio?$filter=datosProyect_ID eq '${projectID}'`;
+
+        try {
+          const response = await fetch(sUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Error en la respuesta de la API: ' + errorText);
+          }
+
+          const oData = await response.json();
+
+          if (!oData || !oData.value || !Array.isArray(oData.value) || oData.value.length === 0) {
+            console.warn("No se encontraron datos de planServicio para el proyecto:", projectID);
+            return;
+          }
+
+          // Ordenar por fecha inicio
+          oData.value.sort((a, b) => new Date(a.fecha_inicio) - new Date(b.fecha_inicio));
+
+          // Tomamos el modelo "fechasModel" que es el que usa el VizFrame
+          var oFechasModel = this.getView().getModel("fechasModel");
+          if (!oFechasModel) {
+            oFechasModel = new sap.ui.model.json.JSONModel();
+            this.getView().setModel(oFechasModel, "fechasModel");
+          }
+
+          // Transformamos los datos en el formato que espera el FlattenedDataset
+          const chartData = oData.value.map(item => {
+            let fechaInicio = item.fecha_inicio ? new Date(item.fecha_inicio).toISOString().split("T")[0] : null;
+            let fechaFin = item.fecha_fin ? new Date(item.fecha_fin).toISOString().split("T")[0] : null;
+
+            return {
+              fase: item.hito,                         // se va al eje X
+              duracion: item.duracion,                 // se va al eje Y
+              label: `Inicio: ${fechaInicio} - Fin: ${fechaFin}` // se muestra como tooltip
+            };
+          });
+
+          // Guardamos en el modelo
+          oFechasModel.setProperty("/chartData", chartData);
+
+          // Guardamos primer ID
+          this._idPlanServicio = oData.value[0].ID;
+
+          console.log("Datos cargados para VizFrame2:", chartData);
+
+        } catch (error) {
+          console.error("Error al obtener los datos de planServicio:", error);
+        }
+      },
+
 
 
 
@@ -2831,6 +2827,9 @@ sap.ui.define([
             const errorText = await response.text();
             throw new Error('Network response was not ok: ' + errorText);
           }
+
+         this.byId("idTextComProve").setEditable(false);
+
 
           const oData = await response.json();
           var oTable = this.byId("table2");
@@ -5012,7 +5011,7 @@ sap.ui.define([
 
 
       //--------------------------METODOS GRAFICOS -------------------------------------------
-      //------ Metodo vizframe1 y seleccion fechas importantes ------
+
       updateVizFrame1: function (oData) {
         var oView = this.getView();
         var oModel = oView.getModel("planning");
@@ -5022,25 +5021,18 @@ sap.ui.define([
           return;
         }
 
-        //var oData = oModel.getData();
-
         if (!oData || !oData.value) {
-          //    console.log("Los datos del modelo son inválidos o no contienen 'value'.", oData);
           return;
         }
 
-        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
-          pattern: "yyyy-MM-dd",
-        });
+        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
 
         var aChartData = oData.value.map(function (milestone) {
           var startDate = milestone.fecha_inicio ? new Date(milestone.fecha_inicio) : null;
           var endDate = milestone.fecha_fin ? new Date(milestone.fecha_fin) : null;
 
-          // Validación de las fechas
           if (startDate && !isNaN(startDate.getTime()) && endDate && !isNaN(endDate.getTime())) {
-            var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
-
+            var duration = (endDate - startDate) / (1000 * 60 * 60 * 24);
             return {
               fase: milestone.hito,
               fechaInicio: oDateFormat.format(startDate),
@@ -5050,185 +5042,110 @@ sap.ui.define([
             };
           } else {
             console.warn("Fechas no válidas para el hito:", milestone);
-            return null; // Devuelve null si las fechas no son válidas
+            return null;
           }
-        }).filter(Boolean); // Filtra los elementos nulos
+        }).filter(Boolean);
 
         oModel.setProperty("/chartData", aChartData);
-        console.log(aChartData);
 
         this._aChartData = aChartData;
-
-        // Ajuste en la lógica de fases importantes
-        var oFechas = {};
-      /*  aChartData.forEach(function (oHito) {
-          // Validar nombres de fases exactos para obtener las fechas correctas
-          if (oHito.fase === "Kick off") { // Actualiza si es necesario
-            oFechas.fechaInicioConstruccion = oHito.fechaInicio;
-          }
-          if (oHito.fase === "Server post/prod") { // Asegúrate de que el nombre de fase es correcto
-            oFechas.fechaFinPruebasTQ = oHito.fechaFin;
-          }
-        });
-
-        // Asegúrate de que las fechas importantes se carguen correctamente
-        var oFechasModel = new sap.ui.model.json.JSONModel({
-          fechas: [
-            {
-              fase: "Plan",
-              fechaInicioConstruccion: oFechas.fechaInicioConstruccion || "No definida",
-              fechaFinPruebasTQ: oFechas.fechaFinPruebasTQ || "No definida"
-            }
-          ]
-        });
-
-        oView.setModel(oFechasModel, "fechasModel");
-
-        this.updateVizFrame2(oFechasModel);*/
       },
       //----------------------------------------------------------
 
 
 
-      //------ Meotdo updateVizframe2 recoge fechas importantes y hace un grafico 
 
+      //------ Meotdo updateVizframe2 para Plan de Servicio 
 
-   updateVizFrame2: function(oArg) {
-    var oView = this.getView();
-    var oPlanning = oView.getModel("planning");
-
-    // Intentamos tomar el modelo de fechas
-    var oFechasModel = oArg instanceof sap.ui.model.json.JSONModel ? oArg : oView.getModel("fechasModel");
-
-    var fechasData = oFechasModel ? oFechasModel.getProperty("/fechas") : null;
-
-    // Si no hay modelo, tomamos los valores directamente de los DatePicker
-    if (!fechasData) {
-        fechasData = [{
-            fase: "Plan",
-            fechaInicioConstruccion: this.byId("text11") ? this.byId("text11").getDateValue() : null,
-            fechaFinPruebasTQ: this.byId("text100052881") ? this.byId("text100052881").getDateValue() : null
-        }];
-    }
-
-    var oDateFormat = sap.ui.core.format.DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
-
-    var aChartData2 = fechasData.map(function(fecha) {
-        var startDate = fecha.fechaInicioConstruccion ? new Date(fecha.fechaInicioConstruccion) : null;
-        var endDate = fecha.fechaFinPruebasTQ ? new Date(fecha.fechaFinPruebasTQ) : null;
-
-        if (startDate && !isNaN(startDate.getTime()) && endDate && !isNaN(endDate.getTime())) {
-            var duration = Math.round((endDate - startDate) / (1000*60*60*24));
-            return {
-                fase: fecha.fase || "Plan",
-                fechaInicio: oDateFormat.format(startDate),
-                fechaFin: oDateFormat.format(endDate),
-                duracion: duration,
-                label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
-            };
-        }
-        return null;
-    }).filter(Boolean);
-
-    oPlanning.setProperty("/chartModel", aChartData2);
-    console.log("Modelo/Valores manuales", aChartData2);
-},
-
-
-
-onFechaManualChange: function(oEvent) {
-    var oView = this.getView();
-    var oPlanning = oView.getModel("planning");
-    var oDateFormat = sap.ui.core.format.DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
-
-    // Usar el valor que viene en el evento
-    var startVal = this.byId("text11").getValue() || oEvent.getSource().getValue();
-    var endVal   = this.byId("text100052881").getValue() || oEvent.getSource().getValue();
-
-    console.log("Valores obtenidos del DatePicker:", startVal, endVal);
-
-    if (!startVal || !endVal) {
-        console.warn("Alguna de las fechas está vacía. No se actualizará el gráfico.");
-        return;
-    }
-
-    // Convertir a Date
-    var startDate = new Date(startVal);
-    var endDate   = new Date(endVal);
-
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        console.warn("Fechas inválidas. No se actualizará el gráfico.");
-        return;
-    }
-
-    var duration = Math.round((endDate - startDate) / (1000*60*60*24));
-
-    // Actualizar el modelo planning
-    oPlanning.setProperty("/chartModel", [{
-        fase: "Plan",
-        fechaInicio: oDateFormat.format(startDate),
-        fechaFin: oDateFormat.format(endDate),
-        duracion: duration,
-        label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
-    }]);
-
-    console.log("Modelo planning actualizado manualmente:", oPlanning.getProperty("/chartModel"));
-
-    // Actualizar VizFrame
-    if (this.updateVizFrame2) {
-        this.updateVizFrame2();
-    }
-},
-
-
-      /// original 
- /*     updateVizFrame2: function (oFechasModel) {
+      onFechaManualChange: function () {
         var oView = this.getView();
-        var oModel = oView.getModel("planning"); // Obtén el modelo 'planning' si es necesario
+        var oFechasModel = oView.getModel("fechasModel");
+        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
 
-        if (!(oFechasModel instanceof sap.ui.model.json.JSONModel) || !oFechasModel.getData) {
-          //  console.log("El modelo 'fechasModel' no está definido.");
+        // Leer las dos fechas desde el modelo directamente
+        var startVal = oFechasModel.getProperty("/fechas/0/fechaInicio");
+        var endVal = oFechasModel.getProperty("/fechas/0/fechaFin");
+
+        console.log("Valores obtenidos del modelo:", startVal, endVal);
+
+        if (!startVal || !endVal) {
+          console.warn("Alguna de las fechas está vacía. No se actualizará el gráfico.");
           return;
         }
 
-        var fechasData = oFechasModel.getData().fechas; // Obtén los datos del modelo
+        var startDate = new Date(startVal);
+        var endDate = new Date(endVal);
 
-        var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
-          pattern: "yyyy-MM-dd",
-        });
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          console.warn("Fechas inválidas. No se actualizará el gráfico.");
+          return;
+        }
 
-        // Procesar datos para el gráfico
-        var aChartData2 = fechasData.map(function (fechas) {
-          var startDate = fechas.fechaInicioConstruccion && fechas.fechaInicioConstruccion !== "No definida" ? new Date(fechas.fechaInicioConstruccion) : null;
-          var endDate = fechas.fechaFinPruebasTQ && fechas.fechaFinPruebasTQ !== "No definida" ? new Date(fechas.fechaFinPruebasTQ) : null;
+        var duration = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
 
-          // Validación de las fechas
-          if (startDate && !isNaN(startDate.getTime()) && endDate && !isNaN(endDate.getTime())) {
-            var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
+        var aChartData = [{
+          fase: "Plan",
+          fechaInicio: oDateFormat.format(startDate),
+          fechaFin: oDateFormat.format(endDate),
+          duracion: duration,
+          label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
+        }];
 
-            return {
-              fase: fechas.fase,
-              fechaInicio: oDateFormat.format(startDate),
-              fechaFin: oDateFormat.format(endDate),
-              duracion: duration,
-              label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
-            };
-          } else {
-            //   console.log("Fechas no válidas para la fase:", fechas);
-            return null; // Devuelve null si las fechas no son válidas
-          }
-        }).filter(Boolean); // Filtra los elementos nulos
+        oFechasModel.setProperty("/chartData", aChartData);
 
-        // Asegúrate de que aChartData2 tenga la estructura adecuada
-        oModel.setProperty("/chartModel", aChartData2); // Cambia esto a la propiedad que estás usando en tu modelo
-        //   console.log("Datos del gráfico:", aChartData2);
+        console.log("Modelo fechasModel actualizado:", aChartData);
+      },
 
 
-      },*/
+
+      /// original 
+      /*     updateVizFrame2: function (oFechasPlanServi) {
+             var oView = this.getView();
+             var oModel = oView.getModel("planning"); // Obtén el modelo 'planning' si es necesario
+     
+             if (!(oFechasPlanServi instanceof sap.ui.model.json.JSONModel) || !oFechasPlanServi.getData) {
+               //  console.log("El modelo 'fechasModel' no está definido.");
+               return;
+             }
+     
+             var fechasData = oFechasPlanServi.getData().fechas; // Obtén los datos del modelo
+     
+             var oDateFormat = sap.ui.core.format.DateFormat.getInstance({
+               pattern: "yyyy-MM-dd",
+             });
+     
+             // Procesar datos para el gráfico
+             var aChartData2 = fechasData.map(function (fechas) {
+               var startDate = fechas.fechaInicioConstruccion && fechas.fechaInicioConstruccion !== "No definida" ? new Date(fechas.fechaInicioConstruccion) : null;
+               var endDate = fechas.fechaFinPruebasTQ && fechas.fechaFinPruebasTQ !== "No definida" ? new Date(fechas.fechaFinPruebasTQ) : null;
+     
+               // Validación de las fechas
+               if (startDate && !isNaN(startDate.getTime()) && endDate && !isNaN(endDate.getTime())) {
+                 var duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Convertir a días
+     
+                 return {
+                   fase: fechas.fase,
+                   fechaInicio: oDateFormat.format(startDate),
+                   fechaFin: oDateFormat.format(endDate),
+                   duracion: duration,
+                   label: `Inicio: ${oDateFormat.format(startDate)}, Fin: ${oDateFormat.format(endDate)}, Duración: ${duration} días`
+                 };
+               } else {
+                 //   console.log("Fechas no válidas para la fase:", fechas);
+                 return null; // Devuelve null si las fechas no son válidas
+               }
+             }).filter(Boolean); // Filtra los elementos nulos
+     
+             // Asegúrate de que aChartData2 tenga la estructura adecuada
+             oModel.setProperty("/chartModel", aChartData2); // Cambia esto a la propiedad que estás usando en tu modelo
+             //   console.log("Datos del gráfico:", aChartData2);
+     
+     
+           },*/
       //-----------------------------------------------------------    
 
 
-
+      //---- Calcular duracion de dias 
 
       updateVizFrame3: function () {
         var oView = this.getView();
@@ -5283,35 +5200,6 @@ onFechaManualChange: function(oEvent) {
 
 
         this._aChartData = aChartData;
-
-
-        var oFechas = {};
-        aChartData.forEach(function (oHito) {
-          if (oHito.fase === "Kick off") {
-            oFechas.fechaInicioConstruccion = oHito.fechaInicio;
-          }
-          if (oHito.fase === "Server post/prod") {
-            oFechas.fechaFinPruebasTQ = oHito.fechaFin;
-          }
-        });
-
-
-        // Crear un modelo JSON para las fechas específicas
-        var oFechasModel = new sap.ui.model.json.JSONModel({
-          fechas: [
-            {
-              fase: "Plan",
-              fechaInicioConstruccion: oFechas.fechaInicioConstruccion,
-              fechaFinPruebasTQ: oFechas.fechaFinPruebasTQ
-            }
-          ]
-        });
-
-        // Establecer el nuevo modelo en la vista
-        oView.setModel(oFechasModel, "fechasModel");
-
-        this.updateVizFrame2(oFechasModel);
-
 
       },
 
@@ -5680,7 +5568,6 @@ onFechaManualChange: function(oEvent) {
 
       onSave: async function () {
 
-        //console.log("Entre al ONSAVE ");
         const usuarioOn = this._usuarioActual;
 
         let sMode = this.getView().getModel("viewModel").getProperty("/mode");
@@ -5704,7 +5591,6 @@ onFechaManualChange: function(oEvent) {
           sMode = this._sProjectID ? "edit" : "create";
         }
 
-        //console.log("MODO FINAL USADO EN onSave:", sMode);
 
 
         let errorCount = 0;
@@ -5830,7 +5716,12 @@ onFechaManualChange: function(oEvent) {
         const LicenciaValidation = this.validateLicencia();
         const MultijuridaCheck = this.validateClienteFacturacion();
         const SeguimientValidation = this.validatePlanning();
-        const validationObjAlcan = this.validateTextAreas();
+        //    const validationObjAlcan = this.validateTextAreas();
+        const validarPlanServi = this.validatePlanServicio();
+        const validaClientes = this.validateClienteCampos();
+        const validaProvee = this.validateProveedores();
+        const validaPluriAnual = this.validatePluriAnual();
+
 
         if (!chartValidation.success) {
           errorMessages.push(...chartValidation.errors);
@@ -5897,8 +5788,22 @@ onFechaManualChange: function(oEvent) {
 
 
 
-        if (!validationObjAlcan.success) {
-          errorMessages.push(...validationObjAlcan.errors);
+        if (!validaClientes.success) {
+          errorMessages.push(...validaClientes.errors);
+        }
+
+        if (!validarPlanServi.success) {
+          errorMessages.push(...validarPlanServi.errors);
+        }
+
+
+        if (!validaProvee.success) {
+          errorMessages.push(...validaProvee.errors);
+        }
+
+
+        if (!validaPluriAnual.success) {
+          errorMessages.push(...validaPluriAnual.errors);
         }
 
         validateField(this.byId("input1"), snameProyect, "Nombre del Proyecto");
@@ -5906,8 +5811,8 @@ onFechaManualChange: function(oEvent) {
         //  validateField(this.byId("box_multiJuridica"), sMultiJuri, "Multijuridica");
         validateField(this.byId("date_inico"), sFechaIni, "Inicio", "date");
         validateField(this.byId("date_fin"), sFechaFin, "Fin", "date");
-        validateField(this.byId("idObje"), sdescripcion, "Objectivo y Alcance");
-        validateField(this.byId("idAsunyRestri"), sdescripcion, "Objectivo y Alcance");
+        validateField(this.byId("idObje"), sObjetivoAlcance, "Objectivo y Alcance");
+
 
         if (errorCount > 0 || errorMessages.length > 0) {
           let message = "";
@@ -5926,6 +5831,7 @@ onFechaManualChange: function(oEvent) {
           sap.m.MessageBox.warning(message, { title: "Advertencia" });
           return;
         }
+
 
 
 
@@ -6065,6 +5971,7 @@ onFechaManualChange: function(oEvent) {
 
 
 
+
           } else if (this._mode === "create") {
             // En modo create o sin sProjectID --> creación (POST)
             method = "POST";
@@ -6154,7 +6061,7 @@ onFechaManualChange: function(oEvent) {
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
-
+                 this.insertPlanServicio(generatedId, sCsrfToken)
 
               ]);
 
@@ -6254,85 +6161,37 @@ onFechaManualChange: function(oEvent) {
         }
       },
 
-
-
-
-
-
-      /////----------------------------- VALIDACIONES ANTES DE ENVIAR  --------------------------------    
-
-
-      validateTextAreas: function () {
+      validatePluriAnual: function () {
         const errors = [];
 
-        // Lista de TextAreas a validar
-        const aTextAreas = [
-          { id: "idObje", nombre: "Objetivo y Alcance" },
-          { id: "idAsunyRestri", nombre: "Asunciones y Restricciones" }
-        ];
+        const oCheckPluri = this.byId("box_pluriAnual");
+        const oDateInicio = this.byId("date_inico");
+        const oDateFin = this.byId("date_fin");
 
-        aTextAreas.forEach(item => {
-          const oTextArea = this.byId(item.id);
-          if (oTextArea) {
-            const sValue = oTextArea.getValue().trim();
-            if (!sValue) {
-              errors.push(`El campo "${item.nombre}" es obligatorio.`);
-              oTextArea.addStyleClass("fieldError"); // Clase CSS para marcar en rojo
-            } else {
-              oTextArea.removeStyleClass("fieldError");
+        // Resetear estados
+        oDateInicio.setValueState("None");
+        oDateFin.setValueState("None");
+
+        // Solo validar si el checkbox está marcado
+        if (oCheckPluri.getSelected()) {
+          const sInicio = oDateInicio.getDateValue();
+          const sFin = oDateFin.getDateValue();
+
+          if (!sInicio || !sFin) {
+            errors.push("Debes ingresar fechas de inicio y fin para validar PluriAnual.");
+            if (!sInicio) oDateInicio.setValueState("Error");
+            if (!sFin) oDateFin.setValueState("Error");
+          } else {
+            // Calcular diferencia en años
+            const diffAnios = sFin.getFullYear() - sInicio.getFullYear();
+            const diffMeses = (sFin.getMonth() - sInicio.getMonth()) + diffAnios * 12;
+
+            if (diffMeses < 12) {
+              errors.push("Si seleccionaste PluriAnual, la duración debe ser de al menos 1 año.");
+              oDateInicio.setValueState("Error");
+              oDateFin.setValueState("Error");
             }
           }
-        });
-
-        return {
-          success: errors.length === 0,
-          errors
-        };
-      },
-
-
-
-      // Validacion select  seguimiento 
-      validatePlanning: function () {
-        const errors = [];
-
-        // Obtenemos el valor seleccionado en el select de seguimiento 
-        const oSelectMet = this.byId("selc_Segui"); // Ajusta el ID
-        const sMetValue = oSelectMet && oSelectMet.getSelectedItem()
-          ? oSelectMet.getSelectedItem().getText().trim()
-          : "";
-
-        console.log("Método seleccionado: " + sMetValue);
-
-        // Metodologías que requieren planificación obligatoria
-        const aMetPlanningRequired = ["Agile", "Mixto", "Waterfall"];
-
-        // Obtenemos la planificación del modelo
-        const oModel = this.getView().getModel("planning");
-        const oPlanningData = oModel.getProperty("/milestones");
-        const oPlanningTable = this.byId("planningTable");
-        const aItems = oPlanningTable ? oPlanningTable.getItems() : [];
-
-        if (aMetPlanningRequired.includes(sMetValue)) {
-          if (!oPlanningData || oPlanningData.length === 0) {
-            errors.push(`Rellenar Planificación es obligatoria cuando se selecciona la metodología "${sMetValue}".`);
-            if (oPlanningTable) oPlanningTable.addStyleClass("tableError");
-          } else {
-            oPlanningData.forEach((row, index) => {
-              const oItem = aItems[index]; // ColumnListItem correspondiente
-              if (!row.fechaInicio || !row.fechaFin) {
-                errors.push(`La fase "${row.fase}" está incompleta.`);
-                if (oItem) oItem.addStyleClass("rowError"); // Resalta la fila
-              } else {
-                if (oItem) oItem.removeStyleClass("rowError");
-              }
-            });
-            if (oPlanningTable) oPlanningTable.removeStyleClass("tableError");
-          }
-        } else {
-          // Si la metodología no requiere planificación, quitamos todos los estilos
-          aItems.forEach(oItem => oItem.removeStyleClass("rowError"));
-          if (oPlanningTable) oPlanningTable.removeStyleClass("tableError");
         }
 
         return {
@@ -6341,6 +6200,399 @@ onFechaManualChange: function(oEvent) {
         };
       },
 
+
+      _checkIfAnyTableHasData: function () {
+        let hasData = false;
+
+        // Recorremos todas las tablas que registraste en _tableValues
+        for (const tableId of Object.keys(this._tableValues)) {
+          const oTable = this.byId(tableId);
+          if (!oTable) continue; // si no existe en la vista, salta
+
+          const aItems = oTable.getItems();
+          for (let i = 0; i < aItems.length; i++) {
+            const aCells = aItems[i].getCells();
+            // comprobamos si alguna celda tiene valor o selección
+            const isRowFilled = aCells.some(cell => {
+              if (cell.getValue) {
+                return cell.getValue().trim() !== "";
+              }
+              if (cell.getSelectedKey) {
+                return cell.getSelectedKey().trim() !== "";
+              }
+              return false;
+            });
+
+            if (isRowFilled) {
+              hasData = true;
+              break; // no hace falta seguir revisando esta tabla
+            }
+          }
+
+          if (hasData) break; // ya encontramos una tabla con datos
+        }
+
+        return hasData;
+      },
+
+
+
+
+
+      /////----------------------------- VALIDACIONES ANTES DE ENVIAR  --------------------------------    
+      validateProveedores: function () {
+        const errors = [];
+        let success = true;
+
+        const oTable = this.byId("table2");
+        const aItems = oTable ? oTable.getItems() : [];
+
+        // Función para contar proveedores válidos por columna
+        function countProveedoresValidos(items, columnaIndex) {
+          let count = 0;
+          items.forEach(item => {
+            const cells = item.getCells();
+            const cell = cells[columnaIndex];
+            const value = cell.getValue ? cell.getValue().trim() : "";
+            if (value) count++;
+          });
+          return count;
+        }
+
+        const oCheckCondi = this.byId("box_condi")?.getSelected();
+        const oCheckProve = this.byId("box_prove")?.getSelected();
+        const oTipoCompra = this.byId("select_tipoCom");
+
+        // --- Validar Tipo de compra si se selecciona alguna opción ---
+        if (oCheckCondi || oCheckProve) {
+          if (!oTipoCompra || !oTipoCompra.getSelectedKey()) {
+            errors.push("El campo Tipo de compra es obligatorio.");
+            if (oTipoCompra) oTipoCompra.setValueState("Error");
+            success = false;
+          } else {
+            oTipoCompra.setValueState("None");
+          }
+        }
+
+        // --- Validaciones Condicionado ---
+        if (oCheckCondi) {
+          const totalCondi = countProveedoresValidos(aItems, 0); // columna Condicionado
+          if (totalCondi < 1) {
+            errors.push("Debe haber al menos 1 proveedor si es CONDICIONADO.");
+            success = false;
+          }
+
+          const oMotivo = this.byId("selectMotivo");
+          if (!oMotivo || !oMotivo.getSelectedKey()) {
+            errors.push("Debe indicar el motivo de condicionamiento.");
+            if (oMotivo) oMotivo.setValueState("Error");
+            success = false;
+          } else {
+            oMotivo.setValueState("None");
+          }
+
+          const oJustificacion = this.byId("idTextComProve"); // nuevo TextArea
+          if (!oJustificacion || !oJustificacion.getValue()) {
+            errors.push("Debe indicar la justificación del condicionamiento.");
+            if (oJustificacion) oJustificacion.setValueState("Error");
+            success = false;
+          } else {
+            oJustificacion.setValueState("None");
+          }
+        }
+
+        // --- Validaciones No Condicionado ---
+        if (oCheckProve) {
+          const totalNoCondi = countProveedoresValidos(aItems, 1); // columna Proveedores
+          if (totalNoCondi < 2) {
+            errors.push("Debe haber al menos 2 proveedores si es NO CONDICIONADO.");
+            success = false;
+          }
+        }
+
+        return { success, errors };
+      },
+
+
+
+
+      /*    validateTextAreas: function () {
+            const errors = [];
+    
+            // Lista de TextAreas a validar
+            const aTextAreas = [
+              { id: "idObje", nombre: "Objetivo y Alcance" },
+              { id: "idAsunyRestri", nombre: "Asunciones y Restricciones" }
+            ];
+    
+            aTextAreas.forEach(item => {
+              const oTextArea = this.byId(item.id);
+              if (oTextArea) {
+                const sValue = oTextArea.getValue().trim();
+                if (!sValue) {
+                  errors.push(`El campo "${item.nombre}" es obligatorio.`);
+                  oTextArea.addStyleClass("fieldError"); // Clase CSS para marcar en rojo
+                } else {
+                  oTextArea.removeStyleClass("fieldError");
+                }
+              }
+            });
+    
+            return {
+              success: errors.length === 0,
+              errors
+            };
+          },*/
+
+      validateClienteCampos: function () {
+        const errors = [];
+
+        const oSelect4 = this.byId("slct_inic");
+        const sSelectValue = oSelect4 && oSelect4.getSelectedItem()
+          ? oSelect4.getSelectedItem().getText().trim()
+          : "";
+
+        // Valores que requieren los campos obligatorios
+        const aValoresRequierenCampos = [
+          "Proyecto/Servicio Interno PdV",
+          "Proyecto/Servicio a Cliente Externo"
+        ];
+
+        // Obtener los inputs
+        const oClienteFun = this.byId("int_clienteFun");
+        const oCfactur = this.byId("id_Cfactur");
+        const oComentPdV = this.byId("idComenpVd");
+
+        // Resetear estilos antes de validar
+        oClienteFun.setValueState("None");
+        oCfactur.setValueState("None");
+        oComentPdV.setValueState("None");
+
+        if (aValoresRequierenCampos.includes(sSelectValue)) {
+          const sClienteFun = oClienteFun?.getValue()?.trim();
+          const sCfactur = oCfactur?.getValue()?.trim();
+
+          if (!sClienteFun) {
+            errors.push(`Si seleccionaste "${sSelectValue}", debes completar el campo "Cliente Funcional".`);
+            oClienteFun.setValueState("Error");
+          }
+
+          if (!sCfactur) {
+            errors.push(`Si seleccionaste "${sSelectValue}", debes completar el campo "Cliente a Facturación".`);
+            oCfactur.setValueState("Error");
+          }
+
+          // Validar solo cuando es Proyecto/Servicio Interno PdV
+          if (sSelectValue === "Proyecto/Servicio Interno PdV") {
+            const sComentario = oComentPdV?.getValue()?.trim();
+            if (!sComentario) {
+              errors.push(`Si seleccionaste "${sSelectValue}", debes escribir un comentario en el campo requerido`);
+              oComentPdV.setValueState("Error");
+            }
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+      /*   validateClienteCampos: function () {
+           const errors = [];
+   
+           const oSelect4 = this.byId("slct_inic");
+           const sSelectValue = oSelect4 && oSelect4.getSelectedItem()
+             ? oSelect4.getSelectedItem().getText().trim()
+             : "";
+   
+           // Valores que requieren los campos obligatorios
+           const aValoresRequierenCampos = [
+             "Proyecto/Servicio Interno PdV",
+             "Proyecto/Servicio a Cliente Externo"
+           ];
+   
+           // Obtener los inputs
+           const oClienteFun = this.byId("int_clienteFun");
+           const oCfactur = this.byId("id_Cfactur");
+   
+           // Resetear estilos antes de validar
+           oClienteFun.setValueState("None");
+           oCfactur.setValueState("None");
+   
+           if (aValoresRequierenCampos.includes(sSelectValue)) {
+             const sClienteFun = oClienteFun?.getValue()?.trim();
+             const sCfactur = oCfactur?.getValue()?.trim();
+   
+             if (!sClienteFun) {
+               errors.push(`Si seleccionaste "${sSelectValue}", debes completar el campo "Cliente Funcional  y Cliente a Facturación".`);
+               oClienteFun.setValueState("Error");
+             }
+   
+             if (!sCfactur) {
+               // errors.push(`Si seleccionaste "${sSelectValue}", debes completar el campo "Cliente a Facturar".`);
+               oCfactur.setValueState("Error");
+             }
+           }
+   
+           return {
+             success: errors.length === 0,
+             errors
+           };
+         },*/
+
+
+      validatePlanning: function () {
+        const errors = [];
+
+        // Valor del select
+        const oSelectMet = this.byId("selc_Segui");
+        const sMetValue = oSelectMet && oSelectMet.getSelectedItem()
+          ? oSelectMet.getSelectedItem().getText().trim()
+          : "";
+
+        // Modelos
+        const oModel = this.getView().getModel("planning");
+
+        const aMetPlanningRequired = ["Agile", "Mixto", "Waterfall"];
+        if (aMetPlanningRequired.includes(sMetValue)) {
+          const oPlanningData = oModel.getProperty("/milestones") || [];
+          const oPlanningTable = this.byId("planningTable");
+          const aItems = oPlanningTable ? oPlanningTable.getItems() : [];
+
+          if (oPlanningData.length === 0) {
+            //Caso 1: No hay hitos en absoluto
+            errors.push(`Rellenar Planificación es obligatorio cuando se selecciona la metodología "${sMetValue}".`);
+            if (oPlanningTable) oPlanningTable.addStyleClass("tableError");
+          } else {
+            let allEmpty = true;
+            let completedCount = 0; // Contador de hitos completados
+
+            oPlanningData.forEach((row, index) => {
+              const oItem = aItems[index];
+
+              // Detectar si hay al menos alguna fecha rellenada
+              if (row.fechaInicio || row.fechaFin) {
+                allEmpty = false;
+              }
+
+              // Contar hitos completos (inicio y fin)
+              if (row.fechaInicio && row.fechaFin) {
+                completedCount++;
+              }
+
+              // Validar consistencia
+              if (row.fechaInicio && !row.fechaFin) {
+                errors.push(`La fase "${row.fase}" tiene fecha de inicio pero falta la fecha de fin.`);
+                if (oItem) oItem.addStyleClass("rowError");
+              } else if (!row.fechaInicio && row.fechaFin) {
+                errors.push(`La fase "${row.fase}" tiene fecha de fin pero falta la fecha de inicio.`);
+                if (oItem) oItem.addStyleClass("rowError");
+              } else {
+                if (oItem) oItem.removeStyleClass("rowError");
+              }
+            });
+
+            // Si todas las filas están vacías, mensaje global
+            if (allEmpty) {
+              errors.push(`Al seleccionar "${sMetValue}", debe completar al menos 2 hitos del proyecto en la Planificación Preliminar. No todas las fases son obligatorias, pero se recomienda registrar la mayoría para una mejor trazabilidad.`);
+              if (oPlanningTable) oPlanningTable.addStyleClass("tableError");
+            } else if (completedCount < 2) {
+              errors.push(`Debe completar al menos 2 hitos para la metodología "${sMetValue}".`);
+              if (oPlanningTable) oPlanningTable.addStyleClass("tableError");
+            } else {
+              if (oPlanningTable) oPlanningTable.removeStyleClass("tableError");
+            }
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
+
+
+
+
+
+      // Validacion select  seguimiento 
+      validatePlanServicio: function () {
+        const errors = [];
+
+        // Helper para normalizar fechas
+        function resetTime(date) {
+          if (!date) return null;
+          const d = new Date(date);
+          d.setHours(0, 0, 0, 0);
+          return d;
+        }
+
+        // Obtenemos el valor seleccionado en el select de seguimiento
+        const oSelectMet = this.byId("selc_Segui");
+        const sMetValue = oSelectMet && oSelectMet.getSelectedItem()
+          ? oSelectMet.getSelectedItem().getText().trim()
+          : "";
+
+        // Metodologías que requieren planificación obligatoria
+        const aMetPlanningRequired = ["Sin Seguimiento", "Servicio"];
+
+        if (aMetPlanningRequired.includes(sMetValue)) {
+          // Fechas del formulario
+          const sFechaIniForm = resetTime(this.byId("date_inico").getDateValue());
+          const sFechaFinForm = resetTime(this.byId("date_fin").getDateValue());
+
+          if (!sFechaIniForm || !sFechaFinForm) {
+            errors.push("Debes seleccionar las fechas Inicio y Fin en el formulario.");
+          }
+
+          // Dataset del gráfico
+          const oModel = this.getView().getModel("planning");
+          const aChartData = oModel.getProperty("/chartModel") || [];
+
+          if (aChartData.length === 0) {
+            errors.push(`Debes rellenar el gráfico de Plan de Servicio si seleccionaste "${sMetValue}".`);
+          } else {
+            let minFechaInicio = null;
+            let maxFechaFin = null;
+
+            aChartData.forEach((row) => {
+              const fechaInicio = row.fechaInicio ? resetTime(new Date(row.fechaInicio)) : null;
+              const fechaFin = row.fechaFin ? resetTime(new Date(row.fechaFin)) : null;
+
+              if (!fechaInicio || !fechaFin || !row.duracion) {
+                errors.push(`La fase Plan de Servicio no tiene fechas completas o duración calculada.`);
+              }
+
+              if (fechaInicio) {
+                if (!minFechaInicio || fechaInicio < minFechaInicio) {
+                  minFechaInicio = fechaInicio;
+                }
+              }
+              if (fechaFin) {
+                if (!maxFechaFin || fechaFin > maxFechaFin) {
+                  maxFechaFin = fechaFin;
+                }
+              }
+            });
+
+            // Comparación fechas plan vs formulario
+            if (minFechaInicio && sFechaIniForm && minFechaInicio.getTime() !== sFechaIniForm.getTime()) {
+              errors.push(`La fecha de inicio más temprana en Plan Servicio (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha inicio seleccionada en el formulario (${sFechaIniForm.toLocaleDateString()}).`);
+            }
+
+            if (maxFechaFin && sFechaFinForm && maxFechaFin.getTime() !== sFechaFinForm.getTime()) {
+              errors.push(`La fecha de fin más tardía Plan Servicio (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha fin seleccionada en el formulario (${sFechaFinForm.toLocaleDateString()}).`);
+            }
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
 
 
 
@@ -6350,13 +6602,27 @@ onFechaManualChange: function(oEvent) {
       validateChartData: function () {
         const errors = [];
 
-        // Función para resetear la hora a 00:00:00
+        // Helper para resetear hora
         function resetTime(date) {
           if (!date) return null;
           const d = new Date(date);
           d.setHours(0, 0, 0, 0);
           return d;
         }
+
+        // Valor del select seguimiento
+        const oSelectMet = this.byId("selc_Segui");
+        const sMetValue = oSelectMet && oSelectMet.getSelectedItem()
+          ? oSelectMet.getSelectedItem().getText().trim()
+          : "";
+
+        // Si el select ES "Sin Seguimiento" o "Servicio", no validamos nada
+        const aMetNoValidar = ["Sin Seguimiento", "Servicio"];
+        if (aMetNoValidar.includes(sMetValue)) {
+          return { success: true, errors: [] };
+        }
+
+        // === Solo entramos aquí si NO es "Sin Seguimiento" ni "Servicio" ===
 
         const sFechaIniForm = resetTime(this.byId("date_inico").getDateValue());
         const sFechaFinForm = resetTime(this.byId("date_fin").getDateValue());
@@ -6373,6 +6639,10 @@ onFechaManualChange: function(oEvent) {
             const fechaInicio = chart.fechaInicio ? resetTime(new Date(chart.fechaInicio)) : null;
             const fechaFin = chart.fechaFin ? resetTime(new Date(chart.fechaFin)) : null;
 
+            if (!fechaInicio || !fechaFin || !chart.duracion) {
+              errors.push(`La fase "${chart.fase}" no tiene fechas completas o duración calculada.`);
+            }
+
             if (fechaInicio) {
               if (!minFechaInicio || fechaInicio < minFechaInicio) {
                 minFechaInicio = fechaInicio;
@@ -6386,18 +6656,18 @@ onFechaManualChange: function(oEvent) {
             }
           });
         } else {
-          errors.push("El gráfico está vacío. Debes ingresar al menos un hito.");
+          errors.push("El gráfico Planificación Preliminar del Proyecto está vacío. Debes ingresar al menos un hito.");
         }
 
         if (minFechaInicio && sFechaIniForm) {
           if (minFechaInicio.getTime() !== sFechaIniForm.getTime()) {
-            errors.push(`La fecha de inicio más temprana (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha seleccionada en el formulario (${sFechaIniForm.toLocaleDateString()}).`);
+            errors.push(`La fecha de inicio más temprana en  Planificación (${minFechaInicio.toLocaleDateString()}) no coincide con la fecha inicio seleccionada en el formulario (${sFechaIniForm.toLocaleDateString()}).`);
           }
         }
 
         if (maxFechaFin && sFechaFinForm) {
           if (maxFechaFin.getTime() !== sFechaFinForm.getTime()) {
-            errors.push(`La fecha de fin más tardía (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha seleccionada en el formulario (${sFechaFinForm.toLocaleDateString()}).`);
+            errors.push(`La fecha de fin más tardía Planificación (${maxFechaFin.toLocaleDateString()}) no coincide con la fecha fin seleccionada en el formulario (${sFechaFinForm.toLocaleDateString()}).`);
           }
         }
 
@@ -6494,6 +6764,7 @@ onFechaManualChange: function(oEvent) {
           errors
         };
       },
+
 
 
 
@@ -7453,7 +7724,6 @@ onFechaManualChange: function(oEvent) {
           sMode = this._sProjectID ? "edit" : "create";
         }
 
-        //console.log("MODO FINAL USADO EN onSave:", sMode);
 
         let errorCount = 0;
         const incompleteFields = [];
@@ -7809,6 +8079,7 @@ onFechaManualChange: function(oEvent) {
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
+                this.insertPlanServicio(generatedId, sCsrfToken)
               ]);
               this._oBusyDialog.close();
 
@@ -8321,6 +8592,87 @@ onFechaManualChange: function(oEvent) {
 
 
 
+
+      insertPlanServicio: async function (generatedId, sCsrfToken) {
+        const oFechasModel = this.getView().getModel("fechasModel");
+        const aFechas = oFechasModel.getProperty("/fechas");
+
+        if (!aFechas || aFechas.length === 0) {
+          console.warn("No hay datos en fechasModel para insertar");
+          return;
+        }
+
+        const oFecha = aFechas[0];
+
+        const calcDurationDays = function (fechaInicio, fechaFin) {
+          const start = new Date(fechaInicio);
+          const end = new Date(fechaFin);
+          if (isNaN(start) || isNaN(end)) return 0;
+          const diffMs = end - start;
+          return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        };
+
+        const payload = {
+          hito: "Plan de servicio",
+          fecha_inicio: oFecha.fechaInicio,
+          fecha_fin: oFecha.fechaFin,
+          duracion: calcDurationDays(oFecha.fechaInicio, oFecha.fechaFin),
+          datosProyect_ID: generatedId
+        };
+
+        try {
+          // Buscar registros existentes
+          const existingRecordsResponse = await fetch(
+            `/odata/v4/datos-cdo/planServicio?$filter=datosProyect_ID eq '${generatedId}'`
+          );
+          const existingRecords = await existingRecordsResponse.json();
+          const existingHitos = existingRecords.value.map(record => record.hito);
+
+          if (existingHitos.includes(payload.hito)) {
+            const recordToUpdate = existingRecords.value.find(record => record.hito === payload.hito);
+
+            if (recordToUpdate && recordToUpdate.ID) {
+              // Comillas si el ID es string
+              const idPath = typeof recordToUpdate.ID === "string"
+                ? `'${recordToUpdate.ID}'`
+                : recordToUpdate.ID;
+
+              const response = await fetch(`/odata/v4/datos-cdo/planServicio(${idPath})`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-csrf-token": sCsrfToken
+                },
+                body: JSON.stringify(payload)
+              });
+
+              if (!response.ok) {
+                const errorMessage = await response.text();
+                console.error("Error al actualizar planServicio:", errorMessage);
+              }
+            } else {
+              console.warn("ID no válido para actualizar planServicio:", recordToUpdate);
+            }
+
+          } else {
+            const response2 = await fetch("/odata/v4/datos-cdo/planServicio", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-csrf-token": sCsrfToken
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if (!response2.ok) {
+              const errorMessage = await response2.text();
+              console.error("Error al crear planServicio:", errorMessage);
+            }
+          }
+        } catch (error) {
+          console.error("Error en insertPlanServicio:", error);
+        }
+      },
 
 
 
@@ -12178,7 +12530,7 @@ onFechaManualChange: function(oEvent) {
 
       //doble metodo 
       onselectmethodsetinfo: function (oEvent) {
-        this.onInputChange(oEvent);
+        //  this.onInputChange(oEvent); // se comento  
         this.fechasDinamicas(oEvent);
         this.CaseAno();
       },
@@ -14257,6 +14609,24 @@ onFechaManualChange: function(oEvent) {
           this.byId("idCheckMensual").setVisible(false);
           this.byId("input2_17221205").setValue("");
         }
+
+
+        var oSelectNatu = this.byId("idNatu")
+
+        // Los textos que fuerzan CAPEX
+        var aCapexOptions = [
+          "Proyecto/Servicio Inversión",
+          "Proyecto/Servicio Interno PdV",
+          "Proyecto/Servicio a Cliente Externo"
+        ];
+
+        // 1 Determinar CAPEX u OPEX
+        var sTargetText = aCapexOptions.includes(selectedText) ? "CAPEX" : "OPEX";
+        oSelectNatu.getItems().forEach(function (oItem) {
+          if (oItem.getText().trim() === sTargetText) {
+            oSelectNatu.setSelectedKey(oItem.getKey());
+          }
+        });
       },
 
 
@@ -14341,24 +14711,6 @@ onFechaManualChange: function(oEvent) {
 
         }
 
-
-        // -----    Seleccion Capex o Opex 
-        var oSelectNatu = this.byId("idNatu");
-
-        // Los textos que fuerzan CAPEX
-        var aCapexOptions = [
-          "Proyecto/Servicio Inversión",
-          "Proyecto/Servicio Interno PdV",
-          "Proyecto/Servicio a Cliente Externo"
-        ];
-
-        // 1 Determinar CAPEX u OPEX
-        var sTargetText = aCapexOptions.includes(sSelectValue4) ? "CAPEX" : "OPEX";
-        oSelectNatu.getItems().forEach(function (oItem) {
-          if (oItem.getText().trim() === sTargetText) {
-            oSelectNatu.setSelectedKey(oItem.getKey());
-          }
-        });
 
 
         var oselectPerf5 = this.byId("idNatu");
@@ -14450,7 +14802,7 @@ onFechaManualChange: function(oEvent) {
 
 
 
-          if (sOtherCheckboxId === "box_condi") {
+          if (sOtherCheckboxId === "box_prove") {
 
             this.byId("idTextComProve").setEditable(true);
 
@@ -14484,17 +14836,7 @@ onFechaManualChange: function(oEvent) {
     });
 
 
-    function generateUUID() {
-      // Generador simple de UUID v4
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0,
-          v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
+
   },
-  function roundToTwo(num) {
-    return +(Math.round(num + "e+2") + "e-2");
-  }
 
 );

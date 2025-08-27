@@ -63,7 +63,7 @@ module.exports = cds.service.impl(async function () {
 
       return { resultado: result.OUT_RESULTADO };
     } catch (e) {
-      console.error('❌ Error al ejecutar el procedure:', e.message);
+      console.error(' Error al ejecutar el procedure:', e.message);
       req.error(500, 'Error al ejecutar el procedimiento');  // ← esto lanza el 500
 
 

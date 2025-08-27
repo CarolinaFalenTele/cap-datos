@@ -753,7 +753,7 @@
           "@cds.persistence.name": "FECHA_FIN"
         },
         "duracion": {
-          "type": "cds.Time",
+          "type": "cds.Integer",
           "@cds.persistence.name": "DURACION"
         },
         "datosProyect_ID": {

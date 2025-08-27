@@ -145,6 +145,8 @@ entity DatosProyect {
 
       ResumenCostesTotal       : Association to many ResumenCostesTotal
                                    on ResumenCostesTotal.datosProyect_ID = ID;
+
+      planServicio            : Association to many planServicio on planServicio.datosProyect_ID = ID;
 };
 
 @cds.persistence.journal
@@ -295,7 +297,7 @@ entity planServicio {
       hito            : String;
       fecha_inicio    : Date;
       fecha_fin       : Date;
-      duracion        : Time;
+      duracion : Integer;  
       datosProyect_ID : UUID; // Clave foránea a DatosProyect
 };
 

@@ -201,6 +201,19 @@ sap.ui.define(
                         }
                     });
 
+                    // Contar todos los proyectos, pero ignorar los borradores de otros usuarios
+                    const countTotal = aProyectosConEstado.reduce((acc, proyecto) => {
+                        if (proyecto.Estado === "Borrador" && proyecto.Usuarios_ID !== userId) {
+                            return acc; // no contar borradores de otros
+                        }
+                        return acc + 1; // contar el resto
+                    }, 0);
+
+                    this.getView().setModel(new sap.ui.model.json.JSONModel({
+                        Count: countTotal
+                    }), "modelTotal");
+
+
                     // Procesar mis solicitudes (solo creados por mí)
                     const aMisSolicitudes = await procesarProyectos(myProjects);
 
@@ -236,7 +249,7 @@ sap.ui.define(
                     }), "modelRechazados");
 
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
-                        Count: aProyectosConEstado.length
+                     Count: countTotal,
                     }), "modelTotal");
 
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
@@ -1970,6 +1983,7 @@ sap.ui.define(
 
                                     const paths = [
                                         "planificacion",
+                                        "planServicio",
                                         "Facturacion",
                                         "ClientFactura",
                                         "ProveedoresC",
