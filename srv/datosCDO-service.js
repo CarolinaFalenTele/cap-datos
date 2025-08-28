@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const axios = require("axios");
 const xssec = require('@sap/xssec');
 const xsenv = require('@sap/xsenv');
+const { getDestination } = require("@sap-cloud-sdk/connectivity");
 
 
 console.log("HOLAAAAAAAAAAAAA");
@@ -253,9 +254,8 @@ this.on('startWorkflow', async (req) => {
     const { workflowInstanceId, decision, comentario , idProject } = req.data;
     const userEmail = req.user.email;
     const token = await getWorkflowToken();
-
     console.log("  req.data:", req.data);
-    console.log("Comentario ---->>> ", comentario);
+    console.log("TOKENNNN   ---->>> ", token);
 
     
     if (!idProject) {
@@ -1201,7 +1201,7 @@ this.on('startWorkflow', async (req) => {
 
 
 
-  async function getWorkflowToken() {
+ /* async function getWorkflowToken() {
     const clientid = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";
     const clientsecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";
     const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token";
@@ -1220,9 +1220,30 @@ this.on('startWorkflow', async (req) => {
     });
 
     return response.data.access_token;
-  }
+  }*/
 
+
+
+async function getWorkflowToken() {
+  try {
+    // Obtiene el destination (workflow-api) desde el servicio Destination
+    const destination = await getDestination({ destinationName: "workflow-api" });
+
+    if (!destination?.authTokens || destination.authTokens.length === 0) {
+      throw new Error("No se encontró ningún token en el destino workflow-api");
+    }
+
+    // Devuelve el primer token válido
+    const token = destination.authTokens[0].value;
+    return token;
+
+  } catch (err) {
+    console.error("Error al obtener token del workflow-api:", err.message);
+    throw err;
+  }
+}
 });
+
 
 
 

@@ -127,7 +127,7 @@
                                                                     </Column>
                                                                     <Column id="column1" hAlign="Center">
                                                                         <header>
-                                                                            <Label text="Veritical" id="label1"/>
+                                                                            <Label text="Vertical" id="label1"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column2" hAlign="Center">
@@ -156,7 +156,7 @@
                                                                                     <core:Item xmlns:core="sap.ui.core" key="{ID}" text="{NombreIniciativa}" id="item159"/>
                                                                                 </items>
                                                                             </Select>
-                                                                            <Input xmlns="sap.m" id="int_clienteFun" liveChange="onInputChange" tooltip="En caso de que exista más de una juridica marca el checkbox de 'Multijurida' y completar la informacion en la tabla Cliente Facturacion / Juridicas. En caso contrario indicar la juridica en Cliente Facturacion  "/>
+                                                                            <Input xmlns="sap.m" id="int_clienteFun" liveChange="onInputChange" tooltip="En caso de que exista más de una juridica marca el checkbox de 'Multijurida' y completar la informacion en la tabla Cliente Facturación / Juridicas. En caso contrario indicar la juridica en Cliente Facturación  "/>
 
                                                                             <Input xmlns="sap.m" id="id_Cfactur" placeholder="Facturacion..." liveChange="onInputChange"/>
 
@@ -199,7 +199,7 @@
                                                                     </Column>
                                                                     <Column id="column13" hAlign="Center">
                                                                         <header>
-                                                                            <Label text="Cliente Facturacion" id="label13"/>
+                                                                            <Label text="Cliente Facturación" id="label13"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column14" hAlign="Center">
@@ -290,13 +290,13 @@
                                                     </Toolbar>
                                                 </headerToolbar>
                                                 <content>
-                                                    <Text text="Fechas planificacion" id="text10_1714468462964" class="sapUiSmallMarginBottom myText2"/>
+                                                    <Text text="Fechas Planificación" id="text10_1714468462964" class="sapUiSmallMarginBottom myText2"/>
                                                     <FlexBox width="100%" id="box0_1714468536656">
                                                         <items>
                                                             <Table ariaLabelledBy="__label7" id="table3_1714468867118" class="table1  customHeaderColor" items="{planning>/milestones}" width="500px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="dhyff">
-                                                                        <Title id="2ff" text="Fechas planificacion" level="H2" class="myText2"/>
+                                                                        <Title id="2ff" text="Planificación Preliminar del Proyecto" level="H2" class="myText2"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
 
@@ -379,7 +379,7 @@
                                                     </FlexBox>
                                                     <FlexBox width="100%" id="box0_1714472600967">
                                                         <items>
-                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="sapUiSmallMargin  customHeaderColor2 customHeaderColor1" items="{fechasModel>/fechas}" width="400px">
+                                                            <Table noDataText="Drop column list items here and columns in the area above" id="table0_1714472906427" class="customHeaderColor2 customHeaderColor1" items="{fechasModel>/fechas}" width="500px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="plsn" class="toolbar-con-borde">
                                                                         <Title id="tuilo45" text="Plan de servicio" level="H2"/>
@@ -390,8 +390,8 @@
                                                                     <ColumnListItem type="Active" id="item0_1714472906426">
                                                                         <cells>
                                                                             <Text id="text9" text="Plan"/>
-                                                                            <Text text="{fechasModel>fechaInicioConstruccion}" id="text11"/>
-                                                                            <Text text="{fechasModel>fechaFinPruebasTQ}" id="text100052881"/>
+                                                                            <DatePicker   value ="{fechasModel>fechaInicio}" displayFormat="dd-MM-yyyy"  valueFormat="yyyy-MM-dd"  change="onFechaManualChange"  id="text11"/>
+                                                                          <DatePicker   value ="{fechasModel>fechaFin}" displayFormat="dd-MM-yyyy"  valueFormat="yyyy-MM-dd"   change="onFechaManualChange"   id="text100052881"/>
                                                                         </cells>
                                                                     </ColumnListItem>
                                                                 </items>
@@ -415,26 +415,31 @@
                                                             </Table>
 
                                                             <!-- Segundo VizFrame para Construcción y Pruebas TQ -->
-                                                            <viz:VizFrame id="idVizFrame2" height="280px" width="400px" uiConfig="{ 'applicationSet': 'fiori' }" legendVisible="true" vizType="bar" visible="true">
-                                                                <viz:dataset>
-                                                                    <viz.data:FlattenedDataset id="fnor2" data="{planning>/chartModel}">
-                                                                        <viz.data:dimensions>
-                                                                            <viz.data:DimensionDefinition id="suyel2" name="Fase" value="{planning>fase}"/>
-                                                                        </viz.data:dimensions>
-                                                                        <viz.data:measures>
-                                                                            <viz.data:MeasureDefinition id="mied2" name="Duración (días)" value="{planning>duracion}"/>
-                                                                            <viz.data:MeasureDefinition id="miedLabel2" name="Información" value="{planning>label}"/>
-                                                                        </viz.data:measures>
-                                                                    </viz.data:FlattenedDataset>
-                                                                </viz:dataset>
-                                                                <viz:feeds>
-                                                                    <viz.feeds:FeedItem id="juras2" uid="valueAxis" type="Measure" values="Duración (días)"/>
-                                                                    <viz.feeds:FeedItem id="nopue2" uid="categoryAxis" type="Dimension" values="Fase"/>
-                                                                </viz:feeds>
-                                                                <viz:feeds>
-                                                                    <viz.feeds:FeedItem id="feedLabel2" uid="tooltip" type="Measure" values="Información"/>
-                                                                </viz:feeds>
-                                                            </viz:VizFrame>
+                                                         <viz:VizFrame id="idVizFrame2" height="280px" width="400px"
+              uiConfig="{ 'applicationSet': 'fiori' }"
+              legendVisible="true" vizType="bar" visible="true">
+
+    <viz:dataset>
+        <viz.data:FlattenedDataset id="fnor2" data="{fechasModel>/chartData}">
+            <viz.data:dimensions>
+                <viz.data:DimensionDefinition id="suyel2" name="Fase" value="{fechasModel>fase}"/>
+            </viz.data:dimensions>
+            <viz.data:measures>
+                <viz.data:MeasureDefinition id="mied2" name="Duración (días)" value="{fechasModel>duracion}"/>
+                <viz.data:MeasureDefinition id="miedLabel2" name="Información" value="{fechasModel>label}"/>
+            </viz.data:measures>
+        </viz.data:FlattenedDataset>
+    </viz:dataset>
+
+    <viz:feeds>
+        <viz.feeds:FeedItem id="juras2" uid="valueAxis" type="Measure" values="Duración (días)"/>
+        <viz.feeds:FeedItem id="nopue2" uid="categoryAxis" type="Dimension" values="Fase"/>
+    </viz:feeds>
+    <viz:feeds>
+        <viz.feeds:FeedItem id="feedLabel2" uid="tooltip" type="Measure" values="Información"/>
+    </viz:feeds>
+</viz:VizFrame>
+
                                                         </items>
                                                     </FlexBox>
 
@@ -516,7 +521,7 @@
 
                                                                 <HBox class="sapUiLargeMarginBottom" justifyContent="Center" alignItems="Center">
                                                                     <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="Center" alignItems="Center">
-                                                                        <Label text="Comentarios Proveedores" textAlign="End" id="tituloCome" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
+                                                                        <Label text="Justificación del Condicionamiento" textAlign="End" id="tituloCome" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
                                                                         <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idTextComProve" rows="2" cols="60" editable="false" visible="true"/>
                                                                     </VBox>
 
@@ -574,7 +579,7 @@
                                                             <Table noDataText="Drop column list items here and columns in the area above" id="table_clienteFac" class="sapUiLargeMargin sapUiLargeMarginTop sapUiLargeMarginBottom  customHeaderColor" visible="false" width="600px">
                                                                 <headerToolbar>
                                                                     <Toolbar id="d55">
-                                                                        <Title id="d2654" text="Cliente Facturacion" level="H2" class="color" tooltip="Indicar las jurídicas y sus correspondientes porcentajes aplicables"/>
+                                                                        <Title id="d2654" text="Cliente Facturación" level="H2" class="color" tooltip="Indicar las jurídicas y sus correspondientes porcentajes aplicables"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
                                                                 <items>
@@ -3449,7 +3454,7 @@
 
                                                                     <Column id="column1_1725710862340">
                                                                         <header>
-                                                                            <Label text="Cliente Facturacion" id="label1_1725710862340"/>
+                                                                            <Label text="Cliente Facturación" id="label1_1725710862340"/>
                                                                         </header>
                                                                     </Column>
 

@@ -7,7 +7,8 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1.9.1",
-    "@sap-cloud-sdk/connectivity": "^3.24.0",
+    "@sap-cloud-sdk/connectivity": "^3.26.4",
+    "@sap-cloud-sdk/http-client": "^4.1.1",
     "@sap/approuter": "^20.3.1",
     "@sap/cds": "^8.7.0",
     "@sap/cds-dk": "^8.7.0",
@@ -48,6 +49,12 @@
       "index": "srv/server.js"
     },
     "requires": {
+      "workflow-api": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "workflow-api"
+        }
+      },
       "db": "hana",
       "auth": "xsuaa",
       "roles": true,

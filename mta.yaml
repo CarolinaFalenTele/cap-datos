@@ -1,7 +1,7 @@
 _schema-version: "3.1"
 ID: datosCdo
 description: A simple CAP project.
-version: 1.0.5
+version: 1.0.6
 modules:
 - name: datoscdo-approuter
   type: approuter.nodejs
@@ -31,6 +31,9 @@ modules:
   requires:
   - name: datosCdo-db
   - name: uaa_datosCdo
+  - name: dest_datosCdo
+  - name: conn_datosCdo
+
   provides:
   - name: srv-api
     properties:
@@ -121,7 +124,6 @@ resources:
   parameters:
     service: connectivity
     service-plan: lite
-
 
 
 - name: uaa_datosCdo
