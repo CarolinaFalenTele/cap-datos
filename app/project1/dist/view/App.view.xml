@@ -313,6 +313,25 @@
 </table:Column>
 
 
+<table:Column
+    id="idComentarioPendi"
+    sortProperty="UltimaEtapaComentario"
+    filterProperty="UltimaEtapaComentario"
+    width="auto"
+    hAlign="Center">
+    <Label text="Comentario Etapa Actual" class="customTitle" />
+    <table:template>
+  <Text text="{modelPendientes>UltimaEtapaComentario}"
+            maxLines="1"      
+                      wrapping="true"
+                      tooltip="Si quieres ver el comentario completo accede a ver historial del proceso"    textAlign="Center"/>
+                      
+    </table:template>
+</table:Column>
+
+
+
+
                                                     <!-- Columna Fecha Modificación 
                                                     <table:Column
                                                         id="idFechModi"
@@ -1437,7 +1456,7 @@
                                                             </table:template>
                                                         </table:Column>
 
-                                                        <table:Column
+                                                    <!--   <table:Column
                                                             id="colComentario"
                                                             sortProperty="comentario"
                                                             filterProperty="comentario"
@@ -1455,7 +1474,7 @@
                                                                     textAlign="Center"
                                                                 />
                                                             </table:template>
-                                                        </table:Column>
+                                                        </table:Column>--> 
 
                                                         <table:Column
                                                             id="colAcciones2"

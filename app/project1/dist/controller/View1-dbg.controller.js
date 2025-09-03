@@ -42,8 +42,8 @@ sap.ui.define([
           fechas: [
             {
               fase: "Plan",
-              fechaInicio: null,   
-              fechaFin: null      
+              fechaInicio: null,
+              fechaFin: null
             }
             // Puedes añadir más fases si hace falta
           ]
@@ -1765,11 +1765,23 @@ sap.ui.define([
         const oModel = oView.getModel("planning");
         const oModelDynamic = oView.getModel("dynamicInputs");
 
+        var oFechasModel = this.getView().getModel("fechasModel");
+        if (!oFechasModel) {
+          console.warn("No existe fechasModel, no se puede limpiar el VizFrame");
+          return;
+        }
+
+        // Limpiar solo el dataset del VizFrame
+        oFechasModel.setProperty("/chartData", []);
+
+        //console.log("VizFrame limpio: /chartData vaciado");
+
         this._idWorkflowInstancias = null; // o undefined
         this._idWorkIniciado = null;
 
         this._clearTableTextsOnly();
         // Lista de campos que deben quedarse como no editables
+
 
 
         this._IdFechasPorMesLicencia = null;
@@ -2787,24 +2799,34 @@ sap.ui.define([
             let fechaFin = item.fecha_fin ? new Date(item.fecha_fin).toISOString().split("T")[0] : null;
 
             return {
-              fase: item.hito,                         // se va al eje X
-              duracion: item.duracion,                 // se va al eje Y
-              label: `Inicio: ${fechaInicio} - Fin: ${fechaFin}` // se muestra como tooltip
+              fase: item.hito,
+              duracion: item.duracion,
+              label: `Inicio: ${fechaInicio} - Fin: ${fechaFin}`
             };
           });
 
           // Guardamos en el modelo
           oFechasModel.setProperty("/chartData", chartData);
+          // Función para formatear en yyyy-MM-dd
+          function formatDateToValue(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            return date.toISOString().split("T")[0]; // yyyy-MM-dd
+          }
 
+          //  Setear fechas del primer registro para los DatePicker en el formato correcto
+          oFechasModel.setProperty("/fechas", [{
+            fechaInicio: formatDateToValue(oData.value[0].fecha_inicio),
+            fechaFin: formatDateToValue(oData.value[0].fecha_fin)
+          }]);
           // Guardamos primer ID
           this._idPlanServicio = oData.value[0].ID;
-
-          console.log("Datos cargados para VizFrame2:", chartData);
 
         } catch (error) {
           console.error("Error al obtener los datos de planServicio:", error);
         }
       },
+
 
 
 
@@ -2828,7 +2850,7 @@ sap.ui.define([
             throw new Error('Network response was not ok: ' + errorText);
           }
 
-         this.byId("idTextComProve").setEditable(false);
+          this.byId("idTextComProve").setEditable(false);
 
 
           const oData = await response.json();
@@ -5066,7 +5088,7 @@ sap.ui.define([
         var startVal = oFechasModel.getProperty("/fechas/0/fechaInicio");
         var endVal = oFechasModel.getProperty("/fechas/0/fechaFin");
 
-        console.log("Valores obtenidos del modelo:", startVal, endVal);
+        //   console.log("Valores obtenidos del modelo:", startVal, endVal);
 
         if (!startVal || !endVal) {
           console.warn("Alguna de las fechas está vacía. No se actualizará el gráfico.");
@@ -5093,7 +5115,7 @@ sap.ui.define([
 
         oFechasModel.setProperty("/chartData", aChartData);
 
-        console.log("Modelo fechasModel actualizado:", aChartData);
+      //  console.log("Modelo fechasModel actualizado:", aChartData);
       },
 
 
@@ -5662,7 +5684,18 @@ sap.ui.define([
         const sSelectKeySegui = this.byId("selc_Segui").getSelectedKey();
         const sSelectKeyEjcu = this.byId("selc_ejcu").getSelectedKey();
         const sSelectKeyClienNuevo = this.byId("slct_client").getSelectedKey();
-        const sSelectKeyVerti = this.byId("slct_verti").getSelectedKey();
+        const oSelectVerti = this.byId("slct_verti");
+
+        const sSelectKeyVerti = oSelectVerti.getSelectedKey();
+
+        const sSelectnameVerti = oSelectVerti.getSelectedItem()
+          ? oSelectVerti.getSelectedItem().getText()
+          : null;
+
+        //console.log("ID seleccionado: ", sSelectKeyVerti);
+        //console.log("Nombre seleccionado: ", sSelectnameVerti);
+
+
         const sSelectKeyAmrep = this.byId("selct_Amrecp").getSelectedKey();
 
         function validateField(oField, value, fieldName, type = "text") {
@@ -5721,11 +5754,14 @@ sap.ui.define([
         const validaClientes = this.validateClienteCampos();
         const validaProvee = this.validateProveedores();
         const validaPluriAnual = this.validatePluriAnual();
-
+        const multiPorceValidation = this.validateSumaOfertas();
 
         if (!chartValidation.success) {
           errorMessages.push(...chartValidation.errors);
         }
+
+
+
 
         if (!recursosValidation.success) {
           errorMessages.push(...recursosValidation.errors);
@@ -5781,6 +5817,9 @@ sap.ui.define([
           errorMessages.push(...MultijuridaCheck.errors);
         }
 
+        if (!multiPorceValidation.success) {
+          errorMessages.push(...multiPorceValidation.errors);
+        }
 
         if (!SeguimientValidation.success) {
           errorMessages.push(...SeguimientValidation.errors);
@@ -6061,7 +6100,7 @@ sap.ui.define([
                 this.insertTotalInfraestrLicencia(generatedId, sCsrfToken),
                 this.insertResumenCostesTotal(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
-                 this.insertPlanServicio(generatedId, sCsrfToken)
+                this.insertPlanServicio(generatedId, sCsrfToken)
 
               ]);
 
@@ -6116,6 +6155,12 @@ sap.ui.define([
               //  Agrega fechaComite solo si es Comité
               if (sModalidad === "Comité" && sFechaComite) {
                 workflowPayload.fechaComite = sFechaComite;
+              }
+
+
+              // Solo añadimos vertical si es "ssff" o "sap"
+              if (sSelectnameVerti?.toLowerCase() === "ssff" || sSelectnameVerti?.toLowerCase() === "sap") {
+                workflowPayload.vertical = sSelectnameVerti;
               }
 
               oContext.setParameter("payload", JSON.stringify(workflowPayload));
@@ -6397,6 +6442,57 @@ sap.ui.define([
           errors
         };
       },
+
+
+      validateSumaOfertas: function () {
+        const errors = [];
+        const oCheckBox = this.byId("box_multiJuridica");
+        const isMultiJuridicaChecked = oCheckBox.getSelected();
+
+        // 👉 Solo validar si el checkbox está seleccionado
+        if (isMultiJuridicaChecked) {
+          var oTablaFac = this.byId("table_clienteFac");
+          var aItems = oTablaFac.getItems();
+          var totalOferta = 0;
+
+          // Iterar filas excepto la última
+          aItems.forEach(function (oItem, index) {
+            if (index < aItems.length - 1) {
+              var aCells = oItem.getCells();
+              var ofertaCell = aCells[1]; // Columna de Oferta
+              var valueOferta = "";
+
+              if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+                valueOferta = ofertaCell.getValue();
+              } else if (ofertaCell.getMetadata().getName() === "sap.m.Text") {
+                valueOferta = ofertaCell.getText();
+              }
+
+              var numericValue = parseFloat((valueOferta || "").toString().trim());
+              if (!isNaN(numericValue)) {
+                totalOferta += numericValue;
+              }
+            }
+          });
+
+          // Actualizar el total en pantalla
+          this.byId("text73_172746565340567").setText(totalOferta.toFixed(2) + "%");
+          this._totalOferta = totalOferta;
+
+          //  Validación: debe ser 100%
+          if (totalOferta.toFixed(2) != 100.00) {
+            errors.push(
+              `El total de la columna "Oferta" la suma debe ser exactamente 100%. Actualmente es ${totalOferta.toFixed(2)}%.`
+            );
+          }
+        }
+
+        return {
+          success: errors.length === 0,
+          errors
+        };
+      },
+
 
       /*   validateClienteCampos: function () {
            const errors = [];
@@ -11568,7 +11664,7 @@ sap.ui.define([
 
           // Evitar insertar filas vacías
           if (!sVertical && !stipoServi && !sPerfil && !sConcepto) {
-            console.warn("Fila", i + 1, "está vacía, se omite.");
+            // console.warn("Fila", i + 1, "está vacía, se omite.");
             continue;
           }
 
@@ -12366,58 +12462,99 @@ sap.ui.define([
            //sap.m.MessageToast.show("El total de la columna oferta es: " + totalOferta);
          },*/
 
-
-
-
       metodoSumar: function () {
-
-
         var oTablaFac = this.byId("table_clienteFac");
         var aItems = oTablaFac.getItems();
         var totalOferta = 0;
 
-        //      console.log("Cantidad de filas en la tabla:", aItems.length);
-
-        // Iterar solo sobre las filas de datos (excluyendo la última)
+        // Iterar todas las filas excepto la última
         aItems.forEach(function (oItem, index) {
-          // Verifica si es la fila de total (última fila)
-          if (index < aItems.length - 1) { // Excluye la última fila
+          if (index < aItems.length - 1) {
             var aCells = oItem.getCells();
+            var ofertaCell = aCells[1]; // Columna de Oferta
             var valueOferta = "";
 
-            // Obtiene el valor de la segunda celda (columna de Oferta)
-            var ofertaCell = aCells[1];
-
-            // Verifica si la celda es de tipo Input y obtiene el valor
+            // Si es Input, obtener el valor
             if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
               valueOferta = ofertaCell.getValue();
+            } else if (ofertaCell.getMetadata().getName() === "sap.m.Text") {
+              // Por si acaso es un Text
+              valueOferta = ofertaCell.getText();
             }
 
-            // Limpiar espacios y convertir a número
-            valueOferta = valueOferta.trim();
-            var numericValue = parseFloat(valueOferta);
+            // Convertir a número
+            var numericValue = parseFloat((valueOferta || "").toString().trim());
 
-            // Imprimir para depuración
-            // console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
-
-            // Solo sumar si valueOferta es un número válido
+            // Sumar solo si es válido
             if (!isNaN(numericValue)) {
-              totalOferta += numericValue; // Solo sumar si es un número
-              //console.log(("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+              totalOferta += numericValue;
             }
           }
         });
 
-        // Actualiza el control Text con el total de la oferta
+        // Mostrar el total en el Text
         this.byId("text73_172746565340567").setText(totalOferta.toFixed(2) + "%");
 
-
-        //   console.log("Total de la columna oferta:", totalOferta);
-
-
+        // Guardar el total en la variable global de la instancia
         this._totalOferta = totalOferta;
 
+        // Opcional: verificar si da exactamente 100%
+        if (totalOferta.toFixed(2) != 100.00) {
+         // console.warn(" La suma no es igual a 100%. Total actual:", totalOferta.toFixed(2) + "%");
+        }
       },
+
+
+
+      /*   metodoSumar: function () {
+   
+   
+           var oTablaFac = this.byId("table_clienteFac");
+           var aItems = oTablaFac.getItems();
+           var totalOferta = 0;
+   
+           //      console.log("Cantidad de filas en la tabla:", aItems.length);
+   
+           // Iterar solo sobre las filas de datos (excluyendo la última)
+           aItems.forEach(function (oItem, index) {
+             // Verifica si es la fila de total (última fila)
+             if (index < aItems.length - 1) { // Excluye la última fila
+               var aCells = oItem.getCells();
+               var valueOferta = "";
+   
+               // Obtiene el valor de la segunda celda (columna de Oferta)
+               var ofertaCell = aCells[1];
+   
+               // Verifica si la celda es de tipo Input y obtiene el valor
+               if (ofertaCell.getMetadata().getName() === "sap.m.Input") {
+                 valueOferta = ofertaCell.getValue();
+               }
+   
+               // Limpiar espacios y convertir a número
+               valueOferta = valueOferta.trim();
+               var numericValue = parseFloat(valueOferta);
+   
+               // Imprimir para depuración
+               // console.log("Fila:", index, "Valor de la celda:", valueOferta, "-> Valor numérico:", numericValue);
+   
+               // Solo sumar si valueOferta es un número válido
+               if (!isNaN(numericValue)) {
+                 totalOferta += numericValue; // Solo sumar si es un número
+                 //console.log(("Total acumulado hasta ahora:", totalOferta); // Imprimir el total acumulado
+               }
+             }
+           });
+   
+           // Actualiza el control Text con el total de la oferta
+           this.byId("text73_172746565340567").setText(totalOferta.toFixed(2) + "%");
+   
+   
+           //   console.log("Total de la columna oferta:", totalOferta);
+   
+   
+           this._totalOferta = totalOferta;
+   
+         },*/
 
 
       metodoSumarFac: function () {
@@ -14615,9 +14752,7 @@ sap.ui.define([
 
         // Los textos que fuerzan CAPEX
         var aCapexOptions = [
-          "Proyecto/Servicio Inversión",
-          "Proyecto/Servicio Interno PdV",
-          "Proyecto/Servicio a Cliente Externo"
+          "Proyecto/Servicio Inversión"
         ];
 
         // 1 Determinar CAPEX u OPEX

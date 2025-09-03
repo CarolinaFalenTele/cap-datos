@@ -9,14 +9,10 @@
       "destination": "srv-api",
       "csrfProtection": true,
       "authenticationType": "xsuaa"
-    },
-    {
-      "source" : "^(.*)$",
-      "target": "$1",
-      "service": "html5-apps-repo-rt",
-      "authenticationType": "xsuaa"
-    },
- 
+    }, 
+    
+
+
     {
       "source": "^/user-api(.*)",
       "target": "$1",

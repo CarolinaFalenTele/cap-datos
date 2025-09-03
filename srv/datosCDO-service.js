@@ -546,8 +546,104 @@ this.on('startWorkflow', async (req) => {
   });
 
 
+this.on("getWorkflowTimeline", async (req) => {
+  const { ID } = req.data;
+  console.log("ID recibido:", ID);
 
-  this.on("getWorkflowTimeline", async (req) => {
+  try {
+    const workflowInstanceId = ID;
+    const token = await getWorkflowToken();
+    console.log("Token obtenido (truncado):", token.substring(0, 30) + "...");
+
+    // 1️⃣ Obtener timeline del workflow
+    const timelineResponse = await fetch(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/execution-logs`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!timelineResponse.ok) {
+      throw new Error(`No se pudo obtener el timeline. Código: ${timelineResponse.status}`);
+    }
+
+    const timeline = await timelineResponse.json();
+    let events = [];
+    if (Array.isArray(timeline)) events = timeline;
+    else if (Array.isArray(timeline.events)) events = timeline.events;
+    else if (Array.isArray(timeline.logs)) events = timeline.logs;
+    else if (Array.isArray(timeline.items)) events = timeline.items;
+
+    if (events.length === 0) {
+      req.reject(204, `No hay historial disponible para la instancia con ID: ${ID}`);
+      return;
+    }
+
+    // 2️⃣ Obtener el contexto completo de la instancia (incluye formularios con comentarios)
+    const contextResponse = await fetch(
+      `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}/context`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    if (!contextResponse.ok) {
+      throw new Error(`No se pudo obtener el contexto. Código: ${contextResponse.status}`);
+    }
+
+    const instanceContext = await contextResponse.json();
+
+    // 3️⃣ Mapeo de tipos de evento
+    const tipoEventoLegible = {
+      WORKFLOW_STARTED: "Inicio del workflow",
+      WORKFLOW_COMPLETED: "Finalización del workflow",
+      WORKFLOW_CANCELED: "Cancelación del workflow",
+      WORKFLOW_SUSPENDED: "Workflow suspendido",
+      WORKFLOW_RESUMED: "Reanudación del workflow",
+      USER_TASK_COMPLETED: "Tarea completada",
+      USER_TASK_CREATED: "Tarea creada"
+    };
+
+    // 4️⃣ Función para obtener comentario según activityId del evento
+    const getComentario = (ev) => {
+      if (!instanceContext) return "";
+      const forms = Object.keys(instanceContext).filter(key => key.startsWith("form_"));
+      const form = forms.find(f => f === ev.activityId); // coincide activityId con form
+      if (form && instanceContext[form].comentario && instanceContext[form].comentario.trim() !== "") {
+        return instanceContext[form].comentario;
+      }
+      return "";
+    };
+
+    // 5️⃣ Transformar eventos incluyendo comentario
+    const eventosTransformados = events.map(ev => ({
+      id: ev.id,
+      tipo: ev.type,
+      descripcion: tipoEventoLegible[ev.type] || ev.type,
+      timestamp: ev.timestamp,
+      usuario: ev.userId,
+      instancia: ev.referenceInstanceId,
+      paso: ev.subject || ev.subjectId || ev.activityId || "Paso desconocido",
+      comentario: getComentario(ev)
+    }));
+
+    return eventosTransformados;
+
+  } catch (error) {
+    console.error("Error al obtener el timeline del workflow:", error.message);
+    req.reject(500, "Error al consultar el historial del workflow");
+  }
+});
+
+
+
+
+
+  /*this.on("getWorkflowTimeline", async (req) => {
     const { ID } = req.data;
     console.log("  ID recibido:", ID);
 
@@ -624,7 +720,7 @@ this.on('startWorkflow', async (req) => {
       console.error("  Error al obtener el timeline del workflow:", error.message);
       req.reject(500, "Error al consultar el historial del workflow");
     }
-  });
+  });*/
 
 
   this.on('getUserTask', async (req) => {
@@ -1198,29 +1294,6 @@ this.on('startWorkflow', async (req) => {
     }
   });
 
-
-
-
- /* async function getWorkflowToken() {
-    const clientid = "sb-512669ea-168d-4b94-9719-cdbb586218b4!b546737|xsuaa!b120249";
-    const clientsecret = "03796186-69f6-40b7-85d2-3120d218ca1a$UTF1yJVWdMf8R4fpV_E-K_mEhFUcSz1F3dG4XzmBUvA=";
-    const url = "https://p051dvk8.authentication.eu10.hana.ondemand.com/oauth/token";
-
-    const response = await axios({
-      method: "post",
-      url: `${url}/oauth/token`,
-      auth: {
-        username: clientid,
-        password: clientsecret
-      },
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      data: "grant_type=client_credentials"
-    });
-
-    return response.data.access_token;
-  }*/
 
 
 

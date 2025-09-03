@@ -521,12 +521,12 @@
 
                                                                 <HBox class="sapUiLargeMarginBottom" justifyContent="Center" alignItems="Center">
                                                                     <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="Center" alignItems="Center">
-                                                                        <Label text="Justificación del Condicionamiento" textAlign="End" id="tituloCome" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
+                                                                        <Label text="Justificación del Condicionamiento y/o Información de licitación" textAlign="End" id="tituloCome" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
                                                                         <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idTextComProve" rows="2" cols="60" editable="false" visible="true"/>
                                                                     </VBox>
 
                                                                     <VBox class="sapUiSmallMarginEnd  sapUiLargeMarginBegin" justifyContent="End" alignItems="Center">
-                                                                        <Label text="Comentarios Proyecto Interno PdV" textAlign="End" id="titulo12984" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
+                                                                        <Label text="Contacto en la Operadora" textAlign="End" id="titulo12984" class="color" visible="true" tooltip="Comentarios sobre la facturación si aplica"/>
 
                                                                         <TextArea xmlns="sap.m" placeholder="Escribe aquí..." id="idComenpVd" rows="2" cols="60" editable="false" visible="true"/>
                                                                     </VBox>
@@ -2766,13 +2766,15 @@
                                                     </FlexBox>
 
                                                     <FlexBox width="2000px" id="box0_17254429" class="sapUiLargeMarginTop">
+                          <items>
+
                                                         <ScrollContainer id="scroll_containe4" width="100%" height="auto">
                                                           
 
                                                             <Table noDataText="Drop column list items here and columns in the area above" id="tablaInfrestuctura" class="customHeaderColor" width="auto">
                                                                 <headerToolbar>
                                                                     <Toolbar id="toolbr6">
-                                                                        <Title text="Otros conceptos" id="tituo6" class="customTextColor borderedTable" width="2000px"/>
+                                                                        <Title text="Otros conceptos" id="tituo6" class="customTextColor borderedTable"/>
                                                                         <ToolbarSpacer id="d4ds55"/>
                                                                     </Toolbar>
                                                                 </headerToolbar>
@@ -3005,6 +3007,8 @@
                                                                 </columns>
                                                             </Table>
                                                         </ScrollContainer>
+                                                </items>
+
                                                     </FlexBox>
 
                                                     <FlexBox width="2000px" id="box0_1727955568380">
