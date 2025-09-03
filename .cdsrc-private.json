@@ -1,0 +1,63 @@
+{
+  "requires": {
+    "[hybrid]": {
+      "db": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.eu20-001.hana.ondemand.com",
+          "org": "TELEFONICA GLOBAL TECHNOLOGY, S.A._j8z80lwx",
+          "space": "SP_SHC_DEV",
+          "instance": "datosCdo-db",
+          "key": "datosCdo-db-key"
+        },
+        "kind": "hana",
+        "vcap": {
+          "name": "db"
+        }
+      },
+      "auth": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.eu20-001.hana.ondemand.com",
+          "org": "TELEFONICA GLOBAL TECHNOLOGY, S.A._j8z80lwx",
+          "space": "SP_SHC_DEV",
+          "instance": "datosCdo-xsuaa-service",
+          "key": "datosCdo-xsuaa-service-key",
+          "resolved": false
+        },
+        "kind": "xsuaa-auth",
+        "vcap": {
+          "name": "auth"
+        }
+      },
+      "destinations": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.eu20-001.hana.ondemand.com",
+          "org": "TELEFONICA GLOBAL TECHNOLOGY, S.A._j8z80lwx",
+          "space": "SP_SHC_DEV",
+          "instance": "dest_datosCdo",
+          "key": "dest_datosCdo-key"
+        },
+        "kind": "destinations",
+        "vcap": {
+          "name": "destinations"
+        }
+      },
+      "connectivity": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.eu20-001.hana.ondemand.com",
+          "org": "TELEFONICA GLOBAL TECHNOLOGY, S.A._j8z80lwx",
+          "space": "SP_SHC_DEV",
+          "instance": "conn_datosCdo",
+          "key": "conn_datosCdo-key"
+        },
+        "kind": "connectivity",
+        "vcap": {
+          "name": "connectivity"
+        }
+      }
+    }
+  }
+}
