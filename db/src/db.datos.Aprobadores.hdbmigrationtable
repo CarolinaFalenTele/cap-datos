@@ -1,0 +1,11 @@
+== version=1
+COLUMN TABLE db_datos_Aprobadores (
+  ID NVARCHAR(36) NOT NULL,
+  Area_ID NVARCHAR(36),
+  matricula DECIMAL(20, 4),
+  name NVARCHAR(5000),
+  lastname NVARCHAR(5000),
+  valueJefe NVARCHAR(5000),
+  Activo BOOLEAN,
+  PRIMARY KEY(ID)
+)

@@ -804,3 +804,15 @@ entity ResumenCostesTotal {
 
 
 }
+
+@cds.persistence.journal
+
+entity Aprobadores {
+  key ID              : UUID @cds.auto;
+      Area            : Association to Area;
+      matricula       : Decimal(20, 4);
+      name            : String;
+      lastname        : String;
+      valueJefe       : String;
+      Activo          : Boolean;
+}
