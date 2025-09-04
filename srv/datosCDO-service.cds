@@ -48,13 +48,15 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 
   entity Jefeproyect               as projection on datos.Jefeproyect;
 
+
+  entity Aprobadores               as projection on datos.Aprobadores;
   entity Area                      as projection on datos.Area;
   entity ClienteNuevo              as projection on datos.ClienteNuevo;
   entity AMreceptor                as projection on datos.AMreceptor;
   entity Vertical                  as projection on datos.Vertical;
   entity TipoIniciativa            as projection on datos.TipoIniciativa;
   entity planificacion             as projection on datos.planificacion;
-    entity planServicio             as projection on datos.planServicio;
+  entity planServicio             as projection on datos.planServicio;
   entity Naturaleza                as projection on datos.Naturaleza;
   entity Seguimiento               as projection on datos.Seguimiento;
   entity TipoServicio              as projection on datos.TipoServicio;

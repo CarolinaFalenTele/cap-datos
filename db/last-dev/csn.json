@@ -2579,6 +2579,50 @@
         }
       },
       "@cds.persistence.name": "DB_DATOS_RESUMENCOSTESTOTAL"
+    },
+    "db.datos.Aprobadores": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "Area_ID": {
+          "type": "cds.String",
+          "length": 36,
+          "@odata.foreignKey4": "Area",
+          "@cds.persistence.name": "AREA_ID"
+        },
+        "matricula": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "MATRICULA"
+        },
+        "name": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NAME"
+        },
+        "lastname": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "LASTNAME"
+        },
+        "valueJefe": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "VALUEJEFE"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_APROBADORES"
     }
   },
   "meta": {
