@@ -1669,6 +1669,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
+   //   await  this.CalculosRecursoExterno();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -4632,24 +4633,19 @@ sap.ui.define([
               const Coste = this.getView().getModel();
 
             var primerRecursoID = oData.value[0].ID;
-            const oContextCoste = Coste.bindContext("/getResultado(...)");
 
-// pasa parámetros IN (lo que espera tu acción en CAP)
-oContextCoste.setParameter("id", primerRecursoID );
+   /*this._RecursoExterno.forEach(id => {
+        console.log("ids " + id );
+    const oContextCoste = Coste.bindContext("/getResultado(...)");
+    oContextCoste.setParameter("IN_IDRECURSOS", id);
 
-oContextCoste.execute().then(() => {
-    const oResult = oContextCoste.getBoundContext().getObject();
-
-    console.log("Resultado año 1:", oResult.year1);
-    console.log("Resultado año 2:", oResult.year2);
-
-    sap.m.MessageToast.show(
-        "Año 1: " + oResult.year1 + " | Año 2: " + oResult.year2
-    );
-
-}).catch((oError) => {
-    console.error("Error ejecutando getResultado:", oError);
-});
+    oContextCoste.execute().then(() => {
+        const oResult = oContextCoste.getBoundContext().getObject();
+        console.log("ID:", id, "Año1:", oResult.year1, "Año2:", oResult.year2);
+    }).catch((oError) => {
+        console.error("Error ejecutando getResultado para ID", id, ":", oError);
+    });
+});*/
 
             await this.leerFechasRecursoExterno(primerRecursoID);
 
@@ -4728,6 +4724,23 @@ oContextCoste.execute().then(() => {
 
             await this.leerFechasServRecursoExterno();
 
+
+
+/* const Coste = this.getView().getModel();
+
+for (const id of this._idOtroSerEx) {
+    try {
+        const oContextCoste = Coste.bindContext("/getResultado(...)");
+        oContextCoste.setParameter("IN_IDSERVI", id);
+        await oContextCoste.execute();
+
+        const oResult = oContextCoste.getBoundContext().getObject();
+        console.log("ID:", id, "Resultados del procedimiento:", oResult);
+
+    } catch (oError) {
+        console.error("Error ejecutando getResultado para ID", id, ":", oError);
+    }
+}*/
           } else {
             //     console.log("No hay datos de servi Externos disponibles.");
           }
@@ -4739,7 +4752,7 @@ oContextCoste.execute().then(() => {
       },
 
 
-
+      
 
 
 
@@ -4819,7 +4832,34 @@ oContextCoste.execute().then(() => {
       },
       //-------------------------------------------------------------
 
+   /*   CalculosRecursoExterno : async function () {
 
+        console.log("entre al metodo")
+                  const Coste = this.getView().getModel();
+
+            // asumimos que estas son arrays con los IDs
+            const idRecursos = this._RecursoExterno; // por ejemplo, tomar el primero o combinar
+            const idServi = this._idOtroSerEx;       // lo mismo
+        //    const idViaje = this._idGastosViaje?.[0] ?? null; // opcional
+        console.log("entre al metodo"   + this._RecursoExterno );
+
+            const oContextCoste = Coste.bindContext("/getResultado(...)");
+            oContextCoste.setParameter("idRecursos", idRecursos);
+            oContextCoste.setParameter("idServi", idServi);
+          ///  oContextCoste.setParameter("IN_IDVIAJE", idViaje);
+
+            try {
+                await oContextCoste.execute();
+                const oResult = oContextCoste.getBoundContext().getObject();
+                console.log("Resultados del procedure:", oResult);
+
+                return oResult;
+
+            } catch (oError) {
+                console.error("Error ejecutando el procedure:", oError);
+                return null;
+            }
+      },*/
 
       // ------------------------- Leer Otros Conceptos -----
       leerOtrosConcepto: async function (projectID) {

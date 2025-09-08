@@ -1,46 +1,111 @@
 PROCEDURE "totalesCostesMensualizados"(
-    IN in_id NVARCHAR(36),
+    IN in_idRecursos NVARCHAR(36),
+    IN in_idServi NVARCHAR(36),
+    IN in_idViaje NVARCHAR(36),
     --  (ID)
-      OUT out_year1 DECIMAL(20,4),
-    OUT out_year2 DECIMAL(20,4)
-  
+     OUT out_year1 DECIMAL(20,4),
+    OUT out_year2 DECIMAL(20,4),
+    OUT out_year3 DECIMAL(20,4),
+    OUT out_year4 DECIMAL(20,4),
+    OUT out_year5 DECIMAL(20,4)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 READS SQL DATA AS
 BEGIN
+    -- Variables RecursosExternos
+    DECLARE vPMJ DECIMAL(20,4) := 0;
+    DECLARE vY1 DECIMAL(20,4) := 0;
+    DECLARE vY2 DECIMAL(20,4) := 0;
+    DECLARE vY3 DECIMAL(20,4) := 0;
+    DECLARE vY4 DECIMAL(20,4) := 0;
+    DECLARE vY5 DECIMAL(20,4) := 0;
 
-    DECLARE vPMJ DECIMAL(20,4);
-    DECLARE vYear1 DECIMAL(20,4);
-    DECLARE vYear2 DECIMAL(20,4);
-    DECLARE vPerc1 DECIMAL(20,4);
-    DECLARE vPerc2 DECIMAL(20,4);
+    -- Valores ServiRecurExter
+    DECLARE vS1 DECIMAL(20,4) := 0;
+    DECLARE vS2 DECIMAL(20,4) := 0;
+    DECLARE vS3 DECIMAL(20,4) := 0;
+    DECLARE vS4 DECIMAL(20,4) := 0;
+    DECLARE vS5 DECIMAL(20,4) := 0;
 
-    -- 1) Traemos PMJ y jornadas por año del recurso
-    SELECT PMJ, year1, year2
-      INTO vPMJ, vYear1, vYear2
+    -- Valores GastoViajeRecExter
+    DECLARE vG1 DECIMAL(20,4) := 0;
+    DECLARE vG2 DECIMAL(20,4) := 0;
+    DECLARE vG3 DECIMAL(20,4) := 0;
+    DECLARE vG4 DECIMAL(20,4) := 0;
+    DECLARE vG5 DECIMAL(20,4) := 0;
+
+    -- Porcentajes
+    DECLARE vPct1 DECIMAL(20,4);
+    DECLARE vPct2 DECIMAL(20,4);
+    DECLARE vPct3 DECIMAL(20,4);
+    DECLARE vPct4 DECIMAL(20,4);
+    DECLARE vPct5 DECIMAL(20,4);
+
+    -- 1) Leer datos RecursosExternos
+    SELECT PMJ,
+           COALESCE(year1,0), COALESCE(year2,0), COALESCE(year3,0),
+           COALESCE(year4,0), COALESCE(year5,0)
+      INTO vPMJ, vY1, vY2, vY3, vY4, vY5
       FROM db_datos_RecursosExternos
-     WHERE ID = :in_id;
+     WHERE ID = :in_idRecursos;
 
-    -- 2) Traemos los dos primeros porcentajes activos
-    SELECT Percent INTO vPerc1
-      FROM (
+    -- 2) Leer datos ServiRecurExter
+    SELECT COALESCE(SUM(year1),0),
+           COALESCE(SUM(year2),0),
+           COALESCE(SUM(year3),0),
+           COALESCE(SUM(year4),0),
+           COALESCE(SUM(year5),0)
+      INTO vS1, vS2, vS3, vS4, vS5
+      FROM db_datos_serviRecurExter
+     WHERE ID = :in_idServi;
+
+    -- 3) Leer datos GastoViajeRecExter
+    SELECT COALESCE(SUM(year1),0),
+           COALESCE(SUM(year2),0),
+           COALESCE(SUM(year3),0),
+           COALESCE(SUM(year4),0),
+           COALESCE(SUM(year5),0)
+      INTO vG1, vG2, vG3, vG4, vG5
+      FROM db_datos_GastoViajeRecExter
+     WHERE ID = :in_idViaje;
+
+    -- 4) Traer porcentajes
+    SELECT Percent INTO vPct1 FROM (
         SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
-          FROM db_datos_PorcentajeAnio
-         WHERE Activo = TRUE
-      ) X
-      WHERE rn = 1;
+        FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
+    ) X WHERE rn = 1;
 
-    SELECT Percent INTO vPerc2
-      FROM (
+    SELECT Percent INTO vPct2 FROM (
         SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
-          FROM db_datos_PorcentajeAnio
-         WHERE Activo = TRUE
-      ) X
-      WHERE rn = 2;
+        FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
+    ) X WHERE rn = 2;
 
-    -- 3) Fórmula
-    out_year1 := vPMJ * vYear1 * vPerc1;
-    out_year2 := vPMJ * vYear2 * vPerc2;
+    SELECT Percent INTO vPct3 FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
+        FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
+    ) X WHERE rn = 3;
+
+    SELECT Percent INTO vPct4 FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
+        FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
+    ) X WHERE rn = 4;
+
+    SELECT Percent INTO vPct5 FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
+        FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
+    ) X WHERE rn = 5;
+
+    -- 5) Cálculo final: RecursosExternos + ServiRecurExter + GastoViajeRecExter
+    out_year1 := (CASE WHEN vY1 > 0 AND vPct1 IS NOT NULL
+                       THEN vPMJ * vY1 * vPct1 / 100 ELSE 0 END) + vS1 + vG1;
+    out_year2 := (CASE WHEN vY2 > 0 AND vPct2 IS NOT NULL
+                       THEN vPMJ * vY2 * vPct2 / 100 ELSE 0 END) + vS2 + vG2;
+    out_year3 := (CASE WHEN vY3 > 0 AND vPct3 IS NOT NULL
+                       THEN vPMJ * vY3 * vPct3 / 100 ELSE 0 END) + vS3 + vG3;
+    out_year4 := (CASE WHEN vY4 > 0 AND vPct4 IS NOT NULL
+                       THEN vPMJ * vY4 * vPct4 / 100 ELSE 0 END) + vS4 + vG4;
+    out_year5 := (CASE WHEN vY5 > 0 AND vPct5 IS NOT NULL
+                       THEN vPMJ * vY5 * vPct5 / 100 ELSE 0 END) + vS5 + vG5;
 
 END

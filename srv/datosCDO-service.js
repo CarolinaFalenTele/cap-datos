@@ -48,14 +48,17 @@ module.exports = cds.service.impl(async function () {
   const testID = '9159aee0-e77e-4401-a2b4-9eafcb527ab8'
 
 this.on('getResultado', async req => {
-  const id = req.data.id;
-  console.log('procedure: ejecutando con ID:', id);
+   const { idRecursos, idServi, idViaje } = req.data; 
+
+  console.log('procedure: ejecutando con IDs:', idRecursos, idServi, idViaje);
 
   try {
     const result = await db.run(
-      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
+  `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
       {
-        IN_ID: id,
+        IN_IDRECURSOS: idRecursos,
+        IN_IDSERVI: idServi,
+        IN_IDVIAJE: idViaje,
         OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
         OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
         OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
@@ -64,7 +67,6 @@ this.on('getResultado', async req => {
       }
     );
 
-    // Devolver todos los resultados como objeto JSON
     const response = {
       year1: result.OUT_YEAR1 ?? null,
       year2: result.OUT_YEAR2 ?? null,
@@ -79,7 +81,6 @@ this.on('getResultado', async req => {
   } catch (e) {
     console.error('Error al ejecutar el procedure:', e.message);
     req.error(500, 'Error al ejecutar el procedimiento');
-
    
       const workflowInstanceId = response.data.id;
       console.log("  ID del Workflow creado:", workflowInstanceId);
