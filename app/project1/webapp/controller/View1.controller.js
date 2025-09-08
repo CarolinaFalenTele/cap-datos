@@ -52,6 +52,18 @@ sap.ui.define([
 
 
         /* =======================================================
+           2. Inicializar Model para Años dinamicos  
+        ======================================================= */
+        var oCostesModel = new sap.ui.model.json.JSONModel();
+        oCostesModel.attachRequestCompleted(() => {
+          console.log("Modelo miModeloCostes cargado correctamente");
+          this.actualizarHeadersAnios(); // ahora sí existe el modelo
+        });
+        oCostesModel.loadData("model/costes.json");
+        this.getView().setModel(oCostesModel, "miModeloCostes");
+
+
+        /* =======================================================
            2. Inicializar VizFrames
         ======================================================= */
         var oVizframe1 = this.byId("idVizFrame");
@@ -131,67 +143,95 @@ sap.ui.define([
         this.filtertables();
 
         // Ajustes visuales
-        this.byId("coste6552").setVisible(false);
+        this.byId("coste6552").setVisible(true);
+
+        this.actualizarHeadersAnios();
+
       },
 
 
 
+      onBeforeRendering: function () {
+        // Cada vez que la vista se va a mostrar, revisamos si cambió el año
+        this.actualizarHeadersAnios();
+      },
 
 
 
-      //Actualizar las tablas con años  
       actualizarHeadersAnios: function () {
-        // IDs de las tablas a actualizar
-        const idsTablas = [
-          "tablaConsuExter",
-          "table_dimicFecha",
-          "tablaRecExterno",
-          "tablaInfrestuctura"
-        ];
-
         const anioHoy = new Date().getFullYear();
-
-        // Si no cambio el año, no hacemos nada
         if (anioHoy === this._anioActual) {
-          console.log("Año sin cambios, no actualizo headers.");
           return;
         }
 
-        // Actualizamos la variable del año guardado
         this._anioActual = anioHoy;
+        let aAnios = [];
 
-        idsTablas.forEach(tablaId => {
-          const oTabla = this.byId(tablaId);
-          if (!oTabla) {
-            console.warn(`No se encontró tabla con id: ${tablaId}`);
+        this._anioActual = new Date().getFullYear() - 1;
+
+
+        for (let i = 0; i < 5; i++) {
+          aAnios.push({ anio: anioHoy + i });
+        }
+
+        const oModel = this.getView().getModel("miModeloCostes");
+        oModel.setProperty("/Anios", aAnios);
+        oModel.refresh(true);
+      },
+
+      //Actualizar las tablas con años  
+      /*  actualizarHeadersAnios: function () {
+          // IDs de las tablas a actualizar
+          const idsTablas = [
+            "tablaConsuExter",
+            "table_dimicFecha",
+            "tablaRecExterno",
+            "tablaInfrestuctura"
+          ];
+  
+          const anioHoy = new Date().getFullYear();
+  
+          // Si no cambio el año, no hacemos nada
+          if (anioHoy === this._anioActual) {
+            console.log("Año sin cambios, no actualizo headers.");
             return;
           }
-
-          const aColumnas = oTabla.getColumns();
-          let offset = 0;
-
-          aColumnas.forEach(col => {
-            const headerControl = col.getHeader();
-            if (headerControl && headerControl.isA("sap.m.Label")) {
-              const textoOriginal = headerControl.getText();
-              const texto = textoOriginal.trim();
-
-              // Solo si el texto es un año válido (4 dígitos)
-              if (/^\d{4}$/.test(texto)) {
-                const anioOriginal = parseInt(texto, 10);
-                const nuevoAnio = anioHoy + offset;
-
-                headerControl.setText(nuevoAnio.toString());
-
-                console.log(`Tabla: ${tablaId} - Header "${textoOriginal}" actualizado a "${nuevoAnio}"`);
-                offset++;
-              }
+  
+          // Actualizamos la variable del año guardado
+          this._anioActual = anioHoy;
+  
+          idsTablas.forEach(tablaId => {
+            const oTabla = this.byId(tablaId);
+            if (!oTabla) {
+              console.warn(`No se encontró tabla con id: ${tablaId}`);
+              return;
             }
+  
+            const aColumnas = oTabla.getColumns();
+            let offset = 0;
+  
+            aColumnas.forEach(col => {
+              const headerControl = col.getHeader();
+              if (headerControl && headerControl.isA("sap.m.Label")) {
+                const textoOriginal = headerControl.getText();
+                const texto = textoOriginal.trim();
+  
+                // Solo si el texto es un año válido (4 dígitos)
+                if (/^\d{4}$/.test(texto)) {
+                  const anioOriginal = parseInt(texto, 10);
+                  const nuevoAnio = anioHoy + offset;
+  
+                  headerControl.setText(nuevoAnio.toString());
+  
+                  console.log(`Tabla: ${tablaId} - Header "${textoOriginal}" actualizado a "${nuevoAnio}"`);
+                  offset++;
+                }
+              }
+            });
           });
-        });
-
-        //  MessageToast.show("Headers con años actualizados al año " + anioHoy);
-      },
+  
+          //  MessageToast.show("Headers con años actualizados al año " + anioHoy);
+        },*/
 
 
 
@@ -4589,7 +4629,28 @@ sap.ui.define([
             // Por ejemplo, si quieres usar el ID del primer recurso para llamar otra función:
 
             // this.fechasDinamicas();
+              const Coste = this.getView().getModel();
+
             var primerRecursoID = oData.value[0].ID;
+            const oContextCoste = Coste.bindContext("/getResultado(...)");
+
+// pasa parámetros IN (lo que espera tu acción en CAP)
+oContextCoste.setParameter("id", primerRecursoID );
+
+oContextCoste.execute().then(() => {
+    const oResult = oContextCoste.getBoundContext().getObject();
+
+    console.log("Resultado año 1:", oResult.year1);
+    console.log("Resultado año 2:", oResult.year2);
+
+    sap.m.MessageToast.show(
+        "Año 1: " + oResult.year1 + " | Año 2: " + oResult.year2
+    );
+
+}).catch((oError) => {
+    console.error("Error ejecutando getResultado:", oError);
+});
+
             await this.leerFechasRecursoExterno(primerRecursoID);
 
           } else {
@@ -5115,7 +5176,7 @@ sap.ui.define([
 
         oFechasModel.setProperty("/chartData", aChartData);
 
-      //  console.log("Modelo fechasModel actualizado:", aChartData);
+        //  console.log("Modelo fechasModel actualizado:", aChartData);
       },
 
 
@@ -6132,7 +6193,6 @@ sap.ui.define([
                      console.log(" Entorno QA detectado por URL exacta");
                      urlAPP = "https://URL-especial-para-QA/index.html#/app/";
                    }*/
-
 
 
 
@@ -11728,6 +11788,7 @@ sap.ui.define([
               const idRecursos = result.ID; // Obtener el ID generado
 
 
+
               //      await this.insertServicioRecuExter(idRecursos);
 
               this._idRecursoEx = idRecursos
@@ -12500,7 +12561,7 @@ sap.ui.define([
 
         // Opcional: verificar si da exactamente 100%
         if (totalOferta.toFixed(2) != 100.00) {
-         // console.warn(" La suma no es igual a 100%. Total actual:", totalOferta.toFixed(2) + "%");
+          // console.warn(" La suma no es igual a 100%. Total actual:", totalOferta.toFixed(2) + "%");
         }
       },
 
@@ -12669,12 +12730,12 @@ sap.ui.define([
       onselectmethodsetinfo: function (oEvent) {
         //  this.onInputChange(oEvent); // se comento  
         this.fechasDinamicas(oEvent);
-        this.CaseAno();
+       // this.CaseAno();
       },
 
 
 
-      CaseAno: function (tableId) {
+   /*   CaseAno: function (tableId) {
         //  //console.log("TABLA RECIBIDA  : " + tableId);
 
         var oDatePickerInicio = this.getView().byId("date_inico");
@@ -12752,7 +12813,7 @@ sap.ui.define([
           aniosEnRango.forEach(anio => {
             switch (anio) {
               case 2025:
-                that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+             //   that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
                 that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
@@ -12936,7 +12997,7 @@ sap.ui.define([
       // Fechas dinamicas y tabla dinamica---------  
       onDateChange: function () {
         this.updateVizFrame();
-      },
+      },*/
       //-------------------------------------------
 
 
@@ -12947,6 +13008,8 @@ sap.ui.define([
       fechasDinamicas: function () {
         var oModelDynamic = this.getView().getModel("dynamicInputs");
         var oPreviousData = null;
+
+        
 
         if (!oModelDynamic) {
           oModelDynamic = new sap.ui.model.json.JSONModel();
@@ -13107,338 +13170,11 @@ sap.ui.define([
         });
 
         oModelDynamic.setData(oDynamicData);
+
+      
         // //console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
       },
 
-
-
-
-      /* fechasDinamicas: function () { 
- 
- 
-         this._tableValues = {};
- this._yearlySums = {};
- this._monthlySums = {};  
- 
- 
-         var startDatePicker = this.getView().byId("date_inico");
-         var endDatePicker = this.getView().byId("date_fin");
-     
-         if (!startDatePicker || !endDatePicker) {
-           console.error("Error: No se pudieron obtener los DatePickers.");
-           return;
-         }
-     
-         var startDate = startDatePicker.getDateValue();
-         var endDate = endDatePicker.getDateValue();
-     
-         if (!startDate || !endDate) {
-           return;
-         }
-     
-         var diffMonths = this.getMonthsDifference(startDate, endDate);
-     
-         var flexBoxIds = [
-           "box0_1714747137718",
-           "box0_1727879568594",
-           "box0_1727879817594",
-           "box0_1721815443829",
-           "box0_1727948724833",
-           "box0_1727950351451",
-           "box0_17218154429",
-           "box0_1727953252765",
-           "box1_1727953468615",
-           "box0_17254429",
-           "box0_1727955568380"
-         ];
-     
-         flexBoxIds.forEach((flexBoxId) => {
-           var flexBox = this.getView().byId(flexBoxId);
-           if (flexBox) {
-             flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-           }
-         });
-     
-         var tableIds = [
-           "tablaConsuExter",
-           "table_dimicFecha",
-           "tablaRecExterno",
-           "idOtroserConsu",
-           "idGastoViajeConsu",
-           "idServiExterno",
-           "idGastoRecuExter",
-           "tablaInfrestuctura",
-           "tablaLicencia",
-           "tableServicioInterno",
-           "tablGastoViajeInterno"
-         ];
-     
-         var oModelDynamic = this.getView().getModel("dynamicInputs");
-         var oDataPrev = oModelDynamic ? oModelDynamic.getData() : {};
-       
-         var oDynamicData = {};
-     
-         tableIds.forEach((tableId) => {
-           var oTable = this.getView().byId(tableId);
-           if (!oTable) {
-             console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-             return;
-           }
-     
-           // Eliminar columnas dinámicas previas
-           var columnCount = oTable.getColumns().length;
-           for (var j = columnCount - 1; j >= 0; j--) {
-             var columnHeader = oTable.getColumns()[j].getHeader();
-             if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-               oTable.removeColumn(oTable.getColumns()[j]);
-             }
-           }
-     
-           var totalColumnIndex = this.findTotalColumnIndex(oTable);
-     
-       
-           // Inicializamos la estructura para esta tabla en el objeto dinámico
-           oDynamicData[tableId] = {};
-     
-           for (var i = 0; i <= diffMonths; i++) {
-             var dateCol = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-             var year = dateCol.getFullYear();
-             var monthName = dateCol.toLocaleString("default", { month: "long" });
-             var keyCol = year + "-" + monthName;
-             var totalIndex = this.findTotalColumnIndex(oTable);
-       
-             // Insertar columna
-             var oColumn = new sap.m.Column({
-               header: new sap.m.Label({ text: keyCol }),
-               width: "100px"
-             });
-             oTable.insertColumn(oColumn, totalIndex + 1 + i);
-       
-             oDynamicData[tableId] = oDynamicData[tableId] || {};
-       
-             oTable.getItems().forEach((oRow, rowIndex) => {
-               oDynamicData[tableId][rowIndex] = oDynamicData[tableId][rowIndex] || {};
-       
-               var prevVal = "";
-               if (oDataPrev && oDataPrev[tableId] && oDataPrev[tableId][rowIndex]) {
-                 prevVal = oDataPrev[tableId][rowIndex][keyCol] || "";
-               }
-       
-               var oInput = new sap.m.Input({
-                 placeholder: "0.00",
-                 value: prevVal,
-                 change: this.handleInputChange.bind(this, tableId, rowIndex, i, year)
-               });
-               oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
-       
-               oRow.addCell(oInput);
-       
-               // Guardar referencia opcional
-               this._inputsDinamicos = this._inputsDinamicos || {};
-               this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
-               this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
-               this._inputsDinamicos[tableId][rowIndex][keyCol] = oInput;
-       
-               oDynamicData[tableId][rowIndex][keyCol] = prevVal;
-       
- 
-               //console.log("Valores " + prevVal);
-               //     Disparar handleInputChange manualmente si hay valor previo
-               if (prevVal !== "") {
- 
-                 //console.log("Estoy entrando a metodo del handle por segunda vez "); 
-                 this.handleInputChange(
-                   tableId, 
-                   rowIndex, 
-                   i, 
-                   year, 
-                   { getParameter: () => prevVal }
-                 );
-               }
-             });
-           }
-       
-           // Ajustes de scroll si tienes scroll_container
-           var sc = this.getView().byId("scroll_container_" + tableId);
-           if (sc) {
-             sc.setHorizontal(true);
-             sc.setVertical(false);
-             sc.setWidth("100%");
-           }
-         });
-       
-         // Guardar modelo
-         if (!oModelDynamic) {
-           oModelDynamic = new sap.ui.model.json.JSONModel();
-           this.getView().setModel(oModelDynamic, "dynamicInputs");
-         }
-         oModelDynamic.setData(oDynamicData);
-         //console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
-         
-       },*/
-
-
-
-
-
-
-
-
-
-      /*   fechasDinamicas: function () {
-           var startDatePicker = this.getView().byId("date_inico");
-           var endDatePicker = this.getView().byId("date_fin");
-       
-           if (!startDatePicker || !endDatePicker) {
-             console.error("Error: No se pudieron obtener los DatePickers.");
-             return;
-           }
-       
-           var startDate = startDatePicker.getDateValue();
-           var endDate = endDatePicker.getDateValue();
-       
-           if (!startDate || !endDate) {
-             return;
-           }
-       
-           var diffMonths = this.getMonthsDifference(startDate, endDate);
-       
-           var flexBoxIds = [
-             "box0_1714747137718",
-             "box0_1727879568594",
-             "box0_1727879817594",
-             "box0_1721815443829",
-             "box0_1727948724833",
-             "box0_1727950351451",
-             "box0_17218154429",
-             "box0_1727953252765",
-             "box1_1727953468615",
-             "box0_17254429",
-             "box0_1727955568380"
-           ];
-       
-           flexBoxIds.forEach((flexBoxId) => {
-             var flexBox = this.getView().byId(flexBoxId);
-             if (flexBox) {
-               flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-             }
-           });
-       
-           var tableIds = [
-             "tablaConsuExter",
-             "table_dimicFecha",
-             "tablaRecExterno",
-             "idOtroserConsu",
-             "idGastoViajeConsu",
-             "idServiExterno",
-             "idGastoRecuExter",
-             "tablaInfrestuctura",
-             "tablaLicencia",
-             "tableServicioInterno",
-             "tablGastoViajeInterno"
-           ];
-       
-           tableIds.forEach((tableId) => {
-             var oTable = this.getView().byId(tableId);
-             if (!oTable) {
-               console.error("Error: No se pudo obtener la tabla con ID " + tableId);
-               return;
-             }
-       
-             // Eliminar columnas dinámicas previas
-             var columnCount = oTable.getColumns().length;
-             for (var j = columnCount - 1; j >= 0; j--) {
-               var columnHeader = oTable.getColumns()[j].getHeader();
-               if (columnHeader && /\d{4}-\w+/.test(columnHeader.getText())) {
-                 oTable.removeColumn(oTable.getColumns()[j]);
-               }
-             } 
-             
-       
-             var totalColumnIndex = this.findTotalColumnIndex(oTable);
-       
-   
-             // Construir los nuevos nombres de columnas válidas (por ejemplo, 2024-Julio)
-   var newColumnHeaders = [];
-   for (var i = 0; i <= diffMonths; i++) {
-     var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-     var year = columnDate.getFullYear();
-     var month = columnDate.toLocaleString("default", { month: "long" });
-     newColumnHeaders.push(year + "-" + month);
-   }
-   
-   // Limpiar inputs dinámicos obsoletos
-   if (this._inputsDinamicos && this._inputsDinamicos[tableId]) {
-     Object.keys(this._inputsDinamicos[tableId]).forEach((rowIndex) => {
-       var rowInputs = this._inputsDinamicos[tableId][rowIndex];
-       Object.keys(rowInputs).forEach((columnKey) => {
-         if (!newColumnHeaders.includes(columnKey)) {
-           delete this._inputsDinamicos[tableId][rowIndex][columnKey];
-         }
-       });
-     });
-   }
-   
-   
-   
-   
-   
-             // Añadir nuevas columnas dinámicas
-             for (var i = 0; i <= diffMonths; i++) {
-               var columnDate = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
-               var year = columnDate.getFullYear();
-               var month = columnDate.toLocaleString("default", { month: "long" });
-               var columnHeaderText = year + "-" + month;
-       
-               var oColumn = new sap.m.Column({
-                 header: new sap.m.Label({ text: columnHeaderText }),
-                 width: "100px"
-               });
-       
-               oTable.insertColumn(oColumn, totalColumnIndex + 1 + i);
-       
-               // Agregar inputs dinámicos en cada fila para esta columna
-               for (var rowIndex = 0; rowIndex < oTable.getItems().length; rowIndex++) {
-                 var oRow = oTable.getItems()[rowIndex];
-       
-                 // Antes de añadir inputs nuevos, eliminar celdas extras para evitar acumulación
-                 var fixedCellsCount = totalColumnIndex + 1; // número de columnas fijas antes de las dinámicas
-                 while (oRow.getCells().length > fixedCellsCount + diffMonths + 1) {
-                   oRow.removeCell(oRow.getCells().length - 1);
-                 }
-       
-                 this._inputsDinamicos = this._inputsDinamicos || {};
-                 this._inputsDinamicos[tableId] = this._inputsDinamicos[tableId] || {};
-                 this._inputsDinamicos[tableId][rowIndex] = this._inputsDinamicos[tableId][rowIndex] || {};
-       
-                 var oInput = new sap.m.Input({
-                   placeholder: "0.00",
-                   change: this.handleInputChange.bind(this, tableId, rowIndex, i, year),
-                   liveChange: function(oEvent) {
-                     var sValue = oEvent.getParameter("value");
-                     // Puedes agregar aquí lógica adicional si quieres
-                   }
-                 });
-       
-                 oInput.attachBrowserEvent("paste", this._onPasteValues.bind(this));
-       
-                 // Inicializar valor vacío para evitar reaparecer valores viejos
-                 oInput.setValue("");
-       
-                 oRow.addCell(oInput);
-       
-                 this._inputsDinamicos[tableId][rowIndex][columnHeaderText] = oInput;
-               }
-             }
-       
-             var oScrollContainer = this.getView().byId("scroll_container_" + tableId);
-             if (oScrollContainer) {
-               oScrollContainer.setHorizontal(true);
-               oScrollContainer.setVertical(false);
-               oScrollContainer.setWidth("100%");
-             }
-           });
-         },*/
 
 
 
@@ -13534,6 +13270,8 @@ sap.ui.define([
 
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
 
+        
+
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
         //  //console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
         // //console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
@@ -13596,7 +13334,7 @@ sap.ui.define([
 
           this.calcularPorcentajeInserciones();
 
-          this.CaseAno(tableId);
+      //    this.CaseAno(tableId);
 
           // ——— Actualización del modelo "dynamicInputs" ———
           var oModelDynamic = this.getView().getModel("dynamicInputs");
@@ -13618,6 +13356,8 @@ sap.ui.define([
 
           oModelDynamic.setData(oData);
           oModelDynamic.refresh();
+
+       //     console.log(oModelDynamic);
 
           //console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
 
@@ -14581,10 +14321,10 @@ sap.ui.define([
 
 
         //  this.calcularDistribucionInput();
-        this.CaseAno();
+     //   this.CaseAno();
         // Call CaseAno only if necessary
         if (this._insercionesPorAnoYTabla) {
-          this.CaseAno();
+         // this.CaseAno();
         }
 
 

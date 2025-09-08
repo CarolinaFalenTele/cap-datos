@@ -358,6 +358,34 @@
       },
       "@cds.persistence.name": "DB_DATOS_DATOSPROYECT"
     },
+    "db.datos.PorcentajeAnio": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "Year": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "YEAR"
+        },
+        "Percent": {
+          "type": "cds.Decimal",
+          "precision": 5,
+          "scale": 2,
+          "@cds.persistence.name": "PERCENT"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_PORCENTAJEANIO"
+    },
     "db.datos.SolicitudesVersiones": {
       "kind": "entity",
       "@cds.persistence.journal": true,

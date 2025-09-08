@@ -148,6 +148,14 @@ entity DatosProyect {
 
       planServicio            : Association to many planServicio on planServicio.datosProyect_ID = ID;
 };
+@cds.persistence.journal
+
+entity PorcentajeAnio {
+  key ID      : UUID;
+  Year        : String;
+  Percent : Decimal(5,2);
+  Activo      : Boolean;
+};
 
 @cds.persistence.journal
 
@@ -158,7 +166,7 @@ entity SolicitudesVersiones {
       nombre       : String;
       estado       : String;
       createdAt    : Timestamp;
-}
+};
 
 @cds.persistence.journal
 

@@ -1,0 +1,81 @@
+{
+  "Anios": [],
+  "TipoServicio": [
+    {
+      "Ingresos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirect": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotal": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "Beneficio": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    }
+  ],
+  "ConceptoOferta": [
+    {
+      "Ingresos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirect": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotal": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "Beneficio": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    }
+  ],
+  "TipoRecurso_Vertical": [
+    {
+      "Ingresos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirect": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotal": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "Beneficio": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    }
+  ],
+  "TipoRecursos": [
+    {
+      "nombre": "Recursos Internos",
+      "IngresosInterno": { "valores": ["1€", "4€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirect": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Consumo Externo",
+      "IngresosConsumo": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosConsumo": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirectConsumo": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalConsumo": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioConsumo": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Recursos Externos",
+      "IngresosRecurExt": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosRecurExt": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirectRecurExt": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalRecurExt": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioRecurExt": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Licencias",
+      "IngresosLicencia": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosLicencia": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirectLicencia": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalLicencia": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioLicencia": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Infraestructura",
+      "IngresosInfra": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosInfra": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirectInfra": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalInfra": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioInfra": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Gastos de Viaje Internos",
+      "IngresosGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesDirectosGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CostesIndirectGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "CosteTotalGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "BeneficioGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    }
+    
+  ]
+}

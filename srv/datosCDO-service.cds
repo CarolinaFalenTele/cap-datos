@@ -100,6 +100,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity TipoCompra                as projection on datos.TipoCompra;
   entity Usuarios                  as projection on datos.Usuarios;
   entity Archivos                  as projection on datos.Archivos;
+  entity PorcentajeAnio as projection on datos.PorcentajeAnio;
 
   entity PendientesUsuario         as
     select from WorkflowEtapas {
@@ -173,7 +174,9 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   };
 
 
-action getResultado(id: UUID) returns { resultado: Decimal(20,4); };
+action getResultado(id: UUID) returns {   year1: Decimal(20,4);
+  year2: Decimal(20,4);
+};
 
 
   function getUserInfo()                                                                                                        returns String;
