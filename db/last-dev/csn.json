@@ -12,9 +12,8 @@
           "@cds.persistence.name": "ID"
         },
         "matricula": {
-          "type": "cds.Decimal",
-          "precision": 20,
-          "scale": 4,
+          "type": "cds.String",
+          "length": 5000,
           "@cds.persistence.name": "MATRICULA"
         },
         "name": {
@@ -2625,9 +2624,8 @@
           "@cds.persistence.name": "AREA_ID"
         },
         "matricula": {
-          "type": "cds.Decimal",
-          "precision": 20,
-          "scale": 4,
+          "type": "cds.String",
+          "length": 5000,
           "@cds.persistence.name": "MATRICULA"
         },
         "name": {
@@ -2639,11 +2637,6 @@
           "type": "cds.String",
           "length": 5000,
           "@cds.persistence.name": "LASTNAME"
-        },
-        "valueJefe": {
-          "type": "cds.String",
-          "length": 5000,
-          "@cds.persistence.name": "VALUEJEFE"
         },
         "Activo": {
           "type": "cds.Boolean",

@@ -8,7 +8,7 @@ using {
 @cds.persistence.journal
 entity Jefeproyect {
   key ID        : UUID @cds.auto;
-      matricula : Decimal(20, 4);
+      matricula : String;
       name      : String;
       lastname  : String;
       valueJefe : String;
@@ -818,9 +818,8 @@ entity ResumenCostesTotal {
 entity Aprobadores {
   key ID              : UUID @cds.auto;
       Area            : Association to Area;
-      matricula       : Decimal(20, 4);
+      matricula       : String;
       name            : String;
       lastname        : String;
-      valueJefe       : String;
       Activo          : Boolean;
 }
