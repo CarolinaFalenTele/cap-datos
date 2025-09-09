@@ -37,7 +37,8 @@ module.exports = cds.service.impl(async function () {
     GastoViajeConsumo,
     otrosServiciosConsu,
     WorkflowEtapas,
-    Archivos
+    Archivos,
+    Aprobadores
   } = this.entities;
 
 
@@ -47,12 +48,21 @@ module.exports = cds.service.impl(async function () {
 
   const testID = '9159aee0-e77e-4401-a2b4-9eafcb527ab8'
 
-this.on('getResultado', async req => {
-   const { idRecursos, idServi, idViaje } = req.data; 
+  this.before('CREATE', Aprobadores, async (req) => {
+    const { matricula } = req.data;
+    
+    const bExists = await SELECT.one.from(Aprobadores).where({ matricula: matricula, Activo: true });
+    if (bExists) {
+      req.error(400, `Matricula ${matricula} already exists and must be unique`);
+    }
+  });
 
-  console.log('procedure: ejecutando con IDs:', idRecursos, idServi, idViaje);
+  this.on('getWorkflowToken', async req => {
+     const { idRecursos, idServi, idViaje } = req.data; 
 
-  try {
+    console.log('procedure: ejecutando con IDs:', idRecursos, idServi, idViaje);
+
+    try {
     const result = await db.run(
   `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
       {
