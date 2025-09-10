@@ -1669,7 +1669,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-      await  this.CalculosRecursoExterno();
+        await this.CalculosRecursoExterno();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -4630,22 +4630,22 @@ sap.ui.define([
             // Por ejemplo, si quieres usar el ID del primer recurso para llamar otra función:
 
             // this.fechasDinamicas();
-              const Coste = this.getView().getModel();
+            const Coste = this.getView().getModel();
 
             var primerRecursoID = oData.value[0].ID;
 
-   /*this._RecursoExterno.forEach(id => {
-        console.log("ids " + id );
-    const oContextCoste = Coste.bindContext("/getResultado(...)");
-    oContextCoste.setParameter("IN_IDRECURSOS", id);
-
-    oContextCoste.execute().then(() => {
-        const oResult = oContextCoste.getBoundContext().getObject();
-        console.log("ID:", id, "Año1:", oResult.year1, "Año2:", oResult.year2);
-    }).catch((oError) => {
-        console.error("Error ejecutando getResultado para ID", id, ":", oError);
-    });
-});*/
+            /*this._RecursoExterno.forEach(id => {
+                 console.log("ids " + id );
+             const oContextCoste = Coste.bindContext("/getResultado(...)");
+             oContextCoste.setParameter("IN_IDRECURSOS", id);
+         
+             oContextCoste.execute().then(() => {
+                 const oResult = oContextCoste.getBoundContext().getObject();
+                 console.log("ID:", id, "Año1:", oResult.year1, "Año2:", oResult.year2);
+             }).catch((oError) => {
+                 console.error("Error ejecutando getResultado para ID", id, ":", oError);
+             });
+         });*/
 
             await this.leerFechasRecursoExterno(primerRecursoID);
 
@@ -4726,21 +4726,21 @@ sap.ui.define([
 
 
 
-/* const Coste = this.getView().getModel();
-
-for (const id of this._idOtroSerEx) {
-    try {
-        const oContextCoste = Coste.bindContext("/getResultado(...)");
-        oContextCoste.setParameter("IN_IDSERVI", id);
-        await oContextCoste.execute();
-
-        const oResult = oContextCoste.getBoundContext().getObject();
-        console.log("ID:", id, "Resultados del procedimiento:", oResult);
-
-    } catch (oError) {
-        console.error("Error ejecutando getResultado para ID", id, ":", oError);
-    }
-}*/
+            /* const Coste = this.getView().getModel();
+            
+            for (const id of this._idOtroSerEx) {
+                try {
+                    const oContextCoste = Coste.bindContext("/getResultado(...)");
+                    oContextCoste.setParameter("IN_IDSERVI", id);
+                    await oContextCoste.execute();
+            
+                    const oResult = oContextCoste.getBoundContext().getObject();
+                    console.log("ID:", id, "Resultados del procedimiento:", oResult);
+            
+                } catch (oError) {
+                    console.error("Error ejecutando getResultado para ID", id, ":", oError);
+                }
+            }*/
           } else {
             //     console.log("No hay datos de servi Externos disponibles.");
           }
@@ -4752,7 +4752,7 @@ for (const id of this._idOtroSerEx) {
       },
 
 
-      
+
 
 
 
@@ -4832,20 +4832,19 @@ for (const id of this._idOtroSerEx) {
       },
       //-------------------------------------------------------------
 
-CalculosRecursoExterno: async function() {
-    const Coste = this.getView().getModel();
+      CalculosRecursoExterno: async function () {
+        const Coste = this.getView().getModel();
 
-  //const idRecursos = this._RecursoExterno ?? [];
-    //const idServi    = this._idOtroSerEx ?? [];
-   // const idViaje    = this._idGastosViaje ?? [];
+        //const idRecursos = this._RecursoExterno ?? [];
+        //const idServi    = this._idOtroSerEx ?? [];
+        // const idViaje    = this._idGastosViaje ?? [];
+        const oContextCoste = Coste.bindContext("/getResultado(...)");
+        oContextCoste.setParameter("idRecursos", this._sProjectID);
+     //   oContextCoste.setParameter("idServi", this._idOtroSerEx ?? []);
+       // oContextCoste.setParameter("idViaje", this._idGastosViaje ?? []);
+        await oContextCoste.execute();
 
-   const oContextCoste = Coste.bindContext("/getResultado(...)");
-oContextCoste.setParameter("idRecursos", this._RecursoExterno ?? []);
-//oContextCoste.setParameter("idServi", this._idOtroSerEx ?? []);
-//oContextCoste.setParameter("idViaje", this._idGastosViaje ?? []);
-await oContextCoste.execute();
-    
-},
+      },
 
 
 
@@ -12759,274 +12758,274 @@ await oContextCoste.execute();
       onselectmethodsetinfo: function (oEvent) {
         //  this.onInputChange(oEvent); // se comento  
         this.fechasDinamicas(oEvent);
-       // this.CaseAno();
+        // this.CaseAno();
       },
 
 
 
-   /*   CaseAno: function (tableId) {
-        //  //console.log("TABLA RECIBIDA  : " + tableId);
-
-        var oDatePickerInicio = this.getView().byId("date_inico");
-        var oDatePickerFin = this.getView().byId("date_fin");
-
-
-
-        var sFechaInicio = oDatePickerInicio.getDateValue();
-        var sFechaFin = oDatePickerFin.getDateValue();
-
-        if (sFechaInicio && sFechaFin) {
-          var anioInicio = sFechaInicio.getFullYear();
-          var anioFin = sFechaFin.getFullYear();
-
-          if (anioInicio > anioFin) {
-            sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
-            return;
-          }
-
-          var aniosEnRango = [];
-          for (var i = anioInicio; i <= anioFin; i++) {
-            aniosEnRango.push(i);
-          }
-
-
-          let resultado = this.calcularDistribucionInput();
-          if (!resultado || !resultado.valoresDistribuidos) return;
-
-          let valoresDistribuidos = resultado.valoresDistribuidos;
-          let acumulado = resultado.acumuladoTextPorTablaYAnio;
-
-          if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
-            //         sap.m.MessageToast.show("No se pudo calcular la distribución.");
-            return;
-          }
-
-          //   //console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
-
-          var that = this;
-          var Totalporcentaje = 0;
-          var valoresPorAno = {};
-          var valoresPorAnoPorInput = {};
-          var totalesPorInput = {};
-
-          aniosEnRango.forEach(anio => {
-            valoresPorAno[anio] = 0;
-            valoresPorAnoPorInput[anio] = {};
-          });
-
-          Object.keys(valoresDistribuidos).forEach(function (table) {
-            aniosEnRango.forEach(function (anio) {
-              if (valoresDistribuidos[table] && valoresDistribuidos[table][anio]) {
-                valoresDistribuidos[table][anio].forEach(distribucion => {
-                  var inputName = distribucion.elemento;
-                  var vValor = parseFloat(distribucion.valor) || 0;
-
-                  valoresPorAno[anio] += vValor;
-                  Totalporcentaje += vValor;
-
-                  if (!valoresPorAnoPorInput[anio][inputName]) {
-                    valoresPorAnoPorInput[anio][inputName] = 0;
-                  }
-                  valoresPorAnoPorInput[anio][inputName] += vValor;
-
-                  // Acumular total general por input
-                  if (!totalesPorInput[inputName]) {
-                    totalesPorInput[inputName] = 0;
-                  }
-                  totalesPorInput[inputName] += vValor;
-                });
-              }
-            });
-          });
-
-          aniosEnRango.forEach(anio => {
-            switch (anio) {
-              case 2025:
-             //   that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteD2025").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                that.getView().byId("costes_indirectos2025").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-
-
-
-                this.getView().byId("text129CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€"); // Coste directo 2025 
-                this.getView().byId("text130CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                this.getView().byId("text210").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text400").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text133").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                this.getView().byId("text200").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-
-
-                let total2025 =
-                  (acumulado[2025]?.table_dimicFecha || 0) +
-                  (acumulado[2025]?.tablaConsuExter || 0) +
-                  (acumulado[2025]?.tablGastoViajeInterno || 0) +
-                  (acumulado[2025]?.tablaRecExterno || 0) +
-                  (acumulado[2025]?.tablaLicencia || 0) +
-                  (acumulado[2025]?.tablaInfrestuctura || 0);
-
-
-                that.getView().byId("text75_1729073618729").setText(total2025.toFixed(2) + "€");
-
-
-                break;
-
-
-              case 2026:
-                that.getView().byId("tipoS2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TRecurso2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteT2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("cellCostesTotales_1_2").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteD2026").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                that.getView().byId("costes_indirectos2026").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-
-
-
-
-                that.getView().byId("text128CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                that.getView().byId("text134CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                this.getView().byId("text211").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text401").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text1341").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                this.getView().byId("text201").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-
-
-                let total2026 =
-                  (acumulado[2026]?.table_dimicFecha || 0) +
-                  (acumulado[2026]?.tablaConsuExter || 0) +
-                  (acumulado[2026]?.tablGastoViajeInterno || 0) +
-                  (acumulado[2026]?.tablaRecExterno || 0) +
-                  (acumulado[2026]?.tablaLicencia || 0) +
-                  (acumulado[2026]?.tablaInfrestuctura || 0);
-
-
-                that.getView().byId("text76_1729073618732").setText(total2026.toFixed(2) + "€");
-
-
-                //   that.getView().byId("text128CosteDi").setText((acumulado[anio]["table_dimicFecha"] || 0).toFixed(2) + "€"); //coste directo 2026 
-
-
-                break;
-
-
-              case 2027:
-                that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-
-                that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteT2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteD2027").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                that.getView().byId("costes_indirectos2027").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-
-                that.getView().byId("text135").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                that.getView().byId("text140CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                this.getView().byId("text212").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text402").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text1352").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                this.getView().byId("text202").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-
-
-
-
-                let total2027 =
-                  (acumulado[2027]?.table_dimicFecha || 0) +
-                  (acumulado[2027]?.tablaConsuExter || 0) +
-                  (acumulado[2027]?.tablGastoViajeInterno || 0) +
-                  (acumulado[2027]?.tablaRecExterno || 0) +
-                  (acumulado[2027]?.tablaLicencia || 0) +
-                  (acumulado[2027]?.tablaInfrestuctura || 0);
-
-
-                that.getView().byId("text77_1729073618734").setText(total2027.toFixed(2) + "€");
-
-
-                break;
-
-              case 2028:
-                that.getView().byId("tipoS2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteT2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-
-
-                that.getView().byId("text141CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                that.getView().byId("text136").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                this.getView().byId("text213").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text403").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text1363").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                this.getView().byId("text203").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-
-
-
-
-                let total2028 =
-                  (acumulado[2028]?.table_dimicFecha || 0) +
-                  (acumulado[2028]?.tablaConsuExter || 0) +
-                  (acumulado[2028]?.tablGastoViajeInterno || 0) +
-                  (acumulado[2028]?.tablaRecExterno || 0) +
-                  (acumulado[2028]?.tablaLicencia || 0) +
-                  (acumulado[2028]?.tablaInfrestuctura || 0);
-
-
-                that.getView().byId("text300").setText(total2028.toFixed(2) + "€");
-
-
-                break;
-
-              case 2029:
-                that.getView().byId("tipoS2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                that.getView().byId("TSCosteT2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-
-
-                that.getView().byId("text143CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                this.getView().byId("text214").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text138").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                this.getView().byId("text404").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                this.getView().byId("text1374").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                this.getView().byId("text204").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-
-
-
-
-                let total2029 =
-                  (acumulado[2029]?.table_dimicFecha || 0) +
-                  (acumulado[2029]?.tablaConsuExter || 0) +
-                  (acumulado[2029]?.tablGastoViajeInterno || 0) +
-                  (acumulado[2029]?.tablaRecExterno || 0) +
-                  (acumulado[2029]?.tablaLicencia || 0) +
-                  (acumulado[2029]?.tablaInfrestuctura || 0);
-
-
-                that.getView().byId("text301").setText(total2029.toFixed(2) + "€");
-
-                break;
-            }
-          });
-
-          // Mostrar los totales generales
-          that.getView().byId("tipoSTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-          that.getView().byId("TRecursoTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-          that.getView().byId("TSCosteTotalD").setText((totalesPorInput["Input2"] || 0).toFixed(2) + "€");
-          that.getView().byId("TSCosteTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-          that.getView().byId("cellCostesTotales_1_7").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-
-          that.getView().byId("costes_indirectosTotal").setText((totalesPorInput["Input3"] || 0).toFixed(2) + "€");
-
-
-          that.getView().byId("text70_1729079344938").setText((totalesPorInput["Text1"] || 0).toFixed(2) + "€"); // 2025 
-          that.getView().byId("text137").setText((totalesPorInput["Text4"] || 0).toFixed(2) + "€");
-
-          //  //console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
-        } else {
-          //    sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
-        }
-      },
-
-      // Fechas dinamicas y tabla dinamica---------  
-      onDateChange: function () {
-        this.updateVizFrame();
-      },*/
+      /*   CaseAno: function (tableId) {
+           //  //console.log("TABLA RECIBIDA  : " + tableId);
+   
+           var oDatePickerInicio = this.getView().byId("date_inico");
+           var oDatePickerFin = this.getView().byId("date_fin");
+   
+   
+   
+           var sFechaInicio = oDatePickerInicio.getDateValue();
+           var sFechaFin = oDatePickerFin.getDateValue();
+   
+           if (sFechaInicio && sFechaFin) {
+             var anioInicio = sFechaInicio.getFullYear();
+             var anioFin = sFechaFin.getFullYear();
+   
+             if (anioInicio > anioFin) {
+               sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
+               return;
+             }
+   
+             var aniosEnRango = [];
+             for (var i = anioInicio; i <= anioFin; i++) {
+               aniosEnRango.push(i);
+             }
+   
+   
+             let resultado = this.calcularDistribucionInput();
+             if (!resultado || !resultado.valoresDistribuidos) return;
+   
+             let valoresDistribuidos = resultado.valoresDistribuidos;
+             let acumulado = resultado.acumuladoTextPorTablaYAnio;
+   
+             if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
+               //         sap.m.MessageToast.show("No se pudo calcular la distribución.");
+               return;
+             }
+   
+             //   //console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
+   
+             var that = this;
+             var Totalporcentaje = 0;
+             var valoresPorAno = {};
+             var valoresPorAnoPorInput = {};
+             var totalesPorInput = {};
+   
+             aniosEnRango.forEach(anio => {
+               valoresPorAno[anio] = 0;
+               valoresPorAnoPorInput[anio] = {};
+             });
+   
+             Object.keys(valoresDistribuidos).forEach(function (table) {
+               aniosEnRango.forEach(function (anio) {
+                 if (valoresDistribuidos[table] && valoresDistribuidos[table][anio]) {
+                   valoresDistribuidos[table][anio].forEach(distribucion => {
+                     var inputName = distribucion.elemento;
+                     var vValor = parseFloat(distribucion.valor) || 0;
+   
+                     valoresPorAno[anio] += vValor;
+                     Totalporcentaje += vValor;
+   
+                     if (!valoresPorAnoPorInput[anio][inputName]) {
+                       valoresPorAnoPorInput[anio][inputName] = 0;
+                     }
+                     valoresPorAnoPorInput[anio][inputName] += vValor;
+   
+                     // Acumular total general por input
+                     if (!totalesPorInput[inputName]) {
+                       totalesPorInput[inputName] = 0;
+                     }
+                     totalesPorInput[inputName] += vValor;
+                   });
+                 }
+               });
+             });
+   
+             aniosEnRango.forEach(anio => {
+               switch (anio) {
+                 case 2025:
+                //   that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteD2025").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
+                   that.getView().byId("costes_indirectos2025").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+   
+   
+   
+                   this.getView().byId("text129CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€"); // Coste directo 2025 
+                   this.getView().byId("text130CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text210").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text400").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text133").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text200").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+   
+   
+                   let total2025 =
+                     (acumulado[2025]?.table_dimicFecha || 0) +
+                     (acumulado[2025]?.tablaConsuExter || 0) +
+                     (acumulado[2025]?.tablGastoViajeInterno || 0) +
+                     (acumulado[2025]?.tablaRecExterno || 0) +
+                     (acumulado[2025]?.tablaLicencia || 0) +
+                     (acumulado[2025]?.tablaInfrestuctura || 0);
+   
+   
+                   that.getView().byId("text75_1729073618729").setText(total2025.toFixed(2) + "€");
+   
+   
+                   break;
+   
+   
+                 case 2026:
+                   that.getView().byId("tipoS2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TRecurso2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteT2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("cellCostesTotales_1_2").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteD2026").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
+                   that.getView().byId("costes_indirectos2026").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+   
+   
+   
+   
+                   that.getView().byId("text128CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                   that.getView().byId("text134CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text211").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text401").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text1341").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text201").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+   
+   
+                   let total2026 =
+                     (acumulado[2026]?.table_dimicFecha || 0) +
+                     (acumulado[2026]?.tablaConsuExter || 0) +
+                     (acumulado[2026]?.tablGastoViajeInterno || 0) +
+                     (acumulado[2026]?.tablaRecExterno || 0) +
+                     (acumulado[2026]?.tablaLicencia || 0) +
+                     (acumulado[2026]?.tablaInfrestuctura || 0);
+   
+   
+                   that.getView().byId("text76_1729073618732").setText(total2026.toFixed(2) + "€");
+   
+   
+                   //   that.getView().byId("text128CosteDi").setText((acumulado[anio]["table_dimicFecha"] || 0).toFixed(2) + "€"); //coste directo 2026 
+   
+   
+                   break;
+   
+   
+                 case 2027:
+                   that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+   
+                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteT2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteD2027").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
+                   that.getView().byId("costes_indirectos2027").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
+   
+                   that.getView().byId("text135").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                   that.getView().byId("text140CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text212").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text402").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text1352").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text202").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+   
+   
+   
+   
+                   let total2027 =
+                     (acumulado[2027]?.table_dimicFecha || 0) +
+                     (acumulado[2027]?.tablaConsuExter || 0) +
+                     (acumulado[2027]?.tablGastoViajeInterno || 0) +
+                     (acumulado[2027]?.tablaRecExterno || 0) +
+                     (acumulado[2027]?.tablaLicencia || 0) +
+                     (acumulado[2027]?.tablaInfrestuctura || 0);
+   
+   
+                   that.getView().byId("text77_1729073618734").setText(total2027.toFixed(2) + "€");
+   
+   
+                   break;
+   
+                 case 2028:
+                   that.getView().byId("tipoS2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteT2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+   
+   
+                   that.getView().byId("text141CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                   that.getView().byId("text136").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text213").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text403").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text1363").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text203").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+   
+   
+   
+   
+                   let total2028 =
+                     (acumulado[2028]?.table_dimicFecha || 0) +
+                     (acumulado[2028]?.tablaConsuExter || 0) +
+                     (acumulado[2028]?.tablGastoViajeInterno || 0) +
+                     (acumulado[2028]?.tablaRecExterno || 0) +
+                     (acumulado[2028]?.tablaLicencia || 0) +
+                     (acumulado[2028]?.tablaInfrestuctura || 0);
+   
+   
+                   that.getView().byId("text300").setText(total2028.toFixed(2) + "€");
+   
+   
+                   break;
+   
+                 case 2029:
+                   that.getView().byId("tipoS2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+                   that.getView().byId("TSCosteT2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
+   
+   
+                   that.getView().byId("text143CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text214").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text138").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text404").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text1374").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
+                   this.getView().byId("text204").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
+   
+   
+   
+   
+                   let total2029 =
+                     (acumulado[2029]?.table_dimicFecha || 0) +
+                     (acumulado[2029]?.tablaConsuExter || 0) +
+                     (acumulado[2029]?.tablGastoViajeInterno || 0) +
+                     (acumulado[2029]?.tablaRecExterno || 0) +
+                     (acumulado[2029]?.tablaLicencia || 0) +
+                     (acumulado[2029]?.tablaInfrestuctura || 0);
+   
+   
+                   that.getView().byId("text301").setText(total2029.toFixed(2) + "€");
+   
+                   break;
+               }
+             });
+   
+             // Mostrar los totales generales
+             that.getView().byId("tipoSTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+             that.getView().byId("TRecursoTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+             that.getView().byId("TSCosteTotalD").setText((totalesPorInput["Input2"] || 0).toFixed(2) + "€");
+             that.getView().byId("TSCosteTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+             that.getView().byId("cellCostesTotales_1_7").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
+   
+             that.getView().byId("costes_indirectosTotal").setText((totalesPorInput["Input3"] || 0).toFixed(2) + "€");
+   
+   
+             that.getView().byId("text70_1729079344938").setText((totalesPorInput["Text1"] || 0).toFixed(2) + "€"); // 2025 
+             that.getView().byId("text137").setText((totalesPorInput["Text4"] || 0).toFixed(2) + "€");
+   
+             //  //console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
+           } else {
+             //    sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
+           }
+         },
+   
+         // Fechas dinamicas y tabla dinamica---------  
+         onDateChange: function () {
+           this.updateVizFrame();
+         },*/
       //-------------------------------------------
 
 
@@ -13038,7 +13037,7 @@ await oContextCoste.execute();
         var oModelDynamic = this.getView().getModel("dynamicInputs");
         var oPreviousData = null;
 
-        
+
 
         if (!oModelDynamic) {
           oModelDynamic = new sap.ui.model.json.JSONModel();
@@ -13200,7 +13199,7 @@ await oContextCoste.execute();
 
         oModelDynamic.setData(oDynamicData);
 
-      
+
         // //console.log("Modelo dynamicInputs actualizado tras regenerar:", oModelDynamic.getData());
       },
 
@@ -13299,7 +13298,7 @@ await oContextCoste.execute();
 
       handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
 
-        
+
 
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
         //  //console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
@@ -13363,7 +13362,7 @@ await oContextCoste.execute();
 
           this.calcularPorcentajeInserciones();
 
-      //    this.CaseAno(tableId);
+          //    this.CaseAno(tableId);
 
           // ——— Actualización del modelo "dynamicInputs" ———
           var oModelDynamic = this.getView().getModel("dynamicInputs");
@@ -13386,7 +13385,7 @@ await oContextCoste.execute();
           oModelDynamic.setData(oData);
           oModelDynamic.refresh();
 
-       //     console.log(oModelDynamic);
+          //     console.log(oModelDynamic);
 
           //console.log("Modelo dynamicInputs actualizado: ", oModelDynamic.getData());
 
@@ -14350,10 +14349,10 @@ await oContextCoste.execute();
 
 
         //  this.calcularDistribucionInput();
-     //   this.CaseAno();
+        //   this.CaseAno();
         // Call CaseAno only if necessary
         if (this._insercionesPorAnoYTabla) {
-         // this.CaseAno();
+          // this.CaseAno();
         }
 
 

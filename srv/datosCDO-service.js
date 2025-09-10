@@ -32,7 +32,7 @@ module.exports = cds.service.impl(async function () {
     ClientFactura,
     RecursosInternos,
     otrosGastoRecu,
-    otrosRecursos,
+    otrosRecursos, 
     ConsumoExternos,
     GastoViajeConsumo,
     otrosServiciosConsu,
@@ -65,142 +65,46 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-  this.on("getResultado", async (req) => {
-    // Recibimos arrays de UUID desde el view
-    const { idRecursos = [], idServi = [], idViaje = [] } = req.data;
-   
-    const db = await cds.connect.to("db");
-   
-    // Mapear arrays a objetos con clave ID (como espera tu TYPE)
-    const recursosTable = idRecursos.map(id => ({ ID: id }));
-    const serviTable    = idServi.map(id => ({ ID: id }));
-    const viajeTable    = idViaje.map(id => ({ ID: id }));
-   
-    try {
-      const result = await db.run(
-        `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
-        [
-          { val: recursosTable, type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-          { val: serviTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-          { val: viajeTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-        ]
+this.on("getResultado", async (req) => {
+  // Recibimos arrays de UUID desde el view
+  const { idRecursos  } = req.data;
+
+  console.log("ids recibidos", idRecursos);
+
+  const db = await cds.connect.to("db");
+
+
+  console.log("ids mapeados");
+
+  try {
+   const result = await db.run(
+        `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
+        {
+          in_idRecursos: idRecursos,
+          OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+          OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+          OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+          OUT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+          OUT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+        
+        }
       );
-   
-      // Los OUT vienen como array en el mismo orden
-      const response = {
-        year1: result[0],
-        year2: result[1],
-        year3: result[2],
-        year4: result[3],
-        year5: result[4],
-      };
-   
-      console.log("--- RESULTADO PROCEDURE ---", response);
-      return response;
-   
-    } catch (e) {
-      console.error("--- ERROR PROCEDURE ---");
-      console.error("Mensaje:", e.message);
-      console.error("Stack:", e.stack);
-      }
-    });
 
-  this.on('getWorkflowToken', async req => {
-    const id = req.data.id;
-    console.log('procedure: ejecutando con ID:', id);
+    console.log("Resultset:", result);
 
-    try {
-    const result = await db.run(
-      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
-      [
-        { val: recursosTable, type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-        { val: serviTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-        { val: viajeTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
-        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
-      ]
-    );
 
-    // Los OUT vienen como array en el mismo orden
-    const response = {
-      year1: result[0],
-      year2: result[1],
-      year3: result[2],
-      year4: result[3],
-      year5: result[4],
-    };
 
-    console.log("--- RESULTADO PROCEDURE ---", response);
-    return response;
+      return { year1: result.OUT_YEAR1, year2: result.OUT_YEAR2 };
+
 
   } catch (e) {
     console.error("--- ERROR PROCEDURE ---");
     console.error("Mensaje:", e.message);
     console.error("Stack:", e.stack);
+  }
+});
 
 
-    
-      const workflowInstanceId = response.data.id;
-      console.log("  ID del Workflow creado:", workflowInstanceId);
-
-      let taskList = [];
-      let attempts = 0;
-      const maxAttempts = 10;
-      const delay = ms => new Promise(res => setTimeout(res, ms));
-
-      //   Esperar dinámicamente hasta que existan tareas
-      while (taskList.length === 0 && attempts < maxAttempts) {
-        attempts++;
-        console.log(`  Esperando tareas... intento ${attempts}`);
-        await delay(1500); // espera 1.5 segundos
-
-        const getTasks = await axios.get(
-          `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-
-        taskList = getTasks.data;
-      }
-
-      if (!taskList || taskList.length === 0) {
-        console.warn("  No se encontraron tareas después de varios intentos.");
-      } else {
-        console.log(`  Tareas encontradas en intento ${attempts}:`, JSON.stringify(taskList, null, 2));
-
-        for (const task of taskList) {
-          console.log("  Insertando tarea:", {
-            taskId: task.id,
-            subject: task.subject,
-            assigned: task.recipientUsers?.[0]
-          });
-
-          await INSERT.into('WorkflowEtapas').entries({
-            workflow_ID: workflowInstanceId,
-            taskInstanceId: task.id,
-            nombreEtapa: task.subject || 'Etapa sin nombre',
-            asignadoA: task.recipientUsers?.[0] || null,
-            estado: 'Pendiente'
-          });
-        }
-      }
-
-      return {
-        message: "  Workflow iniciado. Etapas insertadas si existían.",
-        workflowInstanceId
-      };
-
-    }
-  });
 
 
 
