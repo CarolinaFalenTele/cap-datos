@@ -56,14 +56,6 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-  this.before('CREATE', Jefeproyect, async (req) => {
-    const { matricula } = req.data;
-    
-    const bExists = await SELECT.one.from(Jefeproyect).where({ matricula: matricula, Activo: true });
-    if (bExists) {
-      req.error(400, `Matricula ${matricula} already exists and must be unique`);
-    }
-  });
 
   this.before('CREATE', Jefeproyect, async (req) => {
     const { matricula } = req.data;
