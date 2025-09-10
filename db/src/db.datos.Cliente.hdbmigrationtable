@@ -1,0 +1,21 @@
+== version=1
+COLUMN TABLE db_datos_Cliente (
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
+  ID NVARCHAR(36) NOT NULL,
+  Nombre NVARCHAR(5000),
+  Pais NVARCHAR(5000),
+  Zona NVARCHAR(5000),
+  Region NVARCHAR(5000),
+  IDCliente NVARCHAR(5000),
+  CIF NVARCHAR(5000),
+  TipoCliente NVARCHAR(5000),
+  GL NVARCHAR(5000),
+  SociedadGL NVARCHAR(5000),
+  PerimetroTdE NVARCHAR(5000),
+  PerimetroEmpresas NVARCHAR(5000),
+  Activo BOOLEAN,
+  PRIMARY KEY(ID)
+)

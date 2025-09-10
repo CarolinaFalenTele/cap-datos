@@ -814,7 +814,6 @@ entity ResumenCostesTotal {
 }
 
 @cds.persistence.journal
-
 entity Aprobadores {
   key ID              : UUID @cds.auto;
       Area            : Association to Area;
@@ -822,4 +821,21 @@ entity Aprobadores {
       name            : String;
       lastname        : String;
       Activo          : Boolean;
+}
+
+@cds.persistence.journal
+entity Cliente : managed {
+  key ID                : UUID @cds.auto;
+      Nombre            : String;
+      Pais              : String;
+      Zona              : String;
+      Region            : String;
+      IDCliente         : String;
+      CIF               : String;
+      TipoCliente       : String;
+      GL                : String;
+      SociedadGL        : String;
+      PerimetroTdE      : String;
+      PerimetroEmpresas : String;
+      Activo            : Boolean;
 }

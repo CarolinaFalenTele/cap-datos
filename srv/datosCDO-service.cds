@@ -52,6 +52,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity Aprobadores               as projection on datos.Aprobadores;
   entity Area                      as projection on datos.Area;
   entity ClienteNuevo              as projection on datos.ClienteNuevo;
+  entity Cliente                   as projection on datos.Cliente;
   entity AMreceptor                as projection on datos.AMreceptor;
   entity Vertical                  as projection on datos.Vertical;
   entity TipoIniciativa            as projection on datos.TipoIniciativa;

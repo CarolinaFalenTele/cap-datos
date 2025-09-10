@@ -2644,6 +2644,96 @@
         }
       },
       "@cds.persistence.name": "DB_DATOS_APROBADORES"
+    },
+    "db.datos.Cliente": {
+      "kind": "entity",
+      "@cds.persistence.journal": true,
+      "elements": {
+        "createdAt": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "CREATEDAT"
+        },
+        "createdBy": {
+          "type": "cds.String",
+          "length": 255,
+          "@cds.persistence.name": "CREATEDBY"
+        },
+        "modifiedAt": {
+          "type": "cds.Timestamp",
+          "@cds.persistence.name": "MODIFIEDAT"
+        },
+        "modifiedBy": {
+          "type": "cds.String",
+          "length": 255,
+          "@cds.persistence.name": "MODIFIEDBY"
+        },
+        "ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 36,
+          "@cds.persistence.name": "ID"
+        },
+        "Nombre": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "NOMBRE"
+        },
+        "Pais": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "PAIS"
+        },
+        "Zona": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ZONA"
+        },
+        "Region": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "REGION"
+        },
+        "IDCliente": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "IDCLIENTE"
+        },
+        "CIF": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "CIF"
+        },
+        "TipoCliente": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "TIPOCLIENTE"
+        },
+        "GL": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "GL"
+        },
+        "SociedadGL": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "SOCIEDADGL"
+        },
+        "PerimetroTdE": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "PERIMETROTDE"
+        },
+        "PerimetroEmpresas": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "PERIMETROEMPRESAS"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
+        }
+      },
+      "@cds.persistence.name": "DB_DATOS_CLIENTE"
     }
   },
   "meta": {
