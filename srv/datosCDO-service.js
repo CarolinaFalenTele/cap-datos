@@ -56,7 +56,6 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-
   this.before('CREATE', Jefeproyect, async (req) => {
     const { matricula } = req.data;
     
@@ -66,19 +65,56 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
+  this.on("getResultado", async (req) => {
+    // Recibimos arrays de UUID desde el view
+    const { idRecursos = [], idServi = [], idViaje = [] } = req.data;
+   
+    const db = await cds.connect.to("db");
+   
+    // Mapear arrays a objetos con clave ID (como espera tu TYPE)
+    const recursosTable = idRecursos.map(id => ({ ID: id }));
+    const serviTable    = idServi.map(id => ({ ID: id }));
+    const viajeTable    = idViaje.map(id => ({ ID: id }));
+   
+    try {
+      const result = await db.run(
+        `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
+        [
+          { val: recursosTable, type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+          { val: serviTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+          { val: viajeTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+          { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+        ]
+      );
+   
+      // Los OUT vienen como array en el mismo orden
+      const response = {
+        year1: result[0],
+        year2: result[1],
+        year3: result[2],
+        year4: result[3],
+        year5: result[4],
+      };
+   
+      console.log("--- RESULTADO PROCEDURE ---", response);
+      return response;
+   
+    } catch (e) {
+      console.error("--- ERROR PROCEDURE ---");
+      console.error("Mensaje:", e.message);
+      console.error("Stack:", e.stack);
+      }
+    });
 
-this.on("getResultado", async (req) => {
-  // Recibimos arrays de UUID desde el view
-  const { idRecursos = [], idServi = [], idViaje = [] } = req.data;
+  this.on('getWorkflowToken', async req => {
+    const id = req.data.id;
+    console.log('procedure: ejecutando con ID:', id);
 
-  const db = await cds.connect.to("db");
-
-  // Mapear arrays a objetos con clave ID (como espera tu TYPE)
-  const recursosTable = idRecursos.map(id => ({ ID: id }));
-  const serviTable    = idServi.map(id => ({ ID: id }));
-  const viajeTable    = idViaje.map(id => ({ ID: id }));
-
-  try {
+    try {
     const result = await db.run(
       `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
       [
@@ -1360,8 +1396,5 @@ this.on("getResultado", async (req) => {
     }
   }
 });
-
-
-
 
 
