@@ -176,7 +176,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 
 
 action getResultado(
-    idRecursos : UUID,
+    id : UUID,
 ) returns {
     year1 : Decimal(20,4);
     year2 : Decimal(20,4);

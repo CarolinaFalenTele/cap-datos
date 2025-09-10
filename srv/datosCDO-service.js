@@ -66,41 +66,38 @@ module.exports = cds.service.impl(async function () {
   });
 
 this.on("getResultado", async (req) => {
-  // Recibimos arrays de UUID desde el view
-  const { idRecursos  } = req.data;
-
-  console.log("ids recibidos", idRecursos);
-
-  const db = await cds.connect.to("db");
-
-
-  console.log("ids mapeados");
+ const { id } = req.data;
+  console.log('procedure: ejecutando con ID:', id);
 
   try {
-   const result = await db.run(
-        `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
-        {
-          in_idRecursos: idRecursos,
-          OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-          OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-          OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-          OUT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-          OUT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        
-        }
-      );
+    const result = await db.run(
+      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
+      {
+        IN_IDRECURSOS: id,
+        OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+        OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+        OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+        OUT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+        OUT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
+      }
+    );
 
-    console.log("Resultset:", result);
+    // Devolver todos los resultados como objeto JSON
+    const response = {
+      year1: result.OUT_YEAR1 ?? null,
+      year2: result.OUT_YEAR2 ?? null,
+      year3: result.OUT_YEAR3 ?? null,
+      year4: result.OUT_YEAR4 ?? null,
+      year5: result.OUT_YEAR5 ?? null
+    };
 
-
-
-      return { year1: result.OUT_YEAR1, year2: result.OUT_YEAR2 };
-
-
+    console.log("Resultados calculados:", response);
+    return response;
   } catch (e) {
     console.error("--- ERROR PROCEDURE ---");
     console.error("Mensaje:", e.message);
     console.error("Stack:", e.stack);
+    throw e;
   }
 });
 

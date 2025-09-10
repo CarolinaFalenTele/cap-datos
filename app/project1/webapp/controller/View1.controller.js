@@ -4835,14 +4835,14 @@ sap.ui.define([
       CalculosRecursoExterno: async function () {
         const Coste = this.getView().getModel();
 
-        //const idRecursos = this._RecursoExterno ?? [];
-        //const idServi    = this._idOtroSerEx ?? [];
-        // const idViaje    = this._idGastosViaje ?? [];
-        const oContextCoste = Coste.bindContext("/getResultado(...)");
-        oContextCoste.setParameter("idRecursos", this._sProjectID);
-     //   oContextCoste.setParameter("idServi", this._idOtroSerEx ?? []);
-       // oContextCoste.setParameter("idViaje", this._idGastosViaje ?? []);
-        await oContextCoste.execute();
+       const oContextCoste = Coste.bindContext("/getResultado(...)");
+
+          oContextCoste.setParameter("id"  , this._sProjectID);
+          console.log("Id enviado " +  this._sProjectID);
+          await oContextCoste.execute();
+
+          const result = oContextCoste.getBoundContext().getObject();
+          console.log("Resultado acción:", result);
 
       },
 
