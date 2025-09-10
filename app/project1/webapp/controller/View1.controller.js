@@ -1669,7 +1669,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-   //   await  this.CalculosRecursoExterno();
+      await  this.CalculosRecursoExterno();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -4832,34 +4832,23 @@ for (const id of this._idOtroSerEx) {
       },
       //-------------------------------------------------------------
 
-   /*   CalculosRecursoExterno : async function () {
+CalculosRecursoExterno: async function() {
+    const Coste = this.getView().getModel();
 
-        console.log("entre al metodo")
-                  const Coste = this.getView().getModel();
+  //const idRecursos = this._RecursoExterno ?? [];
+    //const idServi    = this._idOtroSerEx ?? [];
+   // const idViaje    = this._idGastosViaje ?? [];
 
-            // asumimos que estas son arrays con los IDs
-            const idRecursos = this._RecursoExterno; // por ejemplo, tomar el primero o combinar
-            const idServi = this._idOtroSerEx;       // lo mismo
-        //    const idViaje = this._idGastosViaje?.[0] ?? null; // opcional
-        console.log("entre al metodo"   + this._RecursoExterno );
+   const oContextCoste = Coste.bindContext("/getResultado(...)");
+oContextCoste.setParameter("idRecursos", this._RecursoExterno ?? []);
+//oContextCoste.setParameter("idServi", this._idOtroSerEx ?? []);
+//oContextCoste.setParameter("idViaje", this._idGastosViaje ?? []);
+await oContextCoste.execute();
+    
+},
 
-            const oContextCoste = Coste.bindContext("/getResultado(...)");
-            oContextCoste.setParameter("idRecursos", idRecursos);
-            oContextCoste.setParameter("idServi", idServi);
-          ///  oContextCoste.setParameter("IN_IDVIAJE", idViaje);
 
-            try {
-                await oContextCoste.execute();
-                const oResult = oContextCoste.getBoundContext().getObject();
-                console.log("Resultados del procedure:", oResult);
 
-                return oResult;
-
-            } catch (oError) {
-                console.error("Error ejecutando el procedure:", oError);
-                return null;
-            }
-      },*/
 
       // ------------------------- Leer Otros Conceptos -----
       leerOtrosConcepto: async function (projectID) {

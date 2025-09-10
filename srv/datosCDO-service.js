@@ -12,7 +12,7 @@ console.log("HOLAAAAAAAAAAAAA");
 //getTokenUser();
 
 module.exports = cds.service.impl(async function () {
-  const db = await cds.connect.to('db'); // <--- ¡importante!
+  const db = await cds.connect.to('db'); 
 
 
   console.log("Servicio cargado correctamente");
@@ -65,41 +65,61 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-  this.on('getWorkflowToken', async req => {
-     const { idRecursos, idServi, idViaje } = req.data; 
+  this.before('CREATE', Jefeproyect, async (req) => {
+    const { matricula } = req.data;
+    
+    const bExists = await SELECT.one.from(Jefeproyect).where({ matricula: matricula, Activo: true });
+    if (bExists) {
+      req.error(400, `Matricula ${matricula} already exists and must be unique`);
+    }
+  });
 
-    console.log('procedure: ejecutando con IDs:', idRecursos, idServi, idViaje);
 
-    try {
+this.on("getResultado", async (req) => {
+  // Recibimos arrays de UUID desde el view
+  const { idRecursos = [], idServi = [], idViaje = [] } = req.data;
+
+  const db = await cds.connect.to("db");
+
+  // Mapear arrays a objetos con clave ID (como espera tu TYPE)
+  const recursosTable = idRecursos.map(id => ({ ID: id }));
+  const serviTable    = idServi.map(id => ({ ID: id }));
+  const viajeTable    = idViaje.map(id => ({ ID: id }));
+
+  try {
     const result = await db.run(
-  `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
-      {
-        IN_IDRECURSOS: idRecursos,
-        IN_IDSERVI: idServi,
-        IN_IDVIAJE: idViaje,
-        OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
-      }
+      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?);`,
+      [
+        { val: recursosTable, type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+        { val: serviTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+        { val: viajeTable,    type: "TABLE", tableType: "TRECURSOEXT_ID_LIST" },
+        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+        { dir: "OUT", type: "DECIMAL", precision: 20, scale: 4 },
+      ]
     );
 
+    // Los OUT vienen como array en el mismo orden
     const response = {
-      year1: result.OUT_YEAR1 ?? null,
-      year2: result.OUT_YEAR2 ?? null,
-      year3: result.OUT_YEAR3 ?? null,
-      year4: result.OUT_YEAR4 ?? null,
-      year5: result.OUT_YEAR5 ?? null
+      year1: result[0],
+      year2: result[1],
+      year3: result[2],
+      year4: result[3],
+      year5: result[4],
     };
 
-    console.log("Resultados calculados:", response);
+    console.log("--- RESULTADO PROCEDURE ---", response);
     return response;
 
   } catch (e) {
-    console.error('Error al ejecutar el procedure:', e.message);
-    req.error(500, 'Error al ejecutar el procedimiento');
-   
+    console.error("--- ERROR PROCEDURE ---");
+    console.error("Mensaje:", e.message);
+    console.error("Stack:", e.stack);
+
+
+    
       const workflowInstanceId = response.data.id;
       console.log("  ID del Workflow creado:", workflowInstanceId);
 

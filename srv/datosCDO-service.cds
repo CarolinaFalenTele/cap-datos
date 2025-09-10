@@ -174,10 +174,17 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   };
 
 
-action getResultado(id: UUID) returns {   year1: Decimal(20,4);
-  year2: Decimal(20,4);
+action getResultado(
+    idRecursos : array of String,
+    idServi    : array of String,
+    idViaje    : array of String
+) returns {
+    year1 : Decimal(20,4);
+    year2 : Decimal(20,4);
+    year3 : Decimal(20,4);
+    year4 : Decimal(20,4);
+    year5 : Decimal(20,4);
 };
-
 
   function getUserInfo()                                                                                                        returns String;
   action   cancelWorkflow(workflowInstanceId : String)                                                                          returns String;
