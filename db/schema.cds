@@ -20,6 +20,7 @@ entity TipoCompra {
   key ID    : UUID @cds.auto;
       tipo  : String;
       valor : String;
+      Activo: Boolean;
 }
 @cds.persistence.journal
 
@@ -27,6 +28,7 @@ entity MotivoCondi {
   key ID    : UUID @cds.auto;
       tipo  : String;
       valor : String;
+      Activo: Boolean;
 }
 @cds.persistence.journal
 
@@ -194,6 +196,7 @@ entity PerfilConsumo {
   key ID            : UUID @cds.auto;
       nombrePerfilC : String;
       valuePerfilC  : String;
+      Activo        : Boolean;
 };
 
 @cds.persistence.journal

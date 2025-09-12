@@ -57,6 +57,10 @@
           "type": "cds.String",
           "length": 5000,
           "@cds.persistence.name": "VALOR"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
         }
       },
       "@cds.persistence.name": "DB_DATOS_TIPOCOMPRA"
@@ -80,6 +84,10 @@
           "type": "cds.String",
           "length": 5000,
           "@cds.persistence.name": "VALOR"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
         }
       },
       "@cds.persistence.name": "DB_DATOS_MOTIVOCONDI"
@@ -501,6 +509,10 @@
           "type": "cds.String",
           "length": 5000,
           "@cds.persistence.name": "VALUEPERFILC"
+        },
+        "Activo": {
+          "type": "cds.Boolean",
+          "@cds.persistence.name": "ACTIVO"
         }
       },
       "@cds.persistence.name": "DB_DATOS_PERFILCONSUMO"
