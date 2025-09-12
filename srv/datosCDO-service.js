@@ -66,30 +66,63 @@ module.exports = cds.service.impl(async function () {
   });
 
 this.on("getResultado", async (req) => {
- const { id } = req.data;
+  const { id } = req.data;
   console.log('procedure: ejecutando con ID:', id);
 
   try {
-    const result = await db.run(
-      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
-      {
-        IN_IDRECURSOS: id,
-        OUT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-        OUT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
-      }
-    );
+const result = await db.run(
+  `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+  {
+    IN_IDRECURSOS: id,
+
+    // Recursos Internos
+    OUT_INT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_INT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_INT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_INT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_INT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+
+    // Otros Gastos
+    OUT_SRV_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_SRV_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_SRV_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_SRV_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_SRV_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+
+    // Otros Recursos
+    OUT_GTO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_GTO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_GTO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_GTO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
+    OUT_GTO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
+  }
+);
+
 
     // Devolver todos los resultados como objeto JSON
     const response = {
-      year1: result.OUT_YEAR1 ?? null,
-      year2: result.OUT_YEAR2 ?? null,
-      year3: result.OUT_YEAR3 ?? null,
-      year4: result.OUT_YEAR4 ?? null,
-      year5: result.OUT_YEAR5 ?? null
-    };
+  recursosInternos: {
+    year1: result.OUT_INT_YEAR1 ?? null,
+    year2: result.OUT_INT_YEAR2 ?? null,
+    year3: result.OUT_INT_YEAR3 ?? null,
+    year4: result.OUT_INT_YEAR4 ?? null,
+    year5: result.OUT_INT_YEAR5 ?? null
+  },
+  otrosGastos: {
+    year1: result.OUT_SRV_YEAR1 ?? null,
+    year2: result.OUT_SRV_YEAR2 ?? null,
+    year3: result.OUT_SRV_YEAR3 ?? null,
+    year4: result.OUT_SRV_YEAR4 ?? null,
+    year5: result.OUT_SRV_YEAR5 ?? null
+  },
+  otrosRecursos: {
+    year1: result.OUT_GTO_YEAR1 ?? null,
+    year2: result.OUT_GTO_YEAR2 ?? null,
+    year3: result.OUT_GTO_YEAR3 ?? null,
+    year4: result.OUT_GTO_YEAR4 ?? null,
+    year5: result.OUT_GTO_YEAR5 ?? null
+  }
+};
 
     console.log("Resultados calculados:", response);
     return response;

@@ -54,16 +54,28 @@ sap.ui.define([
         /* =======================================================
            2. Inicializar Model para Años dinamicos  
         ======================================================= */
+        var oAniosModel = new sap.ui.model.json.JSONModel();
+
         var oCostesModel = new sap.ui.model.json.JSONModel();
         oCostesModel.attachRequestCompleted(() => {
-          console.log("Modelo miModeloCostes cargado correctamente");
+          //     console.log("Modelo miModeloCostes cargado correctamente");
           this.actualizarHeadersAnios(); // ahora sí existe el modelo
         });
         oCostesModel.loadData("model/costes.json");
         this.getView().setModel(oCostesModel, "miModeloCostes");
+        var oAniosModel = new sap.ui.model.json.JSONModel();
 
+        oAniosModel.attachRequestCompleted(() => {
+          console.log("Modelo añosDinamicos cargado correctamente");
+          this.actualizarHeadersAnios(); 
+        });
 
-        /* =======================================================
+        // Cargamos el JSON externo
+        oAniosModel.loadData("model/añosDinamicos.json");
+
+        // Asignamos el modelo a la vista con un nombre independiente
+        this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
+        /* ======================================================
            2. Inicializar VizFrames
         ======================================================= */
         var oVizframe1 = this.byId("idVizFrame");
@@ -177,6 +189,17 @@ sap.ui.define([
         const oModel = this.getView().getModel("miModeloCostes");
         oModel.setProperty("/Anios", aAnios);
         oModel.refresh(true);
+
+
+        
+    // --- Actualiza el modelo modeloAnioDinamicos ---
+    const oAniosModel = this.getView().getModel("modeloAnioDinamicos");
+    if (oAniosModel) {
+        oAniosModel.setProperty("/AnioDinamicos", aAnios);
+        oAniosModel.refresh(true);
+    } else {
+        console.warn("El modelo 'modeloAnioDinamicos' no existe");
+    }
       },
 
       //Actualizar las tablas con años  
@@ -1669,7 +1692,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-        await this.CalculosRecursoExterno();
+     //   await this.CalculosRecursoExterno();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -3190,9 +3213,8 @@ sap.ui.define([
                 aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00");
                 aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00");
                 aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00");
-                aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00");
-                aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00");
+                aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                aCells[11].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00");
               }
             });
           }
@@ -4233,9 +4255,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
-                  aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[11].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
 
                 }
@@ -4309,9 +4330,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
-                  aCells[12].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[11].setText(Recurso.totalE ? parseFloat(Recurso.totalE).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
                 }
               }
@@ -4397,9 +4417,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00");
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00");
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00");
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00");
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.totalC).toFixed(2) : "0.00");
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.totalC).toFixed(2) : "0.00");
                 }
               }
             });
@@ -4472,9 +4491,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
                 }
               }
             });
@@ -4545,9 +4563,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
                 }
               }
@@ -4620,9 +4637,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00");
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00");
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00");
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00");
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.totalC).toFixed(2) : "0.00");
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.totalC).toFixed(2) : "0.00");
                 }
               }
             });
@@ -4711,9 +4727,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
                 }
               }
@@ -4803,9 +4818,8 @@ sap.ui.define([
                   aCells[7].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[9].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[11].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[12].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
                 }
               }
@@ -4835,14 +4849,14 @@ sap.ui.define([
       CalculosRecursoExterno: async function () {
         const Coste = this.getView().getModel();
 
-       const oContextCoste = Coste.bindContext("/getResultado(...)");
+        const oContextCoste = Coste.bindContext("/getResultado(...)");
 
-          oContextCoste.setParameter("id"  , this._sProjectID);
-          console.log("Id enviado " +  this._sProjectID);
-          await oContextCoste.execute();
+        oContextCoste.setParameter("id", this._sProjectID);
+        console.log("Id enviado " + this._sProjectID);
+        await oContextCoste.execute();
 
-          const result = oContextCoste.getBoundContext().getObject();
-          console.log("Resultado acción:", result);
+        const result = oContextCoste.getBoundContext().getObject();
+        console.log("Resultado acción:", result);
 
       },
 
@@ -4896,9 +4910,8 @@ sap.ui.define([
                   aCells[6].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[7].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[9].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[9].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[10].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
                 }
               }
             });
@@ -5090,9 +5103,8 @@ sap.ui.define([
                   aCells[6].setText(Recurso.year3 ? parseFloat(Recurso.year3).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[7].setText(Recurso.year4 ? parseFloat(Recurso.year4).toFixed(2) : "0.00"); // Para el Input (PMJ)
                   aCells[8].setText(Recurso.year5 ? parseFloat(Recurso.year5).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[9].setText(Recurso.year6 ? parseFloat(Recurso.year6).toFixed(2) : "0.00"); // Para el Input (PMJ)
-                  aCells[10].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
-                  aCells[11].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
+                  aCells[9].setText(Recurso.total ? parseFloat(Recurso.total).toFixed(2) : "0.00");
+                  aCells[10].setText(Recurso.totalC ? parseFloat(Recurso.total).toFixed(2) : "0.00"); // Para el Input (Cantidad)
 
                 }
               }
@@ -7114,8 +7126,8 @@ sap.ui.define([
           const oSelectTipoServi = oItem.getCells()[1];
           const oInputConcepto = oItem.getCells()[3];
           const oTextPMJ = oItem.getCells()[4];
-          const oTextTotal = oItem.getCells()[11];
-          const oTextTotalE = oItem.getCells()[12];
+          const oTextTotal = oItem.getCells()[10];
+          const oTextTotalE = oItem.getCells()[11];
 
           const sVertical = oSelectVertical.getSelectedKey();
           const sTipoServi = oSelectTipoServi.getSelectedKey();
@@ -7196,8 +7208,8 @@ sap.ui.define([
           const sPerfil = oPerfil?.getSelectedKey() || "";
           const sConcepto = oConcepto?.getValue()?.trim() || "";
           const sPMJ = parseFloat(oPMJ?.getText()) || 0; // ojo que antes tenías getText() que da string no editable
-          const sTotal = parseFloat(oItem.getCells()[11]?.getText()) || 0;
-          const stotalRe = parseFloat(oItem.getCells()[12]?.getText()) || 0;
+          const sTotal = parseFloat(oItem.getCells()[10]?.getText()) || 0;
+          const stotalRe = parseFloat(oItem.getCells()[11]?.getText()) || 0;
 
           const isRowWithData = sVertical || stipoServi || sPerfil || sConcepto || sPMJ > 0 || sTotal > 0 || stotalRe > 0;
 
@@ -7260,8 +7272,8 @@ sap.ui.define([
           const oSelectTipoServi = oItem.getCells()[1];
           const oInputConcepto = oItem.getCells()[3];
           const oTextPMJ = oItem.getCells()[4];
-          const oTextTotal = oItem.getCells()[11];
-          const oTextTotalE = oItem.getCells()[12];
+          const oTextTotal = oItem.getCells()[10];
+          const oTextTotalE = oItem.getCells()[11];
 
           const sVertical = oSelectVertical.getSelectedKey();
           const sTipoServi = oSelectTipoServi.getSelectedKey();
@@ -7324,8 +7336,8 @@ sap.ui.define([
           const oSelectTipoServi = oItem.getCells()[1];
           const oInputConcepto = oItem.getCells()[3];
           const oTextPMJ = oItem.getCells()[4];
-          const oTextTotal = oItem.getCells()[11];
-          const oTextTotalE = oItem.getCells()[12];
+          const oTextTotal = oItem.getCells()[10];
+          const oTextTotalE = oItem.getCells()[11];
 
           const sVertical = oSelectVertical.getSelectedKey();
           const sTipoServi = oSelectTipoServi.getSelectedKey();
@@ -7397,8 +7409,8 @@ sap.ui.define([
           const sPerfil = oPerfil.getValue() || "";
           const sConcepto = oConcepto.getValue() || "";
           const sPMJ = parseFloat(oPMJ.getValue());
-          const sTotal = parseFloat(oItem.getCells()[11].getText());
-          const stotalRe = parseFloat(oItem.getCells()[12].getText());
+          const sTotal = parseFloat(oItem.getCells()[10].getText());
+          const stotalRe = parseFloat(oItem.getCells()[11].getText());
 
           const isRowWithData =
             sVertical || stipoServi || sPerfil || sConcepto ||
@@ -7474,8 +7486,8 @@ sap.ui.define([
           const oSelectTipoServi = oItem.getCells()[1];
           const oInputConcepto = oItem.getCells()[3];
           const oTextPMJ = oItem.getCells()[4];
-          const oTextTotal = oItem.getCells()[11];
-          const oTextTotalE = oItem.getCells()[12];
+          const oTextTotal = oItem.getCells()[10];
+          const oTextTotalE = oItem.getCells()[11];
 
           const sVertical = oSelectVertical.getSelectedKey();
           const sTipoServi = oSelectTipoServi.getSelectedKey();
@@ -7547,8 +7559,8 @@ sap.ui.define([
           const oSelectTipoServi = oItem.getCells()[1];
           const oInputConcepto = oItem.getCells()[3];
           const oTextPMJ = oItem.getCells()[4];
-          const oTextTotal = oItem.getCells()[11];
-          const oTextTotalE = oItem.getCells()[12];
+          const oTextTotal = oItem.getCells()[10];
+          const oTextTotalE = oItem.getCells()[11];
 
           const sVertical = oSelectVertical.getSelectedKey();
           const sTipoServi = oSelectTipoServi.getSelectedKey();
@@ -8316,8 +8328,9 @@ sap.ui.define([
         console.log(" Tamaño:", file.size, "bytes");
         console.log(" Contenido (Blob):", file);
       */
+        let putRes;
         try {
-          let putRes; //  Declarar aquí para evitar error de "not defined"
+          //  Declarar aquí para evitar error de "not defined"
 
           // Paso 1: Enviar metadata
           const metadataPayload = {
@@ -9325,9 +9338,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0", 10);
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0", 10);
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0", 10);
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0", 10);
-          const sTotal = parseFloat(oItem.getCells()[11]?.getText() || "0");
-          const stotalRe = parseFloat(oItem.getCells()[12]?.getText() || "0");
+          const sTotal = parseFloat(oItem.getCells()[10]?.getText() || "0");
+          const stotalRe = parseFloat(oItem.getCells()[11]?.getText() || "0");
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil) {
@@ -9346,7 +9358,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: Number(sTotal.toFixed(2)),
             totalE: Number(stotalRe.toFixed(2)),
             tipoServicio_ID: stipoServi,
@@ -9561,7 +9572,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 12; j < oItem.getCells().length; j++) {
+        for (let j = 11; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -9697,7 +9708,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 13; j < oItem.getCells().length; j++) {
+        for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -9832,7 +9843,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 13; j < oItem.getCells().length; j++) {
+        for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -9982,7 +9993,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 12; j < oItem.getCells().length; j++) {
+        for (let j = 11; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10108,13 +10119,14 @@ sap.ui.define([
         }
       },
 
+
       InsertmesAñoServConExterno: async function (oItem) {
         const idSerConsu = this._idSerConsu;
         const sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 13; j < oItem.getCells().length; j++) {
+        for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10237,17 +10249,13 @@ sap.ui.define([
       },
 
 
-
-
-
-
       InsertmesAñoGViajeConExterno: async function (oItem) {
         const idGasViaConsu = this._idGasViaConsu;
         const sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 13; j < oItem.getCells().length; j++) {
+        for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10392,7 +10400,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 12; j < oItem.getCells().length; j++) {
+        for (let j = 11; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10526,7 +10534,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 13; j < oItem.getCells().length; j++) {
+        for (let j = 12; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10803,7 +10811,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 12; j < oItem.getCells().length; j++) {
+        for (let j = 11; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -10941,7 +10949,7 @@ sap.ui.define([
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
 
-        for (let j = 12; j < oItem.getCells().length; j++) {
+        for (let j = 11; j < oItem.getCells().length; j++) {
           const cell = oItem.getCells()[j];
           let dynamicValue;
 
@@ -11095,9 +11103,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -11116,7 +11123,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: Number(sTotal),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11307,9 +11313,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sConcepto) {
@@ -11328,7 +11333,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: Number(sTotal.toFixed(2)),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11418,9 +11422,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = parseFloat(oItem.getCells()[11].getText()) || 0; // Text de Total
-          const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0; // Text de TotalE
+          const sTotal = parseFloat(oItem.getCells()[10].getText()) || 0; // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[11].getText()) || 0; // Text de TotalE
 
           // Validar si todos los datos son válidos
           if (!sVertical || !stipoServi || !sPerfil || !sConcepto) {
@@ -11438,7 +11441,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11520,9 +11522,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -11541,7 +11542,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: Number(sTotal.toFixed(2)),
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11629,9 +11629,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -11650,7 +11649,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11746,9 +11744,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = parseFloat(oItem.getCells()[11].getText()) || 0;
-          const stotalRe = parseFloat(oItem.getCells()[12].getText()) || 0;
+          const sTotal = parseFloat(oItem.getCells()[10].getText()) || 0;
+          const stotalRe = parseFloat(oItem.getCells()[11].getText()) || 0;
 
           // Evitar insertar filas vacías
           if (!sVertical && !stipoServi && !sPerfil && !sConcepto) {
@@ -11766,7 +11763,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalR: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11874,9 +11870,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -11895,7 +11890,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -11981,9 +11975,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
-          const sTotal = this.convertToInt(oItem.getCells()[11].getText()); // Text de Total
-          const stotalRe = this.convertToInt(oItem.getCells()[12].getText()); // Text de TotalE
+          const sTotal = this.convertToInt(oItem.getCells()[10].getText()); // Text de Total
+          const stotalRe = this.convertToInt(oItem.getCells()[11].getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -12001,7 +11994,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalE: stotalRe,
             tipoServicio_ID: stipoServi,
@@ -12079,9 +12071,8 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[6]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[8]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const sTotal = parseFloat(oItem.getCells()[10]?.getText()); // Text de Total
-          const stotalRe = parseFloat(oItem.getCells()[11]?.getText()); // Text de TotalE
+          const sTotal = parseFloat(oItem.getCells()[9]?.getText()); // Text de Total
+          const stotalRe = parseFloat(oItem.getCells()[10]?.getText()); // Text de TotalE
 
 
           // Validar si todos los datos son válidos
@@ -12100,7 +12091,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             datosProyect_ID: generatedId
@@ -12195,7 +12185,6 @@ sap.ui.define([
           const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
           const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
           const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-          const syear6 = parseFloat(oItem.getCells()[10]?.getText() || "0");
           const sTotal = parseFloat(oItem.getCells()[4]?.getText()); // Text de Total
           const stotalRe = parseFloat(oItem.getCells()[5]?.getText()); // Text de TotalE
 
@@ -12216,7 +12205,6 @@ sap.ui.define([
             year3: Number(syear3.toFixed(2)),
             year4: Number(syear4.toFixed(2)),
             year5: Number(syear5.toFixed(2)),
-            year6: Number(syear6.toFixed(2)),
             total: sTotal,
             totalC: stotalRe,
             datosProyect_ID: generatedId
@@ -13698,15 +13686,15 @@ sap.ui.define([
         let suma = 0;
         var totalRecurExter, totalRecurIn, totalCons;
 
-        var totalFor2024 = this.getTotalForYear(2025, rowIndex, tableId);
-        var totalFor2025 = this.getTotalForYear(2026, rowIndex, tableId);
-        var totalFor2026 = this.getTotalForYear(2027, rowIndex, tableId);
-        var totalFor2027 = this.getTotalForYear(2028, rowIndex, tableId);
-        var totalFor2028 = this.getTotalForYear(2029, rowIndex, tableId);
-        var totalFor2029 = this.getTotalForYear(2030, rowIndex, tableId);
+        var totalForAnio1 = this.getTotalForYear(2025, rowIndex, tableId);
+        var totalForAnio2 = this.getTotalForYear(2026, rowIndex, tableId);
+        var totalForAnio3 = this.getTotalForYear(2027, rowIndex, tableId);
+        var totalForAnio4 = this.getTotalForYear(2028, rowIndex, tableId);
+        var totalForAnio5 = this.getTotalForYear(2029, rowIndex, tableId);
+        var totalForAnio6 = this.getTotalForYear(2030, rowIndex, tableId);
 
 
-        //    console.log("TRAIDO DEL 2025 ---->>>>>> <3 : " + totalFor2024);
+        //    console.log("TRAIDO DEL 2025 ---->>>>>> <3 : " + totalForAnio1);
         // Lógica para cada tabla según la tabla seleccionada (tableId)
         if (tableId === "tablaConsuExter") {
           // Obtener la tabla "tablaConsuExter"
@@ -13725,18 +13713,17 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
                 PMJCos = aCells[4].getText(); // Celda para PMJ
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                totalSum1 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                totalSum1 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
                 var resulCon = PMJCos * totalSum1;
 
-                aCells[11].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
-                aCells[12].setText(resulCon.toFixed(2) + "€"); // Celda para Total 
+                aCells[10].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
+                aCells[11].setText(resulCon.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -13765,18 +13752,17 @@ sap.ui.define([
                 // Actualizar las celdas con los valores específicos de las s
 
                 var PMJDi = aCells[4].getText();
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                totalSum2 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                totalSum2 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 var resulDina = PMJDi * totalSum2;
 
-                aCells[11].setText(totalSum2.toFixed(2)); // Celda para Total 
-                aCells[12].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
+                aCells[10].setText(totalSum2.toFixed(2)); // Celda para Total 
+                aCells[11].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
 
               }
             }
@@ -13806,28 +13792,27 @@ sap.ui.define([
                   PMJReValue = 0;
                 }
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum3 = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
-                aCells[11].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
+                var totalSum3 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                aCells[10].setText(totalSum3.toFixed(2) + "€"); // Celda para Total 
 
                 // Calcular resultado inicial para celda 12
                 var initialResult = PMJReValue * totalSum3;
-                aCells[12].setText(initialResult.toFixed(2) + "€");
+                aCells[11].setText(initialResult.toFixed(2) + "€");
 
                 // Agregar listener para recalcular si cambia el valor de la celda 4
                 aCells[4].attachLiveChange(function (oEvent) {
                   var newValue = parseFloat(oEvent.getSource().getValue().replace(",", "."));
                   if (!isNaN(newValue)) {
                     var newResult = newValue * totalSum3;
-                    aCells[12].setText(newResult.toFixed(2) + "€");
+                    aCells[11].setText(newResult.toFixed(2) + "€");
                   } else {
-                    aCells[12].setText("0.00€");
+                    aCells[11].setText("0.00€");
                   }
 
                   // Actualizar suma general en inputs relacionados
@@ -13861,17 +13846,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -13895,17 +13879,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -13929,17 +13912,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -13963,17 +13945,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -13997,17 +13978,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[4].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[5].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[6].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[7].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[8].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[9].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[4].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[5].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[6].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[7].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[8].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                aCells[9].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -14030,18 +14010,17 @@ sap.ui.define([
 
               if (aCells && aCells.length >= 12) {
                 // Actualizar las celdas con los valores específicos de las fechas
-                aCells[4].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[5].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[6].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[7].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[8].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[9].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[4].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[5].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[6].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[7].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[8].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                aCells[9].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -14065,17 +14044,16 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
+
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
-
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
               }
             }
           });
@@ -14100,19 +14078,19 @@ sap.ui.define([
               if (aCells && aCells.length >= 11) {
                 // Actualizar las celdas con los valores específicos de las fechas
 
-                aCells[5].setText(totalFor2024.toFixed(2) + "€"); // Celda para 2024
-                aCells[6].setText(totalFor2025.toFixed(2) + "€"); // Celda para 2025
-                aCells[7].setText(totalFor2026.toFixed(2) + "€"); // Celda para 2026
-                aCells[8].setText(totalFor2027.toFixed(2) + "€"); // Celda para 2027
-                aCells[9].setText(totalFor2028.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalFor2029.toFixed(2) + "€"); // Celda para 2029
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
+                aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
+                aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
+                aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
+                aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
 
-                var totalSum = totalFor2024 + totalFor2025 + totalFor2026 + totalFor2027 + totalFor2028 + totalFor2029;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
 
-                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total
+                aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total
 
 
-                aCells[12].setText(totalSum.toFixed(2) + "€"); // Celda para Total1
+                aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total1
 
               }
             }
@@ -14193,8 +14171,8 @@ sap.ui.define([
         aItems.forEach(function (oItem) {
           var aCells = oItem.getCells();
           // Verifica que aCells tenga al menos 13 elementos antes de acceder
-          var sPrecio = aCells.length > 11 && aCells[11].getText ? aCells[11].getText() : "0"; // Celda 12 (índice 11)
-          var sTotal1 = aCells.length > 12 && aCells[12].getText ? aCells[12].getText() : "0"; // Celda 13 (índice 12)
+          var sPrecio = aCells.length > 10 && aCells[10].getText ? aCells[10].getText() : "0"; // Celda 12 (índice 11)
+          var sTotal1 = aCells.length > 11 && aCells[11].getText ? aCells[11].getText() : "0"; // Celda 13 (índice 12)
 
 
           suma += parseFloat(sPrecio) || 0;

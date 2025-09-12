@@ -329,8 +329,7 @@
                                                                     </ColumnListItem>
                                                                 </items>
                                                             </Table>
-
-                                                            <!--<viz:VizFrame 
+<!--<viz:VizFrame 
     id="idVizFrame" 
     height='400px' 
     width='600px' 
@@ -1116,36 +1115,32 @@
 
                                                                         <Column id="column5_1476188" vAlign="Bottom">
                                                                             <header>
-                                                                                <Label text="2025" id="anio1"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/0/anio}" id="anio1"/>
                                                                             </header>
                                                                         </Column>
 
                                                                         <Column id="column5_76188" vAlign="Bottom">
                                                                             <header>
-                                                                                <Label text="2026" id="anio2"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/1/anio}" id="anio2"/>
                                                                             </header>
                                                                         </Column>
 
                                                                         <Column id="column5_7688" vAlign="Bottom">
                                                                             <header>
-                                                                                <Label text="2027" id="anio3"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/2/anio}" id="anio3"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column5_768" vAlign="Bottom">
                                                                             <header>
-                                                                                <Label text="2028" id="anio4"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/3/anio}" id="anio4"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column5_788" vAlign="Bottom">
                                                                             <header>
-                                                                                <Label text="2029" id="anio5"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/4/anio}" id="anio5"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column5_76" vAlign="Bottom">
-                                                                            <header>
-                                                                                <Label text="2030" id="anio6"/>
-                                                                            </header>
-                                                                        </Column>
+                                                            
                                                                         <Column id="column5_78" vAlign="Bottom">
                                                                             <header>
                                                                                 <Label text="Total" id="lbl_total"/>
@@ -1311,12 +1306,6 @@
                                                                         <Column id="column1_1727576857"/>
 
                                                                         <Column id="column1_172779576857"/>
-
-                                                                        <Column id="column2_179576857">
-                                                                            <header>
-                                                                                <Text xmlns="sap.m" id="text71_1729582650577"/>
-                                                                            </header>
-                                                                        </Column>
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -1443,7 +1432,6 @@
                                                                         <Column id="coluomn787994540115"/>
                                                                         <Column id="coluomn7879945465850115"/>
                                                                         <Column id="coluomn78799454890115"/>
-                                                                        <Column id="co6890115"/>
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -1674,34 +1662,30 @@
                                                                         </Column>
                                                                         <Column id="column3_1723559286551">
                                                                             <header>
-                                                                                <Label text="2025" id="text40_1723559286550"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/0/anio}" id="text40_1723559286550"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column4_1723559297070">
                                                                             <header>
-                                                                                <Label text="2026" id="text41_1723559297069"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/1/anio}" id="text41_1723559297069"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column5_1723559395812">
                                                                             <header>
-                                                                                <Label text="2027" id="text42_1723559395811"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/2/anio}" id="text42_1723559395811"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column6">
                                                                             <header>
-                                                                                <Label text="2028" id="text43"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/3/anio}" id="text43"/>
                                                                             </header>
                                                                         </Column>
                                                                         <Column id="column7">
                                                                             <header>
-                                                                                <Label text="2029" id="text44"/>
+                                                                                <Label text="{modeloAnioDinamicos>/AnioDinamicos/4/anio}" id="text44"/>
                                                                             </header>
                                                                         </Column>
-                                                                        <Column id="column8">
-                                                                            <header>
-                                                                                <Label text="2030" id="text45"/>
-                                                                            </header>
-                                                                        </Column>
+                                             
                                                                         <Column id="column9_1723560312685">
                                                                             <header>
                                                                                 <Label text="Total" id="txt46"/>
@@ -1913,7 +1897,6 @@
 
                                                                         <Column id="column10_1727948956089"/>
 
-                                                                        <Column id="column3_1727948934250"/>
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -2110,7 +2093,6 @@
 
                                                                         <Column id="column1_1727950359287"/>
 
-                                                                        <Column id="column2_1727950359288"/>
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -2319,34 +2301,30 @@
                                                                     </Column>
                                                                     <Column id="column3_172355928651">
                                                                         <header>
-                                                                            <Label text="2025" id="text40_17559286550"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/0/anio}" id="text40_17559286550"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column4_17235592970">
                                                                         <header>
-                                                                            <Label text="2026" id="text41_179297069"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/1/anio}" id="text41_179297069"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column5_172355932">
                                                                         <header>
-                                                                            <Label text="2027" id="text1723559395811"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/2/anio}" id="text1723559395811"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column66569">
                                                                         <header>
-                                                                            <Label text="2028" id="text4556853"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/3/anio}" id="text4556853"/>
                                                                         </header>
                                                                     </Column>
                                                                     <Column id="column79978">
                                                                         <header>
-                                                                            <Label text="2029" id="text58744"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/4/anio}" id="text58744"/>
                                                                         </header>
                                                                     </Column>
-                                                                    <Column id="column8879">
-                                                                        <header>
-                                                                            <Label text="2030" id="text984798445"/>
-                                                                        </header>
-                                                                    </Column>
+                                                       
                                                                     <Column id="column9_170312685">
                                                                         <header>
                                                                             <Label text="Total" id="lbl_tal"/>
@@ -2547,7 +2525,6 @@
 
                                                                         <Column id="column1_1727953262176"/>
 
-                                                                        <Column id="column2_1727953262177"/>
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -2756,9 +2733,7 @@
                                                                             <header/>
                                                                         </Column>
 
-                                                                        <Column id="column15_1727953477170">
-                                                                            <header/>
-                                                                        </Column>
+                                                                      
                                                                     </columns>
                                                                 </Table>
                                                             </ScrollContainer>
@@ -2959,39 +2934,35 @@
 
                                                                     <Column id="column4_1724414055800">
                                                                         <header>
-                                                                            <Label text="2025" id="text72"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/0/anio}" id="text72"/>
                                                                         </header>
                                                                     </Column>
 
                                                                     <Column id="column5_1724414073667">
                                                                         <header>
-                                                                            <Label text="2026" id="text73"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/1/anio}" id="text73"/>
                                                                         </header>
                                                                     </Column>
 
                                                                     <Column id="column6_1724414086329">
                                                                         <header>
-                                                                            <Label text="2027" id="text74"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/2/anio}" id="text74"/>
                                                                         </header>
                                                                     </Column>
 
                                                                     <Column id="column7_1724414094602">
                                                                         <header>
-                                                                            <Label text="2028" id="text75"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/3/anio}" id="text75"/>
                                                                         </header>
                                                                     </Column>
 
                                                                     <Column id="column8_1724414260725">
                                                                         <header>
-                                                                            <Label text="2029" id="text76"/>
+                                                                            <Label text="{modeloAnioDinamicos>/AnioDinamicos/4/anio}" id="text76"/>
                                                                         </header>
                                                                     </Column>
 
-                                                                    <Column id="column9_1724414268892">
-                                                                        <header>
-                                                                            <Label text="2030" id="text77"/>
-                                                                        </header>
-                                                                    </Column>
+                                                                
 
                                                                     <Column id="column10_1724414276433">
                                                                         <header>
@@ -3032,7 +3003,6 @@
                                                                     </Column>
                                                                     <Column id="column1_1727955577123"/>
                                                                     <Column id="column0_1729173455651"/>
-                                                                    <Column id="column0_1730206050097"/>
                                                                 </columns>
 
                                                                 <items>

@@ -176,14 +176,31 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 
 
 action getResultado(
-    id : UUID,
+  id : UUID
 ) returns {
+  recursosInternos : {
     year1 : Decimal(20,4);
     year2 : Decimal(20,4);
     year3 : Decimal(20,4);
     year4 : Decimal(20,4);
     year5 : Decimal(20,4);
+  };
+  otrosGastos : {
+    year1 : Decimal(20,4);
+    year2 : Decimal(20,4);
+    year3 : Decimal(20,4);
+    year4 : Decimal(20,4);
+    year5 : Decimal(20,4);
+  };
+  otrosRecursos : {
+    year1 : Decimal(20,4);
+    year2 : Decimal(20,4);
+    year3 : Decimal(20,4);
+    year4 : Decimal(20,4);
+    year5 : Decimal(20,4);
+  };
 };
+
 
   function getUserInfo()                                                                                                        returns String;
   action   cancelWorkflow(workflowInstanceId : String)                                                                          returns String;

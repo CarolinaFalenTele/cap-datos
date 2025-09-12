@@ -1,28 +1,25 @@
 PROCEDURE "totalesCostesMensualizados"(
     IN in_idRecursos NVARCHAR(500),
-    OUT out_year1 DECIMAL(20,4),
-    OUT out_year2 DECIMAL(20,4),
-    OUT out_year3 DECIMAL(20,4),
-    OUT out_year4 DECIMAL(20,4),
-    OUT out_year5 DECIMAL(20,4)
+    OUT out_int_year1 DECIMAL(20,4),
+    OUT out_int_year2 DECIMAL(20,4),
+    OUT out_int_year3 DECIMAL(20,4),
+    OUT out_int_year4 DECIMAL(20,4),
+    OUT out_int_year5 DECIMAL(20,4),
+    OUT out_srv_year1 DECIMAL(20,4),
+    OUT out_srv_year2 DECIMAL(20,4),
+    OUT out_srv_year3 DECIMAL(20,4),
+    OUT out_srv_year4 DECIMAL(20,4),
+    OUT out_srv_year5 DECIMAL(20,4),
+    OUT out_gto_year1 DECIMAL(20,4),
+    OUT out_gto_year2 DECIMAL(20,4),
+    OUT out_gto_year3 DECIMAL(20,4),
+    OUT out_gto_year4 DECIMAL(20,4),
+    OUT out_gto_year5 DECIMAL(20,4)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 READS SQL DATA AS
 BEGIN
-
-    -- Variables para servicios y viajes
-    DECLARE vS1 DECIMAL(20,4) := 0;
-    DECLARE vS2 DECIMAL(20,4) := 0;
-    DECLARE vS3 DECIMAL(20,4) := 0;
-    DECLARE vS4 DECIMAL(20,4) := 0;
-    DECLARE vS5 DECIMAL(20,4) := 0;
-
-    DECLARE vG1 DECIMAL(20,4) := 0;
-    DECLARE vG2 DECIMAL(20,4) := 0;
-    DECLARE vG3 DECIMAL(20,4) := 0;
-    DECLARE vG4 DECIMAL(20,4) := 0;
-    DECLARE vG5 DECIMAL(20,4) := 0;
 
     -- Porcentajes
     DECLARE vPct1 DECIMAL(20,4);
@@ -57,47 +54,44 @@ BEGIN
         FROM db_datos_PorcentajeAnio WHERE Activo = TRUE
     ) X WHERE rn = 5;
 
-    -- 2) Cálculo fila por fila en RecursosExternos
-    SELECT 
-        COALESCE(SUM(CASE WHEN year1 > 0 AND vPct1 IS NOT NULL 
-                          THEN PMJ * year1 * vPct1 / 100 ELSE 0 END),0),
-        COALESCE(SUM(CASE WHEN year2 > 0 AND vPct2 IS NOT NULL 
-                          THEN PMJ * year2 * vPct2 / 100 ELSE 0 END),0),
-        COALESCE(SUM(CASE WHEN year3 > 0 AND vPct3 IS NOT NULL 
-                          THEN PMJ * year3 * vPct3 / 100 ELSE 0 END),0),
-        COALESCE(SUM(CASE WHEN year4 > 0 AND vPct4 IS NOT NULL 
-                          THEN PMJ * year4 * vPct4 / 100 ELSE 0 END),0),
-        COALESCE(SUM(CASE WHEN year5 > 0 AND vPct5 IS NOT NULL 
-                          THEN PMJ * year5 * vPct5 / 100 ELSE 0 END),0)
-    INTO out_year1, out_year2, out_year3, out_year4, out_year5
-    FROM db_datos_RecursosExternos
-    WHERE datosProyect_ID = :in_idRecursos;
+   -----------------------------------------------------------------
+        -- 2) RecursosInternos: aplica PMJ * anio * porcentaje
+        -----------------------------------------------------------------
+        SELECT 
+            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN PMJ * year1 * vPct1 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN PMJ * year2 * vPct2 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN PMJ * year3 * vPct3 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN PMJ * year4 * vPct4 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN PMJ * year5 * vPct5 / 100 ELSE 0 END),0),2)
+        INTO out_int_year1, out_int_year2, out_int_year3, out_int_year4, out_int_year5
+        FROM db_datos_RecursosInternos
+        WHERE datosProyect_ID = :in_idRecursos;
 
-    -- 3) ServiRecurExter (suma simple)
-    SELECT COALESCE(SUM(year1),0),
-           COALESCE(SUM(year2),0),
-           COALESCE(SUM(year3),0),
-           COALESCE(SUM(year4),0),
-           COALESCE(SUM(year5),0)
-      INTO vS1, vS2, vS3, vS4, vS5
-      FROM db_datos_serviRecurExter
-     WHERE datosProyect_ID = :in_idRecursos;
+        -----------------------------------------------------------------
+        -- 3) OtrosGastoRecu: aplica anio * porcentaje (sin PMJ)
+        -----------------------------------------------------------------
+        SELECT 
+            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN year1 * vPct1 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN year2 * vPct2 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN year3 * vPct3 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN year4 * vPct4 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN year5 * vPct5 / 100 ELSE 0 END),0),2)
+        INTO out_srv_year1, out_srv_year2, out_srv_year3, out_srv_year4, out_srv_year5
+        FROM db_datos_otrosGastoRecu
+        WHERE datosProyect_ID = :in_idRecursos;
 
-    -- 4) GastoViajeRecExter (suma simple)
-    SELECT COALESCE(SUM(year1),0),
-           COALESCE(SUM(year2),0),
-           COALESCE(SUM(year3),0),
-           COALESCE(SUM(year4),0),
-           COALESCE(SUM(year5),0)
-      INTO vG1, vG2, vG3, vG4, vG5
-      FROM db_datos_GastoViajeRecExter
-     WHERE datosProyect_ID = :in_idRecursos;
+        -----------------------------------------------------------------
+        -- 4) OtrosRecursos: aplica anio * porcentaje (sin PMJ)
+        -----------------------------------------------------------------
+        SELECT 
+            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN year1 * vPct1 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN year2 * vPct2 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN year3 * vPct3 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN year4 * vPct4 / 100 ELSE 0 END),0),2),
+            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN year5 * vPct5 / 100 ELSE 0 END),0),2)
+        INTO out_gto_year1, out_gto_year2, out_gto_year3, out_gto_year4, out_gto_year5
+        FROM db_datos_otrosRecursos
+        WHERE datosProyect_ID = :in_idRecursos;
 
-    -- 5) Agregar servicios y viajes a los totales
-    out_year1 := out_year1 + vS1 + vG1;
-    out_year2 := out_year2 + vS2 + vG2;
-    out_year3 := out_year3 + vS3 + vG3;
-    out_year4 := out_year4 + vS4 + vG4;
-    out_year5 := out_year5 + vS5 + vG5;
 
 END
