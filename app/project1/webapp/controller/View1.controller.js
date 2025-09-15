@@ -67,7 +67,7 @@ sap.ui.define([
 
         oAniosModel.attachRequestCompleted(() => {
           console.log("Modelo añosDinamicos cargado correctamente");
-          this.actualizarHeadersAnios(); 
+          this.actualizarHeadersAnios();
         });
 
         // Cargamos el JSON externo
@@ -159,6 +159,10 @@ sap.ui.define([
 
         this.actualizarHeadersAnios();
 
+
+
+        this.traerPorcentajes();
+
       },
 
 
@@ -191,15 +195,15 @@ sap.ui.define([
         oModel.refresh(true);
 
 
-        
-    // --- Actualiza el modelo modeloAnioDinamicos ---
-    const oAniosModel = this.getView().getModel("modeloAnioDinamicos");
-    if (oAniosModel) {
-        oAniosModel.setProperty("/AnioDinamicos", aAnios);
-        oAniosModel.refresh(true);
-    } else {
-        console.warn("El modelo 'modeloAnioDinamicos' no existe");
-    }
+
+        // --- Actualiza el modelo modeloAnioDinamicos ---
+        const oAniosModel = this.getView().getModel("modeloAnioDinamicos");
+        if (oAniosModel) {
+          oAniosModel.setProperty("/AnioDinamicos", aAnios);
+          oAniosModel.refresh(true);
+        } else {
+          console.warn("El modelo 'modeloAnioDinamicos' no existe");
+        }
       },
 
       //Actualizar las tablas con años  
@@ -1692,7 +1696,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-     //   await this.CalculosRecursoExterno();
+           await this.CalculosRecursoExterno();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -3526,7 +3530,7 @@ sap.ui.define([
           }
 
           const oData = await response.json();
-          //  console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
+      //   console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -3539,7 +3543,7 @@ sap.ui.define([
             this.byId("totalSubtotal").setValue(Recurso.Subtotal ? parseFloat(Recurso.Subtotal).toFixed(2) : "0.00");
             this.byId("input2_172475612").setValue(Recurso.CosteEstruPorce ? parseFloat(Recurso.CosteEstruPorce).toFixed(2) : "0.00");
             this.byId("input2_1724756105").setValue(Recurso.Costeestructura ? parseFloat(Recurso.Costeestructura).toFixed(2) : "0.00");
-            this.byId("input2_17221205").setValue(Recurso.totalLicencias ? parseFloat(Recurso.totalLicencias).toFixed(2) : "0.00");
+            this.byId("input2_17221205").setValue(Recurso.MargenPorce ? parseFloat(Recurso.MargenPorce).toFixed(2) : "0.00");
             this.byId("input2_1756121205").setValue(Recurso.Margeingresos ? parseFloat(Recurso.Margeingresos).toFixed(2) : "0.00");
 
 
@@ -4845,20 +4849,51 @@ sap.ui.define([
         }
       },
       //-------------------------------------------------------------
+CalculosRecursoExterno: async function () {
+    const Coste = this.getView().getModel();
+    const oContextCoste = Coste.bindContext("/getResultado(...)");
+    oContextCoste.setParameter("id", this._sProjectID);
 
-      CalculosRecursoExterno: async function () {
-        const Coste = this.getView().getModel();
+    await oContextCoste.execute();
+    const response = oContextCoste.getBoundContext().getObject();
+    console.log("Resultado acción:", response);
 
-        const oContextCoste = Coste.bindContext("/getResultado(...)");
+    // Cargamos JSON de plantilla
+    const res = await fetch("model/costes.json");
+    const oData = await res.json();
 
-        oContextCoste.setParameter("id", this._sProjectID);
-        console.log("Id enviado " + this._sProjectID);
-        await oContextCoste.execute();
+    if (oData.TipoServicio && oData.TipoServicio.length > 0) {
+        const tipoServicio = oData.TipoServicio[0];
 
-        const result = oContextCoste.getBoundContext().getObject();
-        console.log("Resultado acción:", result);
+        // Reemplazamos valores año por año en CostesDirectos
+        tipoServicio.CostesDirectos.valores = [
+            parseFloat(response.totales.year1).toFixed(2) + '€',
+            parseFloat(response.totales.year2).toFixed(2) + '€',
+            parseFloat(response.totales.year3).toFixed(2) + '€',
+            parseFloat(response.totales.year4).toFixed(2) + '€',
+            parseFloat(response.totales.year5).toFixed(2) + '€'
+        ];
 
-      },
+        // Calculamos el total sumando todos los años
+        tipoServicio.CostesDirectos.total = Object.values(response.totales)
+            .reduce((acc, val) => acc + parseFloat(val || 0), 0)
+            .toFixed(2) + '€';
+    }
+
+  // Creamos el modelo y mantenemos los años intactos
+    const oCostesModel = new sap.ui.model.json.JSONModel(oData);
+    const oModelAnterior = this.getView().getModel("miModeloCostes");
+    if (oModelAnterior && oModelAnterior.getProperty("/Anios")) {
+        // Conservamos los años existentes
+        oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
+    }
+
+    this.getView().setModel(oCostesModel, "miModeloCostes");
+    oCostesModel.refresh(true);
+},
+
+
+
 
 
 
@@ -5422,7 +5457,7 @@ sap.ui.define([
           oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
 
 
-          // 🔥 Asegura que _editedRows tenga el índice actualizado
+          // Asegura que _editedRows tenga el índice actualizado
           var tableId = "table_dimicFecha";
           if (!this._editedRows[tableId]) {
             this._editedRows[tableId] = new Set();
@@ -5433,25 +5468,7 @@ sap.ui.define([
 
           //  Llama a updateTotalField inmediatamente
           this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
-          /*oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
-             oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
-             oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
-             oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
-             oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
-             oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
-   
-             // Suma de 2024 y 2025 para 'Total'
-             var total = 0;
-             oRowData[11].setText(total);  // Coloca la suma en 'Total'
-   
-             // Suma de PMJ + Total para 'Total1'
-             var total1 = 0;
-             oRowData[12].setText(total1); */ // Coloca la suma en 'Total1'
-
-
-
-          //console.log(total1);
-
+  
 
 
 
@@ -5578,7 +5595,6 @@ sap.ui.define([
             this._editedRows[tableId].add(iIndex);
           }
 
-          // Llama a updateTotalField inmediatamente
           this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
         } else {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
@@ -8275,7 +8291,9 @@ sap.ui.define([
                 this.insertTotalRecuInterno(generatedId, sCsrfToken),
                 this.insertTotalConsuExt(generatedId, sCsrfToken),
                 this.onUploadFile(generatedId, sCsrfToken),
-                this.insertPlanServicio(generatedId, sCsrfToken)
+                this.insertPlanServicio(generatedId, sCsrfToken),
+                this.insertResumenCostesTotal(generatedId, sCsrfToken),
+
               ]);
               this._oBusyDialog.close();
 
@@ -13386,87 +13404,7 @@ sap.ui.define([
 
 
 
-      /* handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
-         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
-         // console.log(`1. Nuevo valor ingresado en la tabla ${tableId}, fila ${rowIndex}, columna ${columnIndex}: ${newValue}`);
- 
-         if (this.currentTable !== tableId) {
-           //  console.log(`Cambio de tabla detectado. Reiniciando acumulación para la tabla ${tableId}.`);
-           this.resetTableAccumulations(tableId);
-           this.currentTable = tableId;
-         }
- 
-         if (!this._tableValues) this._tableValues = {};
-         if (!this._tableValues[tableId]) this._tableValues[tableId] = {};
-         if (!this._tableValues[tableId][rowIndex]) this._tableValues[tableId][rowIndex] = {};
- 
-         // Obtener el valor anterior
-         var oldValue = this._tableValues[tableId][rowIndex][columnIndex] || 0;
- 
-         // Guarda el nuevo valor en _tableValues
-         this._tableValues[tableId][rowIndex][columnIndex] = newValue;
- 
-         if (!this._editedRows) this._editedRows = {};
-         if (!this._editedRows[tableId]) this._editedRows[tableId] = new Set();
-         this._editedRows[tableId].add(rowIndex);
- 
-         this._tableChanged = true;
- 
-         //   //console.log("Verificando _yearlySums antes de asignar:", JSON.stringify(this._yearlySums));
- 
-         if (!this._yearlySums[rowIndex]) this._yearlySums[rowIndex] = {};
- 
-         // Restar el valor anterior antes de sumar el nuevo
-         if (this._yearlySums[rowIndex][year] !== undefined) {
-           this._yearlySums[rowIndex][year] -= oldValue;
-         }
- 
-         this._yearlySums[rowIndex][year] = (this._yearlySums[rowIndex][year] || 0) + newValue;
- 
-         //  console.log(`Valor actualizado en _yearlySums[${rowIndex}][${year}]:`, this._yearlySums[rowIndex][year]);
- 
-         if (!this._yearlySums[tableId]) this._yearlySums[tableId] = {};
-         if (!this._yearlySums[tableId][rowIndex]) this._yearlySums[tableId][rowIndex] = {};
-         if (!this._yearlySums[tableId][rowIndex][year]) this._yearlySums[tableId][rowIndex][year] = 0;
- 
-         this._yearlySums[tableId][rowIndex][year] -= oldValue;
-         this._yearlySums[tableId][rowIndex][year] += newValue;
- 
-         //console.log(`Suma acumulada para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
- 
-         this.updateTotalField(tableId, rowIndex, newValue);
- 
- 
-         //    console.log(`Suma total para el año ${year} en fila ${rowIndex}:`, this._yearlySums[tableId][rowIndex][year]);
- 
-         if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
-         if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
-         if (!this._insercionesPorAnoYTabla[year][tableId]) this._insercionesPorAnoYTabla[year][tableId] = 0;
- 
-         this._insercionesPorAnoYTabla[year][tableId]++;
- 
- 
-         //console.log("ME AÑO RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
- 
-         if (!this._insercionesPorTabla) this._insercionesPorTabla = {};
-         if (!this._insercionesPorTabla[tableId]) this._insercionesPorTabla[tableId] = 0;
- 
-         this._insercionesPorTabla[tableId]++;
- 
- 
-         //  //console.log("PORCEM RECOGIDO" + JSON.stringify(this._insercionesPorAnoYTabla));
-         //  //console.log("PORCEM RECOGIDO:", this._insercionesPorAnoYTabla);
-         // //console.log("PORCENTAJE POR TABLA  RECOGIDO" + JSON.stringify(this._insercionesPorTabla));
- 
- 
- 
- 
- 
-         this.calcularPorcentajeInserciones();
- 
-         this.CaseAno(tableId);
-       },*/
-
+  
 
 
 
@@ -13659,7 +13597,31 @@ sap.ui.define([
 
 
 
+      traerPorcentajes: async function () {
+        // Crear modelo OData V4 apuntando directamente a tu servicio
 
+
+        const oModel = this.getOwnerComponent().getModel(); // modelo "" definido en manifest.json
+
+
+        // Crear el binding sobre la entidad PorcentajeAnio
+        const oBinding = oModel.bindList("/PorcentajeAnio");
+
+        try {
+          const aContexts = await oBinding.requestContexts();
+          const aPorcentajes = aContexts.map(ctx => ctx.getObject());
+
+          // Guardar en un JSONModel local
+          const oJsonModel = new sap.ui.model.json.JSONModel({ Porcentajes: aPorcentajes });
+          this.getView().setModel(oJsonModel, "modeloPorcentajesLocal");
+
+          // console.log("Modelo "  +     JSON.stringify(oJsonModel)  );
+
+          console.log(" Porcentajes cargados:", aPorcentajes);
+        } catch (err) {
+          console.error("Error cargando PorcentajeAnio:", err);
+        }
+      },
 
 
 
@@ -13675,12 +13637,13 @@ sap.ui.define([
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
 
-         var oAniosModel = this.getView().getModel("modeloAnioDinamicos");
-    var aAnios = oAniosModel.getProperty("/AnioDinamicos") || [];
+        var oAniosModel = this.getView().getModel("modeloAnioDinamicos");
+        var aAnios = oAniosModel.getProperty("/AnioDinamicos") || [];
+
+        var oPorcentajeModel = this.getView().getModel("modeloPorcentajesLocal");
+        var aPorcentajes = oPorcentajeModel ? oPorcentajeModel.getProperty("/Porcentajes") : [];
 
 
-
-        //  console.log("ESTOY ENTRANDO AL  updateTotalField "  );   
 
         //    console.log("1. updateTotal ---->>> " + rowIndex + newValue);
         // Obtener el total acumulado para cada año
@@ -13691,13 +13654,13 @@ sap.ui.define([
         var totalJornada = 0;
         let suma = 0;
         var totalRecurExter, totalRecurIn, totalCons;
-// Por si no tienes siempre 6 años, protegemos con "?" y operador ternario
-      var totalForAnio1 = aAnios[0] ? this.getTotalForYear(aAnios[0].anio, rowIndex, tableId) : 0;
-      var totalForAnio2 = aAnios[1] ? this.getTotalForYear(aAnios[1].anio, rowIndex, tableId) : 0;
-      var totalForAnio3 = aAnios[2] ? this.getTotalForYear(aAnios[2].anio, rowIndex, tableId) : 0;
-      var totalForAnio4 = aAnios[3] ? this.getTotalForYear(aAnios[3].anio, rowIndex, tableId) : 0;
-      var totalForAnio5 = aAnios[4] ? this.getTotalForYear(aAnios[4].anio, rowIndex, tableId) : 0;
-      var totalForAnio6 = aAnios[5] ? this.getTotalForYear(aAnios[5].anio, rowIndex, tableId) : 0;
+        // Por si no tienes siempre 6 años, protegemos con "?" y operador ternario
+        var totalForAnio1 = aAnios[0] ? this.getTotalForYear(aAnios[0].anio, rowIndex, tableId) : 0;
+        var totalForAnio2 = aAnios[1] ? this.getTotalForYear(aAnios[1].anio, rowIndex, tableId) : 0;
+        var totalForAnio3 = aAnios[2] ? this.getTotalForYear(aAnios[2].anio, rowIndex, tableId) : 0;
+        var totalForAnio4 = aAnios[3] ? this.getTotalForYear(aAnios[3].anio, rowIndex, tableId) : 0;
+        var totalForAnio5 = aAnios[4] ? this.getTotalForYear(aAnios[4].anio, rowIndex, tableId) : 0;
+        var totalForAnio6 = aAnios[5] ? this.getTotalForYear(aAnios[5].anio, rowIndex, tableId) : 0;
 
 
 
@@ -13726,7 +13689,7 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                totalSum1 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                totalSum1 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 var resulCon = PMJCos * totalSum1;
 
                 aCells[10].setText(totalSum1.toFixed(2) + "€"); // Celda para Total 
@@ -13739,7 +13702,6 @@ sap.ui.define([
 
         } else if (tableId === "table_dimicFecha") {
 
-          //      console.log("ESTOY ENTRANDO AL  updateTotalField   PERO DE TABLAS DINAMICAS   "  );   
 
           // Obtener la tabla "table_dimicFecha"
           var oTable = this.byId("table_dimicFecha");
@@ -13765,6 +13727,21 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
+
+                function getPctForYear(anio) {
+                  var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
+                  if (rec) {
+                    return parseFloat(rec.Percent) / 100; // aquí Percent
+                  }
+                  return 1; // si no encuentra nada, usa 100%
+                }
+
+                // Aplicamos el % a cada año
+                totalForAnio1 = totalForAnio1 * getPctForYear(aAnios[0].anio);
+                totalForAnio2 = totalForAnio2 * getPctForYear(aAnios[1].anio);
+                totalForAnio3 = totalForAnio3 * getPctForYear(aAnios[2].anio);
+                totalForAnio4 = totalForAnio4 * getPctForYear(aAnios[3].anio);
+                totalForAnio5 = totalForAnio5 * getPctForYear(aAnios[4].anio);
                 totalSum2 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 var resulDina = PMJDi * totalSum2;
 
@@ -13925,7 +13902,7 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
@@ -13958,7 +13935,7 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
@@ -14024,7 +14001,7 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
 
-                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[9].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
@@ -14057,7 +14034,7 @@ sap.ui.define([
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
-                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
                 aCells[11].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
@@ -14090,9 +14067,9 @@ sap.ui.define([
                 aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
-              //  aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
+                //  aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
 
-                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
+                var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
 
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total
 

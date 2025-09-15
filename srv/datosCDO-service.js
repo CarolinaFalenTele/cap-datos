@@ -77,69 +77,32 @@ module.exports = cds.service.impl(async function () {
 
 this.on("getResultado", async (req) => {
   const { id } = req.data;
-  console.log('procedure: ejecutando con ID:', id);
+  console.log("procedure ejecutando con ID:", id);
 
   try {
-const result = await db.run(
-  `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-  {
-    IN_IDRECURSOS: id,
+    const result = await db.run(
+      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
+      {
+        IN_IDRECURSOS: id,
+        OUT_TOTAL_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+        OUT_TOTAL_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+        OUT_TOTAL_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+        OUT_TOTAL_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+        OUT_TOTAL_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
+      }
+    );
 
-    // Recursos Internos
-    OUT_INT_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_INT_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_INT_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_INT_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_INT_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-
-    // Otros Gastos
-    OUT_SRV_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_SRV_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_SRV_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_SRV_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_SRV_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-
-    // Otros Recursos
-    OUT_GTO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_GTO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_GTO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_GTO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 },
-    OUT_GTO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 4 }
-  }
-);
-
-
-    // Devolver todos los resultados como objeto JSON
-    const response = {
-  recursosInternos: {
-    year1: result.OUT_INT_YEAR1 ?? null,
-    year2: result.OUT_INT_YEAR2 ?? null,
-    year3: result.OUT_INT_YEAR3 ?? null,
-    year4: result.OUT_INT_YEAR4 ?? null,
-    year5: result.OUT_INT_YEAR5 ?? null
-  },
-  otrosGastos: {
-    year1: result.OUT_SRV_YEAR1 ?? null,
-    year2: result.OUT_SRV_YEAR2 ?? null,
-    year3: result.OUT_SRV_YEAR3 ?? null,
-    year4: result.OUT_SRV_YEAR4 ?? null,
-    year5: result.OUT_SRV_YEAR5 ?? null
-  },
-  otrosRecursos: {
-    year1: result.OUT_GTO_YEAR1 ?? null,
-    year2: result.OUT_GTO_YEAR2 ?? null,
-    year3: result.OUT_GTO_YEAR3 ?? null,
-    year4: result.OUT_GTO_YEAR4 ?? null,
-    year5: result.OUT_GTO_YEAR5 ?? null
-  }
-};
-
-    console.log("Resultados calculados:", response);
-    return response;
+    return {
+      totales: {
+        year1: result.OUT_TOTAL_YEAR1 ?? 0,
+        year2: result.OUT_TOTAL_YEAR2 ?? 0,
+        year3: result.OUT_TOTAL_YEAR3 ?? 0,
+        year4: result.OUT_TOTAL_YEAR4 ?? 0,
+        year5: result.OUT_TOTAL_YEAR5 ?? 0
+      }
+    };
   } catch (e) {
-    console.error("--- ERROR PROCEDURE ---");
-    console.error("Mensaje:", e.message);
-    console.error("Stack:", e.stack);
+    console.error("ERROR en procedure:", e.message);
     throw e;
   }
 });
