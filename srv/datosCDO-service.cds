@@ -101,7 +101,7 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   entity TipoCompra                as projection on datos.TipoCompra;
   entity Usuarios                  as projection on datos.Usuarios;
   entity Archivos                  as projection on datos.Archivos;
-  entity PorcentajeAnio as projection on datos.PorcentajeAnio;
+  entity PorcentajeAnio            as projection on datos.PorcentajeAnio;
 
   entity PendientesUsuario         as
     select from WorkflowEtapas {

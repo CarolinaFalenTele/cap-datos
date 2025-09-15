@@ -39,7 +39,8 @@ module.exports = cds.service.impl(async function () {
     WorkflowEtapas,
     Archivos,
     Aprobadores,
-    Jefeproyect
+    Jefeproyect,
+    PorcentajeAnio
   } = this.entities;
 
   const { WorkflowService } = this.entities;
@@ -62,6 +63,15 @@ module.exports = cds.service.impl(async function () {
     const bExists = await SELECT.one.from(Jefeproyect).where({ matricula: matricula, Activo: true });
     if (bExists) {
       req.error(400, `Matricula ${matricula} already exists and must be unique`);
+    }
+  });
+
+  this.before('CREATE', PorcentajeAnio, async (req) => {
+    const { Year } = req.data;
+    
+    const bExists = await SELECT.one.from(PorcentajeAnio).where({ Year: Year, Activo: true });
+    if (bExists) {
+      req.error(400, `Year ${Year} already exists and must be unique`);
     }
   });
 
