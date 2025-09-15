@@ -13674,6 +13674,12 @@ sap.ui.define([
 
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
+
+         var oAniosModel = this.getView().getModel("modeloAnioDinamicos");
+    var aAnios = oAniosModel.getProperty("/AnioDinamicos") || [];
+
+
+
         //  console.log("ESTOY ENTRANDO AL  updateTotalField "  );   
 
         //    console.log("1. updateTotal ---->>> " + rowIndex + newValue);
@@ -13685,13 +13691,14 @@ sap.ui.define([
         var totalJornada = 0;
         let suma = 0;
         var totalRecurExter, totalRecurIn, totalCons;
+// Por si no tienes siempre 6 años, protegemos con "?" y operador ternario
+      var totalForAnio1 = aAnios[0] ? this.getTotalForYear(aAnios[0].anio, rowIndex, tableId) : 0;
+      var totalForAnio2 = aAnios[1] ? this.getTotalForYear(aAnios[1].anio, rowIndex, tableId) : 0;
+      var totalForAnio3 = aAnios[2] ? this.getTotalForYear(aAnios[2].anio, rowIndex, tableId) : 0;
+      var totalForAnio4 = aAnios[3] ? this.getTotalForYear(aAnios[3].anio, rowIndex, tableId) : 0;
+      var totalForAnio5 = aAnios[4] ? this.getTotalForYear(aAnios[4].anio, rowIndex, tableId) : 0;
+      var totalForAnio6 = aAnios[5] ? this.getTotalForYear(aAnios[5].anio, rowIndex, tableId) : 0;
 
-        var totalForAnio1 = this.getTotalForYear(2025, rowIndex, tableId);
-        var totalForAnio2 = this.getTotalForYear(2026, rowIndex, tableId);
-        var totalForAnio3 = this.getTotalForYear(2027, rowIndex, tableId);
-        var totalForAnio4 = this.getTotalForYear(2028, rowIndex, tableId);
-        var totalForAnio5 = this.getTotalForYear(2029, rowIndex, tableId);
-        var totalForAnio6 = this.getTotalForYear(2030, rowIndex, tableId);
 
 
         //    console.log("TRAIDO DEL 2025 ---->>>>>> <3 : " + totalForAnio1);
