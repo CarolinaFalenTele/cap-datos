@@ -14090,7 +14090,7 @@ sap.ui.define([
                 aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
-                aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
+              //  aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
 
                 var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5 ;
 
