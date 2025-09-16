@@ -80,27 +80,86 @@ this.on("getResultado", async (req) => {
   console.log("procedure ejecutando con ID:", id);
 
   try {
-    const result = await db.run(
-      `CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?);`,
-      {
-        IN_IDRECURSOS: id,
-        OUT_TOTAL_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-        OUT_TOTAL_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-        OUT_TOTAL_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-        OUT_TOTAL_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-        OUT_TOTAL_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
-      }
-    );
+const result = await db.run(
+`CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+  {
+    IN_IDRECURSOS: id,
 
-    return {
-      totales: {
-        year1: result.OUT_TOTAL_YEAR1 ?? 0,
-        year2: result.OUT_TOTAL_YEAR2 ?? 0,
-        year3: result.OUT_TOTAL_YEAR3 ?? 0,
-        year4: result.OUT_TOTAL_YEAR4 ?? 0,
-        year5: result.OUT_TOTAL_YEAR5 ?? 0
-      }
-    };
+    OUT_TOTAL_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTAL_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTAL_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTAL_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTAL_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTESINDIRECTOS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_TOTALCOSTES_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALCOSTES_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALCOSTES_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALCOSTES_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALCOSTES_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_TOTALINGRESO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALINGRESO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALINGRESO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALINGRESO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALINGRESO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_BENEFICIO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_BENEFICIO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_BENEFICIO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_BENEFICIO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_BENEFICIO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+  }
+);
+
+
+console.log("Resultado bruto procedure:", result);
+
+   return {
+  totales: {
+    year1: result.OUT_TOTAL_YEAR1 ?? 0,
+    year2: result.OUT_TOTAL_YEAR2 ?? 0,
+    year3: result.OUT_TOTAL_YEAR3 ?? 0,
+    year4: result.OUT_TOTAL_YEAR4 ?? 0,
+    year5: result.OUT_TOTAL_YEAR5 ?? 0
+  },
+  indirectos: {
+    year1: result.OUT_COSTESINDIRECTOS_YEAR1 ?? 0,
+    year2: result.OUT_COSTESINDIRECTOS_YEAR2 ?? 0,
+    year3: result.OUT_COSTESINDIRECTOS_YEAR3 ?? 0,
+    year4: result.OUT_COSTESINDIRECTOS_YEAR4 ?? 0,
+    year5: result.OUT_COSTESINDIRECTOS_YEAR5 ?? 0
+  },
+  CosteTotal : {
+      year1: result.OUT_TOTALCOSTES_YEAR1 ?? 0,
+      year2: result.OUT_TOTALCOSTES_YEAR2 ?? 0,
+      year3: result.OUT_TOTALCOSTES_YEAR3 ?? 0,
+      year4: result.OUT_TOTALCOSTES_YEAR4 ?? 0,
+      year5: result.OUT_TOTALCOSTES_YEAR5 ?? 0
+  },
+  Ingresos: {
+  year1: result.OUT_TOTALINGRESO_YEAR1 ?? 0,
+  year2: result.OUT_TOTALINGRESO_YEAR2 ?? 0,
+  year3: result.OUT_TOTALINGRESO_YEAR3 ?? 0,
+  year4: result.OUT_TOTALINGRESO_YEAR4 ?? 0,
+  year5: result.OUT_TOTALINGRESO_YEAR5 ?? 0
+},
+beneficio: {
+  year1: result.OUT_BENEFICIO_YEAR1 ?? 0,
+  year2: result.OUT_BENEFICIO_YEAR2 ?? 0,
+  year3: result.OUT_BENEFICIO_YEAR3 ?? 0,
+  year4: result.OUT_BENEFICIO_YEAR4 ?? 0,
+  year5: result.OUT_BENEFICIO_YEAR5 ?? 0
+}
+
+};
+
   } catch (e) {
     console.error("ERROR en procedure:", e.message);
     throw e;

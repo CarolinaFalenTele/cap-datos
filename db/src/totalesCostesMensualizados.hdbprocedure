@@ -4,7 +4,28 @@ PROCEDURE "totalesCostesMensualizados"(
     OUT out_total_year2 DECIMAL(20,2),
     OUT out_total_year3 DECIMAL(20,2),
     OUT out_total_year4 DECIMAL(20,2),
-    OUT out_total_year5 DECIMAL(20,2)
+    OUT out_total_year5 DECIMAL(20,2),
+    OUT out_costesIndirectos_year1 DECIMAL(20,2),
+    OUT out_costesIndirectos_year2 DECIMAL(20,2),
+    OUT out_costesIndirectos_year3 DECIMAL(20,2),
+    OUT out_costesIndirectos_year4 DECIMAL(20,2),
+    OUT out_costesIndirectos_year5 DECIMAL(20,2),
+    OUT out_totalCostes_year1 DECIMAL(20,2),   
+    OUT out_totalCostes_year2 DECIMAL(20,2),   
+    OUT out_totalCostes_year3 DECIMAL(20,2),   
+    OUT out_totalCostes_year4 DECIMAL(20,2),  
+    OUT out_totalCostes_year5 DECIMAL(20,2),  
+    OUT out_totalIngreso_year1 DECIMAL(20,2),
+    OUT out_totalIngreso_year2 DECIMAL(20,2),
+    OUT out_totalIngreso_year3 DECIMAL(20,2),
+    OUT out_totalIngreso_year4 DECIMAL(20,2),
+    OUT out_totalIngreso_year5 DECIMAL(20,2),  
+    OUT out_beneficio_year1  DECIMAL(20,2),
+    OUT out_beneficio_year2  DECIMAL(20,2),
+    OUT out_beneficio_year3  DECIMAL(20,2),
+    OUT out_beneficio_year4  DECIMAL(20,2),
+    OUT out_beneficio_year5  DECIMAL(20,2)
+
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
@@ -30,6 +51,68 @@ BEGIN
     DECLARE out_gto_year4 DECIMAL(20,4);
     DECLARE out_gto_year5 DECIMAL(20,4);
 
+    DECLARE v_ce_y1 DECIMAL(20,2);
+    DECLARE v_ce_y2 DECIMAL(20,2);
+    DECLARE v_ce_y3 DECIMAL(20,2);
+    DECLARE v_ce_y4 DECIMAL(20,2);
+    DECLARE v_ce_y5 DECIMAL(20,2);
+
+    -- Variables para otrosServiciosConsu
+    DECLARE v_os_y1 DECIMAL(20,2);
+    DECLARE v_os_y2 DECIMAL(20,2);
+    DECLARE v_os_y3 DECIMAL(20,2);
+    DECLARE v_os_y4 DECIMAL(20,2);
+    DECLARE v_os_y5 DECIMAL(20,2);
+
+    -- Variables para GastoViajeConsumo
+    DECLARE v_gvc_y1 DECIMAL(20,2);
+    DECLARE v_gvc_y2 DECIMAL(20,2);
+    DECLARE v_gvc_y3 DECIMAL(20,2);
+    DECLARE v_gvc_y4 DECIMAL(20,2);
+    DECLARE v_gvc_y5 DECIMAL(20,2);
+
+    -- Variables para RecursosExternos
+    DECLARE v_re_y1 DECIMAL(20,2);
+    DECLARE v_re_y2 DECIMAL(20,2);
+    DECLARE v_re_y3 DECIMAL(20,2);
+    DECLARE v_re_y4 DECIMAL(20,2);
+    DECLARE v_re_y5 DECIMAL(20,2);
+
+    -- Variables para serviRecurExter
+    DECLARE v_sre_y1 DECIMAL(20,2);
+    DECLARE v_sre_y2 DECIMAL(20,2);
+    DECLARE v_sre_y3 DECIMAL(20,2);
+    DECLARE v_sre_y4 DECIMAL(20,2);
+    DECLARE v_sre_y5 DECIMAL(20,2);
+
+    -- Variables para GastoViajeRecExter
+    DECLARE v_gvre_y1 DECIMAL(20,2);
+    DECLARE v_gvre_y2 DECIMAL(20,2);
+    DECLARE v_gvre_y3 DECIMAL(20,2);
+    DECLARE v_gvre_y4 DECIMAL(20,2);
+    DECLARE v_gvre_y5 DECIMAL(20,2);
+
+    -- Variables para otrosConceptos
+    DECLARE v_oc_y1 DECIMAL(20,2);
+    DECLARE v_oc_y2 DECIMAL(20,2);
+    DECLARE v_oc_y3 DECIMAL(20,2);
+    DECLARE v_oc_y4 DECIMAL(20,2);
+    DECLARE v_oc_y5 DECIMAL(20,2);
+
+    -- Variables para LicenciasCon
+    DECLARE v_lc_y1 DECIMAL(20,2);
+    DECLARE v_lc_y2 DECIMAL(20,2);
+    DECLARE v_lc_y3 DECIMAL(20,2);
+    DECLARE v_lc_y4 DECIMAL(20,2);
+    DECLARE v_lc_y5 DECIMAL(20,2);
+
+    -- Salida de CostesTotales 
+    DECLARE v_totalCostes_year1 DECIMAL(20,2);
+    DECLARE v_totalCostes_year2 DECIMAL(20,2);
+    DECLARE v_totalCostes_year3 DECIMAL(20,2);
+    DECLARE v_totalCostes_year4 DECIMAL(20,2);
+    DECLARE v_totalCostes_year5 DECIMAL(20,2);
+
 
     -- Porcentajes
     DECLARE vPct1 DECIMAL(20,4);
@@ -38,6 +121,17 @@ BEGIN
     DECLARE vPct4 DECIMAL(20,4);
     DECLARE vPct5 DECIMAL(20,4);
 
+
+    --Porcentajes insertados por el usuario 
+    DECLARE v_CosteEstruPorce DECIMAL(20,4);
+    DECLARE v_MargenPorce DECIMAL(20,4);
+
+    out_total_year1 := 0;
+    out_total_year2 := 0;
+    out_total_year3 := 0;
+    out_total_year4 := 0;
+    out_total_year5 := 0;
+    
     -- 1) Porcentajes (sacados al principio)
     SELECT Percent INTO vPct1 FROM (
         SELECT ROW_NUMBER() OVER (ORDER BY Year ASC) AS rn, Percent
@@ -104,10 +198,183 @@ BEGIN
         WHERE datosProyect_ID = :in_idRecursos;
 
 
-        out_total_year1 := out_int_year1 + out_srv_year1 + out_gto_year1;
-        out_total_year2 := out_int_year2 + out_srv_year2 + out_gto_year2;
-        out_total_year3 := out_int_year3 + out_srv_year3 + out_gto_year3;
-        out_total_year4 := out_int_year4 + out_srv_year4 + out_gto_year4;
-        out_total_year5 := out_int_year5 + out_srv_year5 + out_gto_year5;
+    -----------------------------------------------------------------
+    -- ConsumoExternos
+    -----------------------------------------------------------------
+    SELECT 
+        ROUND(COALESCE(SUM(PMJ * year1),0),2),
+        ROUND(COALESCE(SUM(PMJ * year2),0),2),
+        ROUND(COALESCE(SUM(PMJ * year3),0),2),
+        ROUND(COALESCE(SUM(PMJ * year4),0),2),
+        ROUND(COALESCE(SUM(PMJ * year5),0),2)
+    INTO v_ce_y1, v_ce_y2, v_ce_y3, v_ce_y4, v_ce_y5
+    FROM db_datos_ConsumoExternos
+    WHERE datosProyect_ID = :in_idRecursos;
 
+    -----------------------------------------------------------------
+    -- otrosServiciosConsu
+    -----------------------------------------------------------------
+   SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_os_y1, v_os_y2, v_os_y3, v_os_y4, v_os_y5
+FROM db_datos_otrosServiciosConsu
+WHERE datosProyect_ID = :in_idRecursos;
+
+-- GastoViajeConsumo
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_gvc_y1, v_gvc_y2, v_gvc_y3, v_gvc_y4, v_gvc_y5
+FROM db_datos_GastoViajeConsumo
+WHERE datosProyect_ID = :in_idRecursos;
+
+
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_re_y1, v_re_y2, v_re_y3, v_re_y4, v_re_y5
+FROM db_datos_RecursosExternos
+WHERE datosProyect_ID = :in_idRecursos;
+
+
+-- serviRecurExter
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_sre_y1, v_sre_y2, v_sre_y3, v_sre_y4, v_sre_y5
+FROM db_datos_serviRecurExter
+WHERE datosProyect_ID = :in_idRecursos;
+
+-- GastoViajeRecExter
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_gvre_y1, v_gvre_y2, v_gvre_y3, v_gvre_y4, v_gvre_y5
+FROM db_datos_GastoViajeRecExter
+WHERE datosProyect_ID = :in_idRecursos;
+
+-- otrosConceptos
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_oc_y1, v_oc_y2, v_oc_y3, v_oc_y4, v_oc_y5
+FROM db_datos_otrosConceptos
+WHERE datosProyect_ID = :in_idRecursos;
+
+-- LicenciasCon
+SELECT 
+    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
+    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+INTO v_lc_y1, v_lc_y2, v_lc_y3, v_lc_y4, v_lc_y5
+FROM db_datos_LicenciasCon
+WHERE datosProyect_ID = :in_idRecursos;
+
+
+    -----------------------------------------------------------------
+    -- SUMA FINAL (incluye nuevas tablas sin %)
+
+    -----------------------------------------------------------------
+out_total_year1 := out_total_year1 
+    + out_int_year1 + out_srv_year1 + out_gto_year1
+    + v_ce_y1 + v_os_y1 + v_gvc_y1 + v_re_y1 + v_sre_y1 + v_gvre_y1 + v_oc_y1 + v_lc_y1;
+out_total_year2 := out_total_year2 
+    + out_int_year2 + out_srv_year2 + out_gto_year2
+    + v_ce_y2 + v_os_y2 + v_gvc_y2 + v_re_y2 
+    + v_sre_y2 + v_gvre_y2 + v_oc_y2 + v_lc_y2;
+
+out_total_year3 := out_total_year3 
+    + out_int_year3 + out_srv_year3 + out_gto_year3
+    + v_ce_y3 + v_os_y3 + v_gvc_y3 + v_re_y3 
+    + v_sre_y3 + v_gvre_y3 + v_oc_y3 + v_lc_y3;
+
+out_total_year4 := out_total_year4 
+    + out_int_year4 + out_srv_year4 + out_gto_year4
+    + v_ce_y4 + v_os_y4 + v_gvc_y4 + v_re_y4 
+    + v_sre_y4 + v_gvre_y4 + v_oc_y4 + v_lc_y4;
+
+out_total_year5 := out_total_year5 
+    + out_int_year5 + out_srv_year5 + out_gto_year5
+    + v_ce_y5 + v_os_y5 + v_gvc_y5 + v_re_y5 
+    + v_sre_y5 + v_gvre_y5 + v_oc_y5 + v_lc_y5;
+
+
+
+
+    -----------------------------------------------------------------
+   ---------------- Calculos para Costes Inderectos  ----------------  
+    -----------------------------------------------------------------
+
+    SELECT CosteEstruPorce, MargenPorce
+    INTO v_CosteEstruPorce, v_MargenPorce
+    FROM db_datos_ResumenCostesTotal
+    WHERE datosProyect_ID = :in_idRecursos;
+
+
+    -- Calculamos los costes indirectos aplicando CosteEstruPorce
+    out_costesIndirectos_year1 := ROUND(out_total_year1 * v_CosteEstruPorce / 100, 2);
+    out_costesIndirectos_year2 := ROUND(out_total_year2 * v_CosteEstruPorce / 100, 2);
+    out_costesIndirectos_year3 := ROUND(out_total_year3 * v_CosteEstruPorce / 100, 2);
+    out_costesIndirectos_year4 := ROUND(out_total_year4 * v_CosteEstruPorce / 100, 2);
+    out_costesIndirectos_year5 := ROUND(out_total_year5 * v_CosteEstruPorce / 100, 2);
+
+
+
+    -----------------------------------------------------------------
+    --------------- Calculos para Costes Totales  -------------------  
+    -----------------------------------------------------------------
+
+
+    -- Calculamos los totales de CostesDirectos + CostesIndirectos
+    out_totalCostes_year1 := out_total_year1 + out_costesIndirectos_year1;
+    out_totalCostes_year2 := out_total_year2 + out_costesIndirectos_year2;
+    out_totalCostes_year3 := out_total_year3 + out_costesIndirectos_year3;
+    out_totalCostes_year4 := out_total_year4 + out_costesIndirectos_year4;
+    out_totalCostes_year5 := out_total_year5 + out_costesIndirectos_year5;
+
+
+
+
+    -----------------------------------------------------------------
+   ---------------- Calculos para Ingresos  ------------------------
+    -----------------------------------------------------------------
+
+    -- Calculamos totales ajustados por MargenPorce
+    out_totalIngreso_year1 := ROUND(out_totalCostes_year1 / (1 - v_MargenPorce / 100), 2);
+    out_totalIngreso_year2 := ROUND(out_totalCostes_year2 / (1 - v_MargenPorce / 100), 2);
+    out_totalIngreso_year3 := ROUND(out_totalCostes_year3 / (1 - v_MargenPorce / 100), 2);
+    out_totalIngreso_year4 := ROUND(out_totalCostes_year4 / (1 - v_MargenPorce / 100), 2);
+    out_totalIngreso_year5 := ROUND(out_totalCostes_year5 / (1 - v_MargenPorce / 100), 2);
+
+    
+    -----------------------------------------------------------------
+   ---------------- Calculos para Beneficios   ----------------  
+    -----------------------------------------------------------------
+
+    out_beneficio_year1 := out_totalIngreso_year1 - out_totalCostes_year1;
+    out_beneficio_year2 := out_totalIngreso_year2 - out_totalCostes_year2;
+    out_beneficio_year3 := out_totalIngreso_year3 - out_totalCostes_year3;
+    out_beneficio_year4 := out_totalIngreso_year4 - out_totalCostes_year4;
+    out_beneficio_year5 := out_totalIngreso_year5 - out_totalCostes_year5;
 END

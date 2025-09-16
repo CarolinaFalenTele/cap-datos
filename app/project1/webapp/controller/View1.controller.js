@@ -4849,6 +4849,8 @@ sap.ui.define([
         }
       },
       //-------------------------------------------------------------
+
+
 CalculosRecursoExterno: async function () {
     const Coste = this.getView().getModel();
     const oContextCoste = Coste.bindContext("/getResultado(...)");
@@ -4865,7 +4867,7 @@ CalculosRecursoExterno: async function () {
     if (oData.TipoServicio && oData.TipoServicio.length > 0) {
         const tipoServicio = oData.TipoServicio[0];
 
-        // Reemplazamos valores año por año en CostesDirectos
+        // Costes Directos
         tipoServicio.CostesDirectos.valores = [
             parseFloat(response.totales.year1).toFixed(2) + '€',
             parseFloat(response.totales.year2).toFixed(2) + '€',
@@ -4873,18 +4875,67 @@ CalculosRecursoExterno: async function () {
             parseFloat(response.totales.year4).toFixed(2) + '€',
             parseFloat(response.totales.year5).toFixed(2) + '€'
         ];
-
-        // Calculamos el total sumando todos los años
         tipoServicio.CostesDirectos.total = Object.values(response.totales)
             .reduce((acc, val) => acc + parseFloat(val || 0), 0)
             .toFixed(2) + '€';
+
+        // Costes Indirectos
+        tipoServicio.CostesIndirect.valores = [
+            parseFloat(response.indirectos.year1).toFixed(2) + '€',
+            parseFloat(response.indirectos.year2).toFixed(2) + '€',
+            parseFloat(response.indirectos.year3).toFixed(2) + '€',
+            parseFloat(response.indirectos.year4).toFixed(2) + '€',
+            parseFloat(response.indirectos.year5).toFixed(2) + '€'
+        ];
+        tipoServicio.CostesIndirect.total = Object.values(response.indirectos)
+            .reduce((acc, val) => acc + parseFloat(val || 0), 0)
+            .toFixed(2) + '€';
+
+        // Coste Total = Directos + Indirectos
+        tipoServicio.CosteTotal.valores = [
+            parseFloat(response.CosteTotal.year1).toFixed(2) + '€',
+            parseFloat(response.CosteTotal.year2).toFixed(2) + '€',
+            parseFloat(response.CosteTotal.year3).toFixed(2) + '€',
+            parseFloat(response.CosteTotal.year4).toFixed(2) + '€',
+            parseFloat(response.CosteTotal.year5).toFixed(2) + '€'
+        ];
+        tipoServicio.CosteTotal.total = Object.values(tipoServicio.CosteTotal.valores)
+            .reduce((acc, val) => acc + parseFloat(val.replace('€','')), 0)
+            .toFixed(2) + '€';
+
+
+      tipoServicio.Ingresos.valores = [
+        parseFloat(response.Ingresos.year1).toFixed(2) + '€',
+        parseFloat(response.Ingresos.year2).toFixed(2) + '€',
+        parseFloat(response.Ingresos.year3).toFixed(2) + '€',
+        parseFloat(response.Ingresos.year4).toFixed(2) + '€',
+        parseFloat(response.Ingresos.year5).toFixed(2) + '€'
+    ];
+        tipoServicio.Ingresos.total = Object.values(tipoServicio.Ingresos.valores)
+            .reduce((acc, val) => acc + parseFloat(val.replace('€','')), 0)
+            .toFixed(2) + '€';
+
+            
+      tipoServicio.Beneficio.valores = [
+        parseFloat(response.beneficio.year1).toFixed(2) + '€',
+        parseFloat(response.beneficio.year2).toFixed(2) + '€',
+        parseFloat(response.beneficio.year3).toFixed(2) + '€',
+        parseFloat(response.beneficio.year4).toFixed(2) + '€',
+        parseFloat(response.beneficio.year5).toFixed(2) + '€'
+    ];
+        tipoServicio.Beneficio.total = Object.values(tipoServicio.Beneficio.valores)
+            .reduce((acc, val) => acc + parseFloat(val.replace('€','')), 0)
+            .toFixed(2) + '€';
+    
+
     }
 
-  // Creamos el modelo y mantenemos los años intactos
+
+    
+    // Creamos el modelo y mantenemos los años intactos
     const oCostesModel = new sap.ui.model.json.JSONModel(oData);
     const oModelAnterior = this.getView().getModel("miModeloCostes");
     if (oModelAnterior && oModelAnterior.getProperty("/Anios")) {
-        // Conservamos los años existentes
         oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
     }
 
@@ -14034,6 +14085,24 @@ CalculosRecursoExterno: async function () {
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
+
+                
+                function getPctForYear(anio) {
+                  var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
+                  if (rec) {
+                    return parseFloat(rec.Percent) / 100; // aquí Percent
+                  }
+                  return 1; // si no encuentra nada, usa 100%
+                }
+
+
+                // Aplicamos el % a cada año
+                totalForAnio1 = totalForAnio1 * getPctForYear(aAnios[0].anio);
+                totalForAnio2 = totalForAnio2 * getPctForYear(aAnios[1].anio);
+                totalForAnio3 = totalForAnio3 * getPctForYear(aAnios[2].anio);
+                totalForAnio4 = totalForAnio4 * getPctForYear(aAnios[3].anio);
+                totalForAnio5 = totalForAnio5 * getPctForYear(aAnios[4].anio);
+
                 var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[10].setText(totalSum.toFixed(2) + "€"); // Celda para Total 
 
@@ -14068,6 +14137,24 @@ CalculosRecursoExterno: async function () {
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
                 //  aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
+
+
+                                
+                function getPctForYear(anio) {
+                  var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
+                  if (rec) {
+                    return parseFloat(rec.Percent) / 100; // aquí Percent
+                  }
+                  return 1; // si no encuentra nada, usa 100%
+                }
+
+
+                // Aplicamos el % a cada año
+                totalForAnio1 = totalForAnio1 * getPctForYear(aAnios[0].anio);
+                totalForAnio2 = totalForAnio2 * getPctForYear(aAnios[1].anio);
+                totalForAnio3 = totalForAnio3 * getPctForYear(aAnios[2].anio);
+                totalForAnio4 = totalForAnio4 * getPctForYear(aAnios[3].anio);
+                totalForAnio5 = totalForAnio5 * getPctForYear(aAnios[4].anio);
 
                 var totalSum = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
 

@@ -178,21 +178,37 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
 action getResultado(
   id : UUID
 ) returns {
-  recursosInternos : {
+  totales : {
     year1 : Decimal(20,4);
     year2 : Decimal(20,4);
     year3 : Decimal(20,4);
     year4 : Decimal(20,4);
     year5 : Decimal(20,4);
   };
-  otrosGastos : {
+    indirectos: {
+  
     year1 : Decimal(20,4);
     year2 : Decimal(20,4);
     year3 : Decimal(20,4);
     year4 : Decimal(20,4);
     year5 : Decimal(20,4);
   };
-  otrosRecursos : {
+  CosteTotal : {
+    year1 : Decimal(20,4);
+    year2 : Decimal(20,4);
+    year3 : Decimal(20,4);
+    year4 : Decimal(20,4);
+    year5 : Decimal(20,4);
+  };
+    Ingresos : {
+    year1 : Decimal(20,4);
+    year2 : Decimal(20,4);
+    year3 : Decimal(20,4);
+    year4 : Decimal(20,4);
+    year5 : Decimal(20,4);
+  };
+
+  beneficio : {
     year1 : Decimal(20,4);
     year2 : Decimal(20,4);
     year3 : Decimal(20,4);
