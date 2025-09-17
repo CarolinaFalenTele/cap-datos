@@ -21,6 +21,8 @@ modules:
   parameters:
     disk-quota: 512M
     memory: 512M
+    env:
+      SEND_XFRAMEOPTIONS: 'false'
 
 
 

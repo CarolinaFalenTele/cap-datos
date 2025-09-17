@@ -32,8 +32,8 @@
     },
     "crossNavigation": {
       "inbounds": {
-        "Solicitud CDO-display": {
-          "semanticObject": "Solicitud CDO",
+        "SolicitudCDO-display": {
+          "semanticObject": "SolicitudCDO",
           "action": "display",
           "title": "{{flpTitle}}",
           "signature": {
