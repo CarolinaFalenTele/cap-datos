@@ -3950,15 +3950,15 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item5_1725870548700">
                                                                             <cells>
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/0}" id="COIndirectos2025" class="boldText"/>
+                                                                                <Text text="{miModeloCostes>CostesIndirect/valores/0}" id="COIndirectos2025" class="boldText"/>
 
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/1}" id="COIndirectos2026" class="boldText"/>
+                                                                                <Text text="{miModeloCostes>CostesIndirect/valores/1}" id="COIndirectos2026" class="boldText"/>
 
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/2}" id="COIndirectos2027" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/valores/3}" id="COIndirectos2028" class="boldText"/>
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/valores/4}" id="COIndirectos2029" class="boldText"/>
+                                                                                <Text text="{miModeloCostes>CostesIndirect/valores/2}" id="COIndirectos2027" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesIndirect/valores/3}" id="COIndirectos2028" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesIndirect/valores/4}" id="COIndirectos2029" class="boldText"/>
 
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/total}" id="COIndirectosTotal" class="boldText"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesIndirect/total}" id="COIndirectosTotal" class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -4008,17 +4008,17 @@
                                                                     <items>
                                                                         <ColumnListItem type="Active" id="item0_1725872132589">
                                                                             <cells>
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/0}" id="COtotales2025"/>
+                                                                                <Text text="{miModeloCostes>CosteTotal/valores/0}" id="COtotales2025"  class="boldText"/>
 
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/1}" id="COtotales2026"/>
+                                                                                <Text text="{miModeloCostes>CosteTotal/valores/1}" id="COtotales2026"   class="boldText"/>
 
-                                                                                <Text text="{miModeloCostes>CostesDirectos/valores/2}" id="COtotales2027"/>
+                                                                                <Text text="{miModeloCostes>CosteTotal/valores/2}" id="COtotales2027" class="boldText"/>
 
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/valores/3}" id="COtotales2028"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CosteTotal/valores/3}" id="COtotales2028"  class="boldText" />
 
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/valores/4}" id="COtotales2029"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CosteTotal/valores/4}" id="COtotales2029"   class="boldText" />
 
-                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CostesDirectos/total}" id="COtotalesTotal"/>
+                                                                                <Text xmlns="sap.m" text="{miModeloCostes>CosteTotal/total}" id="COtotalesTotal"  class="boldText"/>
                                                                             </cells>
                                                                         </ColumnListItem>
                                                                     </items>
@@ -4497,68 +4497,68 @@
                                                                     <items>
                                                                            <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/3}" />
-                 <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/total}" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/0}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/1}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/2}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/3}" class="boldText"/>
+                 <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/valores/4}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/IngresosInterno/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/0}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/1}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/2}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/3}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/valores/4}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/IngresosConsumo/total}" class="boldText"/>
             </cells>
         </ColumnListItem>
 
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/0}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/1}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/2}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/3}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/valores/4}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/IngresosRecurExt/total}" class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
           <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/0}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/1}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/2}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/3}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/valores/4}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/IngresosLicencia/total}" class="boldText"/>
             </cells>
         </ColumnListItem>
 
         <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/1}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/2}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/3}" class="boldText" />
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/valores/4}" class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/IngresosInfra/total}" class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
          <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/IngresosGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
@@ -4599,68 +4599,68 @@
                                                                     <items>
                                                                                                                                            <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/3}" />
-                 <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/total}" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/3}"  class="boldText"/>
+                 <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesDirectosInterno/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesDirectosConsumo/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesDirectosRecurExt/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
           <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesDirectosLicencia/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
         <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesDirectosInfra/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
          <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesDirectosGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
@@ -4701,68 +4701,68 @@
                                                                     <items>
                                                                                                                                   <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/3}" />
-                 <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/total}" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/3}"  class="boldText"/>
+                 <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CostesIndirect/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CostesIndirectConsumo/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CostesIndirectRecurExt/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
           <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CostesIndirectLicencia/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
         <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CostesIndirectInfra/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
          <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
@@ -4804,68 +4804,68 @@
                                                                     <items>
                                                                                                                                                                                               <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/3}" />
-                 <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/total}" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/3}"  class="boldText"/>
+                 <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/CosteTotalInterno/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/CosteTotalConsumo/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/CosteTotalRecurExt/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
           <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/CosteTotalLicencia/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
         <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/CosteTotalInfra/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
          <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/CosteTotalGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
@@ -4907,68 +4907,68 @@
                                                                     <items>
                                                                                                                                                                                                                                                               <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/3}" />
-                 <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/total}" />
+                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/3}"  class="boldText"/>
+                 <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/0/BeneficioInterno/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/1/BeneficioConsumo/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
              <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/2/BeneficioRecurExt/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
           <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/3/BeneficioLicencia/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
         <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/4/BeneficioInfra/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 
 
          <ColumnListItem>
             <cells>
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/0}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/1}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/2}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/3}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/4}" />
-                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/total}"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 

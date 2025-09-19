@@ -81,7 +81,31 @@ this.on("getResultado", async (req) => {
 
   try {
 const result = await db.run(
-`CALL "totalesCostesMensualizados"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+`CALL "totalesCostesMensualizados"(
+    ?,                     -- in_idRecursos
+    ?, ?, ?, ?, ?, ?,      -- out_total_year1 ... out_interno_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_costesIndirectos_year1 ... out_costesIndirectos_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_totalCostes_year1 ... out_totalCostes_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_totalIngreso_year1 ... out_totalIngreso_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_beneficio_year1 ... out_beneficio_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_recursoInterno_year1 ... out_recursoInterno_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_gastoInternoViaje_year1 ... out_gastoInternoViaje_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_consumoExterno_year1 ... out_consumoExterno_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_recursoExterno_year1 ... out_recursoExterno_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_licencias_year1 ... out_licencias_total (6)
+    ?, ?, ?, ?, ?, ?,       -- out_infraestructura_year1 ... out_infraestructura_total (6)
+    ?, ?, ?, ?, ?, ?,      -- out_costesIndirectosRecurInter_year1 ... out_costesIndirectosRecurIntertotal (6)
+    ?, ?, ?, ?, ?, ?,      -- out_costesIndirectosConsumoExterno_year1 ... out_costesIndirectosConsumoExterno (6)
+    ?, ?, ?, ?, ?, ?,      -- OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR1
+    ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoLicencias_year1
+    ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoInfraestruura_year1
+    ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoGastoviaje_year1
+    ?, ?, ?, ?, ?, ?       -- out_costesIndirectoGastoviaje_year1
+
+
+
+    );
+`,
   {
     IN_IDRECURSOS: id,
 
@@ -90,30 +114,137 @@ const result = await db.run(
     OUT_TOTAL_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTAL_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTAL_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
 
     OUT_COSTESINDIRECTOS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTESINDIRECTOS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTESINDIRECTOS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTESINDIRECTOS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTESINDIRECTOS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
 
     OUT_TOTALCOSTES_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALCOSTES_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALCOSTES_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALCOSTES_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALCOSTES_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALCOSTES_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
 
     OUT_TOTALINGRESO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALINGRESO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALINGRESO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALINGRESO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_TOTALINGRESO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_TOTALINGRESO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
 
     OUT_BENEFICIO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_BENEFICIO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_BENEFICIO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_BENEFICIO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_BENEFICIO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_BENEFICIO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_RECURSOINTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOINTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOINTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOINTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOINTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOINTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+
+    
+    OUT_GASTOINTERNOVIAJE_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_GASTOINTERNOVIAJE_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_GASTOINTERNOVIAJE_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_GASTOINTERNOVIAJE_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_GASTOINTERNOVIAJE_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_GASTOINTERNOVIAJE_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_CONSUMOEXTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_CONSUMOEXTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_CONSUMOEXTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_CONSUMOEXTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_CONSUMOEXTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_CONSUMOEXTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_RECURSOEXTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOEXTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOEXTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOEXTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOEXTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_RECURSOEXTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    
+
+    OUT_LICENCIAS__YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_LICENCIAS__YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_LICENCIAS__YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_LICENCIAS__YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_LICENCIAS__YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_LICENCIAS__TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_INFRAESTRUCTURA_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INFRAESTRUCTURA_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INFRAESTRUCTURA_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INFRAESTRUCTURA_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INFRAESTRUCTURA_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_INFRAESTRUCTURA_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_COSTESINDIRECTOSRECURINTER_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURINTER_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURINTER_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURINTER_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURINTER_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURINTER_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSCONSUMOEXTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOSRECURSOEXTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTESINDIRECTOLICENCIAS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOLICENCIAS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOLICENCIAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOLICENCIAS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOLICENCIAS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOLICENCIAS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOINFRAESTRUCTURA_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTESINDIRECTOGASTOVIAJE_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOGASTOVIAJE_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOGASTOVIAJE_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOGASTOVIAJE_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOGASTOVIAJE_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTESINDIRECTOGASTOVIAJE_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_COSTETOTALESRECUINTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALESRECUINTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALESRECUINTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALESRECUINTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALESRECUINTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALESRECUINTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
 
   }
 );
@@ -127,36 +258,170 @@ console.log("Resultado bruto procedure:", result);
     year2: result.OUT_TOTAL_YEAR2 ?? 0,
     year3: result.OUT_TOTAL_YEAR3 ?? 0,
     year4: result.OUT_TOTAL_YEAR4 ?? 0,
-    year5: result.OUT_TOTAL_YEAR5 ?? 0
+    year5: result.OUT_TOTAL_YEAR5 ?? 0,
+    total: result.OUT_INTERNO_TOTAL ?? 0
   },
   indirectos: {
     year1: result.OUT_COSTESINDIRECTOS_YEAR1 ?? 0,
     year2: result.OUT_COSTESINDIRECTOS_YEAR2 ?? 0,
     year3: result.OUT_COSTESINDIRECTOS_YEAR3 ?? 0,
     year4: result.OUT_COSTESINDIRECTOS_YEAR4 ?? 0,
-    year5: result.OUT_COSTESINDIRECTOS_YEAR5 ?? 0
+    year5: result.OUT_COSTESINDIRECTOS_YEAR5 ?? 0,
+    total: result.OUT_COSTESINDIRECTOS_TOTAL ?? 0
+
   },
   CosteTotal : {
       year1: result.OUT_TOTALCOSTES_YEAR1 ?? 0,
       year2: result.OUT_TOTALCOSTES_YEAR2 ?? 0,
       year3: result.OUT_TOTALCOSTES_YEAR3 ?? 0,
       year4: result.OUT_TOTALCOSTES_YEAR4 ?? 0,
-      year5: result.OUT_TOTALCOSTES_YEAR5 ?? 0
+      year5: result.OUT_TOTALCOSTES_YEAR5 ?? 0,
+      total: result.OUT_TOTALCOSTES_TOTAL ?? 0
+
   },
   Ingresos: {
   year1: result.OUT_TOTALINGRESO_YEAR1 ?? 0,
   year2: result.OUT_TOTALINGRESO_YEAR2 ?? 0,
   year3: result.OUT_TOTALINGRESO_YEAR3 ?? 0,
   year4: result.OUT_TOTALINGRESO_YEAR4 ?? 0,
-  year5: result.OUT_TOTALINGRESO_YEAR5 ?? 0
+  year5: result.OUT_TOTALINGRESO_YEAR5 ?? 0,
+  total: result.OUT_TOTALINGRESO_TOTAL ?? 0
 },
 beneficio: {
   year1: result.OUT_BENEFICIO_YEAR1 ?? 0,
   year2: result.OUT_BENEFICIO_YEAR2 ?? 0,
   year3: result.OUT_BENEFICIO_YEAR3 ?? 0,
   year4: result.OUT_BENEFICIO_YEAR4 ?? 0,
-  year5: result.OUT_BENEFICIO_YEAR5 ?? 0
+  year5: result.OUT_BENEFICIO_YEAR5 ?? 0,
+  total: result.OUT_BENEFICIO_TOTAL ?? 0
+
+},
+totalRecursosInterno: {
+  year1: result.OUT_RECURSOINTERNO_YEAR1 ?? 0,
+  year2: result.OUT_RECURSOINTERNO_YEAR2 ?? 0,
+  year3: result.OUT_RECURSOINTERNO_YEAR3 ?? 0,
+  year4: result.OUT_RECURSOINTERNO_YEAR4 ?? 0,
+  year5: result.OUT_RECURSOINTERNO_YEAR5 ?? 0,
+  total: result.OUT_RECURSOINTERNO_TOTAL ?? 0
+},
+
+totalGastoViajeInterno: {
+  year1: result.OUT_GASTOINTERNOVIAJE_YEAR1 ?? 0,
+  year2: result.OUT_GASTOINTERNOVIAJE_YEAR2 ?? 0,
+  year3: result.OUT_GASTOINTERNOVIAJE_YEAR3 ?? 0,
+  year4: result.OUT_GASTOINTERNOVIAJE_YEAR4 ?? 0,
+  year5: result.OUT_GASTOINTERNOVIAJE_YEAR5 ?? 0,
+  total: result.OUT_GASTOINTERNOVIAJE_TOTAL ?? 0
+}, 
+
+totalRecursoExterno: {
+  year1: result.OUT_RECURSOEXTERNO_YEAR1 ?? 0,
+  year2: result.OUT_RECURSOEXTERNO_YEAR2 ?? 0,
+  year3: result.OUT_RECURSOEXTERNO_YEAR3 ?? 0,
+  year4: result.OUT_RECURSOEXTERNO_YEAR4 ?? 0,
+  year5: result.OUT_RECURSOEXTERNO_YEAR5 ?? 0,
+  total: result.OUT_RECURSOEXTERNO_TOTAL ?? 0
+},
+
+
+totalInfraestructura: {
+  year1: result.OUT_INFRAESTRUCTURA_YEAR1 ?? 0,
+  year2: result.OUT_INFRAESTRUCTURA_YEAR2 ?? 0,
+  year3: result.OUT_INFRAESTRUCTURA_YEAR3 ?? 0,
+  year4: result.OUT_INFRAESTRUCTURA_YEAR4 ?? 0,
+  year5: result.OUT_INFRAESTRUCTURA_YEAR5 ?? 0,
+  total: result.OUT_INFRAESTRUCTURA_TOTAL ?? 0
+},
+
+
+totalLicencias: {
+  year1: result.OUT_LICENCIAS_YEAR1 ?? 0,
+  year2: result.OUT_LICENCIAS_YEAR2 ?? 0,
+  year3: result.OUT_LICENCIAS_YEAR3 ?? 0,
+  year4: result.OUT_LICENCIAS_YEAR4 ?? 0,
+  year5: result.OUT_LICENCIAS_YEAR5 ?? 0,
+  total: result.OUT_LICENCIAS_TOTAL ?? 0
+},
+
+totalConsumoExterno: {
+  year1: result.OUT_CONSUMOEXTERNO_YEAR1 ?? 0,
+  year2: result.OUT_CONSUMOEXTERNO_YEAR2 ?? 0,
+  year3: result.OUT_CONSUMOEXTERNO_YEAR3 ?? 0,
+  year4: result.OUT_CONSUMOEXTERNO_YEAR4 ?? 0,
+  year5: result.OUT_CONSUMOEXTERNO_YEAR5 ?? 0,
+  total: result.OUT_CONSUMOEXTERNO_TOTAL ?? 0
+},
+
+
+costesIndirectosRecursoInter: {
+  year1: result.OUT_COSTESINDIRECTOSRECURINTER_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOSRECURINTER_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOSRECURINTER_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOSRECURINTER_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOSRECURINTER_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOSRECURINTER_TOTAL ?? 0
+},
+
+costesIndirectosConsumoExterno: {
+  year1: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOSCONSUMOEXTERNO_TOTAL ?? 0
+
+},
+
+costesIndirectosRecursoExterno: {
+  year1: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOSRECURSOEXTERNO_TOTAL ?? 0
+}, 
+
+costesIndirectoLicencias: {
+  year1: result.OUT_COSTESINDIRECTOLICENCIAS_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOLICENCIAS_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOLICENCIAS_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOLICENCIAS_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOLICENCIAS_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOLICENCIAS_TOTAL ?? 0
+},
+costesIndirectoInfraestructura: {
+  year1: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOINFRAESTRUCTURA_TOTAL ?? 0
+},
+
+costesIndirectoGastoViaje: {
+  year1: result.OUT_COSTESINDIRECTOGASTOVIAJE_YEAR1 ?? 0,
+  year2: result.OUT_COSTESINDIRECTOGASTOVIAJE_YEAR2 ?? 0,
+  year3: result.OUT_COSTESINDIRECTOGASTOVIAJE_YEAR3 ?? 0,
+  year4: result.OUT_COSTESINDIRECTOGASTOVIAJE_YEAR4 ?? 0,
+  year5: result.OUT_COSTESINDIRECTOGASTOVIAJE_YEAR5 ?? 0,
+  total: result.OUT_COSTESINDIRECTOGASTOVIAJE_TOTAL ?? 0
+},
+
+costeTotalRecurInterno:{
+   year1: result.OUT_COSTETOTALESRECUINTERNO_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALESRECUINTERNO_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALESRECUINTERNO_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALESRECUINTERNO_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALESRECUINTERNO_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALESRECUINTERNO_TOTAL ?? 0
 }
+
+
+
+
+
+
+
 
 };
 

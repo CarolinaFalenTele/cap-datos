@@ -175,46 +175,35 @@ service DatosCDOService @(path: '/odata/v4/datos-cdo') {
   };
 
 
-action getResultado(
-  id : UUID
-) returns {
-  totales : {
-    year1 : Decimal(20,4);
-    year2 : Decimal(20,4);
-    year3 : Decimal(20,4);
-    year4 : Decimal(20,4);
-    year5 : Decimal(20,4);
-  };
-    indirectos: {
-  
-    year1 : Decimal(20,4);
-    year2 : Decimal(20,4);
-    year3 : Decimal(20,4);
-    year4 : Decimal(20,4);
-    year5 : Decimal(20,4);
-  };
-  CosteTotal : {
-    year1 : Decimal(20,4);
-    year2 : Decimal(20,4);
-    year3 : Decimal(20,4);
-    year4 : Decimal(20,4);
-    year5 : Decimal(20,4);
-  };
-    Ingresos : {
-    year1 : Decimal(20,4);
-    year2 : Decimal(20,4);
-    year3 : Decimal(20,4);
-    year4 : Decimal(20,4);
-    year5 : Decimal(20,4);
-  };
 
-  beneficio : {
-    year1 : Decimal(20,4);
-    year2 : Decimal(20,4);
-    year3 : Decimal(20,4);
-    year4 : Decimal(20,4);
-    year5 : Decimal(20,4);
-  };
+type YearTotals : {
+  year1 : Decimal(20,4);
+  year2 : Decimal(20,4);
+  year3 : Decimal(20,4);
+  year4 : Decimal(20,4);
+  year5 : Decimal(20,4);
+  total : Decimal(20,4);
+};
+
+action getResultado(id : UUID) returns {
+  totales               : YearTotals;
+  indirectos            : YearTotals;
+  CosteTotal            : YearTotals;
+  Ingresos              : YearTotals;
+  beneficio             : YearTotals;
+  totalRecursosInterno  : YearTotals;
+  totalConsumoExterno   : YearTotals;
+  totalGastoViajeInterno: YearTotals;
+  totalRecursoExterno   : YearTotals;
+  totalInfraestructura  : YearTotals;
+  totalLicencias        : YearTotals;
+  costesIndirectosRecursoInter : YearTotals;
+  costesIndirectosConsumoExterno : YearTotals;
+  costesIndirectosRecursoExterno: YearTotals;
+  costesIndirectoLicencias: YearTotals;
+costesIndirectoInfraestructura  : YearTotals;
+costesIndirectoGastoViaje  : YearTotals;
+costeTotalRecurInterno  : YearTotals;
 };
 
 
