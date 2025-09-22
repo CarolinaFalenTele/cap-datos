@@ -163,7 +163,53 @@ OUT out_costeTotalesRecuInterno_year2  DECIMAL(20,2),
 OUT out_costeTotalesRecuInterno_year3  DECIMAL(20,2),
 OUT out_costeTotalesRecuInterno_year4  DECIMAL(20,2),
 OUT out_costeTotalesRecuInterno_year5  DECIMAL(20,2),
-OUT out_costeTotalesRecuInterno_total  DECIMAL(20,2)
+OUT out_costeTotalesRecuInterno_total  DECIMAL(20,2),
+
+
+---- Totales Coste Consumo Externo ----
+OUT out_costeTotaleConsumoExterno_year1  DECIMAL(20,2),
+OUT out_costeTotaleConsumoExterno_year2  DECIMAL(20,2),
+OUT out_costeTotaleConsumoExterno_year3  DECIMAL(20,2),
+OUT out_costeTotaleConsumoExterno_year4  DECIMAL(20,2),
+OUT out_costeTotaleConsumoExterno_year5  DECIMAL(20,2),
+OUT out_costeTotaleConsumoExterno_total  DECIMAL(20,2),
+
+---- Totales Coste Recursos Externos ----
+OUT out_costeTotaleRecursosExternos_year1  DECIMAL(20,2),
+OUT out_costeTotaleRecursosExternos_year2  DECIMAL(20,2),
+OUT out_costeTotaleRecursosExternos_year3  DECIMAL(20,2),
+OUT out_costeTotaleRecursosExternos_year4  DECIMAL(20,2),
+OUT out_costeTotaleRecursosExternos_year5  DECIMAL(20,2),
+OUT out_costeTotaleRecursosExternos_total  DECIMAL(20,2),
+
+
+---- Totales Coste Licencias ----
+OUT out_costeTotaleLicencias_year1  DECIMAL(20,2),
+OUT out_costeTotaleLicencias_year2  DECIMAL(20,2),
+OUT out_costeTotaleLicencias_year3  DECIMAL(20,2),
+OUT out_costeTotaleLicencias_year4  DECIMAL(20,2),
+OUT out_costeTotaleLicencias_year5  DECIMAL(20,2),
+OUT out_costeTotaleLicencias_total  DECIMAL(20,2),
+
+---- Totales Coste Infraestructuras ----
+OUT out_costeTotaleInfraestructuras_year1  DECIMAL(20,2),
+OUT out_costeTotaleInfraestructuras_year2  DECIMAL(20,2),
+OUT out_costeTotaleInfraestructuras_year3  DECIMAL(20,2),
+OUT out_costeTotaleInfraestructuras_year4  DECIMAL(20,2),
+OUT out_costeTotaleInfraestructuras_year5  DECIMAL(20,2),
+OUT out_costeTotaleInfraestructuras_total  DECIMAL(20,2),
+
+---- Totales Coste Gastos de Viaje Internos ----
+OUT out_costeTotaleGastosViajeInternos_year1  DECIMAL(20,2),
+OUT out_costeTotaleGastosViajeInternos_year2  DECIMAL(20,2),
+OUT out_costeTotaleGastosViajeInternos_year3  DECIMAL(20,2),
+OUT out_costeTotaleGastosViajeInternos_year4  DECIMAL(20,2),
+OUT out_costeTotaleGastosViajeInternos_year5  DECIMAL(20,2),
+OUT out_costeTotaleGastosViajeInternos_total  DECIMAL(20,2)
+
+
+
+
 
 
 
@@ -675,9 +721,63 @@ out_costesIndirectoGastoViaje_total := out_costesIndirectoGastoViaje_year1 + out
 
 
 
+-- ConsumoExterno 
+
+   out_costeTotaleConsumoExterno_year1 :=   COALESCE(out_consumoExterno_year1,0) + COALESCE(out_costesIndirectosConsumoExterno_year1,0);
+   out_costeTotaleConsumoExterno_year2 :=   COALESCE(out_consumoExterno_year2,0) + COALESCE(out_costesIndirectosConsumoExterno_year2,0);
+   out_costeTotaleConsumoExterno_year3 :=   COALESCE(out_consumoExterno_year3,0) + COALESCE(out_costesIndirectosConsumoExterno_year3,0);
+   out_costeTotaleConsumoExterno_year4 :=   COALESCE(out_consumoExterno_year4,0) + COALESCE(out_costesIndirectosConsumoExterno_year4,0);
+   out_costeTotaleConsumoExterno_year5 :=   COALESCE(out_consumoExterno_year5,0) + COALESCE(out_costesIndirectosConsumoExterno_year5,0);
+   
+   out_costeTotaleConsumoExterno_total :=   COALESCE(out_costeTotaleConsumoExterno_year1,0) + COALESCE(out_costeTotaleConsumoExterno_year2,0)  + COALESCE(out_costeTotaleConsumoExterno_year3,0) + COALESCE(out_costeTotaleConsumoExterno_year4,0) + COALESCE(out_costeTotaleConsumoExterno_year5,0);
+
+
+-- RECURSO EXTERNO   
+   out_costeTotaleRecursosExternos_year1 :=   COALESCE(out_recursoExterno_year1,0) + COALESCE(out_costesIndirectosRecursoExterno_year1,0);
+   out_costeTotaleRecursosExternos_year1 :=   COALESCE(out_recursoExterno_year2,0) + COALESCE(out_costesIndirectosRecursoExterno_year2,0);
+   out_costeTotaleRecursosExternos_year1 :=   COALESCE(out_recursoExterno_year3,0) + COALESCE(out_costesIndirectosRecursoExterno_year3,0);
+   out_costeTotaleRecursosExternos_year1 :=   COALESCE(out_recursoExterno_year4,0) + COALESCE(out_costesIndirectosRecursoExterno_year4,0);
+   out_costeTotaleRecursosExternos_year1 :=   COALESCE(out_recursoExterno_year5,0) + COALESCE(out_costesIndirectosRecursoExterno_year5,0);
+   
+   out_costeTotaleRecursosExternos_total :=   COALESCE(out_costeTotaleRecursosExternos_year1,0) + COALESCE(out_costeTotaleRecursosExternos_year2,0)  + COALESCE(out_costeTotaleRecursosExternos_year3,0) + COALESCE(out_costeTotaleRecursosExternos_year4,0) + COALESCE(out_costeTotaleRecursosExternos_year5,0);
+
+
+   -- LICENCIA  
+   out_costeTotaleLicencias_year1 :=   COALESCE(out_licencias_year1,0) + COALESCE(out_costesIndirectoLicencias_year1,0);
+   out_costeTotaleLicencias_year2 :=   COALESCE(out_licencias_year2,0) + COALESCE(out_costesIndirectoLicencias_year2,0);
+   out_costeTotaleLicencias_year3 :=   COALESCE(out_licencias_year3,0) + COALESCE(out_costesIndirectoLicencias_year3,0);
+   out_costeTotaleLicencias_year4 :=   COALESCE(out_licencias_year4,0) + COALESCE(out_costesIndirectoLicencias_year4,0);
+   out_costeTotaleLicencias_year5 :=   COALESCE(out_licencias_year5,0) + COALESCE(out_costesIndirectoLicencias_year5,0);
+   
+   out_costeTotaleLicencias_total :=   COALESCE(out_costeTotaleLicencias_year1,0) + COALESCE(out_costeTotaleLicencias_year2,0)  + COALESCE(out_costeTotaleLicencias_year3,0) + COALESCE(out_costeTotaleLicencias_year4,0) + COALESCE(out_costeTotaleLicencias_year5,0);
+
+-- INFRAESTRUCTURA   
+    out_costeTotaleInfraestructuras_year1 :=   COALESCE(out_infraestructura_year1,0) + COALESCE(out_costesIndirectoInfraestructura_year1,0);
+    out_costeTotaleInfraestructuras_year2 :=   COALESCE(out_infraestructura_year2,0) + COALESCE(out_costesIndirectoInfraestructura_year2,0);
+    out_costeTotaleInfraestructuras_year3 :=   COALESCE(out_infraestructura_year3,0) + COALESCE(out_costesIndirectoInfraestructura_year3,0);
+    out_costeTotaleInfraestructuras_year4 :=   COALESCE(out_infraestructura_year4,0) + COALESCE(out_costesIndirectoInfraestructura_year4,0);
+    out_costeTotaleInfraestructuras_year5 :=   COALESCE(out_infraestructura_year5,0) + COALESCE(out_costesIndirectoInfraestructura_year5,0);
+
+    out_costeTotaleInfraestructuras_total :=   COALESCE(out_costeTotaleInfraestructuras_year1,0) + COALESCE(out_costeTotaleInfraestructuras_year2,0)  + COALESCE(out_costeTotaleInfraestructuras_year3,0) + COALESCE(out_costeTotaleInfraestructuras_year4,0) + COALESCE(out_costeTotaleInfraestructuras_year5,0);
+
+
+
+
+ 
+
+--- GASTO VIAJE     
+    
+    out_costeTotaleGastosViajeInternos_year1 :=   COALESCE(out_gastoInternoViaje_year1,0) + COALESCE(out_costesIndirectoGastoViaje_year1,0);
+    out_costeTotaleGastosViajeInternos_year2 :=   COALESCE(out_gastoInternoViaje_year2,0) + COALESCE(out_costesIndirectoGastoViaje_year2,0);
+    out_costeTotaleGastosViajeInternos_year3 :=   COALESCE(out_gastoInternoViaje_year3,0) + COALESCE(out_costesIndirectoGastoViaje_year3,0);
+    out_costeTotaleGastosViajeInternos_year4 :=   COALESCE(out_gastoInternoViaje_year4,0) + COALESCE(out_costesIndirectoGastoViaje_year4,0);
+    out_costeTotaleGastosViajeInternos_year5 :=   COALESCE(out_gastoInternoViaje_year5,0) + COALESCE(out_costesIndirectoGastoViaje_year5,0);
+
+    out_costeTotaleGastosViajeInternos_total :=   COALESCE(out_costeTotaleInfraestructuras_year1,0) + COALESCE(out_costeTotaleInfraestructuras_year2,0)  + COALESCE(out_costeTotaleInfraestructuras_year3,0) + COALESCE(out_costeTotaleInfraestructuras_year4,0) + COALESCE(out_costeTotaleInfraestructuras_year5,0);
 
 
 
 
 
+   
 END 

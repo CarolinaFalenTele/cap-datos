@@ -75,6 +75,8 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
+
+
 this.on("getResultado", async (req) => {
   const { id } = req.data;
   console.log("procedure ejecutando con ID:", id);
@@ -100,12 +102,14 @@ const result = await db.run(
     ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoLicencias_year1
     ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoInfraestruura_year1
     ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoGastoviaje_year1
-    ?, ?, ?, ?, ?, ?       -- out_costesIndirectoGastoviaje_year1
+    ?, ?, ?, ?, ?, ?,       -- out_costesIndirectoGastoviaje_year1
+    ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?
 
-
-
-    );
-`,
+    );`,
   {
     IN_IDRECURSOS: id,
 
@@ -244,7 +248,32 @@ const result = await db.run(
     OUT_COSTETOTALESRECUINTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTETOTALESRECUINTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
     OUT_COSTETOTALESRECUINTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-    OUT_COSTETOTALESRECUINTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
+    OUT_COSTETOTALESRECUINTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+    OUT_COSTETOTALECONSUMOEXTERNO_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALECONSUMOEXTERNO_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALECONSUMOEXTERNO_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALECONSUMOEXTERNO_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALECONSUMOEXTERNO_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALECONSUMOEXTERNO_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+    OUT_COSTETOTALERECURSOSEXTERNOS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALERECURSOSEXTERNOS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALERECURSOSEXTERNOS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALERECURSOSEXTERNOS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALERECURSOSEXTERNOS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALERECURSOSEXTERNOS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+   OUT_COSTETOTALELICENCIAS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+   OUT_COSTETOTALELICENCIAS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },      
+   OUT_COSTETOTALELICENCIAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+   OUT_COSTETOTALELICENCIAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+   OUT_COSTETOTALELICENCIAS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+   OUT_COSTETOTALELICENCIAS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
+
+
+
 
   }
 );
@@ -414,14 +443,34 @@ costeTotalRecurInterno:{
   year4: result.OUT_COSTETOTALESRECUINTERNO_YEAR4 ?? 0,
   year5: result.OUT_COSTETOTALESRECUINTERNO_YEAR5 ?? 0,
   total: result.OUT_COSTETOTALESRECUINTERNO_TOTAL ?? 0
-}
+},
 
+costeTotalConsumoExterno: {
+  year1: result.OUT_COSTETOTALECONSUMOEXTERNO_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALECONSUMOEXTERNO_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALECONSUMOEXTERNO_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALECONSUMOEXTERNO_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALECONSUMOEXTERNO_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALECONSUMOEXTERNO_TOTAL ?? 0
+},
 
+costeTotalRecursoExterno  :{
+  year1: result.OUT_COSTETOTALERECURSOSEXTERNOS_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALERECURSOSEXTERNOS_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALERECURSOSEXTERNOS_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALERECURSOSEXTERNOS_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALERECURSOSEXTERNOS_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALERECURSOSEXTERNOS_TOTAL  ?? 0
+},
 
-
-
-
-
+costeTotalLicencia  :{
+  year1: result.OUT_COSTETOTALELICENCIAS_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALELICENCIAS_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALELICENCIAS_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALELICENCIAS_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALELICENCIAS_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALELICENCIAS_TOTAL  ?? 0
+},
 
 };
 

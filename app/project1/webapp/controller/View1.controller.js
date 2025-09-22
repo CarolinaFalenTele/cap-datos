@@ -9,7 +9,7 @@ sap.ui.define([
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
   "sap/ui/model/json/JSONModel",
-  "sap/m/MessageBox"
+  "sap/m/MessageBox" 
 
 ],
 
@@ -5007,7 +5007,7 @@ if (oData.TipoRecursos[2]) {
 if (oData.TipoRecursos[3]) {
     const licencias = oData.TipoRecursos[3].CostesDirectosLicencia;
 
-        console.log("Resultado bruto de licencias:", response);
+     //   console.log("Resultado bruto de licencias:", response);
 
     licencias.valores = [
         parseFloat(response.totalLicencias.year1).toFixed(2) + '€',
@@ -5131,6 +5131,86 @@ if (oData.TipoRecursos[0]) {
     costeTotalRecuInterno.total = parseFloat(response.costeTotalRecurInterno.total).toFixed(2) + '€';
 }
 
+
+if (oData.TipoRecursos[1]) {
+    const costeTotalConsumo = oData.TipoRecursos[1].CosteTotalConsumo;
+
+    console.log("Resultado bruto de rECURSO:", costeTotalConsumo);
+
+    costeTotalConsumo.valores = [
+        parseFloat(response.costeTotalConsumoExterno.year1).toFixed(2) + '€',
+        parseFloat(response.costeTotalConsumoExterno.year2).toFixed(2) + '€',
+        parseFloat(response.costeTotalConsumoExterno.year3).toFixed(2) + '€',
+        parseFloat(response.costeTotalConsumoExterno.year4).toFixed(2) + '€',
+        parseFloat(response.costeTotalConsumoExterno.year5).toFixed(2) + '€'
+    ];
+    costeTotalConsumo.total = parseFloat(response.costeTotalConsumoExterno.total).toFixed(2) + '€';
+}
+
+
+
+if (oData.TipoRecursos[2]) {
+    const costeTotalRecuExter = oData.TipoRecursos[2].CosteTotalRecurExt;
+
+
+    costeTotalRecuExter.valores = [
+        parseFloat(response.costeTotalRecursoExterno.year1).toFixed(2) + '€',
+        parseFloat(response.costeTotalRecursoExterno.year2).toFixed(2) + '€',
+        parseFloat(response.costeTotalRecursoExterno.year3).toFixed(2) + '€',
+        parseFloat(response.costeTotalRecursoExterno.year4).toFixed(2) + '€',
+        parseFloat(response.costeTotalRecursoExterno.year5).toFixed(2) + '€'
+    ];
+    costeTotalRecuExter.total = parseFloat(response.costeTotalRecursoExterno.total).toFixed(2) + '€';
+}
+
+
+
+if (oData.TipoRecursos[3]) {
+    const costeTotalLicencias = oData.TipoRecursos[3].CosteTotalLicencia;
+
+
+    costeTotalLicencias.valores = [
+        parseFloat(response.costeTotalLicencia.year1).toFixed(2) + '€',
+        parseFloat(response.costeTotalLicencia.year2).toFixed(2) + '€',
+        parseFloat(response.costeTotalLicencia.year3).toFixed(2) + '€',
+        parseFloat(response.costeTotalLicencia.year4).toFixed(2) + '€',
+        parseFloat(response.costeTotalLicencia.year5).toFixed(2) + '€'
+    ];
+    costeTotalLicencias.total = parseFloat(response.costeTotalLicencia.total).toFixed(2) + '€';
+}
+
+
+
+/*if (oData.TipoRecursos[4]) {
+    const costeTotalInfraestruc = oData.TipoRecursos[4].CosteTotalInfra;
+
+
+    costeTotalInfraestruc.valores = [
+        parseFloat(response.costeTotalInfraestructura.year1).toFixed(2) + '€',
+        parseFloat(response.costeTotalInfraestructura.year2).toFixed(2) + '€',
+        parseFloat(response.costeTotalInfraestructura.year3).toFixed(2) + '€',
+        parseFloat(response.costeTotalInfraestructura.year4).toFixed(2) + '€',
+        parseFloat(response.costeTotalInfraestructura.year5).toFixed(2) + '€'
+    ];
+    costeTotalInfraestruc.total = parseFloat(response.costeTotalInfraestructura.total).toFixed(2) + '€';
+}
+
+
+
+
+if (oData.TipoRecursos[5]) {
+    const costeTotalGastoViaje = oData.TipoRecursos[5].CosteTotalLicencia;
+
+
+    costeTotalGastoViaje.valores = [
+        parseFloat(response.costeTotalGastoViaje.year1).toFixed(2) + '€',
+        parseFloat(response.costeTotalGastoViaje.year2).toFixed(2) + '€',
+        parseFloat(response.costeTotalGastoViaje.year3).toFixed(2) + '€',
+        parseFloat(response.costeTotalGastoViaje.year4).toFixed(2) + '€',
+        parseFloat(response.costeTotalGastoViaje.year5).toFixed(2) + '€'
+    ];
+    costeTotalGastoViaje.total = parseFloat(response.costeTotalGastoViaje.total).toFixed(2) + '€';
+}*/
 
 
     // Creamos el modelo y mantenemos los años intactos
