@@ -4,6 +4,8 @@ const axios = require("axios");
 const xssec = require('@sap/xssec');
 const xsenv = require('@sap/xsenv');
 const { getDestination } = require("@sap-cloud-sdk/connectivity");
+const fileType = require('file-type');
+const readXlsxFile = require('read-excel-file/node')
 
 
 console.log("HOLAAAAAAAAAAAAA");
@@ -1654,6 +1656,38 @@ costeTotalLicencia  :{
     }
   });
 
+  this.on('massiveMDLoad', async (req) => {
+    const { file, text } = req.data;
+
+    // Por ahora: log simple
+    console.log("Texto recibido:", text);
+    console.log("Fichero recibido (bytes):", file?.length);
+    
+    const buffer = Buffer.from(file, 'base64');
+
+    
+    if (!await isExcel(buffer)) {
+      req.error(415, 'Not excel file');
+      return;
+    }
+
+    const rows = await readXlsxFile(buffer);
+    console.log(rows);
+
+    //TODO CONTINUE READ ROWS, CHECK EXISTING AND INSERT INTO DB
+    
+    return `Procesado OK: texto=${text}, bytes=${file?.length || 0}`;
+    
+  });
+
+  async function isExcel(buffer) {
+    const type = await fileType.fileTypeFromBuffer(buffer);
+  
+    if (!type) return false;
+    
+    return type.mime === 'application/vnd.ms-excel' ||
+           type.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  }
 
 
 
