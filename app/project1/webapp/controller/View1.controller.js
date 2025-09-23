@@ -267,6 +267,75 @@ sap.ui.define([
                 FILTROS INACTIVOS O ACTIVOS 
       ======================================================= */
 
+      _applyActiveFilters: async function () {
+        [
+          {"oSelect": this.byId("slct_area"), "sPath": "/Area", "sKey": "ID", "sText": "NombreArea"},
+          {"oSelect": this.byId("slct_Jefe"), "sPath": "/Jefeproyect", "sKey": "ID", "sText": "name"},
+          {"oSelect": this.byId("slct_verti"), "sPath": "/Vertical", "sKey": "ID", "sText": "NombreVertical"},
+          {"oSelect": this.byId("slct_client"), "sPath": "/ClienteNuevo", "sKey": "ID", "sText": "NombreClienteNuevo"},
+          {"oSelect": this.byId("slct_inic"), "sPath": "/TipoIniciativa", "sKey": "ID", "sText": "NombreIniciativa"},
+          {"oSelect": this.byId("idNatu"), "sPath": "/Naturaleza", "sKey": "ID", "sText": "NombreNaturaleza"},
+          {"oSelect": this.byId("selc_Segui"), "sPath": "/Seguimiento", "sKey": "ID", "sText": "NombreSeguimiento"},
+          {"oSelect": this.byId("selc_ejcu"), "sPath": "/EjecucionVia", "sKey": "ID", "sText": "NombreEjecuVia"},
+          {"oSelect": this.byId("selct_Amrecp"), "sPath": "/AMreceptor", "sKey": "ID", "sText": "NombreAMreceptor"},
+          {"oSelect": this.byId("select_tipoCom"), "sPath": "/TipoCompra", "sKey": "ID", "sText": "tipo"},
+          {"oSelect": this.byId("selectMotivo"), "sPath": "/MotivoCondi", "sKey": "ID", "sText": "tipo"}
+        ].forEach(({oSelect, sPath, sKey, sText}) => {
+          oSelect?.bindItems({
+            path: sPath,
+            filters: [
+              new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+            ],
+            template: new sap.ui.core.Item({
+              key: `{${sKey}}`,
+              text: `{${sText}}`
+            })
+          });
+        });
+
+        this._filterCompleteTables();
+      },
+
+      _filterCompleteTables: async function() {
+        [
+          {"sTableId": "tablaConsuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: 2},
+          {"sTableId": "table_dimicFecha", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: 2, iPerfilConsuColumn: null},
+          {"sTableId": "tablaRecExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "idOtroserConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "idGastoViajeConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "idServiExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "idGastoRecuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "tablaInfrestuctura", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "tablaLicencia", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "tableServicioInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
+          {"sTableId": "tablGastoViajeInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null}
+        ].forEach(oTableData => {
+          const {sTableId, iVerticalColumn, iTipoServicioColumn, iPerfilServiColumn, iPerfilConsuColumn} = oTableData;
+          var oTable = this.byId(sTableId);
+          var aItems = oTable?.getItems();
+
+          aItems.forEach(oRow => {
+            this._filterDynamic(oRow.getCells()[iVerticalColumn], "/Vertical", "ID", "NombreVertical");
+            this._filterDynamic(oRow.getCells()[iTipoServicioColumn], "/TipoServicio", "ID", "NombreTipoServ");
+            this._filterDynamic(oRow.getCells()[iPerfilServiColumn], "/PerfilServicio", "ID", "NombrePerfil");
+            this._filterDynamic(oRow.getCells()[iPerfilConsuColumn], "/PerfilConsumo", "ID", "nombrePerfilC");
+          });
+        });
+      },
+
+      _filterDynamic: async function(oSelect, sPath, sKey, sText) {
+        oSelect?.bindItems({
+          path: sPath,
+          filters: [
+            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+          ],
+          template: new sap.ui.core.Item({
+            key: `{${sKey}}`,
+            text: `{${sText}}`
+          })
+        });
+      },
+
       filterAreaFalse: async function (ID) {
         var oSelect = this.byId("slct_area");
         var oModel = this.getOwnerComponent().getModel();
@@ -1440,6 +1509,8 @@ sap.ui.define([
 
         //     Llamamos con el source limpio
         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
+
+        this._applyActiveFilters();
 
         this._sProjectID = sProjectID;
 
