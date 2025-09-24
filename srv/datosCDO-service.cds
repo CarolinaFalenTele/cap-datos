@@ -209,6 +209,21 @@ action getResultado(id : UUID) returns {
   costeTotalLicencia : YearTotals;
   costeTotalInfraestructura  :  YearTotals;
   costeTotalGastoViaje  :  YearTotals;
+  ingresoInternos        :  YearTotals;
+  ingresoConsumoExterno      :  YearTotals;
+  ingresoRecursoExterno      :  YearTotals;
+  ingresoLicencias      :  YearTotals;
+  ingresoInfraestructura     :  YearTotals;
+  ingresoGastoViaje     :  YearTotals;
+  beneficioRecurInterno     :  YearTotals;
+  beneficioConsumoExterno    :  YearTotals;
+  beneficioRecursoExterno : YearTotals;
+  beneficioLicencia : YearTotals;
+  beneficioInfraestructura : YearTotals;
+  beneficioGastoViaje : YearTotals;
+
+
+
 
 };
 

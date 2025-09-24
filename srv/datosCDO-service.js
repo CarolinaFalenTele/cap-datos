@@ -76,8 +76,91 @@ module.exports = cds.service.impl(async function () {
   });
 
 
-
 this.on("getResultado", async (req) => {
+  const { id } = req.data;
+  const db = await cds.connect.to("db"); 
+
+  // Definir categorías → key = nombre en el return CDS, cat = prefijo de HANA
+  const categorias = [
+    { key: "totales", cat: "TOTAL", customTotal: "OUT_INTERNO_TOTAL" },
+    { key: "indirectos", cat: "COSTESINDIRECTOS" },
+    { key: "CosteTotal", cat: "TOTALCOSTES" },
+    { key: "Ingresos", cat: "TOTALINGRESO" },
+    { key: "beneficio", cat: "BENEFICIO" },
+    { key: "totalRecursosInterno", cat: "RECURSOINTERNO" },
+    { key: "totalConsumoExterno", cat: "CONSUMOEXTERNO" },
+    { key: "totalGastoViajeInterno", cat: "GASTOINTERNOVIAJE" },
+    { key: "totalRecursoExterno", cat: "RECURSOEXTERNO" },
+    { key: "totalInfraestructura", cat: "INFRAESTRUCTURA" },
+    { key: "totalLicencias", cat: "LICENCIAS" },
+    { key: "costesIndirectosRecursoInter", cat: "COSTESINDIRECTOSRECURINTER" },
+    { key: "costesIndirectosConsumoExterno", cat: "COSTESINDIRECTOSCONSUMOEXTERNO" },
+    { key: "costesIndirectosRecursoExterno", cat: "COSTESINDIRECTOSRECURSOEXTERNO" },
+    { key: "costesIndirectoLicencias", cat: "COSTESINDIRECTOLICENCIAS" },
+    { key: "costesIndirectoInfraestructura", cat: "COSTESINDIRECTOINFRAESTRUCTURA" },
+    { key: "costesIndirectoGastoViaje", cat: "COSTESINDIRECTOGASTOVIAJE" },
+    { key: "costeTotalRecurInterno", cat: "COSTETOTALESRECUINTERNO" },
+    { key: "costeTotalConsumoExterno", cat: "COSTETOTALECONSUMOEXTERNO" },
+    { key: "costeTotalRecursoExterno", cat: "COSTETOTALERECURSOSEXTERNOS" },
+    { key: "costeTotalLicencia", cat: "COSTETOTALELICENCIAS" },
+    { key: "costeTotalInfraestructura", cat: "COSTETOTALEINFRAESTRUCTURAS" },
+    { key: "costeTotalGastoViaje", cat: "COSTETOTALEGASTOSVIAJEINTERNOS" },
+    { key: "ingresoInternos", cat: "INGRESOSINTERNOS" },
+    { key: "ingresoConsumoExterno", cat: "INGRESOSCONSUMOEXTERNO" },
+    { key: "ingresoRecursoExterno", cat: "INGRESOSRECURSOEXTERNO" },
+    { key: "ingresoLicencias", cat: "INGRESOSLICENCIAS" },
+    { key: "ingresoInfraestructura", cat: "INGRESOSINFRAESTRUCTURA" },
+    { key: "ingresoGastoViaje", cat: "INGRESOSGASTOVIAJE" },
+    { key: "beneficioRecurInterno", cat: "BENEFICIOSINTERNOS" },
+    { key: "beneficioConsumoExterno", cat: "BENEFICIOSCOSUMOEXTERNO" },
+    { key: "beneficioRecursoExterno", cat: "BENEFICIOSRECURSOEXTERNO" },
+    { key: "beneficioLicencia", cat: "BENEFICIOSLICENCIAS" },
+    { key: "beneficioInfraestructura", cat: "BENEFICIOSINFRAESTRUCTURA" },
+    { key: "beneficioGastoViaje", cat: "BENEFICIOSGASTOVIAJE" }
+
+  ];
+
+  // Generar dinámicamente parámetros OUT del procedure
+  const outParams = {};
+  const years = [1, 2, 3, 4, 5];
+  categorias.forEach(({ cat, customTotal }) => {
+    years.forEach(y => {
+      outParams[`OUT_${cat}_YEAR${y}`] = { dir: "OUT", type: "DECIMAL", precision: 20, scale: 2 };
+    });
+    outParams[customTotal || `OUT_${cat}_TOTAL`] = { dir: "OUT", type: "DECIMAL", precision: 20, scale: 2 };
+  });
+
+  // Ejecutar procedure
+  const result = await db.run(
+    `CALL "totalesCostesMensualizados"(${["?", ...Object.keys(outParams).map(() => "?")].join(",")})`,
+    { IN_IDRECURSOS: id, ...outParams }
+  );
+
+  console.log("Resultado bruto procedure:", result);
+
+  // Helper → construye la estructura YearTotals
+  const buildYearTotals = (cat, customTotal) => ({
+    year1: result[`OUT_${cat}_YEAR1`] ?? 0,
+    year2: result[`OUT_${cat}_YEAR2`] ?? 0,
+    year3: result[`OUT_${cat}_YEAR3`] ?? 0,
+    year4: result[`OUT_${cat}_YEAR4`] ?? 0,
+    year5: result[`OUT_${cat}_YEAR5`] ?? 0,
+    total: result[customTotal || `OUT_${cat}_TOTAL`] ?? 0
+  });
+
+  // Armar respuesta exactamente con la definición de tu action
+  const response = {};
+  categorias.forEach(({ key, cat, customTotal }) => {
+    response[key] = buildYearTotals(cat, customTotal);
+  });
+
+  return response;
+});
+
+
+
+
+/*this.on("getResultado", async (req) => {
   const { id } = req.data;
   console.log("procedure ejecutando con ID:", id);
 
@@ -270,7 +353,28 @@ const result = await db.run(
    OUT_COSTETOTALELICENCIAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
    OUT_COSTETOTALELICENCIAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
    OUT_COSTETOTALELICENCIAS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
-   OUT_COSTETOTALELICENCIAS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
+   OUT_COSTETOTALELICENCIAS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+   
+   
+
+    OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEINFRAESTRUCTURAS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+
+
+
+
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR1: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR2: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR3: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR4: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR5: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 },
+    OUT_COSTETOTALEGASTOSVIAJEINTERNOS_TOTAL: { dir: 'OUT', type: 'DECIMAL', precision: 20, scale: 2 }
+
+
 
 
 
@@ -463,14 +567,38 @@ costeTotalRecursoExterno  :{
   total: result.OUT_COSTETOTALERECURSOSEXTERNOS_TOTAL  ?? 0
 },
 
-costeTotalLicencia  :{
-  year1: result.OUT_COSTETOTALELICENCIAS_YEAR1 ?? 0,
-  year2: result.OUT_COSTETOTALELICENCIAS_YEAR2 ?? 0,
-  year3: result.OUT_COSTETOTALELICENCIAS_YEAR3 ?? 0,
-  year4: result.OUT_COSTETOTALELICENCIAS_YEAR4 ?? 0,
-  year5: result.OUT_COSTETOTALELICENCIAS_YEAR5 ?? 0,
-  total: result.OUT_COSTETOTALELICENCIAS_TOTAL  ?? 0
+
+costeTotalLicencia  : {
+year1:  result.OUT_COSTETOTALELICENCIAS_YEAR1 ?? 0,
+year2:  result.OUT_COSTETOTALELICENCIAS_YEAR2 ?? 0,
+year3:  result.OUT_COSTETOTALELICENCIAS_YEAR3 ?? 0,
+year4:  result.OUT_COSTETOTALELICENCIAS_YEAR4 ?? 0,
+year5:  result.OUT_COSTETOTALELICENCIAS_YEAR5 ?? 0,
+total:  result.OUT_COSTETOTALELICENCIAS_TOTAL ?? 0
 },
+
+
+costeTotalInfraestructura  :{
+  year1: result.OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALEINFRAESTRUCTURAS_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALEINFRAESTRUCTURAS_TOTAL  ?? 0
+},
+
+
+costeTotalGastoViaje  :{
+  year1: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR1 ?? 0,
+  year2: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR2 ?? 0,
+  year3: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR3 ?? 0,
+  year4: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR4 ?? 0,
+  year5: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_YEAR5 ?? 0,
+  total: result.OUT_COSTETOTALEGASTOSVIAJEINTERNOS_TOTAL  ?? 0
+}
+
+
+
 
 };
 
@@ -478,7 +606,7 @@ costeTotalLicencia  :{
     console.error("ERROR en procedure:", e.message);
     throw e;
   }
-});
+});*/
 
 
 

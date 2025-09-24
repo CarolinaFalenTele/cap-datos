@@ -30,7 +30,7 @@
   "TipoRecursos": [
     {
       "nombre": "Recursos Internos",
-      "IngresosInterno": { "valores": ["1€", "4€", "0€", "0€", "0€"], "total": "0€" },
+      "IngresosInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
       "CostesDirectosInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
       "CostesIndirect": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
       "CosteTotalInterno": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
@@ -75,7 +75,16 @@
       "CostesIndirectGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
       "CosteTotalGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
       "BeneficioGastoViInter": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
+    },
+    {
+      "nombre": "Totales",
+      "totalesIngreso": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "totalesCostesDirectos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "totalesCostesIndirectos": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "totalesCosteTotal": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" },
+      "totalesBeneficio": { "valores": ["0€", "0€", "0€", "0€", "0€"], "total": "0€" }
     }
+
     
   ]
 }

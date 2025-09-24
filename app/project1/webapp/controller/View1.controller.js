@@ -4921,7 +4921,133 @@ sap.ui.define([
       },
       //-------------------------------------------------------------
 
+
 CalculosRecursoExterno: async function () {
+    const Coste = this.getView().getModel();
+    const oContextCoste = Coste.bindContext("/getResultado(...)");
+    oContextCoste.setParameter("id", this._sProjectID);
+
+    await oContextCoste.execute();
+    const response = oContextCoste.getBoundContext().getObject();
+    console.log("Resultado acción:", response);
+
+    // 🔹 Cargamos JSON de plantilla
+    const res = await fetch("model/costes.json");
+    const oData = await res.json();
+
+    // 🔹 Helper → formatea los YearTotals en el formato esperado
+    const formatYearTotals = (yearTotals) => ({
+        valores: [
+            parseFloat(yearTotals.year1).toFixed(2) + "€",
+            parseFloat(yearTotals.year2).toFixed(2) + "€",
+            parseFloat(yearTotals.year3).toFixed(2) + "€",
+            parseFloat(yearTotals.year4).toFixed(2) + "€",
+            parseFloat(yearTotals.year5).toFixed(2) + "€"
+        ],
+        total: parseFloat(yearTotals.total).toFixed(2) + "€"
+    });
+
+  //  Mapeo para servicios (TipoServicio, ConceptoOferta, TipoRecurso_Vertical)
+const serviciosMap = [
+  { responseKey: "totales",    target: "CostesDirectos" },
+  { responseKey: "indirectos", target: "CostesIndirect" },
+  { responseKey: "CosteTotal", target: "CosteTotal" },
+  { responseKey: "Ingresos",   target: "Ingresos" },
+  { responseKey: "beneficio",  target: "Beneficio" }
+];
+
+// Mapeo para recursos (TipoRecursos[index].prop)
+const recursosMap = [
+  // Recurso Interno
+  { index: 0, prop: "CostesDirectosInterno",   responseKey: "totalRecursosInterno" },
+  { index: 0, prop: "CostesIndirect",          responseKey: "costesIndirectosRecursoInter" },
+  { index: 0, prop: "CosteTotalInterno",       responseKey: "costeTotalRecurInterno" },
+  { index: 0, prop: "IngresosInterno",       responseKey: "ingresoInternos" },
+  { index: 0, prop: "BeneficioInterno",       responseKey: "beneficioRecurInterno" },
+
+
+
+  // Consumo Externo
+  { index: 1, prop: "CostesDirectosConsumo",   responseKey: "totalConsumoExterno" },
+  { index: 1, prop: "CostesIndirectConsumo",   responseKey: "costesIndirectosConsumoExterno" },
+  { index: 1, prop: "CosteTotalConsumo",       responseKey: "costeTotalConsumoExterno" },
+  { index: 1, prop: "IngresosConsumo",       responseKey: "ingresoConsumoExterno" },
+  { index: 1, prop: "BeneficioConsumo",       responseKey: "beneficioConsumoExterno" },
+
+
+  // Recurso Externo
+  { index: 2, prop: "CostesDirectosRecurExt",  responseKey: "totalRecursoExterno" },
+  { index: 2, prop: "CostesIndirectRecurExt",  responseKey: "costesIndirectosRecursoExterno" },
+  { index: 2, prop: "CosteTotalRecurExt",      responseKey: "costeTotalRecursoExterno" },
+  { index: 2, prop: "IngresosRecurExt",      responseKey: "ingresoRecursoExterno" },
+  { index: 2, prop: "BeneficioRecurExt",      responseKey: "beneficioRecursoExterno" },
+
+  // Licencias
+  { index: 3, prop: "CostesDirectosLicencia",  responseKey: "totalLicencias" },
+  { index: 3, prop: "CostesIndirectLicencia",  responseKey: "costesIndirectoLicencias" },
+  { index: 3, prop: "CosteTotalLicencia",      responseKey: "costeTotalLicencia" },
+  { index: 3, prop: "IngresosLicencia",      responseKey: "ingresoLicencias" },
+  { index: 3, prop: "BeneficioLicencia",      responseKey: "beneficioLicencia" },
+
+
+  // Infraestructura
+  { index: 4, prop: "CostesDirectosInfra",     responseKey: "totalInfraestructura" },
+  { index: 4, prop: "CostesIndirectInfra",     responseKey: "costesIndirectoInfraestructura" },
+  { index: 4, prop: "CosteTotalInfra",         responseKey: "costeTotalInfraestructura" },
+  { index: 4, prop: "IngresosInfra",         responseKey: "ingresoInfraestructura" },
+  { index: 4, prop: "BeneficioInfra",         responseKey: "beneficioInfraestructura" },
+
+
+
+  // Gasto Viaje Interno
+  { index: 5, prop: "CostesDirectosGastoViInter", responseKey: "totalGastoViajeInterno" },
+  { index: 5, prop: "CostesIndirectGastoViInter", responseKey: "costesIndirectoGastoViaje" },
+  { index: 5, prop: "CosteTotalGastoViInter",     responseKey: "costeTotalGastoViaje" },
+  { index: 5, prop: "IngresosGastoViInter",     responseKey: "ingresoGastoViaje" },
+  { index: 5, prop: "BeneficioGastoViInter",     responseKey: "beneficioGastoViaje" }
+
+
+];
+
+// Aplicar servicios principales
+if (oData.TipoServicio && oData.TipoServicio.length > 0) {
+    const tipoServicio = oData.TipoServicio[0];
+    const conceptoOferta = oData.ConceptoOferta?.[0] || null;
+    const tipoRecursoVertical = oData.TipoRecurso_Vertical?.[0] || null;
+
+    serviciosMap.forEach(({ responseKey, target }) => {
+        if (response[responseKey]) {
+            tipoServicio[target] = formatYearTotals(response[responseKey]);
+            if (conceptoOferta) conceptoOferta[target] = tipoServicio[target];
+            if (tipoRecursoVertical) tipoRecursoVertical[target] = tipoServicio[target];
+        }
+    });
+}
+
+// Aplicar recursos
+if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
+    recursosMap.forEach(({ index, prop, responseKey }) => {
+        if (oData.TipoRecursos[index] && response[responseKey]) {
+            oData.TipoRecursos[index][prop] = formatYearTotals(response[responseKey]);
+        }
+    });
+}
+
+    // Creamos el modelo y mantenemos los años intactos
+    const oCostesModel = new sap.ui.model.json.JSONModel(oData);
+    const oModelAnterior = this.getView().getModel("miModeloCostes");
+    if (oModelAnterior?.getProperty("/Anios")) {
+        oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
+    }
+
+    this.getView().setModel(oCostesModel, "miModeloCostes");
+    oCostesModel.refresh(true);
+},
+
+
+
+
+/*CalculosRecursoExterno: async function () {
     const Coste = this.getView().getModel();
     const oContextCoste = Coste.bindContext("/getResultado(...)");
     oContextCoste.setParameter("id", this._sProjectID);
@@ -5014,7 +5140,6 @@ CalculosRecursoExterno: async function () {
 
         
     }
-
 
 
     // --- Recurso Interno ---
@@ -5252,7 +5377,7 @@ if (oData.TipoRecursos[3]) {
 
 
 
-/*if (oData.TipoRecursos[4]) {
+if (oData.TipoRecursos[4]) {
     const costeTotalInfraestruc = oData.TipoRecursos[4].CosteTotalInfra;
 
 
@@ -5270,7 +5395,7 @@ if (oData.TipoRecursos[3]) {
 
 
 if (oData.TipoRecursos[5]) {
-    const costeTotalGastoViaje = oData.TipoRecursos[5].CosteTotalLicencia;
+    const costeTotalGastoViaje = oData.TipoRecursos[5].CosteTotalGastoViInter;
 
 
     costeTotalGastoViaje.valores = [
@@ -5281,7 +5406,7 @@ if (oData.TipoRecursos[5]) {
         parseFloat(response.costeTotalGastoViaje.year5).toFixed(2) + '€'
     ];
     costeTotalGastoViaje.total = parseFloat(response.costeTotalGastoViaje.total).toFixed(2) + '€';
-}*/
+}
 
 
     // Creamos el modelo y mantenemos los años intactos
@@ -5293,7 +5418,7 @@ if (oData.TipoRecursos[5]) {
 
     this.getView().setModel(oCostesModel, "miModeloCostes");
     oCostesModel.refresh(true);
-},
+},*/
 
 
 
