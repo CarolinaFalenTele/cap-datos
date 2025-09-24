@@ -1674,11 +1674,90 @@ costeTotalLicencia  :{
     const rows = await readXlsxFile(buffer);
     console.log(rows);
 
-    //TODO CONTINUE READ ROWS, CHECK EXISTING AND INSERT INTO DB
+    let oProcessedData = {};
+    switch(text){
+        case "APROBADORES":
+          oProcessedData = processApproverRows(rows);
+          break;
+        case "AREA":
+          oProcessedData = processAreaRows(rows);
+          break;
+        case "CLIENTE":
+          oProcessedData = processClienteRows(rows);
+          break;
+        case "JEFESDEPROYECTO":
+          oProcessedData = processJefeProyectoRows(rows);
+          break;
+        case "MOTIVOCONDICIONAMIENTO":
+          oProcessedData = processMotivoCondicionAmientosRows(rows);
+          break;
+        case "PERFILCONSUMO":
+          oProcessedData = processPerfilConsumoRows(rows);
+          break;
+        case "PERFILSERVICIO":
+          oProcessedData = processPerfilServicioRows(rows);
+          break;
+        case "PORCENTAJEANIO":
+          oProcessedData = processPorcentajeAnioRows(rows);
+          break;
+        case "SEGUIMIENTO":
+          oProcessedData = processSeguimientoRows(rows);
+          break;
+        case "TIPOCOMPRA":
+          oProcessedData = processTipoCompraRows(rows);
+          break;
+        case "VERTICAL":
+          oProcessedData = processVerticalRows(rows);
+          break;
+    }
     
     return `Procesado OK: texto=${text}, bytes=${file?.length || 0}`;
     
   });
+
+  function processApproverRows(rows) {
+    console.log("TODO CONTINUE APPROVER ROWS");
+  }
+
+  function processAreaRows(rows) {
+    console.log("TODO CONTINUE AREA ROWS");
+  }
+
+  function processClienteRows(rows) {
+    console.log("TODO CONTINUE CLIENTE ROWS");
+  }
+  
+  function processJefeProyectoRows(rows) {
+    console.log("TODO CONTINUE JEFEPROYECTO ROWS");
+  }
+
+  function processMotivoCondicionAmientosRows(rows) {
+    console.log("TODO CONTINUE MOTIVOCONDICIONAMIENTO ROWS");
+  }
+
+  function processPerfilConsumoRows(rows) {
+    console.log("TODO CONTINUE PERFILCONSUMO ROWS");
+  }
+
+  function processPerfilServicioRows(rows) {
+    console.log("TODO CONTINUE PERFILSERVICIO ROWS");
+  }
+
+  function processPorcentajeAnioRows(rows) {
+    console.log("TODO CONTINUE PORCENTAJEANIO ROWS");
+  }
+
+  function processSeguimientoRows(rows) {
+    console.log("TODO CONTINUE SEGUIMIENTO ROWS");
+  }
+
+  function processTipoCompraRows(rows) {
+    console.log("TODO CONTINUE TIPOCOMPRA ROWS");
+  }
+
+  function processVerticalRows(rows) {
+    console.log("TODO CONTINUE VERTICAL ROWS");
+  }
 
   async function isExcel(buffer) {
     const type = await fileType.fileTypeFromBuffer(buffer);
