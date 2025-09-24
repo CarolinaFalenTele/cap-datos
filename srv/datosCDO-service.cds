@@ -217,7 +217,11 @@ action getResultado(id : UUID) returns {
   action   cancelWorkflow(workflowInstanceId : String)                                                                          returns String;
   action   uploadFile()                                                                                                         returns String;
 
-  action   massiveMDLoad(file : LargeBinary, text : String)                                                                     returns String;
+  type ProcessedData : {
+    ok : Boolean;
+    errors : array of String;
+  };
+  action   massiveMDLoad(file : LargeBinary, text : String)                                                                     returns ProcessedData;
 
 
 }

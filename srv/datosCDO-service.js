@@ -20,6 +20,7 @@ module.exports = cds.service.impl(async function () {
   console.log("Servicio cargado correctamente");
 
   const {
+    Area,
     DatosProyect,
     Usuarios,
     ProveedoresC,
@@ -1659,7 +1660,6 @@ costeTotalLicencia  :{
   this.on('massiveMDLoad', async (req) => {
     const { file, text } = req.data;
 
-    // Por ahora: log simple
     console.log("Texto recibido:", text);
     console.log("Fichero recibido (bytes):", file?.length);
     
@@ -1672,90 +1672,141 @@ costeTotalLicencia  :{
     }
 
     const rows = await readXlsxFile(buffer);
+    rows.shift(); // Remove header
     console.log(rows);
 
     let oProcessedData = {};
     switch(text){
         case "APROBADORES":
-          oProcessedData = processApproverRows(rows);
+          oProcessedData = await processApproverRows(rows);
           break;
         case "AREA":
-          oProcessedData = processAreaRows(rows);
+          oProcessedData = await processAreaRows(rows);
           break;
         case "CLIENTE":
-          oProcessedData = processClienteRows(rows);
+          oProcessedData = await processClienteRows(rows);
           break;
         case "JEFESDEPROYECTO":
-          oProcessedData = processJefeProyectoRows(rows);
+          oProcessedData = await processJefeProyectoRows(rows);
           break;
         case "MOTIVOCONDICIONAMIENTO":
-          oProcessedData = processMotivoCondicionAmientosRows(rows);
+          oProcessedData = await processMotivoCondicionAmientosRows(rows);
           break;
         case "PERFILCONSUMO":
-          oProcessedData = processPerfilConsumoRows(rows);
+          oProcessedData = await processPerfilConsumoRows(rows);
           break;
         case "PERFILSERVICIO":
-          oProcessedData = processPerfilServicioRows(rows);
+          oProcessedData = await processPerfilServicioRows(rows);
           break;
         case "PORCENTAJEANIO":
-          oProcessedData = processPorcentajeAnioRows(rows);
+          oProcessedData = await processPorcentajeAnioRows(rows);
           break;
         case "SEGUIMIENTO":
-          oProcessedData = processSeguimientoRows(rows);
+          oProcessedData = await processSeguimientoRows(rows);
           break;
         case "TIPOCOMPRA":
-          oProcessedData = processTipoCompraRows(rows);
+          oProcessedData = await processTipoCompraRows(rows);
           break;
         case "VERTICAL":
-          oProcessedData = processVerticalRows(rows);
+          oProcessedData = await processVerticalRows(rows);
           break;
     }
     
-    return `Procesado OK: texto=${text}, bytes=${file?.length || 0}`;
+    return oProcessedData;
     
   });
 
-  function processApproverRows(rows) {
-    console.log("TODO CONTINUE APPROVER ROWS");
+  async function processApproverRows(rows) {
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedApprovers = [];
+    rows.forEach(row => {
+      aFormattedApprovers.push({
+        area: row[0],
+        name: row[1],
+        lastname: row[2],
+        matricula: row[3],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oApprover of aFormattedApprovers) {
+      const sArea = oApprover.area,
+      sNombre = oApprover.name,
+      sApellido = oApprover.lastname,
+      sMatricula = oApprover.matricula;
+      if(!sArea || !sNombre || !sApellido || !sMatricula) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      }
+      if(sArea) {
+        const oArea = await SELECT.one.from(Area).where({ NombreArea: sArea });
+        if(!oArea) {
+          oProcessedData.errors.push(`Área: ${sArea} no encontrada, por favor revise mayúsculas, minúsculas y tildes`);
+        } else {
+          oApprover.Area_ID = oArea.ID;
+          delete oApprover.area;
+        }
+      }
+      if(sMatricula) {
+        const oMatricula = await SELECT.one.from(Aprobadores).where({ matricula: sMatricula, Activo: true });
+        if(oMatricula) {
+          oProcessedData.errors.push(`Matrícula: ${sMatricula} ya existe`);
+        }
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Aprobadores).entries(aFormattedApprovers);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
-  function processAreaRows(rows) {
+  async function processAreaRows(rows) {
     console.log("TODO CONTINUE AREA ROWS");
   }
 
-  function processClienteRows(rows) {
+  async function processClienteRows(rows) {
     console.log("TODO CONTINUE CLIENTE ROWS");
   }
   
-  function processJefeProyectoRows(rows) {
+  async function processJefeProyectoRows(rows) {
     console.log("TODO CONTINUE JEFEPROYECTO ROWS");
   }
 
-  function processMotivoCondicionAmientosRows(rows) {
+  async function processMotivoCondicionAmientosRows(rows) {
     console.log("TODO CONTINUE MOTIVOCONDICIONAMIENTO ROWS");
   }
 
-  function processPerfilConsumoRows(rows) {
+  async function processPerfilConsumoRows(rows) {
     console.log("TODO CONTINUE PERFILCONSUMO ROWS");
   }
 
-  function processPerfilServicioRows(rows) {
+  async function processPerfilServicioRows(rows) {
     console.log("TODO CONTINUE PERFILSERVICIO ROWS");
   }
 
-  function processPorcentajeAnioRows(rows) {
+  async function processPorcentajeAnioRows(rows) {
     console.log("TODO CONTINUE PORCENTAJEANIO ROWS");
   }
 
-  function processSeguimientoRows(rows) {
+  async function processSeguimientoRows(rows) {
     console.log("TODO CONTINUE SEGUIMIENTO ROWS");
   }
 
-  function processTipoCompraRows(rows) {
+  async function processTipoCompraRows(rows) {
     console.log("TODO CONTINUE TIPOCOMPRA ROWS");
   }
 
-  function processVerticalRows(rows) {
+  async function processVerticalRows(rows) {
     console.log("TODO CONTINUE VERTICAL ROWS");
   }
 
