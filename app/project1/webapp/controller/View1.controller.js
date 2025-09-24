@@ -66,7 +66,7 @@ sap.ui.define([
         var oAniosModel = new sap.ui.model.json.JSONModel();
 
         oAniosModel.attachRequestCompleted(() => {
-          console.log("Modelo añosDinamicos cargado correctamente");
+        //  console.log("Modelo añosDinamicos cargado correctamente");
           this.actualizarHeadersAnios();
         });
 
@@ -1767,7 +1767,7 @@ sap.ui.define([
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-           await this.CalculosRecursoExterno();
+           await this.CalculosResumenIngresosVSCostes();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -1903,6 +1903,12 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
         const oModelDynamic = oView.getModel("dynamicInputs");
+
+     //  const oModelAnterior = this.getView().getModel("miModeloCostes");
+
+  
+       // console.log("MOdelo " + oModelResumenCostes );
+
 
         var oFechasModel = this.getView().getModel("fechasModel");
         if (!oFechasModel) {
@@ -2083,8 +2089,6 @@ sap.ui.define([
         if (oArchivosModel) {
           oArchivosModel.setProperty("/archivos", []);
         }
-
-
 
 
         this.refreshODataModel();
@@ -4922,7 +4926,7 @@ sap.ui.define([
       //-------------------------------------------------------------
 
 
-CalculosRecursoExterno: async function () {
+CalculosResumenIngresosVSCostes: async function () {
     const Coste = this.getView().getModel();
     const oContextCoste = Coste.bindContext("/getResultado(...)");
     oContextCoste.setParameter("id", this._sProjectID);
@@ -4931,11 +4935,11 @@ CalculosRecursoExterno: async function () {
     const response = oContextCoste.getBoundContext().getObject();
     console.log("Resultado acción:", response);
 
-    // 🔹 Cargamos JSON de plantilla
+    //  Cargamos JSON de plantilla
     const res = await fetch("model/costes.json");
     const oData = await res.json();
 
-    // 🔹 Helper → formatea los YearTotals en el formato esperado
+    // Helper → formatea los YearTotals en el formato esperado
     const formatYearTotals = (yearTotals) => ({
         valores: [
             parseFloat(yearTotals.year1).toFixed(2) + "€",
@@ -5004,7 +5008,19 @@ const recursosMap = [
   { index: 5, prop: "CostesIndirectGastoViInter", responseKey: "costesIndirectoGastoViaje" },
   { index: 5, prop: "CosteTotalGastoViInter",     responseKey: "costeTotalGastoViaje" },
   { index: 5, prop: "IngresosGastoViInter",     responseKey: "ingresoGastoViaje" },
-  { index: 5, prop: "BeneficioGastoViInter",     responseKey: "beneficioGastoViaje" }
+  { index: 5, prop: "BeneficioGastoViInter",     responseKey: "beneficioGastoViaje" },
+
+
+  { index: 6, prop: "totalesIngreso",     responseKey: "totalesIngresos" },
+  { index: 6, prop: "totalesCostesDirectos",     responseKey: "totalCostesDirectos" },
+  { index: 6, prop: "totalesCostesIndirectos",     responseKey: "totalCostesIndirectos" },
+  { index: 6, prop: "totalesCosteTotal",     responseKey: "totalCostesTotales" },
+  { index: 6, prop: "totalesBeneficio",     responseKey: "totalBeneficios" },
+
+
+
+
+
 
 
 ];
@@ -5046,379 +5062,6 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
 
 
-
-/*CalculosRecursoExterno: async function () {
-    const Coste = this.getView().getModel();
-    const oContextCoste = Coste.bindContext("/getResultado(...)");
-    oContextCoste.setParameter("id", this._sProjectID);
-
-    await oContextCoste.execute();
-    const response = oContextCoste.getBoundContext().getObject();
-    console.log("Resultado acción:", response);
-
-    // Cargamos JSON de plantilla
-    const res = await fetch("model/costes.json");
-    const oData = await res.json();
-
-    if (oData.TipoServicio && oData.TipoServicio.length > 0) {
-        const tipoServicio = oData.TipoServicio[0];
-        const conceptoOferta = (oData.ConceptoOferta && oData.ConceptoOferta.length > 0) 
-            ? oData.ConceptoOferta[0] 
-            : null;
-        const tipoRecursoVertical = (oData.TipoRecurso_Vertical && oData.TipoRecurso_Vertical.length > 0) 
-            ? oData.TipoRecurso_Vertical[0] 
-            : null;
-
-        // Costes Directos
-        tipoServicio.CostesDirectos.valores = [
-            parseFloat(response.totales.year1).toFixed(2) + '€',
-            parseFloat(response.totales.year2).toFixed(2) + '€',
-            parseFloat(response.totales.year3).toFixed(2) + '€',
-            parseFloat(response.totales.year4).toFixed(2) + '€',
-            parseFloat(response.totales.year5).toFixed(2) + '€'
-        ];
-        tipoServicio.CostesDirectos.total =    parseFloat(response.totales.total).toFixed(2) + '€';
-
-        if (conceptoOferta) conceptoOferta.CostesDirectos = tipoServicio.CostesDirectos;
-        if (tipoRecursoVertical) tipoRecursoVertical.CostesDirectos = tipoServicio.CostesDirectos;
-
-        // Costes Indirectos
-        tipoServicio.CostesIndirect.valores = [
-            parseFloat(response.indirectos.year1).toFixed(2) + '€',
-            parseFloat(response.indirectos.year2).toFixed(2) + '€',
-            parseFloat(response.indirectos.year3).toFixed(2) + '€',
-            parseFloat(response.indirectos.year4).toFixed(2) + '€',
-            parseFloat(response.indirectos.year5).toFixed(2) + '€'
-        ];
-        tipoServicio.CostesIndirect.total =  parseFloat(response.indirectos.total).toFixed(2) + '€'; 
-
-        if (conceptoOferta) conceptoOferta.CostesIndirect = tipoServicio.CostesIndirect;
-        if (tipoRecursoVertical) tipoRecursoVertical.CostesIndirect = tipoServicio.CostesIndirect;
-
-        // Coste Total
-        tipoServicio.CosteTotal.valores = [
-            parseFloat(response.CosteTotal.year1).toFixed(2) + '€',
-            parseFloat(response.CosteTotal.year2).toFixed(2) + '€',
-            parseFloat(response.CosteTotal.year3).toFixed(2) + '€',
-            parseFloat(response.CosteTotal.year4).toFixed(2) + '€',
-            parseFloat(response.CosteTotal.year5).toFixed(2) + '€'
-        ];
-        tipoServicio.CosteTotal.total =   parseFloat(response.CosteTotal.total).toFixed(2) + '€'; 
-
-        if (conceptoOferta) conceptoOferta.CosteTotal = tipoServicio.CosteTotal;
-        if (tipoRecursoVertical) tipoRecursoVertical.CosteTotal = tipoServicio.CosteTotal;
-
-        // Ingresos
-        tipoServicio.Ingresos.valores = [
-            parseFloat(response.Ingresos.year1).toFixed(2) + '€',
-            parseFloat(response.Ingresos.year2).toFixed(2) + '€',
-            parseFloat(response.Ingresos.year3).toFixed(2) + '€',
-            parseFloat(response.Ingresos.year4).toFixed(2) + '€',
-            parseFloat(response.Ingresos.year5).toFixed(2) + '€'
-        ];
-        tipoServicio.Ingresos.total =  parseFloat(response.beneficio.total).toFixed(2) + '€';
-
-
-        if (conceptoOferta) conceptoOferta.Ingresos = tipoServicio.Ingresos;
-        if (tipoRecursoVertical) tipoRecursoVertical.Ingresos = tipoServicio.Ingresos;
-
-        // Beneficio
-        tipoServicio.Beneficio.valores = [
-            parseFloat(response.beneficio.year1).toFixed(2) + '€',
-            parseFloat(response.beneficio.year2).toFixed(2) + '€',
-            parseFloat(response.beneficio.year3).toFixed(2) + '€',
-            parseFloat(response.beneficio.year4).toFixed(2) + '€',
-            parseFloat(response.beneficio.year5).toFixed(2) + '€'
-        ];
-        tipoServicio.Beneficio.total = parseFloat(response.beneficio.total).toFixed(2) + '€';
-
-
-        if (conceptoOferta) conceptoOferta.Beneficio = tipoServicio.Beneficio;
-        if (tipoRecursoVertical) tipoRecursoVertical.Beneficio = tipoServicio.Beneficio;
-
-
-
-        
-    }
-
-
-    // --- Recurso Interno ---
-if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
-    // Aquí asumimos que el primero de TipoRecursos corresponde a "Interno"
-    const recursoInterno = oData.TipoRecursos[0];
-
-    recursoInterno.CostesDirectosInterno.valores = [
-        parseFloat(response.totalRecursosInterno.year1).toFixed(2) + '€',
-        parseFloat(response.totalRecursosInterno.year2).toFixed(2) + '€',
-        parseFloat(response.totalRecursosInterno.year3).toFixed(2) + '€',
-        parseFloat(response.totalRecursosInterno.year4).toFixed(2) + '€',
-        parseFloat(response.totalRecursosInterno.year5).toFixed(2) + '€'
-       
-    ];
-    recursoInterno.CostesDirectosInterno.total = parseFloat(response.totalRecursosInterno.total).toFixed(2)  + '€';
-}
-
-// --- Gastos de Viaje Internos ---
-if (oData.TipoRecursos && oData.TipoRecursos.length > 5) {
-    // Aquí asumo que el 6º elemento de TipoRecursos es el de Gasto Viaje Interno
-    const gastoViajeInterno = oData.TipoRecursos[5];
-
-    gastoViajeInterno.CostesDirectosGastoViInter.valores = [
-        parseFloat(response.totalGastoViajeInterno.year1).toFixed(2) + '€',
-        parseFloat(response.totalGastoViajeInterno.year2).toFixed(2) + '€',
-        parseFloat(response.totalGastoViajeInterno.year3).toFixed(2) + '€',
-        parseFloat(response.totalGastoViajeInterno.year4).toFixed(2) + '€',
-        parseFloat(response.totalGastoViajeInterno.year5).toFixed(2) + '€'
-    ];
-    gastoViajeInterno.CostesDirectosGastoViInter.total = parseFloat(response.totalGastoViajeInterno.total).toFixed(2) + '€';
-}
-// Consumo Externo
-if (oData.TipoRecursos[1]) {
-    const consumoExterno = oData.TipoRecursos[1].CostesDirectosConsumo;
-    consumoExterno.valores = [
-        parseFloat(response.totalConsumoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.totalConsumoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.totalConsumoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.totalConsumoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.totalConsumoExterno.year5).toFixed(2) + '€'
-    ];
-    consumoExterno.total = parseFloat(response.totalConsumoExterno.total).toFixed(2) + '€';
-}
-
-// Recursos Externos
-if (oData.TipoRecursos[2]) {
-    const recursoExterno = oData.TipoRecursos[2].CostesDirectosRecurExt;
-    recursoExterno.valores = [
-        parseFloat(response.totalRecursoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.totalRecursoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.totalRecursoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.totalRecursoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.totalRecursoExterno.year5).toFixed(2) + '€'
-    ];
-    recursoExterno.total = parseFloat(response.totalRecursoExterno.total).toFixed(2) + '€';
-}
-
-// Licencias
-// Licencias
-if (oData.TipoRecursos[3]) {
-    const licencias = oData.TipoRecursos[3].CostesDirectosLicencia;
-
-     //   console.log("Resultado bruto de licencias:", response);
-
-    licencias.valores = [
-        parseFloat(response.totalLicencias.year1).toFixed(2) + '€',
-        parseFloat(response.totalLicencias.year2).toFixed(2) + '€',
-        parseFloat(response.totalLicencias.year3).toFixed(2) + '€',
-        parseFloat(response.totalLicencias.year4).toFixed(2) + '€',
-        parseFloat(response.totalLicencias.year5).toFixed(2) + '€'
-    ];
-    licencias.total = parseFloat(response.totalLicencias.total).toFixed(2) + '€';
-}
-
-
-// Infraestructura
-if (oData.TipoRecursos[4]) {
-    const infraestructura = oData.TipoRecursos[4].CostesDirectosInfra;
-    infraestructura.valores = [
-        parseFloat(response.totalInfraestructura.year1).toFixed(2) + '€',
-        parseFloat(response.totalInfraestructura.year2).toFixed(2) + '€',
-        parseFloat(response.totalInfraestructura.year3).toFixed(2) + '€',
-        parseFloat(response.totalInfraestructura.year4).toFixed(2) + '€',
-        parseFloat(response.totalInfraestructura.year5).toFixed(2) + '€'
-    ];
-    infraestructura.total = parseFloat(response.totalInfraestructura.total).toFixed(2) + '€';
-}
-
-
-// ------ costes indirectos Recurso interno 
-if (oData.TipoRecursos[0]) {
-    const costeIndireRecInter = oData.TipoRecursos[0].CostesIndirect;
-    costeIndireRecInter.valores = [
-        parseFloat(response.costesIndirectosRecursoInter.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoInter.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoInter.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoInter.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoInter.year5).toFixed(2) + '€'
-    ];
-    costeIndireRecInter.total = parseFloat(response.costesIndirectosRecursoInter.total).toFixed(2) + '€';
-}
-
-// ------ costes indirectos Consumo Externo 
-if (oData.TipoRecursos[1]) {
-    const costeIndireConsumo = oData.TipoRecursos[1].CostesIndirectConsumo;
-    costeIndireConsumo.valores = [
-        parseFloat(response.costesIndirectosConsumoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosConsumoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosConsumoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosConsumoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosConsumoExterno.year5).toFixed(2) + '€'
-    ];
-    costeIndireConsumo.total = parseFloat(response.costesIndirectosConsumoExterno.total).toFixed(2) + '€';
-}
-
-
-// ------ costes indirectos Recurso Externo 
-
-if (oData.TipoRecursos[2]) {
-    const costeIndireConsumo = oData.TipoRecursos[2].CostesIndirectRecurExt;
-    costeIndireConsumo.valores = [
-        parseFloat(response.costesIndirectosRecursoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectosRecursoExterno.year5).toFixed(2) + '€'
-    ];
-    costeIndireConsumo.total = parseFloat(response.costesIndirectosRecursoExterno.total).toFixed(2) + '€';
-}
-
-// ------ costes indirectos Licencia 
-
-if (oData.TipoRecursos[3]) {
-    const costeIndireLicencia = oData.TipoRecursos[3].CostesIndirectLicencia;
-    costeIndireLicencia.valores = [
-        parseFloat(response.costesIndirectoLicencias.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoLicencias.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoLicencias.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoLicencias.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoLicencias.year5).toFixed(2) + '€'
-    ];
-    costeIndireLicencia.total = parseFloat(response.costesIndirectoLicencias.total).toFixed(2) + '€';
-}
-
-
-// ------ costes indirectos Infreaestructura   
-
-if (oData.TipoRecursos[4]) {
-    const costeIndireInfraestructura = oData.TipoRecursos[4].CostesIndirectInfra;
-    costeIndireInfraestructura.valores = [
-        parseFloat(response.costesIndirectoInfraestructura.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoInfraestructura.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoInfraestructura.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoInfraestructura.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoInfraestructura.year5).toFixed(2) + '€'
-    ];
-    costeIndireInfraestructura.total = parseFloat(response.costesIndirectoInfraestructura.total).toFixed(2) + '€';
-}
-
-
-
-if (oData.TipoRecursos[5]) {
-    const costeIndireGastoViaje = oData.TipoRecursos[5].CostesIndirectGastoViInter;
-    costeIndireGastoViaje.valores = [
-        parseFloat(response.costesIndirectoGastoViaje.year1).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoGastoViaje.year2).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoGastoViaje.year3).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoGastoViaje.year4).toFixed(2) + '€',
-        parseFloat(response.costesIndirectoGastoViaje.year5).toFixed(2) + '€'
-    ];
-    costeIndireGastoViaje.total = parseFloat(response.costesIndirectoGastoViaje.total).toFixed(2) + '€';
-}
-
-
-if (oData.TipoRecursos[0]) {
-    const costeTotalRecuInterno = oData.TipoRecursos[0].CosteTotalInterno;
-    costeTotalRecuInterno.valores = [
-        parseFloat(response.costeTotalRecurInterno.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecurInterno.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecurInterno.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecurInterno.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecurInterno.year5).toFixed(2) + '€'
-    ];
-    costeTotalRecuInterno.total = parseFloat(response.costeTotalRecurInterno.total).toFixed(2) + '€';
-}
-
-
-if (oData.TipoRecursos[1]) {
-    const costeTotalConsumo = oData.TipoRecursos[1].CosteTotalConsumo;
-
-    console.log("Resultado bruto de rECURSO:", costeTotalConsumo);
-
-    costeTotalConsumo.valores = [
-        parseFloat(response.costeTotalConsumoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalConsumoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalConsumoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalConsumoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalConsumoExterno.year5).toFixed(2) + '€'
-    ];
-    costeTotalConsumo.total = parseFloat(response.costeTotalConsumoExterno.total).toFixed(2) + '€';
-}
-
-
-
-if (oData.TipoRecursos[2]) {
-    const costeTotalRecuExter = oData.TipoRecursos[2].CosteTotalRecurExt;
-
-
-    costeTotalRecuExter.valores = [
-        parseFloat(response.costeTotalRecursoExterno.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecursoExterno.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecursoExterno.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecursoExterno.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalRecursoExterno.year5).toFixed(2) + '€'
-    ];
-    costeTotalRecuExter.total = parseFloat(response.costeTotalRecursoExterno.total).toFixed(2) + '€';
-}
-
-
-
-if (oData.TipoRecursos[3]) {
-    const costeTotalLicencias = oData.TipoRecursos[3].CosteTotalLicencia;
-
-
-    costeTotalLicencias.valores = [
-        parseFloat(response.costeTotalLicencia.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalLicencia.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalLicencia.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalLicencia.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalLicencia.year5).toFixed(2) + '€'
-    ];
-    costeTotalLicencias.total = parseFloat(response.costeTotalLicencia.total).toFixed(2) + '€';
-}
-
-
-
-if (oData.TipoRecursos[4]) {
-    const costeTotalInfraestruc = oData.TipoRecursos[4].CosteTotalInfra;
-
-
-    costeTotalInfraestruc.valores = [
-        parseFloat(response.costeTotalInfraestructura.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalInfraestructura.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalInfraestructura.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalInfraestructura.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalInfraestructura.year5).toFixed(2) + '€'
-    ];
-    costeTotalInfraestruc.total = parseFloat(response.costeTotalInfraestructura.total).toFixed(2) + '€';
-}
-
-
-
-
-if (oData.TipoRecursos[5]) {
-    const costeTotalGastoViaje = oData.TipoRecursos[5].CosteTotalGastoViInter;
-
-
-    costeTotalGastoViaje.valores = [
-        parseFloat(response.costeTotalGastoViaje.year1).toFixed(2) + '€',
-        parseFloat(response.costeTotalGastoViaje.year2).toFixed(2) + '€',
-        parseFloat(response.costeTotalGastoViaje.year3).toFixed(2) + '€',
-        parseFloat(response.costeTotalGastoViaje.year4).toFixed(2) + '€',
-        parseFloat(response.costeTotalGastoViaje.year5).toFixed(2) + '€'
-    ];
-    costeTotalGastoViaje.total = parseFloat(response.costeTotalGastoViaje.total).toFixed(2) + '€';
-}
-
-
-    // Creamos el modelo y mantenemos los años intactos
-    const oCostesModel = new sap.ui.model.json.JSONModel(oData);
-    const oModelAnterior = this.getView().getModel("miModeloCostes");
-    if (oModelAnterior && oModelAnterior.getProperty("/Anios")) {
-        oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
-    }
-
-    this.getView().setModel(oCostesModel, "miModeloCostes");
-    oCostesModel.refresh(true);
-},*/
 
 
 

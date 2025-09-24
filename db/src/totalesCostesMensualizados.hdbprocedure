@@ -324,7 +324,7 @@ OUT out_totalesCostesIndirectos_year2  DECIMAL(20,2),
 OUT out_totalesCostesIndirectos_year3  DECIMAL(20,2),
 OUT out_totalesCostesIndirectos_year4  DECIMAL(20,2),
 OUT out_totalesCostesIndirectos_year5 DECIMAL(20,2),
-OUT out_totalesCostesIndirectos_year6 DECIMAL(20,2),
+OUT out_totalesCostesIndirectos_total DECIMAL(20,2),
 
 
 
@@ -1181,6 +1181,50 @@ out_beneficiosGastoViaje_total := out_beneficiosGastoViaje_year1 +  out_benefici
    out_totalesIngresos_year4  := out_ingresosInternos_year4   + out_ingresosConsumoExterno_year4  + out_ingresosRecursoExterno_year4  + out_ingresosLicencias_year4  + out_ingresosInfraestructura_year4  + out_ingresosGastoViaje_year4;
    out_totalesIngresos_year5  := out_ingresosInternos_year5   + out_ingresosConsumoExterno_year5  + out_ingresosRecursoExterno_year5  + out_ingresosLicencias_year5  + out_ingresosInfraestructura_year5  + out_ingresosGastoViaje_year5;
 
-   out_totalesIngresos_year5 := 
+   out_totalesIngresos_total :=   out_ingresosInternos_total  + out_ingresosConsumoExterno_total  + out_ingresosRecursoExterno_total + out_ingresosLicencias_total + out_ingresosInfraestructura_total + out_ingresosGastoViaje_total;
+
+
+
+-- COSTE DIRECTOS -  TOTALES 
+
+   out_totalesCostesDirectos_year1  := out_recursoInterno_year1   + out_consumoExterno_year1  + out_recursoExterno_year1  + out_licencias_year1  + out_infraestructura_year1  + out_gastoInternoViaje_year1;
+   out_totalesCostesDirectos_year2  := out_recursoInterno_year2   + out_consumoExterno_year2  + out_recursoExterno_year2  + out_licencias_year2  + out_infraestructura_year2  + out_gastoInternoViaje_year2;
+   out_totalesCostesDirectos_year3  := out_recursoInterno_year3   + out_consumoExterno_year3  + out_recursoExterno_year3  + out_licencias_year3  + out_infraestructura_year3  + out_gastoInternoViaje_year3;
+   out_totalesCostesDirectos_year4  := out_recursoInterno_year4   + out_consumoExterno_year4  + out_recursoExterno_year4  + out_licencias_year4  + out_infraestructura_year4  + out_gastoInternoViaje_year4;
+   out_totalesCostesDirectos_year5  := out_recursoInterno_year5   + out_consumoExterno_year5  + out_recursoExterno_year5  + out_licencias_year5  + out_infraestructura_year5  + out_gastoInternoViaje_year5;
+
+   out_totalesCostesDirectos_total :=   out_recursoInterno_total  + out_consumoExterno_total  + out_recursoExterno_total + out_licencias_total + out_infraestructura_total + out_gastoInternoViaje_total;
+
+
+--- COSTES INDIRECTOS 
+   out_totalesCostesIndirectos_year1 := out_costesIndirectosRecurInter_year1 + out_costesIndirectosConsumoExterno_year1  + out_costesIndirectosRecursoExterno_year1  + out_costesIndirectoLicencias_year1  + out_costesIndirectoInfraestructura_year1 + out_costesIndirectoGastoViaje_year1;
+   out_totalesCostesIndirectos_year2 := out_costesIndirectosRecurInter_year2 + out_costesIndirectosConsumoExterno_year2  + out_costesIndirectosRecursoExterno_year2  + out_costesIndirectoLicencias_year2  + out_costesIndirectoInfraestructura_year2 + out_costesIndirectoGastoViaje_year2;
+   out_totalesCostesIndirectos_year3 := out_costesIndirectosRecurInter_year3 + out_costesIndirectosConsumoExterno_year3  + out_costesIndirectosRecursoExterno_year3  + out_costesIndirectoLicencias_year3  + out_costesIndirectoInfraestructura_year3 + out_costesIndirectoGastoViaje_year3;
+   out_totalesCostesIndirectos_year4 := out_costesIndirectosRecurInter_year4 + out_costesIndirectosConsumoExterno_year4  + out_costesIndirectosRecursoExterno_year4  + out_costesIndirectoLicencias_year4  + out_costesIndirectoInfraestructura_year4 + out_costesIndirectoGastoViaje_year4;
+   out_totalesCostesIndirectos_year5 := out_costesIndirectosRecurInter_year5 + out_costesIndirectosConsumoExterno_year5  + out_costesIndirectosRecursoExterno_year5  + out_costesIndirectoLicencias_year5  + out_costesIndirectoInfraestructura_year5 + out_costesIndirectoGastoViaje_year5;
+
+   out_totalesCostesIndirectos_total := out_costesIndirectosRecurInter_total + out_costesIndirectosConsumoExterno_total  + out_costesIndirectosRecursoExterno_total  + out_costesIndirectoLicencias_total  + out_costesIndirectoInfraestructura_total + out_costesIndirectoGastoViaje_total;
+
+
+-- COSTES TOTALES
+    out_totalesCostesTotal_year1:= out_costeTotalesRecuInterno_year1  + out_costeTotaleConsumoExterno_year1  +  out_costeTotaleRecursosExternos_year1  + out_costeTotaleLicencias_year1 + out_costeTotaleInfraestructuras_year1  + out_costeTotaleGastosViajeInternos_year1;
+    out_totalesCostesTotal_year2:= out_costeTotalesRecuInterno_year2  + out_costeTotaleConsumoExterno_year2  +  out_costeTotaleRecursosExternos_year2  + out_costeTotaleLicencias_year2 + out_costeTotaleInfraestructuras_year2  + out_costeTotaleGastosViajeInternos_year2;
+    out_totalesCostesTotal_year3:= out_costeTotalesRecuInterno_year3  + out_costeTotaleConsumoExterno_year3  +  out_costeTotaleRecursosExternos_year3  + out_costeTotaleLicencias_year3 + out_costeTotaleInfraestructuras_year3  + out_costeTotaleGastosViajeInternos_year3;
+    out_totalesCostesTotal_year4:= out_costeTotalesRecuInterno_year4  + out_costeTotaleConsumoExterno_year4  +  out_costeTotaleRecursosExternos_year4  + out_costeTotaleLicencias_year4 + out_costeTotaleInfraestructuras_year4  + out_costeTotaleGastosViajeInternos_year4;
+    out_totalesCostesTotal_year5:= out_costeTotalesRecuInterno_year5  + out_costeTotaleConsumoExterno_year5  +  out_costeTotaleRecursosExternos_year5  + out_costeTotaleLicencias_year5 + out_costeTotaleInfraestructuras_year5  + out_costeTotaleGastosViajeInternos_year5;
+
+
+    out_totalesCostesTotal_total:= out_costeTotalesRecuInterno_total  + out_costeTotaleConsumoExterno_total  +  out_costeTotaleRecursosExternos_total  + out_costeTotaleLicencias_total + out_costeTotaleInfraestructuras_total  + out_costeTotaleGastosViajeInternos_total;
+
+
+-- BENEFICIOS 
+   out_totalesBeneficios_year1:= out_beneficiosInternos_year1 + out_beneficiosCosumoExterno_year1  + out_beneficiosRecursoExterno_year1  + out_beneficiosLicencias_year1  + out_beneficiosInfraestructura_year1 + out_beneficiosGastoViaje_year1;
+   out_totalesBeneficios_year2:= out_beneficiosInternos_year2 + out_beneficiosCosumoExterno_year2  + out_beneficiosRecursoExterno_year2  + out_beneficiosLicencias_year2  + out_beneficiosInfraestructura_year2 + out_beneficiosGastoViaje_year2;
+   out_totalesBeneficios_year3:= out_beneficiosInternos_year3 + out_beneficiosCosumoExterno_year3  + out_beneficiosRecursoExterno_year3  + out_beneficiosLicencias_year3  + out_beneficiosInfraestructura_year3 + out_beneficiosGastoViaje_year3;
+   out_totalesBeneficios_year4:= out_beneficiosInternos_year4 + out_beneficiosCosumoExterno_year4  + out_beneficiosRecursoExterno_year4  + out_beneficiosLicencias_year4  + out_beneficiosInfraestructura_year4 + out_beneficiosGastoViaje_year4;
+   out_totalesBeneficios_year5:= out_beneficiosInternos_year5 + out_beneficiosCosumoExterno_year5  + out_beneficiosRecursoExterno_year5  + out_beneficiosLicencias_year5  + out_beneficiosInfraestructura_year5 + out_beneficiosGastoViaje_year5;
+
+   out_totalesBeneficios_total:= out_beneficiosInternos_total + out_beneficiosCosumoExterno_total  + out_beneficiosRecursoExterno_total  + out_beneficiosLicencias_total  + out_beneficiosInfraestructura_total + out_beneficiosGastoViaje_total;
+
 
 END 

@@ -76,6 +76,12 @@ entity DatosProyect {
       Fechainicio              : DateTime;
       FechaFin                 : DateTime;
       FechaModificacion        : Date;
+      CosteInterno             : Decimal(20, 4);
+      CosteCosumo              : Decimal(20, 4);
+      CosteExterno             : Decimal(20, 4);
+      Licencias                : Decimal(20, 4);      
+      Infraestructura          : Decimal(20, 4);
+      GastoViaje               : Decimal(20, 4);
       ClienteNuevo             : Association to ClienteNuevo;
       TipoServicio             : Association to TipoServicio;
       Vertical                 : Association to Vertical;

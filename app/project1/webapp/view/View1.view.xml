@@ -4562,6 +4562,19 @@
             </cells>
         </ColumnListItem>
 
+
+         <ColumnListItem>
+            <cells>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesIngreso/total}"  class="boldText"/>
+            </cells>
+        </ColumnListItem>
+
+
                                                                     </items>
 
                                                                     <columns>
@@ -4664,6 +4677,22 @@
             </cells>
         </ColumnListItem>
 
+      <ColumnListItem>
+            <cells>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesDirectos/total}"  class="boldText"/>
+            </cells>
+        </ColumnListItem>
+
+
+
+
+
+
                                                                     </items>
 
                                                                     <columns>
@@ -4765,6 +4794,22 @@
                 <Text text="{miModeloCostes>/TipoRecursos/5/CostesIndirectGastoViInter/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
+
+      <ColumnListItem>
+            <cells>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCostesIndirectos/total}"  class="boldText"/>
+            </cells>
+        </ColumnListItem>
+
+
+
+
+
 
                                                                     </items>
 
@@ -4869,6 +4914,18 @@
             </cells>
         </ColumnListItem>
 
+
+              <ColumnListItem>
+            <cells>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesCosteTotal/total}"  class="boldText"/>
+            </cells>
+        </ColumnListItem>
+
                                                                     </items>
 
                                                                     <columns>
@@ -4969,6 +5026,18 @@
                 <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/3}"  class="boldText"/>
                 <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/valores/4}"  class="boldText"/>
                 <Text text="{miModeloCostes>/TipoRecursos/5/BeneficioGastoViInter/total}"  class="boldText"/>
+            </cells>
+        </ColumnListItem>
+
+
+            <ColumnListItem>
+            <cells>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/valores/0}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/valores/1}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/valores/2}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/valores/3}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/valores/4}"  class="boldText"/>
+                <Text text="{miModeloCostes>/TipoRecursos/6/totalesBeneficio/total}"  class="boldText"/>
             </cells>
         </ColumnListItem>
 

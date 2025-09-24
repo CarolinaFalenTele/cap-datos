@@ -284,6 +284,42 @@
           "type": "cds.Date",
           "@cds.persistence.name": "FECHAMODIFICACION"
         },
+        "CosteInterno": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTEINTERNO"
+        },
+        "CosteCosumo": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTECOSUMO"
+        },
+        "CosteExterno": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "COSTEEXTERNO"
+        },
+        "Licencias": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "LICENCIAS"
+        },
+        "Infraestructura": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "INFRAESTRUCTURA"
+        },
+        "GastoViaje": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 4,
+          "@cds.persistence.name": "GASTOVIAJE"
+        },
         "ClienteNuevo_ID": {
           "type": "cds.String",
           "length": 36,
