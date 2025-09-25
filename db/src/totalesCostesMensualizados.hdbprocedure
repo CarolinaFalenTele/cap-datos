@@ -481,11 +481,21 @@ BEGIN
         -- 2) RecursosInternos: aplica PMJ * anio * porcentaje
         -----------------------------------------------------------------
         SELECT 
-            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN PMJ * year1 * vPct1 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN PMJ * year2 * vPct2 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN PMJ * year3 * vPct3 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN PMJ * year4 * vPct4 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN PMJ * year5 * vPct5 / 100 ELSE 0 END),0),2)
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year1 > 0 
+                                 THEN PMJ * year1 * vPct1 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year2 > 0 
+                                 THEN PMJ * year2 * vPct2 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year3 > 0 
+                                 THEN PMJ * year3 * vPct3 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year4 > 0 
+                                 THEN PMJ * year4 * vPct4 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year5 > 0 
+                                 THEN PMJ * year5 * vPct5 / 100 
+                            ELSE 0 END),0),0) AS INT)
         INTO out_int_year1, out_int_year2, out_int_year3, out_int_year4, out_int_year5
         FROM db_datos_RecursosInternos
         WHERE datosProyect_ID = :in_idRecursos;
@@ -494,11 +504,21 @@ BEGIN
         -- 3) OtrosGastoRecu: aplica anio * porcentaje (sin PMJ)
         -----------------------------------------------------------------
         SELECT 
-            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN year1 * vPct1 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN year2 * vPct2 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN year3 * vPct3 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN year4 * vPct4 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN year5 * vPct5 / 100 ELSE 0 END),0),2)
+           CAST(ROUND(COALESCE(SUM(CASE WHEN year1 > 0 
+                                 THEN year1 * vPct1 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year2 > 0 
+                                 THEN year2 * vPct2 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year3 > 0 
+                                 THEN year3 * vPct3 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year4 > 0 
+                                 THEN year4 * vPct4 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year5 > 0 
+                                 THEN year5 * vPct5 / 100 
+                            ELSE 0 END),0),0) AS INT)
         INTO out_srv_year1, out_srv_year2, out_srv_year3, out_srv_year4, out_srv_year5
         FROM db_datos_otrosGastoRecu
         WHERE datosProyect_ID = :in_idRecursos;
@@ -507,11 +527,21 @@ BEGIN
         -- 4) OtrosRecursos: aplica anio * porcentaje (sin PMJ)
         -----------------------------------------------------------------
         SELECT 
-            ROUND(COALESCE(SUM(CASE WHEN year1 > 0 THEN year1 * vPct1 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year2 > 0 THEN year2 * vPct2 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year3 > 0 THEN year3 * vPct3 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year4 > 0 THEN year4 * vPct4 / 100 ELSE 0 END),0),2),
-            ROUND(COALESCE(SUM(CASE WHEN year5 > 0 THEN year5 * vPct5 / 100 ELSE 0 END),0),2)
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year1 > 0 
+                                 THEN year1 * vPct1 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year2 > 0 
+                                 THEN year2 * vPct2 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year3 > 0 
+                                 THEN year3 * vPct3 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year4 > 0 
+                                 THEN year4 * vPct4 / 100 
+                            ELSE 0 END),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(CASE WHEN year5 > 0 
+                                 THEN year5 * vPct5 / 100 
+                            ELSE 0 END),0),0) AS INT)
         INTO out_gto_year1, out_gto_year2, out_gto_year3, out_gto_year4, out_gto_year5
         FROM db_datos_otrosRecursos
         WHERE datosProyect_ID = :in_idRecursos;
@@ -521,11 +551,11 @@ BEGIN
     -- ConsumoExternos
     -----------------------------------------------------------------
     SELECT 
-        ROUND(COALESCE(SUM(PMJ * year1),0),2),
-        ROUND(COALESCE(SUM(PMJ * year2),0),2),
-        ROUND(COALESCE(SUM(PMJ * year3),0),2),
-        ROUND(COALESCE(SUM(PMJ * year4),0),2),
-        ROUND(COALESCE(SUM(PMJ * year5),0),2)
+        CAST(ROUND(COALESCE(SUM(PMJ * year1),0),0) AS INT),
+        CAST(ROUND(COALESCE(SUM(PMJ * year2),0),0) AS INT),
+        CAST(ROUND(COALESCE(SUM(PMJ * year3),0),0) AS INT),
+        CAST(ROUND(COALESCE(SUM(PMJ * year4),0),0) AS INT),
+        CAST(ROUND(COALESCE(SUM(PMJ * year5),0),0) AS INT)
     INTO v_ce_y1, v_ce_y2, v_ce_y3, v_ce_y4, v_ce_y5
     FROM db_datos_ConsumoExternos
     WHERE datosProyect_ID = :in_idRecursos;
@@ -534,33 +564,33 @@ BEGIN
     -- otrosServiciosConsu
     -----------------------------------------------------------------
    SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_os_y1, v_os_y2, v_os_y3, v_os_y4, v_os_y5
 FROM db_datos_otrosServiciosConsu
 WHERE datosProyect_ID = :in_idRecursos;
 
 -- GastoViajeConsumo
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_gvc_y1, v_gvc_y2, v_gvc_y3, v_gvc_y4, v_gvc_y5
 FROM db_datos_GastoViajeConsumo
 WHERE datosProyect_ID = :in_idRecursos;
 
 
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(PMJ * year1),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(PMJ * year2),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(PMJ * year3),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(PMJ * year4),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(PMJ * year5),0),0) AS INT)
 INTO v_re_y1, v_re_y2, v_re_y3, v_re_y4, v_re_y5
 FROM db_datos_RecursosExternos
 WHERE datosProyect_ID = :in_idRecursos;
@@ -568,44 +598,44 @@ WHERE datosProyect_ID = :in_idRecursos;
 
 -- serviRecurExter
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_sre_y1, v_sre_y2, v_sre_y3, v_sre_y4, v_sre_y5
 FROM db_datos_serviRecurExter
 WHERE datosProyect_ID = :in_idRecursos;
 
 -- GastoViajeRecExter
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_gvre_y1, v_gvre_y2, v_gvre_y3, v_gvre_y4, v_gvre_y5
 FROM db_datos_GastoViajeRecExter
 WHERE datosProyect_ID = :in_idRecursos;
 
 -- otrosConceptos
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_oc_y1, v_oc_y2, v_oc_y3, v_oc_y4, v_oc_y5
 FROM db_datos_otrosConceptos
 WHERE datosProyect_ID = :in_idRecursos;
 
 -- LicenciasCon
 SELECT 
-    ROUND(COALESCE(SUM(COALESCE(year1,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year2,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year3,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year4,0)),0),2),
-    ROUND(COALESCE(SUM(COALESCE(year5,0)),0),2)
+    CAST(ROUND(COALESCE(SUM(COALESCE(year1,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year2,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year3,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year4,0)),0),0) AS INT),
+    CAST(ROUND(COALESCE(SUM(COALESCE(year5,0)),0),0) AS INT)
 INTO v_lc_y1, v_lc_y2, v_lc_y3, v_lc_y4, v_lc_y5
 FROM db_datos_LicenciasCon
 WHERE datosProyect_ID = :in_idRecursos;
@@ -617,7 +647,10 @@ WHERE datosProyect_ID = :in_idRecursos;
     -----------------------------------------------------------------
 out_total_year1 := out_total_year1 
     + out_int_year1 + out_srv_year1 + out_gto_year1
-    + v_ce_y1 + v_os_y1 + v_gvc_y1 + v_re_y1 + v_sre_y1 + v_gvre_y1 + v_oc_y1 + v_lc_y1;
+    + v_ce_y1 + v_os_y1 + v_gvc_y1 + v_re_y1 
+    + v_sre_y1 + v_gvre_y1 + v_oc_y1 + v_lc_y1;
+
+
 out_total_year2 := out_total_year2 
     + out_int_year2 + out_srv_year2 + out_gto_year2
     + v_ce_y2 + v_os_y2 + v_gvc_y2 + v_re_y2 
@@ -651,13 +684,15 @@ out_total_year5 := out_total_year5
     FROM db_datos_ResumenCostesTotal
     WHERE datosProyect_ID = :in_idRecursos;
 
+   v_CosteEstruPorce := COALESCE(v_CosteEstruPorce, 0);
 
     -- Calculamos los costes indirectos aplicando CosteEstruPorce
-    out_costesIndirectos_year1 := ROUND(out_total_year1 * v_CosteEstruPorce / 100, 2);
-    out_costesIndirectos_year2 := ROUND(out_total_year2 * v_CosteEstruPorce / 100, 2);
-    out_costesIndirectos_year3 := ROUND(out_total_year3 * v_CosteEstruPorce / 100, 2);
-    out_costesIndirectos_year4 := ROUND(out_total_year4 * v_CosteEstruPorce / 100, 2);
-    out_costesIndirectos_year5 := ROUND(out_total_year5 * v_CosteEstruPorce / 100, 2);
+        out_costesIndirectos_year1 := CAST(ROUND(out_total_year1 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectos_year2 := CAST(ROUND(out_total_year2 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectos_year3 := CAST(ROUND(out_total_year3 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectos_year4 := CAST(ROUND(out_total_year4 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectos_year5 := CAST(ROUND(out_total_year5 * v_CosteEstruPorce / 100, 0) AS INT);
+
 
 
         out_costesIndirectos_total  :=   out_costesIndirectos_year1  + out_costesIndirectos_year2 + out_costesIndirectos_year3 + out_costesIndirectos_year4  + out_costesIndirectos_year5;
@@ -681,13 +716,14 @@ out_total_year5 := out_total_year5
     -----------------------------------------------------------------
    ---------------- Calculos para Ingresos  ------------------------
     -----------------------------------------------------------------
+   v_MargenPorce := COALESCE(v_MargenPorce, 0);
 
     -- Calculamos totales ajustados por MargenPorce
-    out_totalIngreso_year1 := ROUND(out_totalCostes_year1 / (1 - v_MargenPorce / 100), 2);
-    out_totalIngreso_year2 := ROUND(out_totalCostes_year2 / (1 - v_MargenPorce / 100), 2);
-    out_totalIngreso_year3 := ROUND(out_totalCostes_year3 / (1 - v_MargenPorce / 100), 2);
-    out_totalIngreso_year4 := ROUND(out_totalCostes_year4 / (1 - v_MargenPorce / 100), 2);
-    out_totalIngreso_year5 := ROUND(out_totalCostes_year5 / (1 - v_MargenPorce / 100), 2);
+    out_totalIngreso_year1 := ROUND(out_totalCostes_year1 / (1 - v_MargenPorce / 100), 0);
+    out_totalIngreso_year2 := ROUND(out_totalCostes_year2 / (1 - v_MargenPorce / 100), 0);
+    out_totalIngreso_year3 := ROUND(out_totalCostes_year3 / (1 - v_MargenPorce / 100), 0);
+    out_totalIngreso_year4 := ROUND(out_totalCostes_year4 / (1 - v_MargenPorce / 100), 0);
+    out_totalIngreso_year5 := ROUND(out_totalCostes_year5 / (1 - v_MargenPorce / 100), 0);
 
     out_totalIngreso_total :=  out_totalIngreso_year1 + out_totalIngreso_year2 + out_totalIngreso_year3  + out_totalIngreso_year4   + out_totalIngreso_year5;
 
@@ -695,11 +731,13 @@ out_total_year5 := out_total_year5
    ---------------- Calculos para Beneficios   ----------------  
     -----------------------------------------------------------------
 
-    out_beneficio_year1 := out_totalIngreso_year1 - out_totalCostes_year1;
-    out_beneficio_year2 := out_totalIngreso_year2 - out_totalCostes_year2;
-    out_beneficio_year3 := out_totalIngreso_year3 - out_totalCostes_year3;
-    out_beneficio_year4 := out_totalIngreso_year4 - out_totalCostes_year4;
-    out_beneficio_year5 := out_totalIngreso_year5 - out_totalCostes_year5;
+        out_beneficio_year1 := CAST(ROUND(out_totalIngreso_year1 - out_totalCostes_year1, 0) AS INT);
+        out_beneficio_year2 := CAST(ROUND(out_totalIngreso_year2 - out_totalCostes_year2, 0) AS INT);
+        out_beneficio_year3 := CAST(ROUND(out_totalIngreso_year3 - out_totalCostes_year3, 0) AS INT);
+        out_beneficio_year4 := CAST(ROUND(out_totalIngreso_year4 - out_totalCostes_year4, 0) AS INT);
+        out_beneficio_year5 := CAST(ROUND(out_totalIngreso_year5 - out_totalCostes_year5, 0) AS INT);
+
+out_beneficio_total := out_beneficio_year1 + out_beneficio_year2 + out_beneficio_year3 + out_beneficio_year4 + out_beneficio_year5;
 
     out_beneficio_total  := out_beneficio_year1 + out_beneficio_year2  +  out_beneficio_year3  + out_beneficio_year4   + out_beneficio_year5;
 
@@ -710,32 +748,36 @@ out_total_year5 := out_total_year5
     ---------------- Calculos para CostesDirectos/ Recursos  ------------- 
     -----------------------------------------------------------------
 
-    out_recursoInterno_year1 := COALESCE(out_int_year1,0) + COALESCE(out_srv_year1,0);
-    out_recursoInterno_year2 := COALESCE(out_int_year2,0) + COALESCE(out_srv_year2,0);
-    out_recursoInterno_year3 := COALESCE(out_int_year3,0) + COALESCE(out_srv_year3,0);
-    out_recursoInterno_year4 := COALESCE(out_int_year4,0) + COALESCE(out_srv_year4,0);
-    out_recursoInterno_year5 := COALESCE(out_int_year5,0) + COALESCE(out_srv_year5,0);
+out_recursoInterno_year1 := CAST(ROUND(COALESCE(out_int_year1,0) + COALESCE(out_srv_year1,0), 0) AS INT);
+out_recursoInterno_year2 := CAST(ROUND(COALESCE(out_int_year2,0) + COALESCE(out_srv_year2,0), 0) AS INT);
+out_recursoInterno_year3 := CAST(ROUND(COALESCE(out_int_year3,0) + COALESCE(out_srv_year3,0), 0) AS INT);
+out_recursoInterno_year4 := CAST(ROUND(COALESCE(out_int_year4,0) + COALESCE(out_srv_year4,0), 0) AS INT);
+out_recursoInterno_year5 := CAST(ROUND(COALESCE(out_int_year5,0) + COALESCE(out_srv_year5,0), 0) AS INT);
+
 
     out_recursoInterno_total   := out_recursoInterno_year1  + out_recursoInterno_year2   + out_recursoInterno_year3 + out_recursoInterno_year4  + out_recursoInterno_year5; 
 
     
     ---------------- Calculos para CostesDirectos/ Gastos Internos Recursos  ------------- 
 
-    out_gastoInternoViaje_year1  :=    out_gto_year1;
-    out_gastoInternoViaje_year2  :=    out_gto_year2;
-    out_gastoInternoViaje_year3  :=    out_gto_year3;
-    out_gastoInternoViaje_year4  :=    out_gto_year4;
-    out_gastoInternoViaje_year5  :=    out_gto_year5;
+out_gastoInternoViaje_year1 := CAST(ROUND(out_gto_year1, 0) AS INT);
+out_gastoInternoViaje_year2 := CAST(ROUND(out_gto_year2, 0) AS INT);
+out_gastoInternoViaje_year3 := CAST(ROUND(out_gto_year3, 0) AS INT);
+out_gastoInternoViaje_year4 := CAST(ROUND(out_gto_year4, 0) AS INT);
+out_gastoInternoViaje_year5 := CAST(ROUND(out_gto_year5, 0) AS INT);
+
+
 
     out_gastoInternoViaje_total := out_gastoInternoViaje_year1 + out_gastoInternoViaje_year2 + out_gastoInternoViaje_year3  + out_gastoInternoViaje_year4  + out_gastoInternoViaje_year5; 
     
   ---------------- Calculos para CostesDirectos/ Consumo Recursos  ------------- 
 
-    out_consumoExterno_year1 :=  COALESCE(v_ce_y1,0) + COALESCE(v_os_y1,0) + COALESCE(v_gvc_y1,0) ; 
-    out_consumoExterno_year2 :=  COALESCE(v_ce_y2,0) + COALESCE(v_os_y2,0) + COALESCE(v_gvc_y2,0) ; 
-    out_consumoExterno_year3 :=  COALESCE(v_ce_y3,0) + COALESCE(v_os_y3,0) + COALESCE(v_gvc_y3,0) ; 
-    out_consumoExterno_year4 :=  COALESCE(v_ce_y4,0) + COALESCE(v_os_y4,0) + COALESCE(v_gvc_y4,0) ; 
-    out_consumoExterno_year5 :=  COALESCE(v_ce_y5,0) + COALESCE(v_os_y5,0) + COALESCE(v_gvc_y5,0) ; 
+out_consumoExterno_year1 := CAST(ROUND(COALESCE(v_ce_y1,0) + COALESCE(v_os_y1,0) + COALESCE(v_gvc_y1,0), 0) AS INT);
+out_consumoExterno_year2 := CAST(ROUND(COALESCE(v_ce_y2,0) + COALESCE(v_os_y2,0) + COALESCE(v_gvc_y2,0), 0) AS INT);
+out_consumoExterno_year3 := CAST(ROUND(COALESCE(v_ce_y3,0) + COALESCE(v_os_y3,0) + COALESCE(v_gvc_y3,0), 0) AS INT);
+out_consumoExterno_year4 := CAST(ROUND(COALESCE(v_ce_y4,0) + COALESCE(v_os_y4,0) + COALESCE(v_gvc_y4,0), 0) AS INT);
+out_consumoExterno_year5 := CAST(ROUND(COALESCE(v_ce_y5,0) + COALESCE(v_os_y5,0) + COALESCE(v_gvc_y5,0), 0) AS INT);
+
 
     out_consumoExterno_total := out_consumoExterno_year1 + out_consumoExterno_year2 + out_consumoExterno_year3  + out_consumoExterno_year4  + out_consumoExterno_year5;  
     
@@ -743,31 +785,32 @@ out_total_year5 := out_total_year5
     
    ---------------- Calculos para CostesDirectos/ Recursos Externos Recursos  ------------- 
 
-        out_recursoExterno_year1 :=  COALESCE(v_re_y1,0) + COALESCE(v_sre_y1,0) + COALESCE(v_gvre_y1,0) ; 
-        out_recursoExterno_year2 :=  COALESCE(v_re_y2,0) + COALESCE(v_sre_y2,0) + COALESCE(v_gvre_y2,0) ; 
-        out_recursoExterno_year3 :=  COALESCE(v_re_y3,0) + COALESCE(v_sre_y3,0) + COALESCE(v_gvre_y3,0) ; 
-        out_recursoExterno_year4 :=  COALESCE(v_re_y4,0) + COALESCE(v_sre_y4,0) + COALESCE(v_gvre_y4,0) ; 
-        out_recursoExterno_year5 :=  COALESCE(v_re_y5,0) + COALESCE(v_sre_y5,0) + COALESCE(v_gvre_y5,0) ; 
+out_recursoExterno_year1 := CAST(ROUND(COALESCE(v_re_y1,0) + COALESCE(v_sre_y1,0) + COALESCE(v_gvre_y1,0), 0) AS INT);
+out_recursoExterno_year2 := CAST(ROUND(COALESCE(v_re_y2,0) + COALESCE(v_sre_y2,0) + COALESCE(v_gvre_y2,0), 0) AS INT);
+out_recursoExterno_year3 := CAST(ROUND(COALESCE(v_re_y3,0) + COALESCE(v_sre_y3,0) + COALESCE(v_gvre_y3,0), 0) AS INT);
+out_recursoExterno_year4 := CAST(ROUND(COALESCE(v_re_y4,0) + COALESCE(v_sre_y4,0) + COALESCE(v_gvre_y4,0), 0) AS INT);
+out_recursoExterno_year5 := CAST(ROUND(COALESCE(v_re_y5,0) + COALESCE(v_sre_y5,0) + COALESCE(v_gvre_y5,0), 0) AS INT);
 
         out_recursoExterno_total  := out_recursoExterno_year1 + out_recursoExterno_year2 +  out_recursoExterno_year3 + out_recursoExterno_year4 + out_recursoExterno_year5;
 
 
    ---------------- Calculos para CostesDirectos/ Licencias Recursos  ------------- 
-        out_licencias_year1 := v_lc_y1; 
-        out_licencias_year2  := v_lc_y2;
-        out_licencias_year3  := v_lc_y3;
-        out_licencias_year4  := v_lc_y4;
-        out_licencias_year5  := v_lc_y5;
+out_licencias_year1 := CAST(ROUND(v_lc_y1, 0) AS INT);
+out_licencias_year2 := CAST(ROUND(v_lc_y2, 0) AS INT);
+out_licencias_year3 := CAST(ROUND(v_lc_y3, 0) AS INT);
+out_licencias_year4 := CAST(ROUND(v_lc_y4, 0) AS INT);
+out_licencias_year5 := CAST(ROUND(v_lc_y5, 0) AS INT);
 
         out_licencias_total  :=  v_lc_y1 + v_lc_y2 + v_lc_y3 + v_lc_y4  + v_lc_y5;
 
    ---------------- Calculos para CostesDirectos/ Infraestructura Recursos  ------------- 
 
-    out_infraestructura_year1 := v_oc_y1;
-    out_infraestructura_year2 := v_oc_y2;
-    out_infraestructura_year3 := v_oc_y3;
-    out_infraestructura_year4 := v_oc_y4;
-    out_infraestructura_year5 := v_oc_y5;
+out_infraestructura_year1 := CAST(ROUND(v_oc_y1, 0) AS INT);
+out_infraestructura_year2 := CAST(ROUND(v_oc_y2, 0) AS INT);
+out_infraestructura_year3 := CAST(ROUND(v_oc_y3, 0) AS INT);
+out_infraestructura_year4 := CAST(ROUND(v_oc_y4, 0) AS INT);
+out_infraestructura_year5 := CAST(ROUND(v_oc_y5, 0) AS INT);
+
 
     out_infraestructura_total := v_oc_y1  + v_oc_y2  + v_oc_y3  + v_oc_y4 + v_oc_y5; 
 
@@ -776,67 +819,68 @@ out_total_year5 := out_total_year5
 
     -----------------  COSTES INDIRECTOS / RECURSOS -----------     
 ---   RECURSOS INTERNO 
-   out_costesIndirectosRecurInter_year1 := ROUND(out_recursoInterno_year1 * v_CosteEstruPorce / 100, 2); 
-   out_costesIndirectosRecurInter_year2 := ROUND(out_recursoInterno_year2 * v_CosteEstruPorce / 100, 2); 
-   out_costesIndirectosRecurInter_year3 := ROUND(out_recursoInterno_year3 * v_CosteEstruPorce / 100, 2); 
-   out_costesIndirectosRecurInter_year4 := ROUND(out_recursoInterno_year4 * v_CosteEstruPorce / 100, 2); 
-   out_costesIndirectosRecurInter_year5 := ROUND(out_recursoInterno_year5 * v_CosteEstruPorce / 100, 2); 
+        out_costesIndirectosRecurInter_year1 := CAST(ROUND(out_recursoInterno_year1 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectosRecurInter_year2 := CAST(ROUND(out_recursoInterno_year2 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectosRecurInter_year3 := CAST(ROUND(out_recursoInterno_year3 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectosRecurInter_year4 := CAST(ROUND(out_recursoInterno_year4 * v_CosteEstruPorce / 100, 0) AS INT);
+        out_costesIndirectosRecurInter_year5 := CAST(ROUND(out_recursoInterno_year5 * v_CosteEstruPorce / 100, 0) AS INT);
+
 
    out_costesIndirectosRecurInter_total :=    out_costesIndirectosRecurInter_year1   + out_costesIndirectosRecurInter_year2 + out_costesIndirectosRecurInter_year3  + out_costesIndirectosRecurInter_year4    + out_costesIndirectosRecurInter_year5;
 
 
 
 ---  CONSUMO EXTERNO 
-out_costesIndirectosConsumoExterno_year1 :=  ROUND(out_consumoExterno_year1 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosConsumoExterno_year2 :=  ROUND(out_consumoExterno_year2 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosConsumoExterno_year3 :=  ROUND(out_consumoExterno_year3 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosConsumoExterno_year4 :=  ROUND(out_consumoExterno_year4 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosConsumoExterno_year5 :=  ROUND(out_consumoExterno_year5 * v_CosteEstruPorce / 100, 2);
+out_costesIndirectosConsumoExterno_year1 := CAST(ROUND(out_consumoExterno_year1 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosConsumoExterno_year2 := CAST(ROUND(out_consumoExterno_year2 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosConsumoExterno_year3 := CAST(ROUND(out_consumoExterno_year3 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosConsumoExterno_year4 := CAST(ROUND(out_consumoExterno_year4 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosConsumoExterno_year5 := CAST(ROUND(out_consumoExterno_year5 * v_CosteEstruPorce / 100,0) AS INT);
 
-out_costesIndirectosConsumoExterno_total := out_costesIndirectosConsumoExterno_year1 + out_costesIndirectosConsumoExterno_year2  + out_costesIndirectosConsumoExterno_year3  + out_costesIndirectosConsumoExterno_year4  + out_costesIndirectosConsumoExterno_year5; 
+out_costesIndirectosConsumoExterno_total := out_costesIndirectosConsumoExterno_year1 + out_costesIndirectosConsumoExterno_year2 + out_costesIndirectosConsumoExterno_year3 + out_costesIndirectosConsumoExterno_year4 + out_costesIndirectosConsumoExterno_year5;
 
 
 ---  RECURSO EXTERNO     
-out_costesIndirectosRecursoExterno_year1 :=  ROUND(out_recursoExterno_year1 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosRecursoExterno_year2 :=  ROUND(out_recursoExterno_year2 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosRecursoExterno_year3 :=  ROUND(out_recursoExterno_year3 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosRecursoExterno_year4 :=  ROUND(out_recursoExterno_year4 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectosRecursoExterno_year5 :=  ROUND(out_recursoExterno_year5 * v_CosteEstruPorce / 100, 2);
+out_costesIndirectosRecursoExterno_year1 := CAST(ROUND(out_recursoExterno_year1 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosRecursoExterno_year2 := CAST(ROUND(out_recursoExterno_year2 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosRecursoExterno_year3 := CAST(ROUND(out_recursoExterno_year3 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosRecursoExterno_year4 := CAST(ROUND(out_recursoExterno_year4 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectosRecursoExterno_year5 := CAST(ROUND(out_recursoExterno_year5 * v_CosteEstruPorce / 100,0) AS INT);
 
-out_costesIndirectosRecursoExterno_total := out_costesIndirectosRecursoExterno_year1 + out_costesIndirectosRecursoExterno_year2  + out_costesIndirectosRecursoExterno_year3  + out_costesIndirectosRecursoExterno_year4  + out_costesIndirectosRecursoExterno_year5; 
+out_costesIndirectosRecursoExterno_total := out_costesIndirectosRecursoExterno_year1 + out_costesIndirectosRecursoExterno_year2 + out_costesIndirectosRecursoExterno_year3 + out_costesIndirectosRecursoExterno_year4 + out_costesIndirectosRecursoExterno_year5;
 
 
 -- LICENCIA 
 
-out_costesIndirectoLicencias_year1 :=  ROUND(out_licencias_year1 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoLicencias_year2 :=  ROUND(out_licencias_year2 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoLicencias_year3 :=  ROUND(out_licencias_year3 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoLicencias_year4 :=  ROUND(out_licencias_year4 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoLicencias_year5 :=  ROUND(out_licencias_year5 * v_CosteEstruPorce / 100, 2);
+out_costesIndirectoLicencias_year1 := CAST(ROUND(out_licencias_year1 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoLicencias_year2 := CAST(ROUND(out_licencias_year2 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoLicencias_year3 := CAST(ROUND(out_licencias_year3 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoLicencias_year4 := CAST(ROUND(out_licencias_year4 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoLicencias_year5 := CAST(ROUND(out_licencias_year5 * v_CosteEstruPorce / 100,0) AS INT);
 
-out_costesIndirectoLicencias_total := out_costesIndirectoLicencias_year1 + out_costesIndirectoLicencias_year2  + out_costesIndirectoLicencias_year3  + out_costesIndirectoLicencias_year4  + out_costesIndirectoLicencias_year5; 
+out_costesIndirectoLicencias_total := out_costesIndirectoLicencias_year1 + out_costesIndirectoLicencias_year2 + out_costesIndirectoLicencias_year3 + out_costesIndirectoLicencias_year4 + out_costesIndirectoLicencias_year5;
 
 
 -- Infraestructura   
 
-out_costesIndirectoInfraestructura_year1   :=  ROUND(out_infraestructura_year1 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoInfraestructura_year2 :=  ROUND(out_infraestructura_year2 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoInfraestructura_year3 :=  ROUND(out_infraestructura_year3 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoInfraestructura_year4 :=  ROUND(out_infraestructura_year4 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoInfraestructura_year5 :=  ROUND(out_infraestructura_year5 * v_CosteEstruPorce / 100, 2);
+out_costesIndirectoInfraestructura_year1 := CAST(ROUND(out_infraestructura_year1 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoInfraestructura_year2 := CAST(ROUND(out_infraestructura_year2 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoInfraestructura_year3 := CAST(ROUND(out_infraestructura_year3 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoInfraestructura_year4 := CAST(ROUND(out_infraestructura_year4 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoInfraestructura_year5 := CAST(ROUND(out_infraestructura_year5 * v_CosteEstruPorce / 100,0) AS INT);
 
-out_costesIndirectoInfraestructura_total := out_costesIndirectoInfraestructura_year1 + out_costesIndirectoInfraestructura_year2  + out_costesIndirectoInfraestructura_year3  + out_costesIndirectoInfraestructura_year4  + out_costesIndirectoInfraestructura_year5; 
+out_costesIndirectoInfraestructura_total := out_costesIndirectoInfraestructura_year1 + out_costesIndirectoInfraestructura_year2 + out_costesIndirectoInfraestructura_year3 + out_costesIndirectoInfraestructura_year4 + out_costesIndirectoInfraestructura_year5;
 
 -- GastoViaje    
 
 
-out_costesIndirectoGastoViaje_year1 :=  ROUND(out_gastoInternoViaje_year1 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoGastoViaje_year2 :=  ROUND(out_gastoInternoViaje_year2 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoGastoViaje_year3 :=  ROUND(out_gastoInternoViaje_year3 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoGastoViaje_year4 :=  ROUND(out_gastoInternoViaje_year4 * v_CosteEstruPorce / 100, 2);
-out_costesIndirectoGastoViaje_year5 :=  ROUND(out_gastoInternoViaje_year5 * v_CosteEstruPorce / 100, 2);
+out_costesIndirectoGastoViaje_year1 := CAST(ROUND(out_gastoInternoViaje_year1 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoGastoViaje_year2 := CAST(ROUND(out_gastoInternoViaje_year2 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoGastoViaje_year3 := CAST(ROUND(out_gastoInternoViaje_year3 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoGastoViaje_year4 := CAST(ROUND(out_gastoInternoViaje_year4 * v_CosteEstruPorce / 100,0) AS INT);
+out_costesIndirectoGastoViaje_year5 := CAST(ROUND(out_gastoInternoViaje_year5 * v_CosteEstruPorce / 100,0) AS INT);
 
-out_costesIndirectoGastoViaje_total := out_costesIndirectoGastoViaje_year1 + out_costesIndirectoGastoViaje_year2  + out_costesIndirectoGastoViaje_year3  + out_costesIndirectoGastoViaje_year4  + out_costesIndirectoGastoViaje_year5; 
+out_costesIndirectoGastoViaje_total := out_costesIndirectoGastoViaje_year1 + out_costesIndirectoGastoViaje_year2 + out_costesIndirectoGastoViaje_year3 + out_costesIndirectoGastoViaje_year4 + out_costesIndirectoGastoViaje_year5;
 
 
   ------------------  COSTES TOTALES / RECURSOS  ------------------------------------------     

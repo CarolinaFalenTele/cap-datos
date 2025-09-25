@@ -3687,6 +3687,7 @@ sap.ui.define([
             });
             this._IdFechasPorMes = idPorFecha;
 
+console.log("Valores por fecha:", valoresPorFecha);
 
             //   console.log("FECHAS TRAIDAS "  +  JSON.stringify(this._IdFechasPorMes));
             //   console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
@@ -3780,10 +3781,15 @@ sap.ui.define([
           return;
         }
 
-        for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
-          const oInput = inputsFila[mesAno];
-          if (oInput) {
-            const valorFormateado = Number(valor).toFixed(2);
+     for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
+    const oInput = inputsFila[mesAno];
+    if (oInput) {
+        // Convertimos a número
+        const numValor = Number(valor);
+
+        // Si es entero, lo mostramos sin decimales, si tiene decimales, los mostramos completos
+        const valorFormateado = (numValor % 1 === 0) ? numValor.toString() : valor;
+
             //  console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
             oInput.setValue(valorFormateado);
             oInput.fireChange({ value: valorFormateado });
@@ -9795,7 +9801,7 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
             continue;
           }
 
-          //   console.log(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+            console.log(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
@@ -9838,11 +9844,18 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
             console.error(" Error al verificar existencia del registro:", e);
           }
 
+
+          let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
           //  Paso 2: Armar payload
           const payload = {
             RecursosInternos_ID: idRecursos,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -13987,7 +14000,7 @@ if (!this._idLicencia) this._idLicencia = [];
                 // Actualizar las celdas con los valores específicos de las s
 
                 var PMJDi = aCells[4].getText();
-                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
+                aCells[5].setText(totalForAnio1); // Celda para 2024
                 aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
                 aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
