@@ -1460,7 +1460,49 @@ this.on("getResultado", async (req) => {
   }
   
   async function processJefeProyectoRows(rows) {
-    console.log("TODO CONTINUE JEFEPROYECTO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedJefesDeProyecto = [];
+    rows.forEach(row => {
+      aFormattedJefesDeProyecto.push({
+        name: row[0],
+        lastname: row[1],
+        matricula: row[2],
+        valueJefe: row[3],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oJefeDeProyecto of aFormattedJefesDeProyecto) {
+      const sNombre = oJefeDeProyecto.name,
+      sApellido = oJefeDeProyecto.lastname,
+      sMatricula = oJefeDeProyecto.matricula,
+      sValueJefe = oJefeDeProyecto.valueJefe;
+      if(!sNombre || !sApellido || !sMatricula || !sValueJefe) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      }
+      
+      if(sMatricula) {
+        const oMatricula = await SELECT.one.from(Jefeproyect).where({ matricula: ""+sMatricula, Activo: true });
+        if(oMatricula) {
+          oProcessedData.errors.push(`Matrícula: ${sMatricula} ya existe`);
+        }
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Jefeproyect).entries(aFormattedJefesDeProyecto);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processMotivoCondicionAmientosRows(rows) {
