@@ -4,6 +4,8 @@ const axios = require("axios");
 const xssec = require('@sap/xssec');
 const xsenv = require('@sap/xsenv');
 const { getDestination } = require("@sap-cloud-sdk/connectivity");
+const fileType = require('file-type');
+const readXlsxFile = require('read-excel-file/node')
 
 
 console.log("HOLAAAAAAAAAAAAA");
@@ -18,6 +20,7 @@ module.exports = cds.service.impl(async function () {
   console.log("Servicio cargado correctamente");
 
   const {
+    Area,
     DatosProyect,
     Usuarios,
     ProveedoresC,
@@ -1335,6 +1338,167 @@ this.on("getResultado", async (req) => {
     }
   });
 
+  this.on('massiveMDLoad', async (req) => {
+    const { file, text } = req.data;
+
+    console.log("Texto recibido:", text);
+    console.log("Fichero recibido (bytes):", file?.length);
+    
+    const buffer = Buffer.from(file, 'base64');
+
+    
+    if (!await isExcel(buffer)) {
+      req.error(415, 'Not excel file');
+      return;
+    }
+
+    const rows = await readXlsxFile(buffer);
+    rows.shift(); // Remove header
+    console.log(rows);
+
+    let oProcessedData = {};
+    switch(text){
+        case "APROBADORES":
+          oProcessedData = await processApproverRows(rows);
+          break;
+        case "AREA":
+          oProcessedData = await processAreaRows(rows);
+          break;
+        case "CLIENTE":
+          oProcessedData = await processClienteRows(rows);
+          break;
+        case "JEFESDEPROYECTO":
+          oProcessedData = await processJefeProyectoRows(rows);
+          break;
+        case "MOTIVOCONDICIONAMIENTO":
+          oProcessedData = await processMotivoCondicionAmientosRows(rows);
+          break;
+        case "PERFILCONSUMO":
+          oProcessedData = await processPerfilConsumoRows(rows);
+          break;
+        case "PERFILSERVICIO":
+          oProcessedData = await processPerfilServicioRows(rows);
+          break;
+        case "PORCENTAJEANIO":
+          oProcessedData = await processPorcentajeAnioRows(rows);
+          break;
+        case "SEGUIMIENTO":
+          oProcessedData = await processSeguimientoRows(rows);
+          break;
+        case "TIPOCOMPRA":
+          oProcessedData = await processTipoCompraRows(rows);
+          break;
+        case "VERTICAL":
+          oProcessedData = await processVerticalRows(rows);
+          break;
+    }
+    
+    return oProcessedData;
+    
+  });
+
+  async function processApproverRows(rows) {
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedApprovers = [];
+    rows.forEach(row => {
+      aFormattedApprovers.push({
+        area: row[0],
+        name: row[1],
+        lastname: row[2],
+        matricula: row[3],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oApprover of aFormattedApprovers) {
+      const sArea = oApprover.area,
+      sNombre = oApprover.name,
+      sApellido = oApprover.lastname,
+      sMatricula = oApprover.matricula;
+      if(!sArea || !sNombre || !sApellido || !sMatricula) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      }
+      if(sArea) {
+        const oArea = await SELECT.one.from(Area).where({ NombreArea: sArea });
+        if(!oArea) {
+          oProcessedData.errors.push(`Área: ${sArea} no encontrada, por favor revise mayúsculas, minúsculas y tildes`);
+        } else {
+          oApprover.Area_ID = oArea.ID;
+          delete oApprover.area;
+        }
+      }
+      if(sMatricula) {
+        const oMatricula = await SELECT.one.from(Aprobadores).where({ matricula: sMatricula, Activo: true });
+        if(oMatricula) {
+          oProcessedData.errors.push(`Matrícula: ${sMatricula} ya existe`);
+        }
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Aprobadores).entries(aFormattedApprovers);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
+  }
+
+  async function processAreaRows(rows) {
+    console.log("TODO CONTINUE AREA ROWS");
+  }
+
+  async function processClienteRows(rows) {
+    console.log("TODO CONTINUE CLIENTE ROWS");
+  }
+  
+  async function processJefeProyectoRows(rows) {
+    console.log("TODO CONTINUE JEFEPROYECTO ROWS");
+  }
+
+  async function processMotivoCondicionAmientosRows(rows) {
+    console.log("TODO CONTINUE MOTIVOCONDICIONAMIENTO ROWS");
+  }
+
+  async function processPerfilConsumoRows(rows) {
+    console.log("TODO CONTINUE PERFILCONSUMO ROWS");
+  }
+
+  async function processPerfilServicioRows(rows) {
+    console.log("TODO CONTINUE PERFILSERVICIO ROWS");
+  }
+
+  async function processPorcentajeAnioRows(rows) {
+    console.log("TODO CONTINUE PORCENTAJEANIO ROWS");
+  }
+
+  async function processSeguimientoRows(rows) {
+    console.log("TODO CONTINUE SEGUIMIENTO ROWS");
+  }
+
+  async function processTipoCompraRows(rows) {
+    console.log("TODO CONTINUE TIPOCOMPRA ROWS");
+  }
+
+  async function processVerticalRows(rows) {
+    console.log("TODO CONTINUE VERTICAL ROWS");
+  }
+
+  async function isExcel(buffer) {
+    const type = await fileType.fileTypeFromBuffer(buffer);
+  
+    if (!type) return false;
+    
+    return type.mime === 'application/vnd.ms-excel' ||
+           type.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  }
 
 
 
