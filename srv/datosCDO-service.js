@@ -1452,7 +1452,38 @@ this.on("getResultado", async (req) => {
   }
 
   async function processAreaRows(rows) {
-    console.log("TODO CONTINUE AREA ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedAreas = [];
+    rows.forEach(row => {
+      aFormattedAreas.push({
+        NombreArea: row[0],
+        valueArea: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oArea of aFormattedAreas) {
+      const sNombreArea = oArea.NombreArea,
+      sValueArea = oArea.valueArea;
+      if(!sNombreArea || !sValueArea) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Area).entries(aFormattedAreas);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processClienteRows(rows) {
@@ -1518,7 +1549,49 @@ this.on("getResultado", async (req) => {
   }
 
   async function processPorcentajeAnioRows(rows) {
-    console.log("TODO CONTINUE PORCENTAJEANIO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedPorcentajeAnio = [];
+    rows.forEach(row => {
+      aFormattedPorcentajeAnio.push({
+        Year: row[0],
+        Percent: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oPorcentajeAnio of aFormattedPorcentajeAnio) {
+      const iYear = oPorcentajeAnio.Year,
+      iPercent = oPorcentajeAnio.Percent;
+      if(!iYear || !iPercent) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      }
+
+      if(isNaN(iYear) || isNaN(iPercent)) {
+        oProcessedData.errors.push(`En la fila ${index} los datos no son numéricos. Revise separar los decimales con comas y no introducir puntos en los miles`);
+      }
+      
+      if(iYear) {
+        const oPorcentajeAnio = await SELECT.one.from(PorcentajeAnio).where({ Year: ""+iYear, Activo: true });
+        if(oPorcentajeAnio) {
+          oProcessedData.errors.push(`Ya existe entrada de porcentaje para el año: ${iYear}`);
+        }
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(PorcentajeAnio).entries(aFormattedPorcentajeAnio);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processSeguimientoRows(rows) {
