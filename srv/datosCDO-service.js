@@ -43,7 +43,14 @@ module.exports = cds.service.impl(async function () {
     Archivos,
     Aprobadores,
     Jefeproyect,
-    PorcentajeAnio
+    PorcentajeAnio,
+    Cliente,
+    MotivoCondi,
+    PerfilConsumo,
+    PerfilServicio,
+    Seguimiento,
+    TipoCompra,
+    Vertical
   } = this.entities;
 
   const { WorkflowService } = this.entities;
@@ -1421,7 +1428,7 @@ this.on("getResultado", async (req) => {
       sApellido = oApprover.lastname,
       sMatricula = oApprover.matricula;
       if(!sArea || !sNombre || !sApellido || !sMatricula) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       if(sArea) {
         const oArea = await SELECT.one.from(Area).where({ NombreArea: sArea });
@@ -1471,7 +1478,7 @@ this.on("getResultado", async (req) => {
       const sNombreArea = oArea.NombreArea,
       sValueArea = oArea.valueArea;
       if(!sNombreArea || !sValueArea) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       index++;
     }
@@ -1487,7 +1494,56 @@ this.on("getResultado", async (req) => {
   }
 
   async function processClienteRows(rows) {
-    console.log("TODO CONTINUE CLIENTE ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedClientes = [];
+    rows.forEach(row => {
+      aFormattedClientes.push({
+        Nombre: row[0],
+        Pais: row[1],
+        Zona: row[2],
+        Region: row[3],
+        IDCliente: row[4],
+        CIF: row[5],
+        TipoCliente: row[6],
+        GL: row[7],
+        SociedadGL: row[8],
+        PerimetroTdE: row[9],
+        PerimetroEmpresas: row[10],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oCliente of aFormattedClientes) {
+      const sNombre = oCliente.Nombre,
+      sPais = oCliente.Pais,
+      sZona = oCliente.Zona,
+      sRegion = oCliente.Region,
+      sIDCliente = oCliente.IDCliente,
+      sCIF = oCliente.CIF,
+      sTipoCliente = oCliente.TipoCliente,
+      sGL = oCliente.GL,
+      sSociedadGL = oCliente.SociedadGL,
+      sPerimetroTdE = oCliente.PerimetroTdE,
+      sPerimetroEmpresas = oCliente.PerimetroEmpresas;
+      if(!sNombre || !sPais || !sZona || !sRegion || !sIDCliente || !sCIF || !sTipoCliente || !sGL || !sSociedadGL || !sPerimetroTdE || !sPerimetroEmpresas) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Cliente).entries(aFormattedClientes);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
   
   async function processJefeProyectoRows(rows) {
@@ -1514,7 +1570,7 @@ this.on("getResultado", async (req) => {
       sMatricula = oJefeDeProyecto.matricula,
       sValueJefe = oJefeDeProyecto.valueJefe;
       if(!sNombre || !sApellido || !sMatricula || !sValueJefe) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       
       if(sMatricula) {
@@ -1537,15 +1593,108 @@ this.on("getResultado", async (req) => {
   }
 
   async function processMotivoCondicionAmientosRows(rows) {
-    console.log("TODO CONTINUE MOTIVOCONDICIONAMIENTO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedMotivos = [];
+    rows.forEach(row => {
+      aFormattedMotivos.push({
+        tipo: row[0],
+        valor: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oMotivo of aFormattedMotivos) {
+      const sTipo = oMotivo.tipo,
+      sValor = oMotivo.valor;
+      if(!sTipo || !sValor) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(MotivoCondi).entries(aFormattedMotivos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPerfilConsumoRows(rows) {
-    console.log("TODO CONTINUE PERFILCONSUMO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedPerfilConsumos = [];
+    rows.forEach(row => {
+      aFormattedPerfilConsumos.push({
+        nombrePerfilC: row[0],
+        valorPerfilC: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oPerfilConsumo of aFormattedPerfilConsumos) {
+      const sNombrePerfilC = oPerfilConsumo.nombrePerfilC,
+      sValorPerfilC = oPerfilConsumo.valorPerfilC;
+      if(!sNombrePerfilC || !sValorPerfilC) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(PerfilConsumo).entries(aFormattedPerfilConsumos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPerfilServicioRows(rows) {
-    console.log("TODO CONTINUE PERFILSERVICIO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedPerfilConsumos = [];
+    rows.forEach(row => {
+      aFormattedPerfilConsumos.push({
+        NombrePerfil: row[0],
+        valuePerfil: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oPerfilConsumo of aFormattedPerfilConsumos) {
+      const sNombrePerfil = oPerfilConsumo.NombrePerfil,
+      sValorPerfil = oPerfilConsumo.valuePerfil;
+      if(!sNombrePerfil || !sValorPerfil) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(PerfilServicio).entries(aFormattedPerfilConsumos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPorcentajeAnioRows(rows) {
@@ -1568,7 +1717,7 @@ this.on("getResultado", async (req) => {
       const iYear = oPorcentajeAnio.Year,
       iPercent = oPorcentajeAnio.Percent;
       if(!iYear || !iPercent) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
 
       if(isNaN(iYear) || isNaN(iPercent)) {
@@ -1595,15 +1744,108 @@ this.on("getResultado", async (req) => {
   }
 
   async function processSeguimientoRows(rows) {
-    console.log("TODO CONTINUE SEGUIMIENTO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedSeguimientos = [];
+    rows.forEach(row => {
+      aFormattedSeguimientos.push({
+        NombreSeguimiento: row[0],
+        valueSeguimiento: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oSeguimiento of aFormattedSeguimientos) {
+      const sNombreSeguimiento = oSeguimiento.NombreSeguimiento,
+      sValorSeguimiento = oSeguimiento.valueSeguimiento;
+      if(!sNombreSeguimiento || !sValorSeguimiento) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Seguimiento).entries(aFormattedSeguimientos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processTipoCompraRows(rows) {
-    console.log("TODO CONTINUE TIPOCOMPRA ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedTipoCompra = [];
+    rows.forEach(row => {
+      aFormattedTipoCompra.push({
+        tipo: row[0],
+        valor: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oTipoCompra of aFormattedTipoCompra) {
+      const sTipo = oTipoCompra.tipo,
+      sValor = oTipoCompra.valor;
+      if(!sTipo || !sValor) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(TipoCompra).entries(aFormattedTipoCompra);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processVerticalRows(rows) {
-    console.log("TODO CONTINUE VERTICAL ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedVertical = [];
+    rows.forEach(row => {
+      aFormattedVertical.push({
+        NombreVertical: row[0],
+        valueVertical: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oVertical of aFormattedVertical) {
+      const sNombreVertical = oVertical.NombreVertical,
+      sValorVertical = oVertical.valueVertical;
+      if(!sNombreVertical || !sValorVertical) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Vertical).entries(aFormattedVertical);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function isExcel(buffer) {
