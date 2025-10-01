@@ -59,11 +59,20 @@ module.exports = cds.service.impl(async function () {
   const testID = '9159aee0-e77e-4401-a2b4-9eafcb527ab8'
 
   this.before('CREATE', Aprobadores, async (req) => {
-    const { matricula } = req.data;
+    const { matricula, email } = req.data;
     
-    const bExists = await SELECT.one.from(Aprobadores).where({ matricula: matricula, Activo: true });
-    if (bExists) {
+    const bMatriculaExists = await SELECT.one.from(Aprobadores).where({ matricula: matricula, Activo: true });
+    if (bMatriculaExists) {
       req.error(400, `Matricula ${matricula} already exists and must be unique`);
+    }
+
+    const bEmailExists = await SELECT.one.from(Aprobadores).where({ email: email, Activo: true });
+    if (bEmailExists) {
+      req.error(400, `Email ${email} already exists and must be unique`);
+    }
+
+    if (!validarEmail(email)) {
+      req.error(400, `Email ${email} is not valid`);
     }
   });
 
@@ -1404,6 +1413,64 @@ this.on("getResultado", async (req) => {
     
   });
 
+  this.on('getEmailsAprobadores', async (req) => {
+    const { area } = req.data;
+
+    console.log("Area recibida:", area);
+
+    let oArea;
+    if(area) {
+      oArea = await SELECT.one.from(Area).where({ NombreArea: area, Activo: true });
+      if(!oArea) {
+        oArea = await SELECT.one.from(Area).where({ ID: area, Activo: true });;
+      }
+    }
+
+    let aEmails = [];
+    if(oArea) {
+      aEmails = await SELECT.from(Aprobadores).columns('email').where({ Area_ID: oArea.ID, Activo: true  });
+    } else {
+      aEmails = await SELECT.from(Aprobadores).columns('email').where({ Activo: true });
+    }
+
+    return aEmails.map(email => email.email).join(",");
+  });
+
+  this.on('cancelWorkflow', async (req) => {
+    const workflowInstanceId = req.data.workflowInstanceId;
+
+    console.log("id recibido " + workflowInstanceId);
+    try {
+      const token = await getWorkflowToken();
+
+      const url = `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}`;
+
+      const result = await axios.patch(
+        url,
+        { status: "CANCELED" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      return `Workflow ${workflowInstanceId} cancelado correctamente`;
+    } catch (err) {
+      const status = err.response?.status;
+
+      //  Si el workflow ya fue cancelado o no existe, no lanzamos error
+      if (status === 404 || status === 400) {
+        console.warn(`Workflow ${workflowInstanceId} ya estaba cancelado o no existe`);
+        return `Workflow ${workflowInstanceId} ya estaba cancelado o no existe`;
+      }
+
+      console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al cancelar workflow: ${err.message}`);
+    }
+  });
+
   async function processApproverRows(rows) {
     let oProcessedData = {
       ok: true,
@@ -1417,6 +1484,7 @@ this.on("getResultado", async (req) => {
         name: row[1],
         lastname: row[2],
         matricula: row[3],
+        email: row[4],
         Activo: true
       });
     });
@@ -1426,8 +1494,9 @@ this.on("getResultado", async (req) => {
       const sArea = oApprover.area,
       sNombre = oApprover.name,
       sApellido = oApprover.lastname,
-      sMatricula = oApprover.matricula;
-      if(!sArea || !sNombre || !sApellido || !sMatricula) {
+      sMatricula = oApprover.matricula,
+      sEmail = oApprover.email;
+      if(!sArea || !sNombre || !sApellido || !sMatricula || !sEmail) {
         oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       if(sArea) {
@@ -1443,6 +1512,14 @@ this.on("getResultado", async (req) => {
         const oMatricula = await SELECT.one.from(Aprobadores).where({ matricula: sMatricula, Activo: true });
         if(oMatricula) {
           oProcessedData.errors.push(`Matrícula: ${sMatricula} ya existe`);
+        }
+      }
+      if(sEmail) {
+        const oEmail = await SELECT.one.from(Aprobadores).where({ email: sEmail, Activo: true });
+        if(oEmail) {
+          oProcessedData.errors.push(`Email: ${sEmail} ya existe`);
+        } else if (!validarEmail(sEmail)) {
+          oProcessedData.errors.push(`Email: ${sEmail} no tiene formato válido`);
         }
       }
       index++;
@@ -1857,8 +1934,6 @@ this.on("getResultado", async (req) => {
            type.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   }
 
-
-
   async function getWorkflowToken() {
     try {
       // Obtiene el destination (workflow-api) desde el servicio Destination
@@ -1876,6 +1951,11 @@ this.on("getResultado", async (req) => {
       console.error("Error al obtener token del workflow-api:", err.message);
       throw err;
     }
+  }
+
+  function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
 });
 

@@ -2689,6 +2689,11 @@
         "Activo": {
           "type": "cds.Boolean",
           "@cds.persistence.name": "ACTIVO"
+        },
+        "email": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "EMAIL"
         }
       },
       "@cds.persistence.name": "DB_DATOS_APROBADORES"

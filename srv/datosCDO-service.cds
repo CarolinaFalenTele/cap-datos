@@ -243,5 +243,6 @@ action getResultado(id : UUID) returns {
   };
   action   massiveMDLoad(file : LargeBinary, text : String)                                                                     returns ProcessedData;
 
+  function getEmailsAprobadores(area : String)                                                                                  returns String;
 
 }
