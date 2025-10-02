@@ -141,12 +141,20 @@ this.on("getResultado", async (req) => {
   });
 
   // Ejecutar procedure
-  const result = await db.run(
-    `CALL "totalesCostesMensualizados"(${["?", ...Object.keys(outParams).map(() => "?")].join(",")})`,
-    { IN_IDRECURSOS: id, ...outParams }
-  );
+  let result;
+  try {
+    result = await db.run(
+      `CALL "totalesCostesMensualizados"(${["?", ...Object.keys(outParams).map(() => "?")].join(",")})`,
+      { IN_IDRECURSOS: id, ...outParams }
+    );
+  } catch (err) {
+    console.error("Error ejecutando procedure:", err);
+    result = {}; // fallback seguro
+  }
 
-  console.log("Resultado bruto procedure:", result);
+  // Si el resultado está vacío, forzar valores a 0
+  result = result || {};
+
 
   // Helper → construye la estructura YearTotals
   const buildYearTotals = (cat, customTotal) => ({

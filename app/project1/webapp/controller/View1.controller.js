@@ -54,27 +54,35 @@ sap.ui.define([
         /* =======================================================
            2. Inicializar Model para Años dinamicos  
         ======================================================= */
-        var oAniosModel = new sap.ui.model.json.JSONModel();
 
-        var oCostesModel = new sap.ui.model.json.JSONModel();
-        oCostesModel.attachRequestCompleted(() => {
-          //     console.log("Modelo miModeloCostes cargado correctamente");
-          this.actualizarHeadersAnios(); // ahora sí existe el modelo
-        });
-        oCostesModel.loadData("model/costes.json");
-        this.getView().setModel(oCostesModel, "miModeloCostes");
-        var oAniosModel = new sap.ui.model.json.JSONModel();
+var oAniosModel = new sap.ui.model.json.JSONModel();
+var oCostesModel = new sap.ui.model.json.JSONModel();
 
-        oAniosModel.attachRequestCompleted(() => {
-        //  console.log("Modelo añosDinamicos cargado correctamente");
-          this.actualizarHeadersAnios();
-        });
+// Attach requestCompleted para coste
+oCostesModel.attachRequestCompleted(() => {
+    const oModel = this.getView().getModel("miModeloCostes");
 
-        // Cargamos el JSON externo
-        oAniosModel.loadData("model/añosDinamicos.json");
+    this.actualizarHeadersAnios(); // ahora sí existe el modelo
+        this._initialCostesData = JSON.parse(JSON.stringify(oCostesModel.getData()));
 
-        // Asignamos el modelo a la vista con un nombre independiente
-        this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
+
+});
+
+// Cargamos datos del modelo de costes
+oCostesModel.loadData("model/costes.json");
+this.getView().setModel(oCostesModel, "miModeloCostes");
+
+// Attach requestCompleted para años
+oAniosModel.attachRequestCompleted(() => {
+    const oModel = this.getView().getModel("modeloAnioDinamicos");
+    this.actualizarHeadersAnios();
+});
+
+// Cargamos datos del modelo de años
+oAniosModel.loadData("model/añosDinamicos.json");
+this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
+
+
         /* ======================================================
            2. Inicializar VizFrames
         ======================================================= */
@@ -163,18 +171,17 @@ sap.ui.define([
 
         this.traerPorcentajes();
 
+
+     
       },
 
 
 
-      onBeforeRendering: function () {
-        // Cada vez que la vista se va a mostrar, revisamos si cambió el año
-        this.actualizarHeadersAnios();
-      },
 
 
 
       actualizarHeadersAnios: function () {
+
         const anioHoy = new Date().getFullYear();
         if (anioHoy === this._anioActual) {
           return;
@@ -204,6 +211,8 @@ sap.ui.define([
         } else {
           console.warn("El modelo 'modeloAnioDinamicos' no existe");
         }
+
+
       },
 
       //Actualizar las tablas con años  
@@ -1904,11 +1913,8 @@ sap.ui.define([
         const oModel = oView.getModel("planning");
         const oModelDynamic = oView.getModel("dynamicInputs");
 
-     //  const oModelAnterior = this.getView().getModel("miModeloCostes");
 
-  
-       // console.log("MOdelo " + oModelResumenCostes );
-
+        this.resetCostesModel();
 
         var oFechasModel = this.getView().getModel("fechasModel");
         if (!oFechasModel) {
@@ -1925,8 +1931,6 @@ sap.ui.define([
         this._idWorkIniciado = null;
 
         this._clearTableTextsOnly();
-        // Lista de campos que deben quedarse como no editables
-
 
 
         this._IdFechasPorMesLicencia = null;
@@ -2091,7 +2095,7 @@ sap.ui.define([
         }
 
 
-        this.refreshODataModel();
+      //  this.refreshODataModel();
 
 
 
@@ -2125,8 +2129,27 @@ sap.ui.define([
           }
         });
 
+
         //     console.log("Todos los campos, textos y gráficos han sido limpiados.");
       },
+
+
+
+resetCostesModel: function () {
+  const oCostesModel = this.getView().getModel("miModeloCostes");
+
+  if (oCostesModel && this._initialCostesData) {
+    const oResetData = JSON.parse(JSON.stringify(this._initialCostesData));
+    oCostesModel.setData(oResetData);
+    oCostesModel.refresh(true);
+
+  } else {
+    console.warn("No hay datos iniciales guardados para resetear el modelo.");
+  }
+},
+
+
+
 
 
       _clearAllInputsEdit: async function () {
@@ -2135,6 +2158,9 @@ sap.ui.define([
         const controls = oView.findElements(true);
         const oModel = oView.getModel("planning");
         const oModelDynamic = oView.getModel("dynamicInputs");
+
+
+
 
 
         if (oModelDynamic) {
@@ -2188,6 +2214,8 @@ sap.ui.define([
           }
         });
 
+
+        
 
       },
 
@@ -2527,6 +2555,8 @@ sap.ui.define([
 
             this.highlightControls();
             this._setAllControlsEditable(false);
+
+            this.CalculosResumenIngresosVSCostes();
 
             this._showSuccessDialog("Datos cargados correctamente");
           }
@@ -4933,6 +4963,8 @@ console.log("Valores por fecha:", valoresPorFecha);
 
 
 CalculosResumenIngresosVSCostes: async function () {
+
+
     const Coste = this.getView().getModel();
     const oContextCoste = Coste.bindContext("/getResultado(...)");
     oContextCoste.setParameter("id", this._sProjectID);
@@ -5064,6 +5096,8 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
     this.getView().setModel(oCostesModel, "miModeloCostes");
     oCostesModel.refresh(true);
+
+
 },
 
 
@@ -5706,7 +5740,7 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
           },
           "Basis - Consultor Junior": {
-            PMJ: 207.19
+            PMJ: 356.21
 
           },
           "Basis - Consultor Senior": {
@@ -8929,6 +8963,9 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
         //console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
 
+          Total = Math.round(Total);
+              console.log("Total " + Total);
+
 
         var payload = {
           Subtotal: sSubtotal,
@@ -9496,12 +9533,6 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
 
 
-
-
-
-
-
-
       insertRecursosInternos: async function (generatedId) {
 
         const stokenr = this._sCsrfToken;
@@ -9541,23 +9572,34 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
             continue; // SALTA A LA SIGUIENTE ITERACIÓN
           }
 
+          
+              // Función para normalizar valores
+              function normalizeNumber(valor) {
+                  let number = parseFloat(valor);
+                  if (!Number.isInteger(number)) {
+                      number = Math.round(number * 10000) / 10000; // redondear a 4 decimales
+                  }
+                  return number;
+              }
 
-          // Construir el payload para cada fila
-          const payload = {
-            Vertical_ID: sVertical,
-            ConceptoOferta: sConcepto,
-            PMJ: sPMJ,
-            year1: Number(syear1.toFixed(2)),
-            year2: Number(syear2.toFixed(2)),
-            year3: Number(syear3.toFixed(2)),
-            year4: Number(syear4.toFixed(2)),
-            year5: Number(syear5.toFixed(2)),
-            total: Number(sTotal.toFixed(2)),
-            totalE: Number(stotalRe.toFixed(2)),
-            tipoServicio_ID: stipoServi,
-            PerfilServicio_ID: sPerfil,
-            datosProyect_ID: generatedId,
-          };
+
+
+            // Construir el payload para cada fila
+            const payload = {
+                Vertical_ID: sVertical,
+                ConceptoOferta: sConcepto,
+                PMJ: sPMJ,
+                year1: normalizeNumber(syear1),
+                year2: normalizeNumber(syear2),
+                year3: normalizeNumber(syear3),
+                year4: normalizeNumber(syear4),
+                year5: normalizeNumber(syear5),
+                total: normalizeNumber(sTotal),
+                totalE: normalizeNumber(stotalRe),
+                tipoServicio_ID: stipoServi,
+                PerfilServicio_ID: sPerfil,
+                datosProyect_ID: generatedId,
+            };
 
           // Verificar si existe el ID de recurso para hacer actualización o inserción
           //      const recursoID = oItem.getBindingContext()?.getProperty("ID"); // Obtiene el ID del recurso, si existe
@@ -9987,11 +10029,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error(" Error al verificar existencia del registro:", e);
           }
 
+                    let valorNormalized = parseFloat(valor);
+
+            // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+            valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
           //  Armar payload
           const payload = {
             otrosGastoRecu_ID: idRecursos,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(` Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -10120,10 +10168,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error(" Error al verificar existencia del registro:", e);
           }
 
+
+                    let valorNormalized = parseFloat(valor);
+
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
           const payload = {
             otrosRecursos_ID: idRecursos,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(` Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -10275,11 +10330,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("Error al verificar existencia del registro:", e);
           }
 
+
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
           // Payload con los nombres y IDs correctos
           const payload = {
             ConsumoExternos_ID: idRecursos,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`Payload preparado para enviar para mes '${mes}' con idFecha: ${idFecha}`, payload);
@@ -10402,11 +10463,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
           //     Construir payload
           const payload = {
             otrosServiciosConsu_ID: idSerConsu,
             mesAno: mesAno,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mesAño '${mesAno}' con idFecha: ${idFecha}`);
@@ -10537,11 +10604,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
           // Paso 2: Armar payload
           const payload = {
             GastoViajeConsumo_ID: idGasViaConsu,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -10678,11 +10751,16 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
           //     Armar payload
           const payload = {
             RecursosExternos_ID: idRecursos,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -10812,10 +10890,16 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
           const payload = {
             ServiRecurExterno_ID: idServiExterno,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -10945,11 +11029,17 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
           //     Armar payload
           const payload = {
             GastoViajeRecExter_ID: idGasRecuExter,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -11089,12 +11179,18 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           } catch (e) {
             console.error("    Error al verificar existencia del registro:", e);
           }
+          let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
+
 
           //     Paso 2: Preparar payload
           const payload = {
             otrosConceptos_ID: idOtrosConcep,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -11228,10 +11324,15 @@ const idLicencia = this._idLicencia[i]; // Solo el UUID de esta fila
             console.error("    Error al verificar existencia del registro:", e);
           }
 
+                    let valorNormalized = parseFloat(valor);
+
+// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+  
           const payload = {
             licencia_ID: idLicencia,
             mesAno: mes,
-            valor: valor
+            valor: valorNormalized
           };
 
           //console.log("(`    Procesando mes '${mes}' con idFecha: ${idFecha}`);
@@ -13048,272 +13149,6 @@ if (!this._idLicencia) this._idLicencia = [];
 
 
 
-      /*   CaseAno: function (tableId) {
-           //  //console.log("TABLA RECIBIDA  : " + tableId);
-   
-           var oDatePickerInicio = this.getView().byId("date_inico");
-           var oDatePickerFin = this.getView().byId("date_fin");
-   
-   
-   
-           var sFechaInicio = oDatePickerInicio.getDateValue();
-           var sFechaFin = oDatePickerFin.getDateValue();
-   
-           if (sFechaInicio && sFechaFin) {
-             var anioInicio = sFechaInicio.getFullYear();
-             var anioFin = sFechaFin.getFullYear();
-   
-             if (anioInicio > anioFin) {
-               sap.m.MessageToast.show("La fecha de inicio no puede ser mayor que la fecha de fin.");
-               return;
-             }
-   
-             var aniosEnRango = [];
-             for (var i = anioInicio; i <= anioFin; i++) {
-               aniosEnRango.push(i);
-             }
-   
-   
-             let resultado = this.calcularDistribucionInput();
-             if (!resultado || !resultado.valoresDistribuidos) return;
-   
-             let valoresDistribuidos = resultado.valoresDistribuidos;
-             let acumulado = resultado.acumuladoTextPorTablaYAnio;
-   
-             if (!valoresDistribuidos || Object.keys(valoresDistribuidos).length === 0) {
-               //         sap.m.MessageToast.show("No se pudo calcular la distribución.");
-               return;
-             }
-   
-             //   //console.log("Distribución de fechas para las tablas:", valoresDistribuidos);
-   
-             var that = this;
-             var Totalporcentaje = 0;
-             var valoresPorAno = {};
-             var valoresPorAnoPorInput = {};
-             var totalesPorInput = {};
-   
-             aniosEnRango.forEach(anio => {
-               valoresPorAno[anio] = 0;
-               valoresPorAnoPorInput[anio] = {};
-             });
-   
-             Object.keys(valoresDistribuidos).forEach(function (table) {
-               aniosEnRango.forEach(function (anio) {
-                 if (valoresDistribuidos[table] && valoresDistribuidos[table][anio]) {
-                   valoresDistribuidos[table][anio].forEach(distribucion => {
-                     var inputName = distribucion.elemento;
-                     var vValor = parseFloat(distribucion.valor) || 0;
-   
-                     valoresPorAno[anio] += vValor;
-                     Totalporcentaje += vValor;
-   
-                     if (!valoresPorAnoPorInput[anio][inputName]) {
-                       valoresPorAnoPorInput[anio][inputName] = 0;
-                     }
-                     valoresPorAnoPorInput[anio][inputName] += vValor;
-   
-                     // Acumular total general por input
-                     if (!totalesPorInput[inputName]) {
-                       totalesPorInput[inputName] = 0;
-                     }
-                     totalesPorInput[inputName] += vValor;
-                   });
-                 }
-               });
-             });
-   
-             aniosEnRango.forEach(anio => {
-               switch (anio) {
-                 case 2025:
-                //   that.getView().byId("tipoS2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteT2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("cellCostesTotales_1_1").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TRecurso2025").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteD2025").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                   that.getView().byId("costes_indirectos2025").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-   
-   
-   
-                   this.getView().byId("text129CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€"); // Coste directo 2025 
-                   this.getView().byId("text130CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text210").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text400").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text133").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text200").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-   
-   
-                   let total2025 =
-                     (acumulado[2025]?.table_dimicFecha || 0) +
-                     (acumulado[2025]?.tablaConsuExter || 0) +
-                     (acumulado[2025]?.tablGastoViajeInterno || 0) +
-                     (acumulado[2025]?.tablaRecExterno || 0) +
-                     (acumulado[2025]?.tablaLicencia || 0) +
-                     (acumulado[2025]?.tablaInfrestuctura || 0);
-   
-   
-                   that.getView().byId("text75_1729073618729").setText(total2025.toFixed(2) + "€");
-   
-   
-                   break;
-   
-   
-                 case 2026:
-                   that.getView().byId("tipoS2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TRecurso2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteT2026").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("cellCostesTotales_1_2").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteD2026").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                   that.getView().byId("costes_indirectos2026").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-   
-   
-   
-   
-                   that.getView().byId("text128CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                   that.getView().byId("text134CosteDi").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text211").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text401").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text1341").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text201").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-   
-   
-                   let total2026 =
-                     (acumulado[2026]?.table_dimicFecha || 0) +
-                     (acumulado[2026]?.tablaConsuExter || 0) +
-                     (acumulado[2026]?.tablGastoViajeInterno || 0) +
-                     (acumulado[2026]?.tablaRecExterno || 0) +
-                     (acumulado[2026]?.tablaLicencia || 0) +
-                     (acumulado[2026]?.tablaInfrestuctura || 0);
-   
-   
-                   that.getView().byId("text76_1729073618732").setText(total2026.toFixed(2) + "€");
-   
-   
-                   //   that.getView().byId("text128CosteDi").setText((acumulado[anio]["table_dimicFecha"] || 0).toFixed(2) + "€"); //coste directo 2026 
-   
-   
-                   break;
-   
-   
-                 case 2027:
-                   that.getView().byId("tipoS2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-   
-                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteT2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteD2027").setText((valoresPorAnoPorInput[anio]["Input2"] || 0).toFixed(2) + "€");
-                   that.getView().byId("costes_indirectos2027").setText((valoresPorAnoPorInput[anio]["Input3"] || 0).toFixed(2) + "€");
-   
-                   that.getView().byId("text135").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                   that.getView().byId("text140CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text212").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text402").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text1352").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text202").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-   
-   
-   
-   
-                   let total2027 =
-                     (acumulado[2027]?.table_dimicFecha || 0) +
-                     (acumulado[2027]?.tablaConsuExter || 0) +
-                     (acumulado[2027]?.tablGastoViajeInterno || 0) +
-                     (acumulado[2027]?.tablaRecExterno || 0) +
-                     (acumulado[2027]?.tablaLicencia || 0) +
-                     (acumulado[2027]?.tablaInfrestuctura || 0);
-   
-   
-                   that.getView().byId("text77_1729073618734").setText(total2027.toFixed(2) + "€");
-   
-   
-                   break;
-   
-                 case 2028:
-                   that.getView().byId("tipoS2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteT2028").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-   
-   
-                   that.getView().byId("text141CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                   that.getView().byId("text136").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text213").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text403").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text1363").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text203").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-   
-   
-   
-   
-                   let total2028 =
-                     (acumulado[2028]?.table_dimicFecha || 0) +
-                     (acumulado[2028]?.tablaConsuExter || 0) +
-                     (acumulado[2028]?.tablGastoViajeInterno || 0) +
-                     (acumulado[2028]?.tablaRecExterno || 0) +
-                     (acumulado[2028]?.tablaLicencia || 0) +
-                     (acumulado[2028]?.tablaInfrestuctura || 0);
-   
-   
-                   that.getView().byId("text300").setText(total2028.toFixed(2) + "€");
-   
-   
-                   break;
-   
-                 case 2029:
-                   that.getView().byId("tipoS2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TRecurso2027").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-                   that.getView().byId("TSCosteT2029").setText((valoresPorAnoPorInput[anio]["Input1"] || 0).toFixed(2) + "€");
-   
-   
-                   that.getView().byId("text143CosteDi").setText((acumulado[anio]?.table_dimicFecha ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text214").setText((acumulado[anio]?.tablGastoViajeInterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text138").setText((acumulado[anio]?.tablaConsuExter ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text404").setText((acumulado[anio]?.tablaRecExterno ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text1374").setText((acumulado[anio]?.tablaLicencia ?? 0).toFixed(2) + "€");
-                   this.getView().byId("text204").setText((acumulado[anio]?.tablaInfrestuctura ?? 0).toFixed(2) + "€");
-   
-   
-   
-   
-                   let total2029 =
-                     (acumulado[2029]?.table_dimicFecha || 0) +
-                     (acumulado[2029]?.tablaConsuExter || 0) +
-                     (acumulado[2029]?.tablGastoViajeInterno || 0) +
-                     (acumulado[2029]?.tablaRecExterno || 0) +
-                     (acumulado[2029]?.tablaLicencia || 0) +
-                     (acumulado[2029]?.tablaInfrestuctura || 0);
-   
-   
-                   that.getView().byId("text301").setText(total2029.toFixed(2) + "€");
-   
-                   break;
-               }
-             });
-   
-             // Mostrar los totales generales
-             that.getView().byId("tipoSTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-             that.getView().byId("TRecursoTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-             that.getView().byId("TSCosteTotalD").setText((totalesPorInput["Input2"] || 0).toFixed(2) + "€");
-             that.getView().byId("TSCosteTotal").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-             that.getView().byId("cellCostesTotales_1_7").setText((totalesPorInput["Input1"] || 0).toFixed(2) + "€");
-   
-             that.getView().byId("costes_indirectosTotal").setText((totalesPorInput["Input3"] || 0).toFixed(2) + "€");
-   
-   
-             that.getView().byId("text70_1729079344938").setText((totalesPorInput["Text1"] || 0).toFixed(2) + "€"); // 2025 
-             that.getView().byId("text137").setText((totalesPorInput["Text4"] || 0).toFixed(2) + "€");
-   
-             //  //console.log("TOTALES DE CASE AÑO : " + Totalporcentaje);
-           } else {
-             //    sap.m.MessageToast.show("Por favor, seleccione ambas fechas.");
-           }
-         },
-   
-         // Fechas dinamicas y tabla dinamica---------  
-         onDateChange: function () {
-           this.updateVizFrame();
-         },*/
-      //-------------------------------------------
-
-
 
 
 
@@ -13354,6 +13189,24 @@ if (!this._idLicencia) this._idLicencia = [];
 
         var diffMonths = this.getMonthsDifference(startDate, endDate);
 
+            
+var widthPerMonth = 200;  // cada mes equivale a 200px
+var minWidth = 2000;      // ancho mínimo
+var maxWidth = 7000;      // ancho máximo
+
+var newWidth = diffMonths * widthPerMonth; // número puro
+
+// si hay pocos meses, forzar un ancho mínimo
+if (diffMonths <= 2) {
+  newWidth = minWidth;  // si hay 1, 2 o 3 meses => forzamos 1000px
+}
+
+// limitar ancho entre min y max
+var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
+
+
+
+
         var flexBoxIds = [
           "box0_1714747137718",
           "box0_1727879568594",
@@ -13368,12 +13221,15 @@ if (!this._idLicencia) this._idLicencia = [];
           "box0_1727955568380"
         ];
 
-        flexBoxIds.forEach((flexBoxId) => {
-          var flexBox = this.getView().byId(flexBoxId);
-          if (flexBox) {
-            flexBox.setWidth(diffMonths > 3 ? "3000px" : "100%");
-          }
-        });
+
+    flexBoxIds.forEach((flexBoxId) => {
+      var flexBox = this.getView().byId(flexBoxId);
+      if (flexBox) {
+        flexBox.setWidth(finalWidth);
+      }
+    });
+
+
 
         var tableIds = [
           "tablaConsuExter",
@@ -13581,13 +13437,13 @@ if (!this._idLicencia) this._idLicencia = [];
 
 
 
-      handleInputChange: function (tableId, rowIndex, columnIndex, year, oEvent) {
+      handleInputChange: async function (tableId, rowIndex, columnIndex, year, oEvent) {
 
 
 
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
         //  //console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
-        // //console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
+      //  console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
 
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
 
@@ -13627,7 +13483,7 @@ if (!this._idLicencia) this._idLicencia = [];
 
 
           //console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
-          this.updateTotalField(tableId, rowIndex, newValue);
+        await   this.updateTotalField(tableId, rowIndex, newValue);
 
           if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
           if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
@@ -13896,7 +13752,7 @@ if (!this._idLicencia) this._idLicencia = [];
 
           // console.log("Modelo "  +     JSON.stringify(oJsonModel)  );
 
-          console.log(" Porcentajes cargados:", aPorcentajes);
+         /// console.log(" Porcentajes cargados:", aPorcentajes);
         } catch (err) {
           console.error("Error cargando PorcentajeAnio:", err);
         }
@@ -13915,6 +13771,7 @@ if (!this._idLicencia) this._idLicencia = [];
 
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
+                
 
         var oAniosModel = this.getView().getModel("modeloAnioDinamicos");
         var aAnios = oAniosModel.getProperty("/AnioDinamicos") || [];
@@ -14000,12 +13857,15 @@ if (!this._idLicencia) this._idLicencia = [];
                 // Actualizar las celdas con los valores específicos de las s
 
                 var PMJDi = aCells[4].getText();
-                aCells[5].setText(totalForAnio1); // Celda para 2024
+                aCells[5].setText(totalForAnio1.toFixed(2)  + "€" ); // Celda para 2024
                 aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
                 aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
+
+                 const totalAntesdelPorcem = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                aCells[10].setText(totalAntesdelPorcem.toFixed(2));
 
                 function getPctForYear(anio) {
                   var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
@@ -14021,10 +13881,26 @@ if (!this._idLicencia) this._idLicencia = [];
                 totalForAnio3 = totalForAnio3 * getPctForYear(aAnios[2].anio);
                 totalForAnio4 = totalForAnio4 * getPctForYear(aAnios[3].anio);
                 totalForAnio5 = totalForAnio5 * getPctForYear(aAnios[4].anio);
+
+
+
+            
                 totalSum2 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 var resulDina = PMJDi * totalSum2;
 
-                aCells[10].setText(totalSum2.toFixed(2)); // Celda para Total 
+           //     console.log("total " + totalSum2);
+
+
+                console.table([
+ { Año: aAnios[0].anio, Total: totalForAnio1.toFixed(2) },
+  { Año: aAnios[1].anio, Total: totalForAnio2.toFixed(2) },
+  { Año: aAnios[2].anio, Total: totalForAnio3.toFixed(2) },
+  { Año: aAnios[3].anio, Total: totalForAnio4.toFixed(2) },
+  { Año: aAnios[4].anio, Total: totalForAnio5.toFixed(2) },
+  { Año: "TOTAL 5 años", Total: totalSum2.toFixed(2) },
+  { Año: "Resultado final (resulDina)", Total: resulDina.toFixed(2) }
+]);    
+                //aCells[10].setText(totalSum2.toFixed(2)); // Celda para Total 
                 aCells[11].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
 
               }
@@ -14613,16 +14489,19 @@ if (!this._idLicencia) this._idLicencia = [];
         var TotalSumas = totalSumaMar + totalMargeSobreIn;
         //  console.log("TOTAL SUMAS FINAL: " + TotalSumas.toFixed(2));
 
-        // Redondear y darle formato de miles
-        var formattedTotal = new Intl.NumberFormat('es-ES', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }).format(TotalSumas);
+    // Redondear al entero más cercano (redondeo matemático)
+var roundedTotal = Math.round(TotalSumas);
 
-        // Agregar el símbolo de euro al final
-        var formattedTotalWithEuro = formattedTotal + ' €';
+// Dar formato con miles y sin decimales
+var formattedTotal = new Intl.NumberFormat('es-ES', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+}).format(roundedTotal);
 
-        this.byId("input0_1725625161348").setValue(formattedTotalWithEuro);
+// Agregar el símbolo de euro
+var formattedTotalWithEuro = formattedTotal + ' €';
+this.byId("input0_1725625161348").setValue(formattedTotalWithEuro);
+
 
 
         //  this.calcularDistribucionInput();

@@ -245,3 +245,8 @@ background-color: bisque;
 }
 
 
+#container-project1---view--subPanel5 .sapMPanelHdr {
+    color: #1565c0; /* azul */
+    font-weight: bold;
+    font-size: 1.1rem;
+}
