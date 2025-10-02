@@ -43,7 +43,14 @@ module.exports = cds.service.impl(async function () {
     Archivos,
     Aprobadores,
     Jefeproyect,
-    PorcentajeAnio
+    PorcentajeAnio,
+    Cliente,
+    MotivoCondi,
+    PerfilConsumo,
+    PerfilServicio,
+    Seguimiento,
+    TipoCompra,
+    Vertical
   } = this.entities;
 
   const { WorkflowService } = this.entities;
@@ -52,11 +59,20 @@ module.exports = cds.service.impl(async function () {
   const testID = '9159aee0-e77e-4401-a2b4-9eafcb527ab8'
 
   this.before('CREATE', Aprobadores, async (req) => {
-    const { matricula } = req.data;
+    const { matricula, email } = req.data;
     
-    const bExists = await SELECT.one.from(Aprobadores).where({ matricula: matricula, Activo: true });
-    if (bExists) {
+    const bMatriculaExists = await SELECT.one.from(Aprobadores).where({ matricula: matricula, Activo: true });
+    if (bMatriculaExists) {
       req.error(400, `Matricula ${matricula} already exists and must be unique`);
+    }
+
+    const bEmailExists = await SELECT.one.from(Aprobadores).where({ email: email, Activo: true });
+    if (bEmailExists) {
+      req.error(400, `Email ${email} already exists and must be unique`);
+    }
+
+    if (!validarEmail(email)) {
+      req.error(400, `Email ${email} is not valid`);
     }
   });
 
@@ -1405,6 +1421,64 @@ this.on("getResultado", async (req) => {
     
   });
 
+  this.on('getEmailsAprobadores', async (req) => {
+    const { area } = req.data;
+
+    console.log("Area recibida:", area);
+
+    let oArea;
+    if(area) {
+      oArea = await SELECT.one.from(Area).where({ NombreArea: area, Activo: true });
+      if(!oArea) {
+        oArea = await SELECT.one.from(Area).where({ ID: area, Activo: true });;
+      }
+    }
+
+    let aEmails = [];
+    if(oArea) {
+      aEmails = await SELECT.from(Aprobadores).columns('email').where({ Area_ID: oArea.ID, Activo: true  });
+    } else {
+      aEmails = await SELECT.from(Aprobadores).columns('email').where({ Activo: true });
+    }
+
+    return aEmails.map(email => email.email).join(",");
+  });
+
+  this.on('cancelWorkflow', async (req) => {
+    const workflowInstanceId = req.data.workflowInstanceId;
+
+    console.log("id recibido " + workflowInstanceId);
+    try {
+      const token = await getWorkflowToken();
+
+      const url = `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/workflow-instances/${workflowInstanceId}`;
+
+      const result = await axios.patch(
+        url,
+        { status: "CANCELED" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      return `Workflow ${workflowInstanceId} cancelado correctamente`;
+    } catch (err) {
+      const status = err.response?.status;
+
+      //  Si el workflow ya fue cancelado o no existe, no lanzamos error
+      if (status === 404 || status === 400) {
+        console.warn(`Workflow ${workflowInstanceId} ya estaba cancelado o no existe`);
+        return `Workflow ${workflowInstanceId} ya estaba cancelado o no existe`;
+      }
+
+      console.error("Error cancelando workflow en backend:", err.response?.data || err.message);
+      req.reject(500, `Error al cancelar workflow: ${err.message}`);
+    }
+  });
+
   async function processApproverRows(rows) {
     let oProcessedData = {
       ok: true,
@@ -1418,6 +1492,7 @@ this.on("getResultado", async (req) => {
         name: row[1],
         lastname: row[2],
         matricula: row[3],
+        email: row[4],
         Activo: true
       });
     });
@@ -1427,9 +1502,10 @@ this.on("getResultado", async (req) => {
       const sArea = oApprover.area,
       sNombre = oApprover.name,
       sApellido = oApprover.lastname,
-      sMatricula = oApprover.matricula;
-      if(!sArea || !sNombre || !sApellido || !sMatricula) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+      sMatricula = oApprover.matricula,
+      sEmail = oApprover.email;
+      if(!sArea || !sNombre || !sApellido || !sMatricula || !sEmail) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       if(sArea) {
         const oArea = await SELECT.one.from(Area).where({ NombreArea: sArea });
@@ -1444,6 +1520,14 @@ this.on("getResultado", async (req) => {
         const oMatricula = await SELECT.one.from(Aprobadores).where({ matricula: sMatricula, Activo: true });
         if(oMatricula) {
           oProcessedData.errors.push(`Matrícula: ${sMatricula} ya existe`);
+        }
+      }
+      if(sEmail) {
+        const oEmail = await SELECT.one.from(Aprobadores).where({ email: sEmail, Activo: true });
+        if(oEmail) {
+          oProcessedData.errors.push(`Email: ${sEmail} ya existe`);
+        } else if (!validarEmail(sEmail)) {
+          oProcessedData.errors.push(`Email: ${sEmail} no tiene formato válido`);
         }
       }
       index++;
@@ -1479,7 +1563,7 @@ this.on("getResultado", async (req) => {
       const sNombreArea = oArea.NombreArea,
       sValueArea = oArea.valueArea;
       if(!sNombreArea || !sValueArea) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       index++;
     }
@@ -1495,7 +1579,56 @@ this.on("getResultado", async (req) => {
   }
 
   async function processClienteRows(rows) {
-    console.log("TODO CONTINUE CLIENTE ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedClientes = [];
+    rows.forEach(row => {
+      aFormattedClientes.push({
+        Nombre: row[0],
+        Pais: row[1],
+        Zona: row[2],
+        Region: row[3],
+        IDCliente: row[4],
+        CIF: row[5],
+        TipoCliente: row[6],
+        GL: row[7],
+        SociedadGL: row[8],
+        PerimetroTdE: row[9],
+        PerimetroEmpresas: row[10],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oCliente of aFormattedClientes) {
+      const sNombre = oCliente.Nombre,
+      sPais = oCliente.Pais,
+      sZona = oCliente.Zona,
+      sRegion = oCliente.Region,
+      sIDCliente = oCliente.IDCliente,
+      sCIF = oCliente.CIF,
+      sTipoCliente = oCliente.TipoCliente,
+      sGL = oCliente.GL,
+      sSociedadGL = oCliente.SociedadGL,
+      sPerimetroTdE = oCliente.PerimetroTdE,
+      sPerimetroEmpresas = oCliente.PerimetroEmpresas;
+      if(!sNombre || !sPais || !sZona || !sRegion || !sIDCliente || !sCIF || !sTipoCliente || !sGL || !sSociedadGL || !sPerimetroTdE || !sPerimetroEmpresas) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Cliente).entries(aFormattedClientes);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
   
   async function processJefeProyectoRows(rows) {
@@ -1522,7 +1655,7 @@ this.on("getResultado", async (req) => {
       sMatricula = oJefeDeProyecto.matricula,
       sValueJefe = oJefeDeProyecto.valueJefe;
       if(!sNombre || !sApellido || !sMatricula || !sValueJefe) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
       
       if(sMatricula) {
@@ -1545,15 +1678,108 @@ this.on("getResultado", async (req) => {
   }
 
   async function processMotivoCondicionAmientosRows(rows) {
-    console.log("TODO CONTINUE MOTIVOCONDICIONAMIENTO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedMotivos = [];
+    rows.forEach(row => {
+      aFormattedMotivos.push({
+        tipo: row[0],
+        valor: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oMotivo of aFormattedMotivos) {
+      const sTipo = oMotivo.tipo,
+      sValor = oMotivo.valor;
+      if(!sTipo || !sValor) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(MotivoCondi).entries(aFormattedMotivos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPerfilConsumoRows(rows) {
-    console.log("TODO CONTINUE PERFILCONSUMO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedPerfilConsumos = [];
+    rows.forEach(row => {
+      aFormattedPerfilConsumos.push({
+        nombrePerfilC: row[0],
+        valorPerfilC: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oPerfilConsumo of aFormattedPerfilConsumos) {
+      const sNombrePerfilC = oPerfilConsumo.nombrePerfilC,
+      sValorPerfilC = oPerfilConsumo.valorPerfilC;
+      if(!sNombrePerfilC || !sValorPerfilC) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(PerfilConsumo).entries(aFormattedPerfilConsumos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPerfilServicioRows(rows) {
-    console.log("TODO CONTINUE PERFILSERVICIO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedPerfilConsumos = [];
+    rows.forEach(row => {
+      aFormattedPerfilConsumos.push({
+        NombrePerfil: row[0],
+        valuePerfil: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oPerfilConsumo of aFormattedPerfilConsumos) {
+      const sNombrePerfil = oPerfilConsumo.NombrePerfil,
+      sValorPerfil = oPerfilConsumo.valuePerfil;
+      if(!sNombrePerfil || !sValorPerfil) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(PerfilServicio).entries(aFormattedPerfilConsumos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processPorcentajeAnioRows(rows) {
@@ -1576,7 +1802,7 @@ this.on("getResultado", async (req) => {
       const iYear = oPorcentajeAnio.Year,
       iPercent = oPorcentajeAnio.Percent;
       if(!iYear || !iPercent) {
-        oProcessedData.errors.push(`Faltan datos en la fila ${index}`);
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
       }
 
       if(isNaN(iYear) || isNaN(iPercent)) {
@@ -1603,15 +1829,108 @@ this.on("getResultado", async (req) => {
   }
 
   async function processSeguimientoRows(rows) {
-    console.log("TODO CONTINUE SEGUIMIENTO ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedSeguimientos = [];
+    rows.forEach(row => {
+      aFormattedSeguimientos.push({
+        NombreSeguimiento: row[0],
+        valueSeguimiento: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oSeguimiento of aFormattedSeguimientos) {
+      const sNombreSeguimiento = oSeguimiento.NombreSeguimiento,
+      sValorSeguimiento = oSeguimiento.valueSeguimiento;
+      if(!sNombreSeguimiento || !sValorSeguimiento) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Seguimiento).entries(aFormattedSeguimientos);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processTipoCompraRows(rows) {
-    console.log("TODO CONTINUE TIPOCOMPRA ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedTipoCompra = [];
+    rows.forEach(row => {
+      aFormattedTipoCompra.push({
+        tipo: row[0],
+        valor: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oTipoCompra of aFormattedTipoCompra) {
+      const sTipo = oTipoCompra.tipo,
+      sValor = oTipoCompra.valor;
+      if(!sTipo || !sValor) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(TipoCompra).entries(aFormattedTipoCompra);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function processVerticalRows(rows) {
-    console.log("TODO CONTINUE VERTICAL ROWS");
+    let oProcessedData = {
+      ok: true,
+      errors: []
+    };
+
+    let aFormattedVertical = [];
+    rows.forEach(row => {
+      aFormattedVertical.push({
+        NombreVertical: row[0],
+        valueVertical: row[1],
+        Activo: true
+      });
+    });
+
+    let index = 1;
+    for(const oVertical of aFormattedVertical) {
+      const sNombreVertical = oVertical.NombreVertical,
+      sValorVertical = oVertical.valueVertical;
+      if(!sNombreVertical || !sValorVertical) {
+        oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      index++;
+    }
+
+    if(oProcessedData.errors.length === 0) {
+      await INSERT.into(Vertical).entries(aFormattedVertical);
+      oProcessedData.ok = true;
+    } else {
+      oProcessedData.ok = false;
+    }
+
+    return oProcessedData;
   }
 
   async function isExcel(buffer) {
@@ -1622,8 +1941,6 @@ this.on("getResultado", async (req) => {
     return type.mime === 'application/vnd.ms-excel' ||
            type.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   }
-
-
 
   async function getWorkflowToken() {
     try {
@@ -1642,6 +1959,11 @@ this.on("getResultado", async (req) => {
       console.error("Error al obtener token del workflow-api:", err.message);
       throw err;
     }
+  }
+
+  function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
 });
 

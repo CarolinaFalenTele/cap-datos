@@ -830,6 +830,7 @@ entity Aprobadores {
       name            : String;
       lastname        : String;
       Activo          : Boolean;
+      email           : String;
 }
 
 @cds.persistence.journal
