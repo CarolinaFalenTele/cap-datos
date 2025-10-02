@@ -203,6 +203,8 @@ entity PerfilConsumo {
       nombrePerfilC : String;
       valuePerfilC  : String;
       Activo        : Boolean;
+      PMJ          : Decimal(20, 2);
+      Anio         : String;
 };
 
 @cds.persistence.journal
@@ -695,7 +697,9 @@ entity PerfilServicio {
   key ID           : UUID @cds.auto;
       valuePerfil  : String;
       NombrePerfil : String;
-      Activo         : Boolean;
+      Activo       : Boolean;
+      PMJ          : Decimal(20, 2);
+      Anio         : String;
 
 
 };

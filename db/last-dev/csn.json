@@ -549,6 +549,17 @@
         "Activo": {
           "type": "cds.Boolean",
           "@cds.persistence.name": "ACTIVO"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 2,
+          "@cds.persistence.name": "PMJ"
+        },
+        "Anio": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ANIO"
         }
       },
       "@cds.persistence.name": "DB_DATOS_PERFILCONSUMO"
@@ -2236,6 +2247,17 @@
         "Activo": {
           "type": "cds.Boolean",
           "@cds.persistence.name": "ACTIVO"
+        },
+        "PMJ": {
+          "type": "cds.Decimal",
+          "precision": 20,
+          "scale": 2,
+          "@cds.persistence.name": "PMJ"
+        },
+        "Anio": {
+          "type": "cds.String",
+          "length": 5000,
+          "@cds.persistence.name": "ANIO"
         }
       },
       "@cds.persistence.name": "DB_DATOS_PERFILSERVICIO"

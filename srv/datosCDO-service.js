@@ -1422,7 +1422,12 @@ this.on("getResultado", async (req) => {
   });
 
   this.on('getEmailsAprobadores', async (req) => {
-    const { area } = req.data;
+    let { area } = req.data;
+
+    if(area && area.startsWith("'") && area.endsWith("'")) {
+      area = area.slice(1);
+      area = area.slice(0, -1);
+    }
 
     console.log("Area recibida:", area);
 
@@ -1721,8 +1726,10 @@ this.on("getResultado", async (req) => {
     let aFormattedPerfilConsumos = [];
     rows.forEach(row => {
       aFormattedPerfilConsumos.push({
-        nombrePerfilC: row[0],
-        valorPerfilC: row[1],
+        Anio: row[0],
+        nombrePerfilC: row[1],
+        valuePerfilC: row[2],
+        PMJ: row[3],
         Activo: true
       });
     });
@@ -1730,9 +1737,15 @@ this.on("getResultado", async (req) => {
     let index = 1;
     for(const oPerfilConsumo of aFormattedPerfilConsumos) {
       const sNombrePerfilC = oPerfilConsumo.nombrePerfilC,
-      sValorPerfilC = oPerfilConsumo.valorPerfilC;
-      if(!sNombrePerfilC || !sValorPerfilC) {
+      sValorPerfilC = oPerfilConsumo.valuePerfilC,
+      iAnio = oPerfilConsumo.Anio,
+      iPMJ = oPerfilConsumo.PMJ;
+      if(!sNombrePerfilC || !sValorPerfilC || !iAnio || !iPMJ) {
         oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      
+      if(isNaN(iAnio) || isNaN(iPMJ)) {
+        oProcessedData.errors.push(`En la fila ${index} los datos no son numéricos. Revise separar los decimales con comas y no introducir puntos en los miles`);
       }
       index++;
     }
@@ -1753,27 +1766,35 @@ this.on("getResultado", async (req) => {
       errors: []
     };
 
-    let aFormattedPerfilConsumos = [];
+    let aFormattedPerfilServicios = [];
     rows.forEach(row => {
-      aFormattedPerfilConsumos.push({
-        NombrePerfil: row[0],
-        valuePerfil: row[1],
+      aFormattedPerfilServicios.push({
+        Anio: row[0],
+        NombrePerfil: row[1],
+        valuePerfil: row[2],
+        PMJ: row[3],
         Activo: true
       });
     });
 
     let index = 1;
-    for(const oPerfilConsumo of aFormattedPerfilConsumos) {
-      const sNombrePerfil = oPerfilConsumo.NombrePerfil,
-      sValorPerfil = oPerfilConsumo.valuePerfil;
-      if(!sNombrePerfil || !sValorPerfil) {
+    for(const oPerfilServicio of aFormattedPerfilServicios) {
+      const sNombrePerfil = oPerfilServicio.NombrePerfil,
+      sValorPerfil = oPerfilServicio.valuePerfil,
+      iAnio = oPerfilServicio.Anio,
+      iPMJ = oPerfilServicio.PMJ;
+      if(!sNombrePerfil || !sValorPerfil || !iAnio || !iPMJ) {
         oProcessedData.errors.push(`Faltan datos en la fila ${index+1}`);
+      }
+      
+      if(isNaN(iAnio) || isNaN(iPMJ)) {
+        oProcessedData.errors.push(`En la fila ${index} los datos no son numéricos. Revise separar los decimales con comas y no introducir puntos en los miles`);
       }
       index++;
     }
 
     if(oProcessedData.errors.length === 0) {
-      await INSERT.into(PerfilServicio).entries(aFormattedPerfilConsumos);
+      await INSERT.into(PerfilServicio).entries(aFormattedPerfilServicios);
       oProcessedData.ok = true;
     } else {
       oProcessedData.ok = false;
