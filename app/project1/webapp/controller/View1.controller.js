@@ -276,7 +276,7 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
                 FILTROS INACTIVOS O ACTIVOS 
       ======================================================= */
 
-      _applyActiveFilters: async function () {
+      _applyActiveFilters: async function (iCreationYear) {
         [
           {"oSelect": this.byId("slct_area"), "sPath": "/Area", "sKey": "ID", "sText": "NombreArea"},
           {"oSelect": this.byId("slct_Jefe"), "sPath": "/Jefeproyect", "sKey": "ID", "sText": "name"},
@@ -302,10 +302,12 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
           });
         });
 
-        this._filterCompleteTables();
+        this._filterCompleteTables(iCreationYear);
       },
 
-      _filterCompleteTables: async function() {
+      _filterCompleteTables: async function(iCreationYear) {
+        const iAnioPerfiles = iCreationYear || new Date().getFullYear();
+
         [
           {"sTableId": "tablaConsuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: 2},
           {"sTableId": "table_dimicFecha", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: 2, iPerfilConsuColumn: null},
@@ -326,18 +328,24 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
           aItems.forEach(oRow => {
             this._filterDynamic(oRow.getCells()[iVerticalColumn], "/Vertical", "ID", "NombreVertical");
             this._filterDynamic(oRow.getCells()[iTipoServicioColumn], "/TipoServicio", "ID", "NombreTipoServ");
-            this._filterDynamic(oRow.getCells()[iPerfilServiColumn], "/PerfilServicio", "ID", "NombrePerfil");
-            this._filterDynamic(oRow.getCells()[iPerfilConsuColumn], "/PerfilConsumo", "ID", "nombrePerfilC");
+            this._filterDynamic(oRow.getCells()[iPerfilServiColumn], "/PerfilServicio", "ID", "NombrePerfil", iAnioPerfiles);
+            this._filterDynamic(oRow.getCells()[iPerfilConsuColumn], "/PerfilConsumo", "ID", "nombrePerfilC", iAnioPerfiles);
           });
         });
       },
 
-      _filterDynamic: async function(oSelect, sPath, sKey, sText) {
+      _filterDynamic: async function(oSelect, sPath, sKey, sText, iAnioPerfiles) {
+        let aFilters = [
+          new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
+        ];
+
+        if (iAnioPerfiles) {
+          aFilters.push(new sap.ui.model.Filter("Anio", sap.ui.model.FilterOperator.EQ, iAnioPerfiles));
+        }
+        
         oSelect?.bindItems({
           path: sPath,
-          filters: [
-            new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
-          ],
+          filters: aFilters,
           template: new sap.ui.core.Item({
             key: `{${sKey}}`,
             text: `{${sText}}`
@@ -1519,13 +1527,23 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
         //     Llamamos con el source limpio
         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
-        this._applyActiveFilters();
-
         this._sProjectID = sProjectID;
+
+        let oData, iCreationYear;
+        if (sProjectID) {
+          try {
+            oData = await this._fetchProjectData(sProjectID);
+            iCreationYear = (new Date(oData.fechaCreacion)).getFullYear();
+          } catch (error) {
+            console.error("Error al obtener los datos del proyecto:", error);
+            sap.m.MessageToast.show("Error al cargar los datos del proyecto");
+          }
+        }
+
+        this._applyActiveFilters(iCreationYear);
 
         if (sProjectID) {
           try {
-            const oData = await this._fetchProjectData(sProjectID);
             await this._populateViewWithData(oData, sMode);
             await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
