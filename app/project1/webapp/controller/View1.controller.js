@@ -171,9 +171,9 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
 
         this.traerPorcentajes();
 
-
      
       },
+
 
 
 
@@ -5651,16 +5651,12 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
           "Director": {
             PMJ: 1370.88
 
-
           },
           "CG4.C": {
             PMJ: 179.46
-
-
           },
           "CG4.A": {
             PMJ: 347.37
-
           },
           "CG4.B": {
             PMJ: 223.59
