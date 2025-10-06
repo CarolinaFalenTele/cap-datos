@@ -9,7 +9,7 @@ sap.ui.define([
   "sap/ui/model/FilterOperator",
   "sap/ui/model/FilterType",
   "sap/ui/model/json/JSONModel",
-  "sap/m/MessageBox" 
+  "sap/m/MessageBox"
 
 ],
 
@@ -55,32 +55,32 @@ sap.ui.define([
            2. Inicializar Model para Años dinamicos  
         ======================================================= */
 
-var oAniosModel = new sap.ui.model.json.JSONModel();
-var oCostesModel = new sap.ui.model.json.JSONModel();
+        var oAniosModel = new sap.ui.model.json.JSONModel();
+        var oCostesModel = new sap.ui.model.json.JSONModel();
 
-// Attach requestCompleted para coste
-oCostesModel.attachRequestCompleted(() => {
-    const oModel = this.getView().getModel("miModeloCostes");
+        // Attach requestCompleted para coste
+        oCostesModel.attachRequestCompleted(() => {
+          const oModel = this.getView().getModel("miModeloCostes");
 
-    this.actualizarHeadersAnios(); // ahora sí existe el modelo
-        this._initialCostesData = JSON.parse(JSON.stringify(oCostesModel.getData()));
+          this.actualizarHeadersAnios(); // ahora sí existe el modelo
+          this._initialCostesData = JSON.parse(JSON.stringify(oCostesModel.getData()));
 
 
-});
+        });
 
-// Cargamos datos del modelo de costes
-oCostesModel.loadData("model/costes.json");
-this.getView().setModel(oCostesModel, "miModeloCostes");
+        // Cargamos datos del modelo de costes
+        oCostesModel.loadData("model/costes.json");
+        this.getView().setModel(oCostesModel, "miModeloCostes");
 
-// Attach requestCompleted para años
-oAniosModel.attachRequestCompleted(() => {
-    const oModel = this.getView().getModel("modeloAnioDinamicos");
-    this.actualizarHeadersAnios();
-});
+        // Attach requestCompleted para años
+        oAniosModel.attachRequestCompleted(() => {
+          const oModel = this.getView().getModel("modeloAnioDinamicos");
+          this.actualizarHeadersAnios();
+        });
 
-// Cargamos datos del modelo de años
-oAniosModel.loadData("model/añosDinamicos.json");
-this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
+        // Cargamos datos del modelo de años
+        oAniosModel.loadData("model/añosDinamicos.json");
+        this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
 
 
         /* ======================================================
@@ -171,11 +171,36 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
 
         this.traerPorcentajes();
 
-     
       },
 
 
 
+onCostesTabSelect: function (oEvent) {
+    var oVBox = this.byId("costeContent");
+    var that = this;
+
+    // Retraso antes de mostrar el spinner (por ejemplo, 1 segundo)
+    this._busyTimeout = setTimeout(function () {
+        oVBox.setBusy(true);
+    }, 1000);
+
+    // Simula carga de datos o procesamiento pesado
+    this._loadCostesData().then(function () {
+        // Si termina antes del segundo, nunca se muestra el spinner
+        clearTimeout(that._busyTimeout);
+        oVBox.setBusy(false);
+    });
+},
+
+_loadCostesData: function () {
+
+
+    return new Promise(function (resolve) {
+        // Aquí iría tu lógica real: llamadas OData, cálculos, etc.
+        // Simulamos tiempo de carga
+        setTimeout(resolve, 2000);
+    });
+},
 
 
 
@@ -278,18 +303,18 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
 
       _applyActiveFilters: async function (iCreationYear) {
         [
-          {"oSelect": this.byId("slct_area"), "sPath": "/Area", "sKey": "ID", "sText": "NombreArea"},
-          {"oSelect": this.byId("slct_Jefe"), "sPath": "/Jefeproyect", "sKey": "ID", "sText": "name"},
-          {"oSelect": this.byId("slct_verti"), "sPath": "/Vertical", "sKey": "ID", "sText": "NombreVertical"},
-          {"oSelect": this.byId("slct_client"), "sPath": "/ClienteNuevo", "sKey": "ID", "sText": "NombreClienteNuevo"},
-          {"oSelect": this.byId("slct_inic"), "sPath": "/TipoIniciativa", "sKey": "ID", "sText": "NombreIniciativa"},
-          {"oSelect": this.byId("idNatu"), "sPath": "/Naturaleza", "sKey": "ID", "sText": "NombreNaturaleza"},
-          {"oSelect": this.byId("selc_Segui"), "sPath": "/Seguimiento", "sKey": "ID", "sText": "NombreSeguimiento"},
-          {"oSelect": this.byId("selc_ejcu"), "sPath": "/EjecucionVia", "sKey": "ID", "sText": "NombreEjecuVia"},
-          {"oSelect": this.byId("selct_Amrecp"), "sPath": "/AMreceptor", "sKey": "ID", "sText": "NombreAMreceptor"},
-          {"oSelect": this.byId("select_tipoCom"), "sPath": "/TipoCompra", "sKey": "ID", "sText": "tipo"},
-          {"oSelect": this.byId("selectMotivo"), "sPath": "/MotivoCondi", "sKey": "ID", "sText": "tipo"}
-        ].forEach(({oSelect, sPath, sKey, sText}) => {
+          { "oSelect": this.byId("slct_area"), "sPath": "/Area", "sKey": "ID", "sText": "NombreArea" },
+          { "oSelect": this.byId("slct_Jefe"), "sPath": "/Jefeproyect", "sKey": "ID", "sText": "name" },
+          { "oSelect": this.byId("slct_verti"), "sPath": "/Vertical", "sKey": "ID", "sText": "NombreVertical" },
+          { "oSelect": this.byId("slct_client"), "sPath": "/ClienteNuevo", "sKey": "ID", "sText": "NombreClienteNuevo" },
+          { "oSelect": this.byId("slct_inic"), "sPath": "/TipoIniciativa", "sKey": "ID", "sText": "NombreIniciativa" },
+          { "oSelect": this.byId("idNatu"), "sPath": "/Naturaleza", "sKey": "ID", "sText": "NombreNaturaleza" },
+          { "oSelect": this.byId("selc_Segui"), "sPath": "/Seguimiento", "sKey": "ID", "sText": "NombreSeguimiento" },
+          { "oSelect": this.byId("selc_ejcu"), "sPath": "/EjecucionVia", "sKey": "ID", "sText": "NombreEjecuVia" },
+          { "oSelect": this.byId("selct_Amrecp"), "sPath": "/AMreceptor", "sKey": "ID", "sText": "NombreAMreceptor" },
+          { "oSelect": this.byId("select_tipoCom"), "sPath": "/TipoCompra", "sKey": "ID", "sText": "tipo" },
+          { "oSelect": this.byId("selectMotivo"), "sPath": "/MotivoCondi", "sKey": "ID", "sText": "tipo" }
+        ].forEach(({ oSelect, sPath, sKey, sText }) => {
           oSelect?.bindItems({
             path: sPath,
             filters: [
@@ -305,23 +330,23 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
         this._filterCompleteTables(iCreationYear);
       },
 
-      _filterCompleteTables: async function(iCreationYear) {
+      _filterCompleteTables: async function (iCreationYear) {
         const iAnioPerfiles = iCreationYear || new Date().getFullYear();
 
         [
-          {"sTableId": "tablaConsuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: 2},
-          {"sTableId": "table_dimicFecha", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: 2, iPerfilConsuColumn: null},
-          {"sTableId": "tablaRecExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "idOtroserConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "idGastoViajeConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "idServiExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "idGastoRecuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "tablaInfrestuctura", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "tablaLicencia", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "tableServicioInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null},
-          {"sTableId": "tablGastoViajeInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null}
+          { "sTableId": "tablaConsuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: 2 },
+          { "sTableId": "table_dimicFecha", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: 2, iPerfilConsuColumn: null },
+          { "sTableId": "tablaRecExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "idOtroserConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "idGastoViajeConsu", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "idServiExterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "idGastoRecuExter", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "tablaInfrestuctura", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "tablaLicencia", iVerticalColumn: 0, iTipoServicioColumn: null, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "tableServicioInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null },
+          { "sTableId": "tablGastoViajeInterno", iVerticalColumn: 0, iTipoServicioColumn: 1, iPerfilServiColumn: null, iPerfilConsuColumn: null }
         ].forEach(oTableData => {
-          const {sTableId, iVerticalColumn, iTipoServicioColumn, iPerfilServiColumn, iPerfilConsuColumn} = oTableData;
+          const { sTableId, iVerticalColumn, iTipoServicioColumn, iPerfilServiColumn, iPerfilConsuColumn } = oTableData;
           var oTable = this.byId(sTableId);
           var aItems = oTable?.getItems();
 
@@ -334,7 +359,7 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
         });
       },
 
-      _filterDynamic: async function(oSelect, sPath, sKey, sText, iAnioPerfiles) {
+      _filterDynamic: async function (oSelect, sPath, sKey, sText, iAnioPerfiles) {
         let aFilters = [
           new sap.ui.model.Filter("Activo", sap.ui.model.FilterOperator.EQ, true)
         ];
@@ -342,7 +367,7 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
         if (iAnioPerfiles) {
           aFilters.push(new sap.ui.model.Filter("Anio", sap.ui.model.FilterOperator.EQ, iAnioPerfiles));
         }
-        
+
         oSelect?.bindItems({
           path: sPath,
           filters: aFilters,
@@ -1794,7 +1819,7 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-           await this.CalculosResumenIngresosVSCostes();
+        await this.CalculosResumenIngresosVSCostes();
         this.highlightControls();
 
         const btnAceptar = this.byId("btnAceptar");
@@ -2113,7 +2138,7 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
         }
 
 
-      //  this.refreshODataModel();
+        //  this.refreshODataModel();
 
 
 
@@ -2153,18 +2178,18 @@ this.getView().setModel(oAniosModel, "modeloAnioDinamicos");
 
 
 
-resetCostesModel: function () {
-  const oCostesModel = this.getView().getModel("miModeloCostes");
+      resetCostesModel: function () {
+        const oCostesModel = this.getView().getModel("miModeloCostes");
 
-  if (oCostesModel && this._initialCostesData) {
-    const oResetData = JSON.parse(JSON.stringify(this._initialCostesData));
-    oCostesModel.setData(oResetData);
-    oCostesModel.refresh(true);
+        if (oCostesModel && this._initialCostesData) {
+          const oResetData = JSON.parse(JSON.stringify(this._initialCostesData));
+          oCostesModel.setData(oResetData);
+          oCostesModel.refresh(true);
 
-  } else {
-    console.warn("No hay datos iniciales guardados para resetear el modelo.");
-  }
-},
+        } else {
+          console.warn("No hay datos iniciales guardados para resetear el modelo.");
+        }
+      },
 
 
 
@@ -2233,7 +2258,7 @@ resetCostesModel: function () {
         });
 
 
-        
+
 
       },
 
@@ -3653,7 +3678,7 @@ resetCostesModel: function () {
           }
 
           const oData = await response.json();
-      //   console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
+          //   console.log("Datos de DATOS TOTAL   coste total   TRAIDO:", oData);
 
 
           // Verificar si hay datos en oData.value
@@ -3735,7 +3760,7 @@ resetCostesModel: function () {
             });
             this._IdFechasPorMes = idPorFecha;
 
-console.log("Valores por fecha:", valoresPorFecha);
+            console.log("Valores por fecha:", valoresPorFecha);
 
             //   console.log("FECHAS TRAIDAS "  +  JSON.stringify(this._IdFechasPorMes));
             //   console.log("VALORES POR FECHAS " + JSON.stringify(valoresPorFecha));
@@ -3829,14 +3854,14 @@ console.log("Valores por fecha:", valoresPorFecha);
           return;
         }
 
-     for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
-    const oInput = inputsFila[mesAno];
-    if (oInput) {
-        // Convertimos a número
-        const numValor = Number(valor);
+        for (const [mesAno, valor] of Object.entries(valoresPorFecha)) {
+          const oInput = inputsFila[mesAno];
+          if (oInput) {
+            // Convertimos a número
+            const numValor = Number(valor);
 
-        // Si es entero, lo mostramos sin decimales, si tiene decimales, los mostramos completos
-        const valorFormateado = (numValor % 1 === 0) ? numValor.toString() : valor;
+            // Si es entero, lo mostramos sin decimales, si tiene decimales, los mostramos completos
+            const valorFormateado = (numValor % 1 === 0) ? numValor.toString() : valor;
 
             //  console.log(`Seteando valor ${valorFormateado} en input de fecha ${mesAno}`);
             oInput.setValue(valorFormateado);
@@ -4980,143 +5005,143 @@ console.log("Valores por fecha:", valoresPorFecha);
       //-------------------------------------------------------------
 
 
-CalculosResumenIngresosVSCostes: async function () {
+      CalculosResumenIngresosVSCostes: async function () {
 
 
-    const Coste = this.getView().getModel();
-    const oContextCoste = Coste.bindContext("/getResultado(...)");
-    oContextCoste.setParameter("id", this._sProjectID);
+        const Coste = this.getView().getModel();
+        const oContextCoste = Coste.bindContext("/getResultado(...)");
+        oContextCoste.setParameter("id", this._sProjectID);
 
-    await oContextCoste.execute();
-    const response = oContextCoste.getBoundContext().getObject();
-    console.log("Resultado acción:", response);
+        await oContextCoste.execute();
+        const response = oContextCoste.getBoundContext().getObject();
+        console.log("Resultado acción:", response);
 
-    //  Cargamos JSON de plantilla
-    const res = await fetch("model/costes.json");
-    const oData = await res.json();
+        //  Cargamos JSON de plantilla
+        const res = await fetch("model/costes.json");
+        const oData = await res.json();
 
-    // Helper → formatea los YearTotals en el formato esperado
-    const formatYearTotals = (yearTotals) => ({
-        valores: [
+        // Helper → formatea los YearTotals en el formato esperado
+        const formatYearTotals = (yearTotals) => ({
+          valores: [
             parseFloat(yearTotals.year1).toFixed(2) + "€",
             parseFloat(yearTotals.year2).toFixed(2) + "€",
             parseFloat(yearTotals.year3).toFixed(2) + "€",
             parseFloat(yearTotals.year4).toFixed(2) + "€",
             parseFloat(yearTotals.year5).toFixed(2) + "€"
-        ],
-        total: parseFloat(yearTotals.total).toFixed(2) + "€"
-    });
+          ],
+          total: parseFloat(yearTotals.total).toFixed(2) + "€"
+        });
 
-  //  Mapeo para servicios (TipoServicio, ConceptoOferta, TipoRecurso_Vertical)
-const serviciosMap = [
-  { responseKey: "totales",    target: "CostesDirectos" },
-  { responseKey: "indirectos", target: "CostesIndirect" },
-  { responseKey: "CosteTotal", target: "CosteTotal" },
-  { responseKey: "Ingresos",   target: "Ingresos" },
-  { responseKey: "beneficio",  target: "Beneficio" }
-];
+        //  Mapeo para servicios (TipoServicio, ConceptoOferta, TipoRecurso_Vertical)
+        const serviciosMap = [
+          { responseKey: "totales", target: "CostesDirectos" },
+          { responseKey: "indirectos", target: "CostesIndirect" },
+          { responseKey: "CosteTotal", target: "CosteTotal" },
+          { responseKey: "Ingresos", target: "Ingresos" },
+          { responseKey: "beneficio", target: "Beneficio" }
+        ];
 
-// Mapeo para recursos (TipoRecursos[index].prop)
-const recursosMap = [
-  // Recurso Interno
-  { index: 0, prop: "CostesDirectosInterno",   responseKey: "totalRecursosInterno" },
-  { index: 0, prop: "CostesIndirect",          responseKey: "costesIndirectosRecursoInter" },
-  { index: 0, prop: "CosteTotalInterno",       responseKey: "costeTotalRecurInterno" },
-  { index: 0, prop: "IngresosInterno",       responseKey: "ingresoInternos" },
-  { index: 0, prop: "BeneficioInterno",       responseKey: "beneficioRecurInterno" },
-
-
-
-  // Consumo Externo
-  { index: 1, prop: "CostesDirectosConsumo",   responseKey: "totalConsumoExterno" },
-  { index: 1, prop: "CostesIndirectConsumo",   responseKey: "costesIndirectosConsumoExterno" },
-  { index: 1, prop: "CosteTotalConsumo",       responseKey: "costeTotalConsumoExterno" },
-  { index: 1, prop: "IngresosConsumo",       responseKey: "ingresoConsumoExterno" },
-  { index: 1, prop: "BeneficioConsumo",       responseKey: "beneficioConsumoExterno" },
-
-
-  // Recurso Externo
-  { index: 2, prop: "CostesDirectosRecurExt",  responseKey: "totalRecursoExterno" },
-  { index: 2, prop: "CostesIndirectRecurExt",  responseKey: "costesIndirectosRecursoExterno" },
-  { index: 2, prop: "CosteTotalRecurExt",      responseKey: "costeTotalRecursoExterno" },
-  { index: 2, prop: "IngresosRecurExt",      responseKey: "ingresoRecursoExterno" },
-  { index: 2, prop: "BeneficioRecurExt",      responseKey: "beneficioRecursoExterno" },
-
-  // Licencias
-  { index: 3, prop: "CostesDirectosLicencia",  responseKey: "totalLicencias" },
-  { index: 3, prop: "CostesIndirectLicencia",  responseKey: "costesIndirectoLicencias" },
-  { index: 3, prop: "CosteTotalLicencia",      responseKey: "costeTotalLicencia" },
-  { index: 3, prop: "IngresosLicencia",      responseKey: "ingresoLicencias" },
-  { index: 3, prop: "BeneficioLicencia",      responseKey: "beneficioLicencia" },
-
-
-  // Infraestructura
-  { index: 4, prop: "CostesDirectosInfra",     responseKey: "totalInfraestructura" },
-  { index: 4, prop: "CostesIndirectInfra",     responseKey: "costesIndirectoInfraestructura" },
-  { index: 4, prop: "CosteTotalInfra",         responseKey: "costeTotalInfraestructura" },
-  { index: 4, prop: "IngresosInfra",         responseKey: "ingresoInfraestructura" },
-  { index: 4, prop: "BeneficioInfra",         responseKey: "beneficioInfraestructura" },
+        // Mapeo para recursos (TipoRecursos[index].prop)
+        const recursosMap = [
+          // Recurso Interno
+          { index: 0, prop: "CostesDirectosInterno", responseKey: "totalRecursosInterno" },
+          { index: 0, prop: "CostesIndirect", responseKey: "costesIndirectosRecursoInter" },
+          { index: 0, prop: "CosteTotalInterno", responseKey: "costeTotalRecurInterno" },
+          { index: 0, prop: "IngresosInterno", responseKey: "ingresoInternos" },
+          { index: 0, prop: "BeneficioInterno", responseKey: "beneficioRecurInterno" },
 
 
 
-  // Gasto Viaje Interno
-  { index: 5, prop: "CostesDirectosGastoViInter", responseKey: "totalGastoViajeInterno" },
-  { index: 5, prop: "CostesIndirectGastoViInter", responseKey: "costesIndirectoGastoViaje" },
-  { index: 5, prop: "CosteTotalGastoViInter",     responseKey: "costeTotalGastoViaje" },
-  { index: 5, prop: "IngresosGastoViInter",     responseKey: "ingresoGastoViaje" },
-  { index: 5, prop: "BeneficioGastoViInter",     responseKey: "beneficioGastoViaje" },
+          // Consumo Externo
+          { index: 1, prop: "CostesDirectosConsumo", responseKey: "totalConsumoExterno" },
+          { index: 1, prop: "CostesIndirectConsumo", responseKey: "costesIndirectosConsumoExterno" },
+          { index: 1, prop: "CosteTotalConsumo", responseKey: "costeTotalConsumoExterno" },
+          { index: 1, prop: "IngresosConsumo", responseKey: "ingresoConsumoExterno" },
+          { index: 1, prop: "BeneficioConsumo", responseKey: "beneficioConsumoExterno" },
 
 
-  { index: 6, prop: "totalesIngreso",     responseKey: "totalesIngresos" },
-  { index: 6, prop: "totalesCostesDirectos",     responseKey: "totalCostesDirectos" },
-  { index: 6, prop: "totalesCostesIndirectos",     responseKey: "totalCostesIndirectos" },
-  { index: 6, prop: "totalesCosteTotal",     responseKey: "totalCostesTotales" },
-  { index: 6, prop: "totalesBeneficio",     responseKey: "totalBeneficios" },
+          // Recurso Externo
+          { index: 2, prop: "CostesDirectosRecurExt", responseKey: "totalRecursoExterno" },
+          { index: 2, prop: "CostesIndirectRecurExt", responseKey: "costesIndirectosRecursoExterno" },
+          { index: 2, prop: "CosteTotalRecurExt", responseKey: "costeTotalRecursoExterno" },
+          { index: 2, prop: "IngresosRecurExt", responseKey: "ingresoRecursoExterno" },
+          { index: 2, prop: "BeneficioRecurExt", responseKey: "beneficioRecursoExterno" },
+
+          // Licencias
+          { index: 3, prop: "CostesDirectosLicencia", responseKey: "totalLicencias" },
+          { index: 3, prop: "CostesIndirectLicencia", responseKey: "costesIndirectoLicencias" },
+          { index: 3, prop: "CosteTotalLicencia", responseKey: "costeTotalLicencia" },
+          { index: 3, prop: "IngresosLicencia", responseKey: "ingresoLicencias" },
+          { index: 3, prop: "BeneficioLicencia", responseKey: "beneficioLicencia" },
 
 
+          // Infraestructura
+          { index: 4, prop: "CostesDirectosInfra", responseKey: "totalInfraestructura" },
+          { index: 4, prop: "CostesIndirectInfra", responseKey: "costesIndirectoInfraestructura" },
+          { index: 4, prop: "CosteTotalInfra", responseKey: "costeTotalInfraestructura" },
+          { index: 4, prop: "IngresosInfra", responseKey: "ingresoInfraestructura" },
+          { index: 4, prop: "BeneficioInfra", responseKey: "beneficioInfraestructura" },
+
+
+
+          // Gasto Viaje Interno
+          { index: 5, prop: "CostesDirectosGastoViInter", responseKey: "totalGastoViajeInterno" },
+          { index: 5, prop: "CostesIndirectGastoViInter", responseKey: "costesIndirectoGastoViaje" },
+          { index: 5, prop: "CosteTotalGastoViInter", responseKey: "costeTotalGastoViaje" },
+          { index: 5, prop: "IngresosGastoViInter", responseKey: "ingresoGastoViaje" },
+          { index: 5, prop: "BeneficioGastoViInter", responseKey: "beneficioGastoViaje" },
+
+
+          { index: 6, prop: "totalesIngreso", responseKey: "totalesIngresos" },
+          { index: 6, prop: "totalesCostesDirectos", responseKey: "totalCostesDirectos" },
+          { index: 6, prop: "totalesCostesIndirectos", responseKey: "totalCostesIndirectos" },
+          { index: 6, prop: "totalesCosteTotal", responseKey: "totalCostesTotales" },
+          { index: 6, prop: "totalesBeneficio", responseKey: "totalBeneficios" },
 
 
 
 
 
-];
 
-// Aplicar servicios principales
-if (oData.TipoServicio && oData.TipoServicio.length > 0) {
-    const tipoServicio = oData.TipoServicio[0];
-    const conceptoOferta = oData.ConceptoOferta?.[0] || null;
-    const tipoRecursoVertical = oData.TipoRecurso_Vertical?.[0] || null;
 
-    serviciosMap.forEach(({ responseKey, target }) => {
-        if (response[responseKey]) {
-            tipoServicio[target] = formatYearTotals(response[responseKey]);
-            if (conceptoOferta) conceptoOferta[target] = tipoServicio[target];
-            if (tipoRecursoVertical) tipoRecursoVertical[target] = tipoServicio[target];
+        ];
+
+        // Aplicar servicios principales
+        if (oData.TipoServicio && oData.TipoServicio.length > 0) {
+          const tipoServicio = oData.TipoServicio[0];
+          const conceptoOferta = oData.ConceptoOferta?.[0] || null;
+          const tipoRecursoVertical = oData.TipoRecurso_Vertical?.[0] || null;
+
+          serviciosMap.forEach(({ responseKey, target }) => {
+            if (response[responseKey]) {
+              tipoServicio[target] = formatYearTotals(response[responseKey]);
+              if (conceptoOferta) conceptoOferta[target] = tipoServicio[target];
+              if (tipoRecursoVertical) tipoRecursoVertical[target] = tipoServicio[target];
+            }
+          });
         }
-    });
-}
 
-// Aplicar recursos
-if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
-    recursosMap.forEach(({ index, prop, responseKey }) => {
-        if (oData.TipoRecursos[index] && response[responseKey]) {
-            oData.TipoRecursos[index][prop] = formatYearTotals(response[responseKey]);
+        // Aplicar recursos
+        if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
+          recursosMap.forEach(({ index, prop, responseKey }) => {
+            if (oData.TipoRecursos[index] && response[responseKey]) {
+              oData.TipoRecursos[index][prop] = formatYearTotals(response[responseKey]);
+            }
+          });
         }
-    });
-}
 
-    // Creamos el modelo y mantenemos los años intactos
-    const oCostesModel = new sap.ui.model.json.JSONModel(oData);
-    const oModelAnterior = this.getView().getModel("miModeloCostes");
-    if (oModelAnterior?.getProperty("/Anios")) {
-        oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
-    }
+        // Creamos el modelo y mantenemos los años intactos
+        const oCostesModel = new sap.ui.model.json.JSONModel(oData);
+        const oModelAnterior = this.getView().getModel("miModeloCostes");
+        if (oModelAnterior?.getProperty("/Anios")) {
+          oCostesModel.setProperty("/Anios", oModelAnterior.getProperty("/Anios"));
+        }
 
-    this.getView().setModel(oCostesModel, "miModeloCostes");
-    oCostesModel.refresh(true);
+        this.getView().setModel(oCostesModel, "miModeloCostes");
+        oCostesModel.refresh(true);
 
 
-},
+      },
 
 
 
@@ -5692,7 +5717,7 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
           //  Llama a updateTotalField inmediatamente
           this.updateTotalField(tableId, iIndex, oUpdate.PMJ, oEvent, 4);
-  
+
 
 
 
@@ -8977,8 +9002,8 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
         //console.log("ID RECIBIDO DEL INSERT " + idResumenCostetotal);
 
-          Total = Math.round(Total);
-              console.log("Total " + Total);
+        Total = Math.round(Total);
+        console.log("Total " + Total);
 
 
         var payload = {
@@ -9586,34 +9611,34 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
             continue; // SALTA A LA SIGUIENTE ITERACIÓN
           }
 
-          
-              // Función para normalizar valores
-              function normalizeNumber(valor) {
-                  let number = parseFloat(valor);
-                  if (!Number.isInteger(number)) {
-                      number = Math.round(number * 10000) / 10000; // redondear a 4 decimales
-                  }
-                  return number;
-              }
+
+          // Función para normalizar valores
+          function normalizeNumber(valor) {
+            let number = parseFloat(valor);
+            if (!Number.isInteger(number)) {
+              number = Math.round(number * 10000) / 10000; // redondear a 4 decimales
+            }
+            return number;
+          }
 
 
 
-            // Construir el payload para cada fila
-            const payload = {
-                Vertical_ID: sVertical,
-                ConceptoOferta: sConcepto,
-                PMJ: sPMJ,
-                year1: normalizeNumber(syear1),
-                year2: normalizeNumber(syear2),
-                year3: normalizeNumber(syear3),
-                year4: normalizeNumber(syear4),
-                year5: normalizeNumber(syear5),
-                total: normalizeNumber(sTotal),
-                totalE: normalizeNumber(stotalRe),
-                tipoServicio_ID: stipoServi,
-                PerfilServicio_ID: sPerfil,
-                datosProyect_ID: generatedId,
-            };
+          // Construir el payload para cada fila
+          const payload = {
+            Vertical_ID: sVertical,
+            ConceptoOferta: sConcepto,
+            PMJ: sPMJ,
+            year1: normalizeNumber(syear1),
+            year2: normalizeNumber(syear2),
+            year3: normalizeNumber(syear3),
+            year4: normalizeNumber(syear4),
+            year5: normalizeNumber(syear5),
+            total: normalizeNumber(sTotal),
+            totalE: normalizeNumber(stotalRe),
+            tipoServicio_ID: stipoServi,
+            PerfilServicio_ID: sPerfil,
+            datosProyect_ID: generatedId,
+          };
 
           // Verificar si existe el ID de recurso para hacer actualización o inserción
           //      const recursoID = oItem.getBindingContext()?.getProperty("ID"); // Obtiene el ID del recurso, si existe
@@ -9857,7 +9882,7 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
             continue;
           }
 
-            console.log(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
+          console.log(` Columna dinámica: '${columnHeader}' con valor: ${dynamicValue}`);
           dynamicColumnsData[columnHeader] = this.convertToInt(dynamicValue);
         }
 
@@ -9903,8 +9928,8 @@ if (oData.TipoRecursos && oData.TipoRecursos.length > 0) {
 
           let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
           //  Paso 2: Armar payload
@@ -10043,10 +10068,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error(" Error al verificar existencia del registro:", e);
           }
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-            // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-            valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
           //  Armar payload
@@ -10183,7 +10208,7 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           }
 
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
           // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
           valorNormalized = Math.round(valorNormalized * 10000) / 10000;
@@ -10345,10 +10370,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           }
 
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
           // Payload con los nombres y IDs correctos
           const payload = {
@@ -10477,10 +10502,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
           //     Construir payload
@@ -10618,10 +10643,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
           // Paso 2: Armar payload
@@ -10765,10 +10790,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
             console.error("    Error al verificar existencia del registro:", e);
           }
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
           //     Armar payload
           const payload = {
@@ -10905,10 +10930,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           }
 
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
           const payload = {
             ServiRecurExterno_ID: idServiExterno,
@@ -11044,10 +11069,10 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           }
 
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
           //     Armar payload
           const payload = {
@@ -11195,8 +11220,8 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           }
           let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
 
@@ -11254,8 +11279,8 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
       //---------------------------INSERTAR MES AÑO LICENCIA ----------
 
-      InsertMesAñosLicencia: async function (oItem , i ) {
-const idLicencia = this._idLicencia[i]; // Solo el UUID de esta fila
+      InsertMesAñosLicencia: async function (oItem, i) {
+        const idLicencia = this._idLicencia[i]; // Solo el UUID de esta fila
         const sTokenMe = this._sCsrfToken;
         const dynamicColumnsData = {};
         const columns = oItem.getParent().getColumns();
@@ -11338,11 +11363,11 @@ const idLicencia = this._idLicencia[i]; // Solo el UUID de esta fila
             console.error("    Error al verificar existencia del registro:", e);
           }
 
-                    let valorNormalized = parseFloat(valor);
+          let valorNormalized = parseFloat(valor);
 
-// Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
-valorNormalized = Math.round(valorNormalized * 10000) / 10000;
-  
+          // Redondeamos a 4 decimales máximo, manejando enteros o dos decimales
+          valorNormalized = Math.round(valorNormalized * 10000) / 10000;
+
           const payload = {
             licencia_ID: idLicencia,
             mesAno: mes,
@@ -12474,102 +12499,102 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
 
 
 
-/*insertarLicencia: async function (generatedId) {
-
-    const sTokenG = this._sCsrfToken;
-
-    // Obtener la tabla por su ID
-    const oTable = this.byId("tablaLicencia");
-
-    // Obtener todos los elementos del tipo ColumnListItem
-    const aItems = oTable.getItems();
-
-    // Asegurarse de que _idLicencia sea un array
-    if (!this._idLicencia) {
-        this._idLicencia = [];
-    }
-
-    // Iterar sobre cada fila
-    for (let i = 0; i < aItems.length; i++) {
-        const oItem = aItems[i];  // Obtener la fila actual
-        const sidLinc = this._idLicencia[i] || null; // UUID de la fila si ya existe
-
-        // Obtener los controles dentro de cada celda
-        const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
-        const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta 
-        const sPMJ = parseFloat(oItem.getCells()[3]?.getText()); // Text de PMJ
-        const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
-        const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
-        const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
-        const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
-        const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
-        const sTotal = parseFloat(oItem.getCells()[4]?.getText()); // Text de Total
-        const stotalRe = parseFloat(oItem.getCells()[5]?.getText()); // Text de TotalE
-
-        // Validar si todos los datos son válidos
-        if (!sVertical || !sConcepto) {
-            continue; // Si hay un error, no se envía la solicitud
-        }
-
-        // Construir el payload para cada fila
-        const payload = {
-            Vertical_ID: sVertical,
-            ConceptoOferta: sConcepto,
-            PMJ: sPMJ,
-            year1: Number(syear1.toFixed(2)),
-            year2: Number(syear2.toFixed(2)),
-            year3: Number(syear3.toFixed(2)),
-            year4: Number(syear4.toFixed(2)),
-            year5: Number(syear5.toFixed(2)),
-            total: sTotal,
-            totalC: stotalRe,
-            datosProyect_ID: generatedId
-        };
-
-        try {
-            let response;
-
-            if (sidLinc) {
-                // PATCH para actualizar fila existente
-                response = await fetch(`/odata/v4/datos-cdo/LicenciasCon('${sidLinc}')`, {
-                    method: 'PATCH',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-csrf-token": sTokenG,
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } else {
-                // POST para insertar nueva fila
-                response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-csrf-token": sTokenG
-                    },
-                    body: JSON.stringify(payload)
-                });
-            }
-
-            if (response.ok) {
-                const result = await response.json();
-                const idLicencia = result.ID;
-
-                // Guardar el UUID de esta fila en el array correspondiente
-                this._idLicencia[i] = idLicencia;
-
-                // Insertar los meses/años de la licencia
-                await this.InsertMesAñosLicencia(oItem);
-
-            } else {
-                const errorMessage = await response.text();
-                console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
-            }
-        } catch (error) {
-            console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
-        }
-    }
-},*/
+      /*insertarLicencia: async function (generatedId) {
+      
+          const sTokenG = this._sCsrfToken;
+      
+          // Obtener la tabla por su ID
+          const oTable = this.byId("tablaLicencia");
+      
+          // Obtener todos los elementos del tipo ColumnListItem
+          const aItems = oTable.getItems();
+      
+          // Asegurarse de que _idLicencia sea un array
+          if (!this._idLicencia) {
+              this._idLicencia = [];
+          }
+      
+          // Iterar sobre cada fila
+          for (let i = 0; i < aItems.length; i++) {
+              const oItem = aItems[i];  // Obtener la fila actual
+              const sidLinc = this._idLicencia[i] || null; // UUID de la fila si ya existe
+      
+              // Obtener los controles dentro de cada celda
+              const sVertical = oItem.getCells()[0].getSelectedKey(); // Select de Vertical
+              const sConcepto = oItem.getCells()[2].getValue(); // Input de Concepto Oferta 
+              const sPMJ = parseFloat(oItem.getCells()[3]?.getText()); // Text de PMJ
+              const syear1 = parseFloat(oItem.getCells()[5]?.getText() || "0");
+              const syear2 = parseFloat(oItem.getCells()[6]?.getText() || "0");
+              const syear3 = parseFloat(oItem.getCells()[7]?.getText() || "0");
+              const syear4 = parseFloat(oItem.getCells()[8]?.getText() || "0");
+              const syear5 = parseFloat(oItem.getCells()[9]?.getText() || "0");
+              const sTotal = parseFloat(oItem.getCells()[4]?.getText()); // Text de Total
+              const stotalRe = parseFloat(oItem.getCells()[5]?.getText()); // Text de TotalE
+      
+              // Validar si todos los datos son válidos
+              if (!sVertical || !sConcepto) {
+                  continue; // Si hay un error, no se envía la solicitud
+              }
+      
+              // Construir el payload para cada fila
+              const payload = {
+                  Vertical_ID: sVertical,
+                  ConceptoOferta: sConcepto,
+                  PMJ: sPMJ,
+                  year1: Number(syear1.toFixed(2)),
+                  year2: Number(syear2.toFixed(2)),
+                  year3: Number(syear3.toFixed(2)),
+                  year4: Number(syear4.toFixed(2)),
+                  year5: Number(syear5.toFixed(2)),
+                  total: sTotal,
+                  totalC: stotalRe,
+                  datosProyect_ID: generatedId
+              };
+      
+              try {
+                  let response;
+      
+                  if (sidLinc) {
+                      // PATCH para actualizar fila existente
+                      response = await fetch(`/odata/v4/datos-cdo/LicenciasCon('${sidLinc}')`, {
+                          method: 'PATCH',
+                          headers: {
+                              "Content-Type": "application/json",
+                              "x-csrf-token": sTokenG,
+                          },
+                          body: JSON.stringify(payload)
+                      });
+                  } else {
+                      // POST para insertar nueva fila
+                      response = await fetch("/odata/v4/datos-cdo/LicenciasCon", {
+                          method: "POST",
+                          headers: {
+                              "Content-Type": "application/json",
+                              "x-csrf-token": sTokenG
+                          },
+                          body: JSON.stringify(payload)
+                      });
+                  }
+      
+                  if (response.ok) {
+                      const result = await response.json();
+                      const idLicencia = result.ID;
+      
+                      // Guardar el UUID de esta fila en el array correspondiente
+                      this._idLicencia[i] = idLicencia;
+      
+                      // Insertar los meses/años de la licencia
+                      await this.InsertMesAñosLicencia(oItem);
+      
+                  } else {
+                      const errorMessage = await response.text();
+                      console.error("Error al guardar la fila " + (i + 1) + ":", errorMessage);
+                  }
+              } catch (error) {
+                  console.error("Error en la llamada al servicio para la fila " + (i + 1) + ":", error);
+              }
+          }
+      },*/
 
 
 
@@ -12623,7 +12648,7 @@ valorNormalized = Math.round(valorNormalized * 10000) / 10000;
           };
 
           let response;
-if (!this._idLicencia) this._idLicencia = [];
+          if (!this._idLicencia) this._idLicencia = [];
 
 
           try {
@@ -12651,13 +12676,13 @@ if (!this._idLicencia) this._idLicencia = [];
 
             if (response.ok) {
               const result = await response.json();
-                 this._idLicencia[i] = result.ID; // Guardar UUID en array
+              this._idLicencia[i] = result.ID; // Guardar UUID en array
 
 
               //  this._idLicencia = idLicencia;
 
 
-              await this.InsertMesAñosLicencia(oItem , i);
+              await this.InsertMesAñosLicencia(oItem, i);
 
               //console.log(("Fila " + (i + 1) + " guardada con éxito: INSERTAR LICENCIA ", result);
             } else {
@@ -13203,20 +13228,20 @@ if (!this._idLicencia) this._idLicencia = [];
 
         var diffMonths = this.getMonthsDifference(startDate, endDate);
 
-            
-var widthPerMonth = 200;  // cada mes equivale a 200px
-var minWidth = 2000;      // ancho mínimo
-var maxWidth = 7000;      // ancho máximo
 
-var newWidth = diffMonths * widthPerMonth; // número puro
+        var widthPerMonth = 200;  // cada mes equivale a 200px
+        var minWidth = 2000;      // ancho mínimo
+        var maxWidth = 7000;      // ancho máximo
 
-// si hay pocos meses, forzar un ancho mínimo
-if (diffMonths <= 2) {
-  newWidth = minWidth;  // si hay 1, 2 o 3 meses => forzamos 1000px
-}
+        var newWidth = diffMonths * widthPerMonth; // número puro
 
-// limitar ancho entre min y max
-var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
+        // si hay pocos meses, forzar un ancho mínimo
+        if (diffMonths <= 2) {
+          newWidth = minWidth;  // si hay 1, 2 o 3 meses => forzamos 1000px
+        }
+
+        // limitar ancho entre min y max
+        var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
 
 
@@ -13236,12 +13261,12 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
         ];
 
 
-    flexBoxIds.forEach((flexBoxId) => {
-      var flexBox = this.getView().byId(flexBoxId);
-      if (flexBox) {
-        flexBox.setWidth(finalWidth);
-      }
-    });
+        flexBoxIds.forEach((flexBoxId) => {
+          var flexBox = this.getView().byId(flexBoxId);
+          if (flexBox) {
+            flexBox.setWidth(finalWidth);
+          }
+        });
 
 
 
@@ -13457,7 +13482,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
         this._handleInputChangeCounter = (this._handleInputChangeCounter || 0) + 1;
         //  //console.log("handleInputChange disparado", tableId, rowIndex, columnIndex, year);
-      //  console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
+        //  console.log("Estoy entrando al HANDLE - llamada número:", this._handleInputChangeCounter);
 
         var newValue = parseFloat(oEvent.getParameter("value")) || 0;
 
@@ -13497,7 +13522,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
 
           //console.log("TOTAL YEAR JSON", JSON.stringify(this._yearlySums));
-        await   this.updateTotalField(tableId, rowIndex, newValue);
+          await this.updateTotalField(tableId, rowIndex, newValue);
 
           if (!this._insercionesPorAnoYTabla) this._insercionesPorAnoYTabla = {};
           if (!this._insercionesPorAnoYTabla[year]) this._insercionesPorAnoYTabla[year] = {};
@@ -13553,7 +13578,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
 
 
-  
+
 
 
 
@@ -13766,7 +13791,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
           // console.log("Modelo "  +     JSON.stringify(oJsonModel)  );
 
-         /// console.log(" Porcentajes cargados:", aPorcentajes);
+          /// console.log(" Porcentajes cargados:", aPorcentajes);
         } catch (err) {
           console.error("Error cargando PorcentajeAnio:", err);
         }
@@ -13785,7 +13810,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
       updateTotalField: function (tableId, rowIndex, newValue, oEvent, colIndex) {
 
-                
+
 
         var oAniosModel = this.getView().getModel("modeloAnioDinamicos");
         var aAnios = oAniosModel.getProperty("/AnioDinamicos") || [];
@@ -13871,14 +13896,14 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
                 // Actualizar las celdas con los valores específicos de las s
 
                 var PMJDi = aCells[4].getText();
-                aCells[5].setText(totalForAnio1.toFixed(2)  + "€" ); // Celda para 2024
+                aCells[5].setText(totalForAnio1.toFixed(2) + "€"); // Celda para 2024
                 aCells[6].setText(totalForAnio2.toFixed(2) + "€"); // Celda para 2025
                 aCells[7].setText(totalForAnio3.toFixed(2) + "€"); // Celda para 2026
                 aCells[8].setText(totalForAnio4.toFixed(2) + "€"); // Celda para 2027
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
 
-                 const totalAntesdelPorcem = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
+                const totalAntesdelPorcem = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 aCells[10].setText(totalAntesdelPorcem.toFixed(2));
 
                 function getPctForYear(anio) {
@@ -13898,22 +13923,22 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
 
 
 
-            
+
                 totalSum2 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
                 var resulDina = PMJDi * totalSum2;
 
-           //     console.log("total " + totalSum2);
+                //     console.log("total " + totalSum2);
 
 
-                console.table([
- { Año: aAnios[0].anio, Total: totalForAnio1.toFixed(2) },
-  { Año: aAnios[1].anio, Total: totalForAnio2.toFixed(2) },
-  { Año: aAnios[2].anio, Total: totalForAnio3.toFixed(2) },
-  { Año: aAnios[3].anio, Total: totalForAnio4.toFixed(2) },
-  { Año: aAnios[4].anio, Total: totalForAnio5.toFixed(2) },
-  { Año: "TOTAL 5 años", Total: totalSum2.toFixed(2) },
-  { Año: "Resultado final (resulDina)", Total: resulDina.toFixed(2) }
-]);    
+               /* console.table([
+                  { Año: aAnios[0].anio, Total: totalForAnio1.toFixed(2) },
+                  { Año: aAnios[1].anio, Total: totalForAnio2.toFixed(2) },
+                  { Año: aAnios[2].anio, Total: totalForAnio3.toFixed(2) },
+                  { Año: aAnios[3].anio, Total: totalForAnio4.toFixed(2) },
+                  { Año: aAnios[4].anio, Total: totalForAnio5.toFixed(2) },
+                  { Año: "TOTAL 5 años", Total: totalSum2.toFixed(2) },
+                  { Año: "Resultado final (resulDina)", Total: resulDina.toFixed(2) }
+                ]);*/
                 //aCells[10].setText(totalSum2.toFixed(2)); // Celda para Total 
                 aCells[11].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
 
@@ -14204,7 +14229,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
                 aCells[9].setText(totalForAnio5.toFixed(2) + "€"); // Celda para 2028
 
 
-                
+
                 function getPctForYear(anio) {
                   var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
                   if (rec) {
@@ -14257,7 +14282,7 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
                 //  aCells[10].setText(totalForAnio6.toFixed(2) + "€"); // Celda para 2029
 
 
-                                
+
                 function getPctForYear(anio) {
                   var rec = aPorcentajes.find(p => String(p.Year) === String(anio)); // aquí Year
                   if (rec) {
@@ -14503,18 +14528,18 @@ var finalWidth = Math.min(Math.max(newWidth, minWidth), maxWidth) + "px";
         var TotalSumas = totalSumaMar + totalMargeSobreIn;
         //  console.log("TOTAL SUMAS FINAL: " + TotalSumas.toFixed(2));
 
-    // Redondear al entero más cercano (redondeo matemático)
-var roundedTotal = Math.round(TotalSumas);
+        // Redondear al entero más cercano (redondeo matemático)
+        var roundedTotal = Math.round(TotalSumas);
 
-// Dar formato con miles y sin decimales
-var formattedTotal = new Intl.NumberFormat('es-ES', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0
-}).format(roundedTotal);
+        // Dar formato con miles y sin decimales
+        var formattedTotal = new Intl.NumberFormat('es-ES', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(roundedTotal);
 
-// Agregar el símbolo de euro
-var formattedTotalWithEuro = formattedTotal + ' €';
-this.byId("input0_1725625161348").setValue(formattedTotalWithEuro);
+        // Agregar el símbolo de euro
+        var formattedTotalWithEuro = formattedTotal + ' €';
+        this.byId("input0_1725625161348").setValue(formattedTotalWithEuro);
 
 
 

@@ -28,7 +28,7 @@
                             <headerContainer>
 
                             
-                                <IconTabBar id="itb1333" selectedKey="key2" upperCase="true"     select="onIconTabSelect">
+                                <IconTabBar id="itb1333" selectedKey="key2" upperCase="true"     select="onCostesTabSelect">
                                     <items>
                                         <!--    <IconTabFilter id="234h" text="Info" count="" key="key1">
                             <l:VerticalLayout id="274143" class="sapUiContentPadding" width="100%">
@@ -756,7 +756,11 @@
                                                 </content>
                                             </Panel>
                                         </IconTabFilter>
-                                        <IconTabFilter id="coste52" text="Costes Mensualizados " count="" key="key1">
+                                        <IconTabFilter id="coste52" text="Costes Mensualizados " count="" key="key1" >
+            <VBox id="costeContent" busyIndicatorDelay="0">
+
+
+
                                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel4">
                                                 <headerToolbar>
                                                     <Toolbar id="toolbar1_1714730282344">
@@ -4636,6 +4640,9 @@
 
 
                                             </Panel>
+
+            </VBox>
+
                                         </IconTabFilter>
                                         <IconTabFilter id="coste652" text="Resumen Costes y Margen" count="" key="key3">
                                             <Panel xmlns="sap.m" width="auto" expandable="true" expanded="true" id="panel0">

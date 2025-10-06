@@ -147,9 +147,6 @@
     "redirect-uris": [
       "https://*.hana.ondemand.com/**",
       "https://*.applicationstudio.cloud.sap/**"
-    ],
-    "allowedproviders": [
-      "sap.custom"
     ]
   }
 }
