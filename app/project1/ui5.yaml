@@ -9,9 +9,9 @@ server:
     configuration:
       ignoreCertError: false
       backend: 
-      - path: odata
+      - path: /odata
       - url: https://telefonica-global-technology--s-a--j8z80lwx-sp-shc-dev-7eb07e72.cfapps.eu20-001.hana.ondemand.com
-      - destination: srv-api
+      - destination: cdo-srv-api
       
       ui5:
       path:

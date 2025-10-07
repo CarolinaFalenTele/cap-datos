@@ -2,8 +2,8 @@ sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "sap/ui/core/CustomData",
-        "sap/m/MessageBox",              
-        "sap/ui/core/format/DateFormat", 
+        "sap/m/MessageBox",
+        "sap/ui/core/format/DateFormat",
         "project1/model/formatter"
     ],
     function (BaseController, CustomData, MessageBox, DateFormat, Formatter) {
@@ -32,7 +32,7 @@ sap.ui.define(
                 this.getUserInfo();
 
                 this._cargarDatosUsuario();
-},
+            },
 
 
 
@@ -171,28 +171,30 @@ sap.ui.define(
                     const aProyectosAsignadosAlUsuario = [];
 
                     aProyectosPendientes.forEach((proyecto) => {
-              
-                const ultimaEtapa = proyecto.Etapas
-        .filter(e => e.estado === "Aprobado" || e.estado === "Rechazado")
-        .sort((a, b) => new Date(b.fechaAprobado || b.creadoEn) - new Date(a.fechaAprobado || a.creadoEn))[0];
 
-    if (ultimaEtapa) {
-        proyecto.UltimaEtapaComentario = ultimaEtapa.comentario || "";
-        proyecto.UltimaEtapaNombre = ultimaEtapa.nombreEtapa || "Etapa sin nombre";
-        
-    } else {
-        proyecto.UltimaEtapaComentario = "";
-        proyecto.UltimaEtapaNombre = "";
-    }
+                        const ultimaEtapa = proyecto.Etapas
+                            .filter(e => e.estado === "Aprobado" || e.estado === "Rechazado")
+                            .sort((a, b) => new Date(b.fechaAprobado || b.creadoEn) - new Date(a.fechaAprobado || a.creadoEn))[0];
 
-              
+                        if (ultimaEtapa) {
+                            proyecto.UltimaEtapaComentario = ultimaEtapa.comentario || "";
+                            proyecto.UltimaEtapaNombre = ultimaEtapa.nombreEtapa || "Etapa sin nombre";
+
+                        } else {
+                            proyecto.UltimaEtapaComentario = "";
+                            proyecto.UltimaEtapaNombre = "";
+                        }
+
+
                         let tieneEtapaAsignada = false;
 
                         proyecto.Etapas.forEach((etapa) => {
-                            if (
-                                etapa.estado === "Pendiente" &&
-                                etapa.asignadoA?.trim().toLowerCase() === userEmail?.trim().toLowerCase()
-                            ) {
+                            const asignados = etapa.asignadoA
+                                ?.split(',')
+                                .map(email => email.trim().toLowerCase()) || [];
+
+                            if (etapa.estado === "Pendiente" && asignados.includes(userEmail?.trim().toLowerCase())) {
+                                tieneEtapaAsignada = true;
                                 tieneEtapaAsignada = true;
 
                                 aEtapasAsignadas.push({
@@ -200,7 +202,7 @@ sap.ui.define(
                                     asignadoA: etapa.asignadoA,
                                     aprobadoPor: etapa.aprobadoPor,
                                     estado: etapa.estado,
-                                   comentario: proyecto.UltimaEtapaComentario,  
+                                    comentario: proyecto.UltimaEtapaComentario,
                                     fechaAprobado: etapa.fechaAprobado,
                                     nameProyect: proyecto.nameProyect,
                                     creadoPor: proyecto.creadoPor,
@@ -265,7 +267,7 @@ sap.ui.define(
                     }), "modelRechazados");
 
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
-                     Count: countTotal,
+                        Count: countTotal,
                     }), "modelTotal");
 
                     this.getView().setModel(new sap.ui.model.json.JSONModel({
@@ -350,51 +352,51 @@ sap.ui.define(
 
 
 
-/*  onVerHistorial: async function (oEvent) {
-                try {
-                    const oSource = oEvent.getSource();
-
-                    // Intenta obtener el contexto desde modelPendientes
-                    let oContext = oSource.getBindingContext("modelPendientes");
-                    let modelo = "modelPendientes";
-
-                    // Si no lo encuentra en modelPendientes, intenta con modelAprobados
-                    if (!oContext) {
-                        oContext = oSource.getBindingContext("modelAprobados");
-                        modelo = "modelAprobados";
-                    }
-
-                    if (!oContext) {
-                        sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
-                        return;
-                    }
-
-                    const oItem = oContext.getObject();
-                    const workflowId = oItem.workflowId;
-
-                    if (!workflowId) {
-                        //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
-                        return;
-                    }
-
-                    const oModel = this.getOwnerComponent().getModel(); // OData Model principal
-                    const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
-
-                    oBoundContext.setParameter("ID", workflowId);
-                    await oBoundContext.execute();
-
-                    const result = oBoundContext.getBoundContext().getObject();
-                    //console.log((` Historial del workflow (${modelo}):`, result);
-
-
-
-                    await this.onActivityPress(oEvent, result);
-                    //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
-                } catch (error) {
-                    console.error(" Error al obtener el historial del workflow:", error);
-                    sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
-                }
-            },*/
+            /*  onVerHistorial: async function (oEvent) {
+                            try {
+                                const oSource = oEvent.getSource();
+            
+                                // Intenta obtener el contexto desde modelPendientes
+                                let oContext = oSource.getBindingContext("modelPendientes");
+                                let modelo = "modelPendientes";
+            
+                                // Si no lo encuentra en modelPendientes, intenta con modelAprobados
+                                if (!oContext) {
+                                    oContext = oSource.getBindingContext("modelAprobados");
+                                    modelo = "modelAprobados";
+                                }
+            
+                                if (!oContext) {
+                                    sap.m.MessageBox.warning("No se pudo determinar el modelo de origen.");
+                                    return;
+                                }
+            
+                                const oItem = oContext.getObject();
+                                const workflowId = oItem.workflowId;
+            
+                                if (!workflowId) {
+                                    //     sap.m.MessageToast.show("Este proyecto no tiene un workflow asociado.");
+                                    return;
+                                }
+            
+                                const oModel = this.getOwnerComponent().getModel(); // OData Model principal
+                                const oBoundContext = oModel.bindContext("/getWorkflowTimeline(...)");
+            
+                                oBoundContext.setParameter("ID", workflowId);
+                                await oBoundContext.execute();
+            
+                                const result = oBoundContext.getBoundContext().getObject();
+                                //console.log((` Historial del workflow (${modelo}):`, result);
+            
+            
+            
+                                await this.onActivityPress(oEvent, result);
+                                //   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                            } catch (error) {
+                                console.error(" Error al obtener el historial del workflow:", error);
+                                sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
+                            }
+                        },*/
 
 
 
@@ -536,7 +538,10 @@ sap.ui.define(
                     "TRIGGERED": "Neutral"
                 };
 
-                const pasosExcluidos = [ /*... tu array ...*/];
+                const pasosExcluidos = [  "INVOKE FUNCTION" ,
+                    "Verificar SSFF o SAP"
+
+                 ];
 
                 const eventosFiltrados = eventos.filter(e => {
                     const paso = (e.paso || "").trim().toUpperCase();
@@ -567,41 +572,30 @@ sap.ui.define(
                     const pasoUpper = pasoRaw.toUpperCase();
 
                     // Mapeo más específico:
-                    if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
-                        laneId = "0";
-                    } else if (pasoUpper.includes("APROBACIÓN")) {
-                        laneId = "1";
-                    } else if (
-                        pasoUpper.includes("PENDIENTE") ||
-                        pasoUpper.includes("BASIS") ||
-                        pasoUpper.includes("TQ") ||
-                        pasoUpper.includes("FACTORIA") ||
-                        pasoUpper.includes("EMAIL DE APROBACIÓN")
-                    ) {
-                        laneId = "2";
-
-
-                    } else if (pasoUpper.includes("PMO") || pasoUpper.includes("NOTIFICACIÓN") || pasoUpper.includes("PENDIENTE")) {
-                        if (pasoUpper.includes("APROBACIÓN")) {
-                            laneId = "4";
-                        } else {
-                            laneId = "3";  // revision PMO
-                        }
-                    } else if (pasoUpper.includes("CONTROL") || pasoUpper.includes("GESTIÓN")) {
-                        if (pasoUpper.includes("APROBADO")) {
-                            laneId = "6";
-                        } else {
-                            laneId = "5";  // revisión control de gestión
-                        }
-                    } else if (pasoUpper.includes("DIRECCIÓN") || pasoUpper.includes("REVISION")) {
-                        if (pasoUpper.includes("APROBACIÓN")) {
-                            laneId = "9";
-                        } else {
-                            laneId = "8";
-                        }
-                    } else if (pasoUpper.includes("RECHAZO") || pasoUpper.includes("FINALIZADO")) {
-                        laneId = "99";
-                    }
+                  if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
+    laneId = "0"; // Solicitud CDO
+} else if (pasoUpper.includes("PMO") && pasoUpper.includes("NOTIFICACIÓN")) {
+    laneId = "1"; // Notificación al área PMO
+} else if (pasoUpper.includes("AL AREA PMO") && pasoUpper.includes("APROBACIÓN")) {
+    laneId = "2"; // Aprobación PMO
+} else if (
+    pasoUpper.includes("BASIS") ||
+    pasoUpper.includes("TQ") ||
+    pasoUpper.includes("FACTORIA") ||
+    pasoUpper.includes("TÉCNICA")
+) {
+    laneId = "3"; // Aprobación técnica
+} else if (pasoUpper.includes("CONTROL") && pasoUpper.includes("NOTIFICACIÓN")) {
+    laneId = "5"; // Notificación Control de Gestión
+} else if (pasoUpper.includes("CONTROL") && pasoUpper.includes("APROBACIÓN")) {
+    laneId = "6"; // Aprobación Control de Gestión
+} else if (pasoUpper.includes("DIRECCIÓN") && pasoUpper.includes("NOTIFICACIÓN")) {
+    laneId = "8"; // Notificación Dirección
+} else if (pasoUpper.includes("DIRECCIÓN") && pasoUpper.includes("APROBACIÓN")) {
+    laneId = "9"; // Aprobación Dirección
+} else if (pasoUpper.includes("FINALIZADO") || pasoUpper.includes("RECHAZO") || pasoUpper.includes("RECHAZADO")) {
+    laneId = "99"; // Finalizado / Rechazado
+}
 
                     // Estado del nodo
                     let state = "Neutral";
@@ -645,10 +639,10 @@ sap.ui.define(
                 const texto = (pasoRaw || "").toUpperCase();
 
                 if (texto.includes("CDO") || texto.includes("SOLICITUD")) return "0";
-                if (texto.includes("NOTIFICACIÓN") && texto.includes("APROBACIÓN")) return "1";
-                if (texto.includes("BASIS") || texto.includes("TQ") || texto.includes("FACTORIA")) return "2";
-                if (texto.includes("NOTIFICACIÓN") && texto.includes("PMO")) return "3";
-                if (texto.includes("PMO") && !texto.includes("NOTIFICACIÓN")) return "4";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("AL AREA PMO")) return "1";
+                if (texto.includes("NOTIFICACIÓN") && texto.includes("PMO")) return "2";
+                if (texto.includes("PMO") && !texto.includes("NOTIFICACIÓN")) return "3";
+                if (texto.includes("BASIS") || texto.includes("TQ") || texto.includes("FACTORIA")) return "4";
                 if (texto.includes("NOTIFICACIÓN") && texto.includes("CONTROL")) return "5";
                 if (texto.includes("CONTROL") && !texto.includes("NOTIFICACIÓN")) return "6";
                 if (texto.includes("NOTIFICACIÓN") && texto.includes("DIRECCIÓN")) return "8";
@@ -658,62 +652,62 @@ sap.ui.define(
                 return "0"; // fallback
             },
 
-onNodePress: function (oEvent) {
-    const node = oEvent.getParameters();
-    if (!node) return;
+            onNodePress: function (oEvent) {
+                const node = oEvent.getParameters();
+                if (!node) return;
 
-    const evento = node.data("eventoOriginal");
-    if (!evento) return;
+                const evento = node.data("eventoOriginal");
+                if (!evento) return;
 
-    if (!this._oDialog) {
-        this._oDialog = new sap.m.Dialog({
-            title: "Detalles del Paso",
-            contentWidth: "500px",
-            contentHeight: "auto",
-            stretchOnPhone: true,
-            verticalScrolling: true,
-            content: [
-                new sap.ui.layout.form.SimpleForm({
-    editable: false,
-    layout: "ResponsiveGridLayout",
-    content: [
-        new sap.m.Label({ text: "Paso" }),
-        new sap.m.Text({ text: evento.paso || "Paso desconocido" }),
+                if (!this._oDialog) {
+                    this._oDialog = new sap.m.Dialog({
+                        title: "Detalles del Paso",
+                        contentWidth: "500px",
+                        contentHeight: "auto",
+                        stretchOnPhone: true,
+                        verticalScrolling: true,
+                        content: [
+                            new sap.ui.layout.form.SimpleForm({
+                                editable: false,
+                                layout: "ResponsiveGridLayout",
+                                content: [
+                                    new sap.m.Label({ text: "Paso" }),
+                                    new sap.m.Text({ text: evento.paso || "Paso desconocido" }),
 
-        new sap.m.Label({ text: "Descripción" }),
-        new sap.m.Text({ text: evento.descripcion || "" }),
+                                    new sap.m.Label({ text: "Descripción" }),
+                                    new sap.m.Text({ text: evento.descripcion || "" }),
 
-        new sap.m.Label({ text: "Fecha" }),
-        new sap.m.Text({ text: evento.timestamp || "" }),
+                                    new sap.m.Label({ text: "Fecha" }),
+                                    new sap.m.Text({ text: evento.timestamp || "" }),
 
-        new sap.m.Label({ text: "Comentario" }),
-        new sap.m.Text({ text: evento.comentario || "N/A", wrapping: true })
-    ]
-})
+                                    new sap.m.Label({ text: "Comentario" }),
+                                    new sap.m.Text({ text: evento.comentario || "N/A", wrapping: true })
+                                ]
+                            })
 
-            ],
-            beginButton: new sap.m.Button({
-                text: "Cerrar",
-                type: "Emphasized",
-                press: function () {
-                    this._oDialog.close();
-                }.bind(this)
-            })
-        });
-        this.getView().addDependent(this._oDialog);
-    } else {
-        // Actualizamos el contenido si el dialog ya existe
-        const panel = this._oDialog.getContent()[0];
-        panel.removeAllContent();
-        panel.addContent(new sap.m.ObjectStatus({ title: "Paso", text: evento.paso || "Paso desconocido", state: "Success" }));
-        panel.addContent(new sap.m.ObjectStatus({ title: "Descripción", text: evento.descripcion || "", state: "Information" }));
-        panel.addContent(new sap.m.ObjectStatus({ title: "Fecha", text: evento.timestamp || "", state: "Warning"  }));
-        panel.addContent(new sap.m.Label({ text: "Comentario", design: "Bold", class: "sapUiSmallMarginTop" }));
-        panel.addContent(new sap.m.Text({title: "Comentario", text: evento.comentario || "N/A", wrapping: true, width: "100%" }));
-    }
+                        ],
+                        beginButton: new sap.m.Button({
+                            text: "Cerrar",
+                            type: "Emphasized",
+                            press: function () {
+                                this._oDialog.close();
+                            }.bind(this)
+                        })
+                    });
+                    this.getView().addDependent(this._oDialog);
+                } else {
+                    // Actualizamos el contenido si el dialog ya existe
+                    const panel = this._oDialog.getContent()[0];
+                    panel.removeAllContent();
+                    panel.addContent(new sap.m.ObjectStatus({ title: "Paso", text: evento.paso || "Paso desconocido", state: "Success" }));
+                    panel.addContent(new sap.m.ObjectStatus({ title: "Descripción", text: evento.descripcion || "", state: "Information" }));
+                    panel.addContent(new sap.m.ObjectStatus({ title: "Fecha", text: evento.timestamp || "", state: "Warning" }));
+                    panel.addContent(new sap.m.Label({ text: "Comentario", design: "Bold", class: "sapUiSmallMarginTop" }));
+                    panel.addContent(new sap.m.Text({ title: "Comentario", text: evento.comentario || "N/A", wrapping: true, width: "100%" }));
+                }
 
-    this._oDialog.open();
-},
+                this._oDialog.open();
+            },
 
 
 
@@ -1252,7 +1246,7 @@ onNodePress: function (oEvent) {
                 }
             },
 
-      
+
 
             onAfterShow: function () {
                 this._loadProjectData();
@@ -1484,7 +1478,7 @@ onNodePress: function (oEvent) {
             },
 
 
-        
+
 
 
 
@@ -1637,12 +1631,12 @@ onNodePress: function (oEvent) {
 
 
 
-            
+
 
 
 
             // Define un objeto con las propiedades hijas que quieres eliminar
-           onDeletePress: async function (oEvent) {
+            onDeletePress: async function (oEvent) {
                 let oButton = oEvent.getSource();
                 const workflowInstanceId = oButton.data("etapaId");
                 let sProjectId = oButton.getCustomData()[0].getValue();
@@ -1749,7 +1743,7 @@ onNodePress: function (oEvent) {
                                         "RecuExterTotal",
                                         "InfraestrLicencia",
                                         "PerfilTotal",
-                                        "Archivos"              
+                                        "Archivos"
 
                                     ];
 
@@ -1840,7 +1834,7 @@ onNodePress: function (oEvent) {
                                     });
 
                                     if (projectResponse.ok) {
-                                  //     console.log("Proyecto eliminado correctamente.");
+                                        //     console.log("Proyecto eliminado correctamente.");
                                         sap.m.MessageBox.success("Proyecto y registros eliminados exitosamente.", {
                                             title: "Éxito",
                                             actions: [sap.m.MessageBox.Action.OK],

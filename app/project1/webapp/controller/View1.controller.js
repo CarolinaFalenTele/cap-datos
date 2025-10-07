@@ -175,34 +175,6 @@ sap.ui.define([
 
 
 
-onCostesTabSelect: function (oEvent) {
-    var oVBox = this.byId("costeContent");
-    var that = this;
-
-    // Retraso antes de mostrar el spinner (por ejemplo, 1 segundo)
-    this._busyTimeout = setTimeout(function () {
-        oVBox.setBusy(true);
-    }, 1000);
-
-    // Simula carga de datos o procesamiento pesado
-    this._loadCostesData().then(function () {
-        // Si termina antes del segundo, nunca se muestra el spinner
-        clearTimeout(that._busyTimeout);
-        oVBox.setBusy(false);
-    });
-},
-
-_loadCostesData: function () {
-
-
-    return new Promise(function (resolve) {
-        // Aquí iría tu lógica real: llamadas OData, cálculos, etc.
-        // Simulamos tiempo de carga
-        setTimeout(resolve, 2000);
-    });
-},
-
-
 
 
       actualizarHeadersAnios: function () {
@@ -1519,6 +1491,8 @@ _loadCostesData: function () {
 
         this._mode = sMode;
 
+        console.log("MOOODEEE" + this._mode );
+
         this.getView().getModel("viewModel").setProperty("/mode", sMode);
 
         // console.log("MODELO GUARDADO (onObjectMatched):", sMode);
@@ -1553,12 +1527,19 @@ _loadCostesData: function () {
         await this._configureButtons(sSourceModel, aprobacionFlag, sMode);
 
         this._sProjectID = sProjectID;
-
         let oData, iCreationYear;
+
         if (sProjectID) {
           try {
             oData = await this._fetchProjectData(sProjectID);
             iCreationYear = (new Date(oData.fechaCreacion)).getFullYear();
+
+            this._bSameYear = iCreationYear === (new Date()).getFullYear();
+
+
+              this._modeyear = sMode;
+            console.log("CONDICION " + this._bSameYear  +  this._modeyear);
+
           } catch (error) {
             console.error("Error al obtener los datos del proyecto:", error);
             sap.m.MessageToast.show("Error al cargar los datos del proyecto");
@@ -1722,9 +1703,17 @@ _loadCostesData: function () {
         const btnBorrado = this.byId("btnBorrado");
 
         //console.log("¿Al trae la informacion   inciio   ", btnBorrado.getEnabled()); 
+  if (!oData) return;
 
-        if (!oData) return;
-        var oStatus = this.byId("23437");
+  // Crear un BusyDialog modal
+  const oBusyDialog = new sap.m.BusyDialog({
+    title: "Cargando datos",
+    text: "Por favor espere mientras se cargan los datos del proyecto..."
+  });
+  oBusyDialog.open();
+
+  try {
+    const oStatus = this.byId("23437");
 
         // Poblar controles básicos
         this.byId("input0").setValue(oData.codigoProyect || "");
@@ -1819,8 +1808,13 @@ _loadCostesData: function () {
           this.getArchivosByProjectId(this._sProjectID)
         ]);
 
-        await this.CalculosResumenIngresosVSCostes();
+      sap.ui.core.BusyIndicator.hide();
+
+
         this.highlightControls();
+
+        await this.CalculosResumenIngresosVSCostes();
+
 
         const btnAceptar = this.byId("btnAceptar");
         //   const btnBorrar = this.byId("btnBorrado");
@@ -1828,21 +1822,15 @@ _loadCostesData: function () {
 
 
 
-        new sap.m.Dialog({
-          title: "Información",
-          type: "Message",
-          state: "Success",
-          content: new sap.m.Text({ text: "Datos cargados correctamente" }),
-          beginButton: new sap.m.Button({
-            text: "OK",
-            press: function () {
-              this.getParent().close();
-            }
-          }),
-          afterClose: function () {
-            this.destroy();
-          }
-        }).open();
+          new sap.m.MessageBox.success("Datos cargados correctamente");
+
+  } catch (error) {
+    console.error("Error al cargar datos:", error);
+    new sap.m.MessageBox.error("Ocurrió un error al cargar los datos. Por favor intente nuevamente.");
+  } finally {
+    // Siempre cerrar el BusyDialog
+    oBusyDialog.close();
+  }
       },
 
 
@@ -3752,7 +3740,7 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno; // Formato: "2024-Enero"
-              valoresPorFecha[key] = item.valor;
+              valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
               idPorFecha[key] = item.ID;  // Guardamos el ID para ese mesAno
 
 
@@ -3904,7 +3892,7 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno; // Ejemplo: "2024-Enero"
-              valoresPorFecha[key] = item.valor;
+                valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
               idPorFecha[key] = item.ID;  // Guardamos el ID para ese mesAno
             });
 
@@ -3962,8 +3950,8 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno;
-              valoresPorFecha[key] = item.valor;
-              idPorFecha[key] = item.ID;
+          valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";             
+            idPorFecha[key] = item.ID;
             });
 
             this._IdFechasPorMesGVinter = idPorFecha;
@@ -4023,7 +4011,7 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno;
-              valoresPorFecha[key] = item.valor;
+              valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
               idPorFecha[key] = item.ID;
             });
 
@@ -4085,8 +4073,8 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno; // Formato: "2024-Enero"
-              valoresPorFecha[key] = item.valor;
-              idPorFecha[key] = item.ID;
+            valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";              
+            idPorFecha[key] = item.ID;
             });
 
             this._IdFechasPorMesServiConsu = idPorFecha;
@@ -4149,8 +4137,8 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno; // Ejemplo: "2024-Enero"
-              valoresPorFecha[key] = item.valor;
-              idPorFecha[key] = item.ID;
+          valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
+                 idPorFecha[key] = item.ID;
             });
 
             this._IdFechasPorMesGasViaConsuEx = idPorFecha;
@@ -4217,8 +4205,9 @@ _loadCostesData: function () {
             const valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno; // Ejemplo: "2024-Enero"
-              valoresPorFecha[key] = item.valor;
-              idPorFecha[key] = item.ID;
+   valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
+   
+   idPorFecha[key] = item.ID;
             });
 
             // Guardar IDs por fecha si se requiere luego
@@ -4278,8 +4267,8 @@ _loadCostesData: function () {
             let valoresPorFecha = {};
             data.value.forEach(item => {
               const key = item.mesAno;
-              valoresPorFecha[key] = item.valor;
-              idPorFecha[key] = item.ID;
+   valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";
+                 idPorFecha[key] = item.ID;
             });
 
             this._IdFechasPorMesSerReEx = idPorFecha; // Si necesitas los IDs luego
@@ -4339,8 +4328,9 @@ _loadCostesData: function () {
             let valoresPorFecha = {};
             oData.value.forEach(item => {
               const key = item.mesAno;
-              valoresPorFecha[key] = item.valor;
+              valoresPorFecha[key] = item.valor != null ? parseFloat(item.valor).toFixed(2) : "0.00";              
               idPorFecha[key] = item.ID;
+        
             });
 
             this._IdFechasPorMesReEx = idPorFecha;
@@ -5638,7 +5628,7 @@ _loadCostesData: function () {
 
 
       //---- Método selección de ítems y cambio para múltiples tablas ----
-      updateRowData: function (oEvent) {
+     /* updateRowData: function (oEvent) {
         // Obtén el ID del Select que ha generado el evento
         const oSource = oEvent.getSource();
 
@@ -5727,10 +5717,85 @@ _loadCostesData: function () {
 
 
 
-      },
+      },*/
 
 
-      selectFuncionchange: function (oEvent) {
+      // Lee los perfiles disponibles desde la entidad PerfilServicio (OData V4)
+leerPerfilesServicio: async function () {
+  try {
+    const oModel = this.getView().getModel(); // OData V4 model
+    const oListBinding = oModel.bindList("/PerfilServicio");
+
+    const aContexts = await oListBinding.requestContexts();
+    const aData = aContexts.map(ctx => ctx.getObject());
+
+    // Convertir a un mapa rápido (clave = NombrePerfil)
+    this._perfilCache = {};
+    aData.forEach(item => {
+      if (item.NombrePerfil) {
+        this._perfilCache[item.NombrePerfil] = parseFloat(item.PMJ) || 0;
+      }
+    });
+
+    console.log(" Cache de PerfilServicio cargado:", this._perfilCache);
+  } catch (error) {
+    console.error(" Error al leer PerfilServicio:", error);
+  }
+},
+
+
+updateRowData: async function (oEvent) {
+  try {
+    const oSource = oEvent.getSource();
+    const oTable = this.byId("table_dimicFecha");
+    const oItem = oSource.getParent();
+    const iIndex = oTable.indexOfItem(oItem);
+
+    if (iIndex === -1) {
+      console.error("Índice de la fila no encontrado en la tabla.");
+      return;
+    }
+
+    const aItems = oTable.getItems();
+    const oRowData = aItems[iIndex].getCells();
+    const sSelectedText = oSource.getSelectedItem().getText(); // NombrePerfil
+
+    // 🔸 Si aún no hay cache, cargar perfiles
+    if (!this._perfilCache) {
+      await this.leerPerfilesServicio();
+    }
+
+    // 🔸 Buscar el PMJ por NombrePerfil
+    const fPMJ = this._perfilCache[sSelectedText];
+
+    if (fPMJ !== undefined) {
+      // Mostrar con 2 decimales
+      oRowData[4].setText(fPMJ.toFixed(2));
+
+      // Registrar fila editada
+      const tableId = "table_dimicFecha";
+      if (!this._editedRows[tableId]) {
+        this._editedRows[tableId] = new Set();
+      }
+      this._editedRows[tableId].add(iIndex);
+
+      // Actualizar totales
+      this.updateTotalField(tableId, iIndex, fPMJ, oEvent, 4);
+
+      console.log(` Perfil '${sSelectedText}' actualizado con PMJ: ${fPMJ}`);
+    } else {
+      console.warn(`No se encontró PMJ para el perfil '${sSelectedText}'`);
+    }
+
+  } catch (error) {
+    console.error(" Error en updateRowData:", error);
+  }
+},
+
+
+
+
+   /*   selectFuncionchange: function (oEvent) {
         // Obtén el ID del Select que ha generado el evento
         const oSource = oEvent.getSource();
 
@@ -5818,23 +5883,6 @@ _loadCostesData: function () {
         if (oUpdate) {
 
           oRowData[4].setText(oUpdate.PMJ); // Ajusta según la celda específica para PMJ
-          /* oRowData[5].setText(oUpdate["2024"]);   // Ajusta según la celda específica para el año 2024
-           oRowData[6].setText(oUpdate["2025"]);   // Ajusta según la celda específica para el año 2025
-           oRowData[7].setText(oUpdate["2026"]);   // Ajusta según la celda específica para el año 2026
-           oRowData[8].setText(oUpdate["2027"]);   // Ajusta según la celda específica para el año 2027
-           oRowData[9].setText(oUpdate["2028"]);   // Ajusta según la celda específica para el año 2028
-           oRowData[10].setText(oUpdate["2029"]);  // Ajusta según la celda específica para el año 2029
- 
-           // Suma de 2024 y 2025 para 'Total'
-           var total = 0;
-           oRowData[11].setText(total);  // Coloca la suma en 'Total'
- 
-           // Suma de PMJ + Total para 'Total1'
-           var total1 = 0;
-           oRowData[12].setText(total1);  // Coloca la suma en 'Total1'
-           console.log(total1);*/
-
-
 
           var tableId = "tablaConsuExter";
           if (!this._editedRows[tableId]) {
@@ -5849,9 +5897,78 @@ _loadCostesData: function () {
           console.error(`No hay configuración definida para el valor seleccionado: ${sSelectedText}`);
         }
 
-      },
+      },*/
 
 
+// Lee los perfiles disponibles desde la entidad PerfilConsumo
+leerPerfilesConsumo: async function () {
+  try {
+    const oModel = this.getView().getModel(); 
+    const oListBinding = oModel.bindList("/PerfilConsumo");
+
+    const aContexts = await oListBinding.requestContexts();
+    const aData = aContexts.map(ctx => ctx.getObject());
+
+  
+    this._perfilConsumoCache = {};
+    aData.forEach(item => {
+      if (item.nombrePerfilC) {
+        this._perfilConsumoCache[item.nombrePerfilC] = parseFloat(item.PMJ) || 0;
+      }
+    });
+
+    console.log(" Cache de PerfilConsumo cargado:", this._perfilConsumoCache);
+  } catch (error) {
+    console.error(" Error al leer PerfilConsumo:", error);
+  }
+},    
+
+selectFuncionchange: async function (oEvent) {
+  try {
+    const oSource = oEvent.getSource();
+    const oTable = this.byId("tablaConsuExter");
+    const oItem = oSource.getParent();
+    const iIndex = oTable.indexOfItem(oItem);
+
+    if (iIndex === -1) {
+      console.error("Índice de la fila no encontrado en la tabla.");
+      return;
+    }
+
+    const aItems = oTable.getItems();
+    const oRowData = aItems[iIndex].getCells();
+    const sSelectedText = oSource.getSelectedItem().getText(); // nombrePerfilC
+
+    // Si aún no hay cache, cargar perfiles de consumo
+    if (!this._perfilConsumoCache) {
+      await this.leerPerfilesConsumo();
+    }
+
+    // Buscar el PMJ por nombrePerfilC
+    const fPMJ = this._perfilConsumoCache[sSelectedText];
+
+    if (fPMJ !== undefined) {
+      oRowData[4].setText(fPMJ.toFixed(2));
+
+      // Registrar la fila editada
+      const tableId = "tablaConsuExter";
+      if (!this._editedRows[tableId]) {
+        this._editedRows[tableId] = new Set();
+      }
+      this._editedRows[tableId].add(iIndex);
+
+      // Actualizar el total en la tabla
+      this.updateTotalField(tableId, iIndex, fPMJ, oEvent, 4);
+
+      console.log(` PerfilConsumo '${sSelectedText}' actualizado con PMJ: ${fPMJ}`);
+    } else {
+      console.warn(` No se encontró PMJ para el perfil '${sSelectedText}'`);
+    }
+
+  } catch (error) {
+    console.error(" Error en selectFuncionchange:", error);
+  }
+},
 
 
 
@@ -13756,7 +13873,7 @@ _loadCostesData: function () {
         // console.log("  Valores distribuidos por tabla y año:");
         //console.log(JSON.stringify(valoresDistribuidos, null, 2));
 
-        //console.log("🔢 Acumulado de textos distribuidos por tabla y año:");
+        //console.log(" Acumulado de textos distribuidos por tabla y año:");
         //console.log(JSON.stringify(acumuladoTextPorTablaYAnio, null, 2));
 
 
@@ -13772,11 +13889,8 @@ _loadCostesData: function () {
 
 
       traerPorcentajes: async function () {
-        // Crear modelo OData V4 apuntando directamente a tu servicio
 
-
-        const oModel = this.getOwnerComponent().getModel(); // modelo "" definido en manifest.json
-
+        const oModel = this.getOwnerComponent().getModel(); 
 
         // Crear el binding sobre la entidad PorcentajeAnio
         const oBinding = oModel.bindList("/PorcentajeAnio");
@@ -13887,7 +14001,7 @@ _loadCostesData: function () {
           }
 
           // Obtener los índices de las filas editadas
-          this._editedRows[tableId].forEach(function (rowIndex) {
+          this._editedRows[tableId].forEach( (rowIndex) => {
             var oItem = oTable.getItems()[rowIndex];
             if (oItem) {
               var aCells = oItem.getCells(); // Obtener las celdas de la fila
@@ -13914,6 +14028,12 @@ _loadCostesData: function () {
                   return 1; // si no encuentra nada, usa 100%
                 }
 
+
+
+
+                if ((this._modeyear === "edit" && this._bSameYear) || this._modeyear !== "edit") {
+
+              console.log("entre al metodo ");
                 // Aplicamos el % a cada año
                 totalForAnio1 = totalForAnio1 * getPctForYear(aAnios[0].anio);
                 totalForAnio2 = totalForAnio2 * getPctForYear(aAnios[1].anio);
@@ -13921,7 +14041,7 @@ _loadCostesData: function () {
                 totalForAnio4 = totalForAnio4 * getPctForYear(aAnios[3].anio);
                 totalForAnio5 = totalForAnio5 * getPctForYear(aAnios[4].anio);
 
-
+                }
 
 
                 totalSum2 = totalForAnio1 + totalForAnio2 + totalForAnio3 + totalForAnio4 + totalForAnio5;
@@ -13930,7 +14050,7 @@ _loadCostesData: function () {
                 //     console.log("total " + totalSum2);
 
 
-               /* console.table([
+                console.table([
                   { Año: aAnios[0].anio, Total: totalForAnio1.toFixed(2) },
                   { Año: aAnios[1].anio, Total: totalForAnio2.toFixed(2) },
                   { Año: aAnios[2].anio, Total: totalForAnio3.toFixed(2) },
@@ -13938,7 +14058,7 @@ _loadCostesData: function () {
                   { Año: aAnios[4].anio, Total: totalForAnio5.toFixed(2) },
                   { Año: "TOTAL 5 años", Total: totalSum2.toFixed(2) },
                   { Año: "Resultado final (resulDina)", Total: resulDina.toFixed(2) }
-                ]);*/
+                ]);
                 //aCells[10].setText(totalSum2.toFixed(2)); // Celda para Total 
                 aCells[11].setText(resulDina.toFixed(2) + "€"); // Celda para Total   
 

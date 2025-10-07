@@ -1280,34 +1280,39 @@
                                                                     text="Solicitud CDO"
                                                                     position="0"
                                                                 />
+                               
                                                                 <suite:ProcessFlowLaneHeader
+                                                                    id="lane3"
+                                                                    laneId="3"
+                                                                    iconSrc="sap-icon://activity-individual"
+                                                                    text="Notificación al area PMO"
+                                                                    position="1"
+                                                                />
+
+                                                                     <suite:ProcessFlowLaneHeader
+                                                                    id="lane4"
+                                                                    laneId="4"
+                                                                    iconSrc="sap-icon://factory"
+                                                                    text="Aprobación PMO"
+                                                                    position="2"
+                                                                />
+                                                     <suite:ProcessFlowLaneHeader
                                                                     id="lane1"
                                                                     laneId="1"
                                                                     iconSrc="sap-icon://approvals"
-                                                                    text="Notificación de Aprobación"
-                                                                    position="1"
+                                                                    text="Notificación de Area (Basis/TQ/Factoría) "
+                                                                    position="3"
                                                                 />
+                                                        
+
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane2"
                                                                     laneId="2"
                                                                     iconSrc="sap-icon://notes"
                                                                     text="Aprobación Técnica (Basis/TQ/Factoría)"
-                                                                    position="2"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane3"
-                                                                    laneId="3"
-                                                                    iconSrc="sap-icon://activity-individual"
-                                                                    text="Notificación a PMO"
-                                                                    position="3"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane4"
-                                                                    laneId="4"
-                                                                    iconSrc="sap-icon://factory"
-                                                                    text="Aprobación PMO"
                                                                     position="4"
                                                                 />
+                                                           
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane5"
                                                                     laneId="5"

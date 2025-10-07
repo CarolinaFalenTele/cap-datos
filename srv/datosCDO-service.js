@@ -300,7 +300,7 @@ this.on("getResultado", async (req) => {
             workflow_ID: workflowInstanceId,
             taskInstanceId: task.id,
             nombreEtapa: task.subject || 'Etapa sin nombre',
-            asignadoA: task.recipientUsers?.[0] || null,
+            asignadoA: task.recipientUsers?.join(', ') || null,
             estado: 'Pendiente'
           });
         }
