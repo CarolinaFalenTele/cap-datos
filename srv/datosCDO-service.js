@@ -320,8 +320,11 @@ this.on("getResultado", async (req) => {
 
   this.on('completeWorkflow', async (req) => {
     const { workflowInstanceId, decision, comentario, idProject } = req.data;
+    console.log(`Step 1: workflowInstanceId: ${workflowInstanceId}, decision: ${decision}, comentario: ${comentario}, idProject: ${idProject}`);
     const userEmail = req.user.email;
+    console.log(`Step 2: userEmail: ${userEmail}`);
     const token = await getWorkflowToken();
+    console.log(`Step 3`);
     console.log("  req.data:", req.data);
     console.log("TOKENNNN   ---->>> ", token);
 
@@ -331,50 +334,69 @@ this.on("getResultado", async (req) => {
     }
 
 
+    
+    console.log(`Step 4`);
     console.log("ID DEL PROYECTO " + idProject);
 
     // Función para esperar y reintentar obtener nuevas tareas
-    async function waitForNextTasks(workflowInstanceId, token, maxRetries = 5, delayMs = 1500) {
+    async function waitForNextTasks(workflowInstanceId, token, maxRetries = 5, delayMs = 20000) {
+      console.log(`Step 16.1 dentro de waitForNextTasks, valores recibidos workflowInstanceId: ${workflowInstanceId}, token: ${token}, maxRetries: ${maxRetries}, delayMs: ${delayMs}`);
       for (let i = 0; i < maxRetries; i++) {
+        console.log(`Step 16.1.1 Intento numero ${i+1}, previo llamada a axios con workflowInstanceId: ${workflowInstanceId} y token: ${token}`);
         const response = await axios.get(
           `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        console.log(`Step 16.1.2 respuesta de axios: ${response}`);
         const tasks = response.data;
+        console.log(`Step 16.1.3 tasks: ${tasks}, en string: ${JSON.stringify(tasks)}. Previo al filtro por READY y RESERVED`);
         const newTasks = tasks.filter(task => (task.status === "READY" || task.status === "RESERVED"));
+        console.log(`Step 16.1.4 newTasks: ${newTasks}, en string: ${JSON.stringify(newTasks)}, length: ${newTasks.length}`);
         if (newTasks.length > 0) {
+          console.log(`Step 16.1.4.1 El length no es 0, devuelve la array completa`);
           return newTasks;
         }
+        console.log(`Step 16.1.5 El length es 0, reintentando en ${delayMs} ms`);
         await new Promise(res => setTimeout(res, delayMs));
       }
+      console.log(`Step 16.2 retries terminados, devuelve array vacía`);
       return [];
     }
 
     try {
+      console.log(`Step 5`);
       console.log("  Buscando tareas para el workflowInstanceId:", workflowInstanceId);
 
       // Paso 1: Obtener tareas actuales
+      console.log(`Step 6 previo al axios a task-instances con el ID anterior`);
       const getResponse = await axios.get(
         `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances?workflowInstanceId=${workflowInstanceId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      
+      console.log(`Step 7 respuesta: ${getResponse}`);
 
       const tasks = getResponse.data;
+      console.log(`Step 8 tasks: ${tasks}`);
 
       if (!tasks || tasks.length === 0) {
         return req.reject(404, `  No se encontraron tareas para el workflowInstanceId ${workflowInstanceId}`);
       }
 
       // Paso 2: Buscar la tarea activa (READY o RESERVED)
+      console.log(`Step 9 tasks previo activeTask`);
       const activeTask = tasks.find(task => task.status === "READY" || task.status === "RESERVED");
+      console.log(`Step 10 activeTask recibido: ${activeTask}`);
       if (!activeTask) {
         return req.reject(400, `  No hay tareas activas (READY o RESERVED) para este workflow.`);
       }
 
       const taskId = activeTask.id;
+      console.log(`Step 11`);
       console.log("  Tarea activa encontrada:", taskId);
 
       // Paso 3: Completar la tarea
+      console.log(`Step 12 llamada axios a task-instances con id anterior y valores decision ${decision}, idcompmo y comentario ${comentario}. Token: ${token}`);
       await axios.patch(
         `https://spa-api-gateway-bpi-eu-prod.cfapps.eu10.hana.ondemand.com/workflow/rest/v1/task-instances/${taskId}`,
         {
@@ -394,10 +416,11 @@ this.on("getResultado", async (req) => {
           }
         }
       );
-
+      console.log(`Step 13`);
       console.log("  Tarea completada con éxito:", taskId);
 
       // Paso 4: Actualizar etapa actual en la tabla WorkflowEtapas
+      console.log(`Step 14 antes del update de WorkflowEtapas con userEmail: ${userEmail}, estado ${decision === 'approve' ? 'Aprobado' : 'Rechazado'} y comentario ${comentario}`);
       await UPDATE('WorkflowEtapas')
         .set({
           aprobadoPor: userEmail,
@@ -407,17 +430,26 @@ this.on("getResultado", async (req) => {
         })
         .where({ taskInstanceId: taskId });
 
+      console.log(`Step 15 update "terminado"`);
 
 
 
       // Paso 5: Reintentar obtener tareas nuevas con espera
+      console.log(`Step 16 antes de waitforNextTasks, parámetros workflowInstanceId: ${workflowInstanceId} y token ${token}`);
       const newActiveTasks = await waitForNextTasks(workflowInstanceId, token);
+      console.log(`Step 17 respuesta de waitforNextTasks: ${newActiveTasks}`);
 
       let inserted = 0;
+      
+      console.log(`Step 18 previo al for de tasks activas`);
       for (const task of newActiveTasks) {
+        console.log(`Step 18.1 task recibido: ${task}, con id: ${task.id}. Comparando con taskId: ${taskId}`);
         if (task.id !== taskId) { // no reinsertar la tarea completada
+          console.log(`Step 18.1.1 Previo a select de task no completado. ID ${task.id}`);
           const exists = await SELECT.one.from('WorkflowEtapas').where({ taskInstanceId: task.id });
+          console.log(`Step 18.1.2 Elemento recuperado ${exists}`);
           if (!exists) {
+            console.log(`Step 18.1.2.1 Elemento no existe, procede a insertar con datos: workflowInstanceId: ${workflowInstanceId}, taskInstanceId: ${task.id}, nombreEtapa: ${task.subject || 'Etapa sin nombre'}, asignadoA: ${task.recipientUsers?.join(', ') || null}`);
             await INSERT.into('WorkflowEtapas').entries({
               workflow_ID: workflowInstanceId,
               taskInstanceId: task.id,
@@ -425,20 +457,28 @@ this.on("getResultado", async (req) => {
               asignadoA: task.recipientUsers?.join(', ') || null,
               estado: 'Pendiente'
             });
+            console.log(`Step 18.1.2.2 Elemento insertado, avanzamos inserted`);
             inserted++;
           }
         }
       }
+      console.log(`Step 19 termiando for de tasks activas, tenemos inserted: ${inserted}`);
 
       if (inserted > 0) {
         return { message: `  Tarea completada. ${inserted} nueva(s) etapa(s) insertada(s).` };
       }
 
+      console.log(`Step 20 inserted es 0, previo a select de etapas con workflowInstanceId: ${workflowInstanceId}`);
       // Paso 6: Si no hay más tareas nuevas, marcar workflow como finalizado
       const etapas = await SELECT.from('WorkflowEtapas').where({ workflow_ID: workflowInstanceId });
+      console.log(`Step 21 etapas recuperadas: ${etapas}`);
       const algunoRechazado = etapas.some(e => e.estado === 'Rechazado');
+      console.log(`Step 22 algunoRechazado: ${algunoRechazado}`);
       const estadoFinal = algunoRechazado ? 'Rechazado' : 'Aprobado';
+      console.log(`Step 23 estadoFinal: ${estadoFinal}`);
 
+      
+      console.log(`Step 24 antes del update de WorkflowInstancias con workflowInstanceId: ${workflowInstanceId} y estadoFinal: ${estadoFinal}`);
       await UPDATE('WorkflowInstancias')
         .set({
           estado: estadoFinal,
@@ -446,11 +486,15 @@ this.on("getResultado", async (req) => {
         })
         .where({ ID: workflowInstanceId });
 
+      console.log(`Step 25 update "terminado"`);
+
       // ** Aquí agrego el UPDATE para DatosProyect solo estado **
+      console.log(`Step 26 antes del update de DatosProyect con workflowInstanceId: ${workflowInstanceId} y estadoFinal: ${estadoFinal}`);
       const result = await UPDATE('DatosProyect')
         .set({ Estado: estadoFinal })
         .where({ ID: idProject });
 
+      console.log(`Step 27 update "terminado". Fin del workflow`);
       console.log("  Resultado UPDATE DatosProyect:", result);
 
       return { message: `  Workflow completado. Estado final: ${estadoFinal}` };
