@@ -1283,7 +1283,7 @@
                                
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane3"
-                                                                    laneId="3"
+                                                                    laneId="1"
                                                                     iconSrc="sap-icon://activity-individual"
                                                                     text="Notificación al area PMO"
                                                                     position="1"
@@ -1291,26 +1291,34 @@
 
                                                                      <suite:ProcessFlowLaneHeader
                                                                     id="lane4"
-                                                                    laneId="4"
+                                                                    laneId="2"
                                                                     iconSrc="sap-icon://factory"
                                                                     text="Aprobación PMO"
                                                                     position="2"
                                                                 />
+
+
+          <suite:ProcessFlowLaneHeader
+            id="lane7"
+            laneId="9"
+            iconSrc="sap-icon://decision"
+            text="Condición: Verificar SSFF o SAP"
+            position="3"
+        />
                                                      <suite:ProcessFlowLaneHeader
                                                                     id="lane1"
-                                                                    laneId="1"
+                                                                    laneId="3"
                                                                     iconSrc="sap-icon://approvals"
                                                                     text="Notificación de Area (Basis/TQ/Factoría) "
-                                                                    position="3"
+                                                                    position="4"
                                                                 />
                                                         
-
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane2"
-                                                                    laneId="2"
+                                                                    laneId="4"
                                                                     iconSrc="sap-icon://notes"
                                                                     text="Aprobación Técnica (Basis/TQ/Factoría)"
-                                                                    position="4"
+                                                                    position="5"
                                                                 />
                                                            
                                                                 <suite:ProcessFlowLaneHeader
@@ -1318,35 +1326,35 @@
                                                                     laneId="5"
                                                                     iconSrc="sap-icon://calendar"
                                                                     text="Notificación Control de Gestión"
-                                                                    position="5"
+                                                                    position="6"
                                                                 />
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane6"
                                                                     laneId="6"
                                                                     iconSrc="sap-icon://accept"
                                                                     text="Aprobación Control de Gestión"
-                                                                    position="6"
-                                                                />
-                                                                <suite:ProcessFlowLaneHeader
-                                                                    id="lane8"
-                                                                    laneId="8"
-                                                                    iconSrc="sap-icon://message-error"
-                                                                    text="Notificación Dirección"
                                                                     position="7"
                                                                 />
                                                                 <suite:ProcessFlowLaneHeader
+                                                                    id="lane8"
+                                                                    laneId="7"
+                                                                    iconSrc="sap-icon://message-error"
+                                                                    text="Notificación Dirección"
+                                                                    position="8"
+                                                                />
+                                                                <suite:ProcessFlowLaneHeader
                                                                     id="lane9"
-                                                                    laneId="9"
+                                                                    laneId="8"
                                                                     iconSrc="sap-icon://payment-approval"
                                                                     text="Aprobación Dirección"
-                                                                    position="8"
+                                                                    position="9"
                                                                 />
                                                                 <suite:ProcessFlowLaneHeader
                                                                     id="lane99"
                                                                     laneId="99"
                                                                     iconSrc="sap-icon://decline"
                                                                     text="Finalizado / Rechazado"
-                                                                    position="9"
+                                                                    position="10"
                                                                 />
                                                             </suite:lanes>
                                                         </suite:ProcessFlow>

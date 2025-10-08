@@ -565,37 +565,48 @@ sap.ui.define(
                 listaEventos.forEach((evento, index) => {
                     if (!evento.id) evento.id = "evento_" + index;
 
-                    let pasoRaw = evento.paso || "Paso desconocido";
+                    let pasoRaw = evento.paso || "Solicitud enviada";
 
                     // Asignar laneId según palabras clave específicas en el paso (pasoRaw)
                     let laneId = this.obtenerLaneIdDesdePaso(pasoRaw);
 
                     const pasoUpper = pasoRaw.toUpperCase();
 
+                    console.log("PASOS: --> " + pasoUpper);
+
                     // Mapeo más específico:
 // Condición especial para EXCLUSIVE_GATEWAY
 if (pasoUpper.includes("VERIFICAR SSFF") || pasoUpper.includes("SAP")) {
-    // Aquí decides a qué lane va según el tipo
     if (pasoUpper.includes("SSFF") || pasoUpper.includes("SAP")) {
-        laneId = "1"; // Notificación de Area (Basis/TQ/Factoría)
+        laneId = "9"; // Notificación de Area (Basis/TQ/Factoría)
+//state = "Critical";
     } else {
         laneId = "5"; // Notificación Control de Gestión
     }
 } 
 // Mapeo más específico
-else if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
-    laneId = "0"; // Solicitud CDO
-} else if (pasoUpper.includes("PMO") && pasoUpper.includes("NOTIFICACIÓN")) {
-    laneId = "1"; // Notificación al área PMO
-} else if (pasoUpper.includes("AL AREA PMO") && pasoUpper.includes("APROBACIÓN")) {
+else if (pasoUpper.includes("NOTIFICACIÓN")  && pasoUpper.includes("EMAIL")) {
+      console.log("He entrado1 ");
+
+    laneId = "1"; // Solicitud CDO
+
+      console.log("He terminado 1 ");
+
+} else if (pasoUpper.includes("APROBACIÓN") && pasoUpper.includes("ÁREA")) {
+  console.log("He entrado 2");
     laneId = "2"; // Aprobación PMO
+      console.log("He terminado 2 ");
+
 } else if (
     pasoUpper.includes("BASIS") ||
     pasoUpper.includes("TQ") ||
     pasoUpper.includes("FACTORIA") ||
     pasoUpper.includes("TÉCNICA")
 ) {
-    laneId = "3"; // Aprobación técnica
+   {
+    laneId = "4";
+    state = "Critical"; // amarillo
+}
 } else if (pasoUpper.includes("CONTROL") && pasoUpper.includes("NOTIFICACIÓN")) {
     laneId = "5"; // Notificación Control de Gestión
 } else if (pasoUpper.includes("CONTROL") && pasoUpper.includes("APROBACIÓN")) {
@@ -652,7 +663,7 @@ else if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
 
                 if (texto.includes("CDO") || texto.includes("SOLICITUD")) return "0";
                 if (texto.includes("NOTIFICACIÓN") && texto.includes("AL AREA PMO")) return "1";
-                if (texto.includes("NOTIFICACIÓN") && texto.includes("PMO")) return "2";
+                if (texto.includes("APROBACIÓN") && texto.includes("PMO")) return "2";
                 if (texto.includes("PMO") && !texto.includes("NOTIFICACIÓN")) return "3";
                 if (texto.includes("BASIS") || texto.includes("TQ") || texto.includes("FACTORIA")) return "4";
                 if (texto.includes("NOTIFICACIÓN") && texto.includes("CONTROL")) return "5";
