@@ -472,7 +472,7 @@ sap.ui.define(
 
 
                     await this.onActivityPress(oEvent, result);
-                   sap.m.MessageBox.information(JSON.stringify(result, null, 2));
+                 sap.m.MessageBox.information(JSON.stringify(result, null, 2));
                 } catch (error) {
                     console.error(" Error al obtener el historial del workflow:", error);
                     sap.m.MessageBox.error("No se pudo obtener el historial del workflow.");
@@ -517,9 +517,10 @@ sap.ui.define(
                 const laneMap = {
                     "SOLICITUD CDO": "0",
                     "APROBACIÓN": "1",
-                    "BASIS": "2",
-                    "PMO": "3",  // tanto revision como aprobado PMO
-                    "APROBADO PMO": "4",
+                         "PMO": "2",
+                 // tanto revision como aprobado PMO
+                    "APROBADO PMO": "3",
+                    "BASIS": "4",
                     "CONTROL": "5",
                     "GESTIÓN": "6",
                     "DIRECCIÓN": "8",
@@ -538,8 +539,8 @@ sap.ui.define(
                     "TRIGGERED": "Neutral"
                 };
 
-                const pasosExcluidos = [  "INVOKE FUNCTION" ,
-                    "Verificar SSFF o SAP"
+                const pasosExcluidos = [  "INVOKE FUNCTION" 
+            
 
                  ];
 
@@ -572,7 +573,17 @@ sap.ui.define(
                     const pasoUpper = pasoRaw.toUpperCase();
 
                     // Mapeo más específico:
-                  if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
+// Condición especial para EXCLUSIVE_GATEWAY
+if (pasoUpper.includes("VERIFICAR SSFF") || pasoUpper.includes("SAP")) {
+    // Aquí decides a qué lane va según el tipo
+    if (pasoUpper.includes("SSFF") || pasoUpper.includes("SAP")) {
+        laneId = "1"; // Notificación de Area (Basis/TQ/Factoría)
+    } else {
+        laneId = "5"; // Notificación Control de Gestión
+    }
+} 
+// Mapeo más específico
+else if (pasoUpper.includes("CDO") || pasoUpper.includes("INICIO")) {
     laneId = "0"; // Solicitud CDO
 } else if (pasoUpper.includes("PMO") && pasoUpper.includes("NOTIFICACIÓN")) {
     laneId = "1"; // Notificación al área PMO
@@ -596,6 +607,7 @@ sap.ui.define(
 } else if (pasoUpper.includes("FINALIZADO") || pasoUpper.includes("RECHAZO") || pasoUpper.includes("RECHAZADO")) {
     laneId = "99"; // Finalizado / Rechazado
 }
+
 
                     // Estado del nodo
                     let state = "Neutral";

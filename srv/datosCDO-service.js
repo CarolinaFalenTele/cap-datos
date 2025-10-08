@@ -465,6 +465,14 @@ this.on("getResultado", async (req) => {
       console.log(`Step 19 termiando for de tasks activas, tenemos inserted: ${inserted}`);
 
       if (inserted > 0) {
+  console.log(" Entró al bloque de nuevas tareas. Workflow sigue en proceso.");
+
+      await UPDATE('DatosProyect')
+        .set({ Estado: 'Pendiente' })
+        .where({ ID: idProject });
+
+          console.log(" Estado del proyecto actualizado a Pendiente");
+
         return { message: `  Tarea completada. ${inserted} nueva(s) etapa(s) insertada(s).` };
       }
 
