@@ -243,7 +243,7 @@ this.on("getResultado", async (req) => {
     console.log(`StartWorkflow Step 1. Input: ${input}`);
 
     const workflowPayload = {
-      definitionId: "eu10.p051dvk8.datoscdoprocesoflujo.aprobacionCDO",
+      definitionId: "eu10.p051dvk8.datoscdoprocesoflujoqua.aprobacionCDOQUA",
       context: input
     };
     console.log(`StartWorkflow Step 2. WorkflowPayload: ${workflowPayload}`);
