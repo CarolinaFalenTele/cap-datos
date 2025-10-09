@@ -242,6 +242,7 @@ this.on("getResultado", async (req) => {
     const input = JSON.parse(req.data.payload);
     console.log(`StartWorkflow Step 1. Input: ${input}`);
 
+    
     const workflowPayload = {
       definitionId: "eu10.p051dvk8.datoscdoprocesoflujo.aprobacionCDO",
       context: input
