@@ -246,7 +246,6 @@ this.on("getResultado", async (req) => {
       definitionId: "eu10.p051dvk8.datoscdoprocesoflujoqua.aprobacionCDOQUA",
       context: input
     };
-    console.log("Línea de prueba");
     console.log(`StartWorkflow Step 2. WorkflowPayload: ${workflowPayload}`);
 
     try {
